@@ -1,6 +1,12 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import RootLayout from "./components/layout/RootLayout";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Community from "./pages/Community";
+import Chat from "./pages/Chat";
+import UserPage from "./pages/UserPage";
 
 const router = createBrowserRouter([
   {
