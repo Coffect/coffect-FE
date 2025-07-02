@@ -10,7 +10,7 @@ const RootLayout = () => {
     <div className="flex justify-center bg-gray-100 h-dvh w-dvw">
       <div className="flex h-full w-full max-w-[430px] flex-col bg-white">
         {/* Main 영역 */}
-        <main className="overflow-y-auto flex-1 bg-green-100">
+        <main className="w-full h-full bg-green-100">
           <Outlet />
         </main>
       </div>
