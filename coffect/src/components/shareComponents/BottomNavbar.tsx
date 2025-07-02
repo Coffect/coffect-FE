@@ -27,37 +27,31 @@ export default function BottomNavbar({ activeLabel }: BottomNavbarProps) {
   ];
 
   return (
-    <>
-      {/* BottomNavbar가 fixed이기 때문에, 컨텐츠가 가려지지 않도록 spacer를 추가 */}
-      <div className="h-[81px] w-full" />
-      <div className="fixed right-0 bottom-0 left-0 bg-white">
-        <div className="flex h-[81px] items-center justify-around px-4">
-          {tabs.map((tab) => {
-            const IconComponent = tab.icon;
-            // activeLabel이 없으면 모두 회색, 있으면 해당 label만 검정색
-            const isActive = activeLabel === tab.label;
-            return (
-              <button
-                key={tab.id}
-                className="flex flex-col flex-1 justify-center items-center h-full"
-                onClick={() => navigate(tab.path)}
-              >
-                <IconComponent
-                  size={24}
-                  className={`mb-1 ${isActive ? "text-black" : "text-gray-400"}`}
-                />
-                <span
-                  className={`text-md ${
-                    isActive ? "font-medium text-black" : "text-gray-400"
-                  }`}
-                >
-                  {tab.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    </>
+    <div className="flex h-[81px] w-full items-center justify-around bg-white px-4">
+      {tabs.map((tab) => {
+        const IconComponent = tab.icon;
+        // activeLabel이 없으면 모두 회색, 있으면 해당 label만 검정색
+        const isActive = activeLabel === tab.label;
+        return (
+          <button
+            key={tab.id}
+            className="flex flex-col flex-1 justify-center items-center h-full"
+            onClick={() => navigate(tab.path)}
+          >
+            <IconComponent
+              size={24}
+              className={`mb-1 ${isActive ? "text-black" : "text-gray-400"}`}
+            />
+            <span
+              className={`text-md ${
+                isActive ? "font-medium text-black" : "text-gray-400"
+              }`}
+            >
+              {tab.label}
+            </span>
+          </button>
+        );
+      })}
+    </div>
   );
 }
