@@ -2,7 +2,7 @@
 description : community 상단 고정바 컴포넌트입니다. */
 
 import { useState } from "react";
-import FilterModal from "./BottomSeat/FilterModal";
+import FilterModal from "./bottomSeat/FilterModal";
 
 // 공통 스타일 변수 정의
 const buttonStyle = "border-4 text-sm text-gray-600 hover:text-gray-800";
