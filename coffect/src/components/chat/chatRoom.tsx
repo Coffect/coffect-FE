@@ -80,7 +80,7 @@ const ChatRoom = () => {
       {/* 팝업 모달 */}
       <RequestModal isOpen={isModalOpen} onClose={closeModal} />
       {/* 메시지 영역 */}
-      <div className="flex flex-1 flex-col gap-2 overflow-y-auto px-4 py-2">
+      <div className="mb-[72px] flex flex-1 flex-col gap-2 overflow-y-auto px-4 py-2">
         <div className="my-2 flex items-center">
           <div className="flex-1 border-t border-gray-500"></div>
           <span className="mx-3 text-xs text-gray-700">
@@ -115,11 +115,13 @@ const ChatRoom = () => {
         ))}
       </div>
       {/* 입력창 */}
-      <ChatInput
-        value={inputValue}
-        onChange={setInputValue}
-        onSend={handleSend}
-      />
+      <div className="fixed bottom-0 left-0 z-10 w-full bg-white px-4 py-2">
+        <ChatInput
+          value={inputValue}
+          onChange={setInputValue}
+          onSend={handleSend}
+        />
+      </div>
     </div>
   );
 };
