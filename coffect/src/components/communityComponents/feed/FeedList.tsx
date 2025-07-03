@@ -3,7 +3,7 @@ author : 강신욱
 description : FeedItem.tsx 로부터 피드를 받아 목록을 출력하는 컴포넌트입니다.
 */
 
-import FeedItem from "./FeedItem";
+import FeedItem from "../../shareComponents/FeedItem";
 
 // Post 타입 정의
 interface Post {

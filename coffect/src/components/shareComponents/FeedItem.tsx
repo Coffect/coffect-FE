@@ -4,7 +4,7 @@ description : 하나의 피드 UI를 구성하는 컴포넌트입니다.
 */
 
 import { useState } from "react";
-import FeedInteraction from "./FeedInteraction";
+import FeedInteraction from "../communityComponents/feed/FeedInteraction";
 
 // Post 타입 정의
 interface Post {
