@@ -1,5 +1,7 @@
-/* author : 강신욱
-description : Header(고정바) 에서 토글 버튼 클릭 시 나오는 모달 컴포넌트 입니다. */
+/*
+author : 강신욱
+description : Header의 필터 버튼 클릭 시 나오는 Modal 컴포넌트입니다.
+*/
 
 import { useState } from "react";
 import "./FilterModalAnimation.css";
@@ -9,51 +11,66 @@ const buttonStyle =
   "w-full rounded bg-gray-200 py-2 text-sm text-gray-600 hover:bg-gray-300 hover:border hover:border-gray-400";
 const selectedButtonStyle = "bg-gray-500 text-white";
 
+// 필터 타입 정의
+interface Filters {
+  type: string | null;
+  topic: string | null;
+}
+
+interface FilterModalProps {
+  isVisible: boolean;
+  onClose: () => void;
+  onApply: (filters: Filters) => void;
+  initialFilters: Filters;
+}
+
 const FilterModal = ({
   isVisible,
   onClose,
-}: {
-  isVisible: boolean;
-  onClose: () => void;
-}) => {
-  /********** 칩 선택 관련 로직 **********/
-  const [selectedType, setSelectedType] = useState<string | null>(null);
-  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+  onApply,
+  initialFilters,
+}: FilterModalProps) => {
+  /* 
+  SelectedType : 글 종류 선택에 대한 상태관리입니다.
+  SelectedTopic : 글 주제 선택에 대한 상태관리입니다.
+  초기값은 initialFilters에서 받아온 값을 사용합니다. (null, null)
+  */
+  const [selectedType, setSelectedType] = useState<string | null>(
+    initialFilters.type,
+  );
+  const [selectedTopic, setSelectedTopic] = useState<string | null>(
+    initialFilters.topic,
+  );
 
+  /***  버튼이 클릭 되었을 때 활성화되고, 재클릭 시 비활성화되는 로직입니다. ***/
   const handleTypeClick = (type: string) => {
-    setSelectedType((prev) => (prev === type ? null : type)); // 선택된 칩을 재클릭하면 해제
+    setSelectedType((prev) => (prev === type ? null : type));
   };
 
   const handleTopicClick = (topic: string) => {
-    setSelectedTopic((prev) => (prev === topic ? null : topic)); // 선택된 칩을 재클릭하면 해제
+    setSelectedTopic((prev) => (prev === topic ? null : topic));
   };
 
-  /********** 필터 적용 버튼 클릭 시 로직 **********/
+  /***  필터 적용 버튼 클릭 시 호출되는 함수입니다. ***/
   const handleApplyFilter = () => {
-    if (selectedType || selectedTopic) {
-      console.log("필터 적용됨:", { selectedType, selectedTopic });
-      onClose(); // 모달 닫기
-    }
+    onApply({ type: selectedType, topic: selectedTopic });
   };
 
-  /********** 초기화 버튼 클릭 시 로직 **********/
+  /***  초기화 버튼 클릭 시 호출되는 함수입니다.  ***/
   const handleReset = () => {
     setSelectedType(null);
     setSelectedTopic(null);
   };
 
-  /********** isVisible null 이면 Modal 이 안나오도록 함. **********/
   if (!isVisible) return null;
 
   return (
     <>
-      {/***** 모달 외 부분 배경 클릭 시 모달 닫기 *****/}
       <div
-        className="fixed inset-0 z-40 backdrop-grayscale-100"
+        className="fixed inset-0 z-40 backdrop-grayscale-500"
         onClick={onClose}
       ></div>
 
-      {/***** 모달 *****/}
       <div
         className={`fixed bottom-0 left-0 z-50 h-[60%] w-full rounded-t-lg bg-white shadow-lg ${
           isVisible ? "animate-slide-up" : "hidden"
@@ -61,7 +78,6 @@ const FilterModal = ({
       >
         <div className="flex h-full flex-col justify-between">
           <div className="p-6">
-            {/* 상단 영역 */}
             <div className="mb-4 flex items-center justify-between pb-4">
               <h2 className="text-lg font-bold">글 카테고리 선택하기</h2>
               <button
@@ -72,45 +88,54 @@ const FilterModal = ({
               </button>
             </div>
 
-            {/* 글 종류 선택 버튼 */}
             <div className="mb-6">
               <h3 className="text-md mb-2 font-semibold">글 종류 선택</h3>
               <div className="grid grid-cols-3 gap-2">
-                {["종류1", "종류2", "종류3", "종류4", "종류5", "종류6"].map(
-                  (type) => (
-                    <button
-                      key={type}
-                      className={`${buttonStyle} ${selectedType === type ? selectedButtonStyle : ""}`}
-                      onClick={() => handleTypeClick(type)}
-                    >
-                      {type}
-                    </button>
-                  ),
-                )}
+                {[
+                  "아티클",
+                  "팀원모집",
+                  "질문",
+                  "도움 필요",
+                  "후기글",
+                  "팁 공유",
+                ].map((type) => (
+                  <button
+                    key={type}
+                    className={`${buttonStyle} ${selectedType === type ? selectedButtonStyle : ""}`}
+                    onClick={() => handleTypeClick(type)}
+                  >
+                    {type}
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* 글 주제 선택 버튼 */}
             <div>
               <h3 className="text-md mb-2 font-semibold">글 주제 선택</h3>
-              <div className="grid grid-cols-3 gap-2">
-                {["주제1", "주제2", "주제3", "주제4", "주제5", "주제6"].map(
-                  (topic) => (
-                    <button
-                      key={topic}
-                      className={`${buttonStyle} ${selectedTopic === topic ? selectedButtonStyle : ""}`}
-                      onClick={() => handleTopicClick(topic)}
-                    >
-                      {topic}
-                    </button>
-                  ),
-                )}
+              <div className="grid grid-cols-4 gap-2">
+                {[
+                  "프로덕트",
+                  "개발",
+                  "디자인",
+                  "기획",
+                  "인사이트",
+                  "취업",
+                  "창업",
+                  "학교",
+                ].map((topic) => (
+                  <button
+                    key={topic}
+                    className={`${buttonStyle} ${selectedTopic === topic ? selectedButtonStyle : ""}`}
+                    onClick={() => handleTopicClick(topic)}
+                  >
+                    {topic}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* 하단 영역: 필터 적용 및 취소 버튼 */}
-          <div className="flex items-center justify-center-safe gap-3 border-t p-4">
+          <div className="flex items-center justify-center-safe gap-3 p-4">
             <button
               className={`border-4 px-4 py-2 ${
                 selectedType || selectedTopic
