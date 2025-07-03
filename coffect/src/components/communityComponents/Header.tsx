@@ -16,8 +16,8 @@ const Header = () => {
   };
 
   return (
-    <>
-      <header className="fixed top-0 z-10 flex h-[15%] w-full flex-col bg-white shadow-md">
+    <div className="top-0 z-10 flex w-full flex-col">
+      <div className="flex w-full flex-col bg-white shadow-md">
         {/***** 상단바 : Coffect / 검색 / 글쓰기 UI *****/}
         <div className={`${containerStyle} h-[50%] justify-between px-6`}>
           <div className="text-lg font-bold text-black">coffect</div>
@@ -36,13 +36,13 @@ const Header = () => {
           <button className={buttonStyle}>인기순</button>
           <button className={buttonStyle}>내학교</button>
         </div>
-      </header>
-      {/***** 모달 컴포넌트 *****/}
+      </div>
+      {/***** 바텀시트 컴포넌트 *****/}
       <FilterModal
         isVisible={isModalVisible}
         onClose={() => setModalVisible(false)}
       />
-    </>
+    </div>
   );
 };
 
