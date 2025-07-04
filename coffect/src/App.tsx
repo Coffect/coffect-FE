@@ -1,5 +1,5 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import RootLayout from "./components/layout/RootLayout";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -7,6 +7,7 @@ import Signup from "./pages/Signup";
 import Community from "./pages/Community";
 import Chat from "./pages/Chat";
 import UserPage from "./pages/UserPage";
+import Search from "./pages/Search";
 
 const router = createBrowserRouter([
   {
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
       {
         path: "/userpage/:id",
         element: <UserPage />,
+      },
+      {
+        path: "/community/search",
+        element: <Search />,
       },
     ],
   },
