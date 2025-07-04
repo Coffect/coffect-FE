@@ -78,7 +78,7 @@ const Community = () => {
         onApply={handleApplyFilters}
         initialFilters={filters}
       />
-      <BottomNavbar />
+      <BottomNavbar activeLabel="커뮤니티" />
     </div>
   );
 };
