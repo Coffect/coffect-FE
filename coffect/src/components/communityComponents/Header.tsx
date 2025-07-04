@@ -2,6 +2,8 @@
 description : community 상단 고정바 컴포넌트입니다. 
 */
 
+import { useNavigate } from "react-router-dom";
+
 // 공통 스타일 변수 정의
 const buttonStyle = "border-4 text-sm text-gray-600 hover:text-gray-800";
 const containerStyle = "flex items-center";
@@ -11,6 +13,13 @@ interface HeaderProps {
 }
 
 const Header = ({ openModal }: HeaderProps) => {
+  /*****  검색 클릭 시 community/search 페이지로 이동 *****/
+  const navigate = useNavigate();
+
+  const handleSearchClick = () => {
+    navigate("/community/search");
+  };
+
   return (
     <div className="sticky top-0 z-10 flex w-full flex-col bg-white shadow-md">
       <div className="flex w-full flex-col">
@@ -18,7 +27,9 @@ const Header = ({ openModal }: HeaderProps) => {
         <div className={`${containerStyle} h-14 justify-between px-6`}>
           <div className="text-lg font-bold text-black">coffect</div>
           <div className="flex items-center space-x-4">
-            <button className={buttonStyle}>검색</button>
+            <button className={buttonStyle} onClick={handleSearchClick}>
+              검색
+            </button>
             <button className={buttonStyle}>글쓰기</button>
           </div>
         </div>
