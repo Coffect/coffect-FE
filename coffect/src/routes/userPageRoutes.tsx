@@ -9,6 +9,8 @@ import Leave from "../components/UserPage/MyPage/Leave/Leave";
 import MyPage from "../components/UserPage/MyPage/MyPage";
 import TimeTable from "../components/UserPage/MyPage/TimeTable";
 import UserPage from "../pages/UserPage";
+import MyProfile from "../components/UserPage/MyPage/MyProfile/MyProfile";
+import Modify from "../components/UserPage/MyPage/MyProfile/Modify";
 
 /*
 사용자 관련 페이지 라우트 배열을 반환합니다.
@@ -17,6 +19,14 @@ const userPageRoutes = [
   {
     path: "/mypage",
     element: <MyPage />,
+  },
+  {
+    path: "/mypage/myprofile",
+    element: <MyProfile />,
+  },
+  {
+    path: "/mypage/myprofile/modify",
+    element: <Modify />,
   },
   {
     path: "/mypage/timetable",
