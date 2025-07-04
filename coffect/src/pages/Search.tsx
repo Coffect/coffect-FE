@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import SearchInput from "../components/searchComponents/SearchInput";
 import SearchResultList from "../components/searchComponents/SearchResultList";
 import BottomNavbar from "../components/shareComponents/BottomNavbar";
@@ -14,11 +15,8 @@ interface User {
 const Search: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [searchResults, setSearchResults] = useState<User[]>([]);
-  const [isButtonActive, setIsButtonActive] = useState<boolean>(false);
-
-  useEffect(() => {
-    setIsButtonActive(searchTerm.length >= 2);
-  }, [searchTerm]);
+  const [hasSearched, setHasSearched] = useState<boolean>(false); // 변경: 검색 수행 여부를 추적하는 상태 추가
+  const navigate = useNavigate();
 
   const handleSearch = () => {
     // In a real application, this would make an API call
@@ -26,25 +24,25 @@ const Search: React.FC = () => {
     // Mock data for demonstration
     const mockUsers: User[] = [
       {
-        id: "user1",
+        id: "@kimghan_0725",
         username: "JohnDoe",
         profileImage: "https://via.placeholder.com/50",
-        major: "Computer Science",
-        studentId: "202012345",
+        major: "TESL 전공",
+        studentId: "24학번",
       },
       {
-        id: "user2",
+        id: "@kimghan_0725",
         username: "JaneSmith",
         profileImage: "https://via.placeholder.com/50",
-        major: "Electrical Engineering",
-        studentId: "201909876",
+        major: "컴퓨터공학 전공",
+        studentId: "20학번",
       },
       {
-        id: "user3",
+        id: "@kimghan_0725",
         username: "PeterJones",
         profileImage: "https://via.placeholder.com/50",
-        major: "Mechanical Engineering",
-        studentId: "202100112",
+        major: "미디어커뮤니케이션 전공",
+        studentId: "22학번",
       },
     ];
 
@@ -54,6 +52,14 @@ const Search: React.FC = () => {
         user.id.toLowerCase().includes(searchTerm.toLowerCase()),
     );
     setSearchResults(filteredResults);
+    setHasSearched(true); // 변경: 검색이 수행되었음을 표시
+  };
+
+  const handleClearAndNavigate = () => {
+    setSearchTerm("");
+    setSearchResults([]);
+    setHasSearched(false); // 변경: 검색 상태 초기화
+    navigate("/community");
   };
 
   return (
@@ -63,12 +69,12 @@ const Search: React.FC = () => {
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           handleSearch={handleSearch}
-          isButtonActive={isButtonActive}
+          onClearAndNavigate={handleClearAndNavigate}
         />
         <SearchResultList
           searchResults={searchResults}
           searchTerm={searchTerm}
-          isButtonActive={isButtonActive}
+          hasSearched={hasSearched} // 변경: hasSearched prop 전달
         />
       </div>
       <BottomNavbar activeLabel="커뮤니티" />
