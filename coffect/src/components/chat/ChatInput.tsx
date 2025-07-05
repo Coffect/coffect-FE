@@ -18,7 +18,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ value, onChange, onSend }) => {
     }
   };
   return (
-    <div className="flex items-center border-t border-gray-500 px-4 py-2">
+    <div className="mx-auto flex w-full max-w-screen-sm items-center border-t border-gray-500 px-4 py-2">
       <button className="mr-2 flex h-8 w-8 items-center justify-center text-2xl">
         +
       </button>

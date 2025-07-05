@@ -5,8 +5,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Community from "./pages/Community";
-import Chat from "./pages/Chat";
-import ChatRoom from "./components/chat/chatRoom";
+import ChatRouter from "./routes/ChatRouter";
 import UserPage from "./pages/UserPage";
 
 const router = createBrowserRouter([
@@ -31,12 +30,8 @@ const router = createBrowserRouter([
         element: <Community />,
       },
       {
-        path: "/chat",
-        element: <Chat />,
-      },
-      {
-        path: "/chat/:id",
-        element: <ChatRoom />,
+        path: "/chat/*",
+        element: <ChatRouter />,
       },
       {
         path: "/userpage/:id",

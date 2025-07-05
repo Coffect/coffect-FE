@@ -66,7 +66,10 @@ const ChatRoom = () => {
           ))}
         </div>
         <div className="flex gap-2">
-          <button className="text-s flex-1 rounded bg-gray-500 py-2 font-bold text-white">
+          <button
+            className="text-s flex-1 rounded bg-gray-500 py-2 font-bold text-white"
+            onClick={() => navigate("/chat/schedule")}
+          >
             커피챗 일정 등록
           </button>
           <button
@@ -115,7 +118,7 @@ const ChatRoom = () => {
         ))}
       </div>
       {/* 입력창 */}
-      <div className="fixed bottom-0 left-0 z-10 w-full bg-white px-4 py-2">
+      <div className="fixed bottom-1 left-0 z-10 w-full bg-white px-1 py-1">
         <ChatInput
           value={inputValue}
           onChange={setInputValue}
