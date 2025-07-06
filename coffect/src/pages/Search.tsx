@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import SearchInput from "../components/searchComponents/SearchInput";
-import SearchResultList from "../components/searchComponents/SearchResultList";
+import SearchInput from "../components/communityComponents/searchComponents/SearchInput";
+import SearchResultList from "../components/communityComponents/searchComponents/SearchResultList";
 import BottomNavbar from "../components/shareComponents/BottomNavbar";
 
 interface User {
