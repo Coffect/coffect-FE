@@ -30,7 +30,9 @@ const Header = ({ openModal }: HeaderProps) => {
             <button className={buttonStyle} onClick={handleSearchClick}>
               검색
             </button>
-            <button className={buttonStyle}>글쓰기</button>
+            <button className={buttonStyle} onClick={() => navigate("/community/write")}>
+              글쓰기
+            </button>
           </div>
         </div>
 
