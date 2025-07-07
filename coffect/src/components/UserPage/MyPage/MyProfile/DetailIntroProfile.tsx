@@ -130,7 +130,7 @@ const DetailIntroProfile = () => {
               {q.isOpen && (
                 <div className="px-4 pb-3">
                   <textarea
-                    className="w-full resize-none rounded border p-2 text-sm focus:border-blue-400 focus:outline-none"
+                    className="w-full resize-none rounded border p-2 text-base focus:border-blue-400 focus:outline-none"
                     rows={3}
                     maxLength={MAX_ANSWER}
                     placeholder="답변을 작성해주세요! (200자 이내)"
