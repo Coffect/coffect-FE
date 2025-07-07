@@ -35,13 +35,13 @@ const chatList = [
 const Chat = () => {
   const navigate = useNavigate();
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="fixed inset-0 flex flex-col bg-white">
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-10 pb-2">
         <span className="text-2xl font-bold">chats</span>
       </div>
       {/* Chat List */}
-      <div className="flex-1 overflow-y-auto px-2">
+      <div className="flex-1 overflow-y-auto px-2 pb-20">
         {chatList.map((chat) => (
           <div
             key={chat.id}
