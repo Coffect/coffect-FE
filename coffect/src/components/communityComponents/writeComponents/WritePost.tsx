@@ -1,8 +1,6 @@
-/* 
-author : 강신욱
+/* author : 강신욱
 description : 글 작성을 관리하는 컨테이너 컴포넌트입니다.
 */
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import BottomNavbar from "../../shareComponents/BottomNavbar";
@@ -30,6 +28,15 @@ const WritePost: React.FC = () => {
     navigate("/community");
   };
 
+  /***** 업로드 버튼 클릭 시 글의 종류, 제목, 내용, 주제를 콘솔에 출력하는 로직입니다. (후에 API 연동 예정) ******/
+  const handleUpload = () => {
+    console.log("글 종류:", postType);
+    console.log("제목:", title);
+    console.log("내용:", content);
+    console.log("글 주제:", topic);
+    // 여기에 API 호출 로직을 추가할 수 있습니다.
+  };
+
   return (
     <>
       <WritePostUI
@@ -43,6 +50,7 @@ const WritePost: React.FC = () => {
         setContent={setContent}
         isFormValid={isFormValid}
         handleBackClick={handleBackClick}
+        onUpload={handleUpload}
       />
       <BottomNavbar activeLabel="커뮤니티" />
     </>

@@ -16,6 +16,7 @@ const WritePostUI: React.FC<WritePostUIProps> = ({
   setContent,
   isFormValid,
   handleBackClick,
+  onUpload,
 }) => {
   const mediaButtonClasses = "rounded px-1 text-sm";
   const uploadButtonBaseClasses = "mt-6 w-[50%] py-3 text-white";
@@ -72,6 +73,7 @@ const WritePostUI: React.FC<WritePostUIProps> = ({
               isFormValid ? "bg-black" : "cursor-not-allowed bg-gray-400"
             }`}
             disabled={!isFormValid}
+            onClick={onUpload}
           >
             업로드
           </button>

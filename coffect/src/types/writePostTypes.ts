@@ -21,6 +21,7 @@ export interface WritePostUIProps {
   setContent: (content: (content: string) => string) => void;
   isFormValid: boolean;
   handleBackClick: () => void;
+  onUpload: () => void;
 }
 
 export interface UseWritePostReturn {
