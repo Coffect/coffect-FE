@@ -23,7 +23,7 @@ export default function BottomNavbar({ activeLabel }: BottomNavbarProps) {
     { id: 0, label: "홈", icon: Home, path: "/home" },
     { id: 1, label: "커뮤니티", icon: VectorSquare, path: "/community" },
     { id: 2, label: "채팅", icon: MessageCircle, path: "/chat" },
-    { id: 3, label: "마이", icon: User, path: "/userpage/jeha" },
+    { id: 3, label: "마이", icon: User, path: "/mypage" },
   ];
 
   return (
@@ -35,7 +35,7 @@ export default function BottomNavbar({ activeLabel }: BottomNavbarProps) {
         return (
           <button
             key={tab.id}
-            className="flex flex-col flex-1 justify-center items-center h-full"
+            className="flex h-full flex-1 flex-col items-center justify-center"
             onClick={() => navigate(tab.path)}
           >
             <IconComponent
