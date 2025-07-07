@@ -1,12 +1,16 @@
-import BottomNavbar from "../components/shareComponents/BottomNavbar";
+/*
+author : 재하
+description : 로그인 한 사용자 or 특정 유저를 구분하여
+              유저 페이지를 출력하는 page 컴포넌트입니다.
+*/
+
+import MyPage from "../components/UserPage/MyPage/MyPage";
 
 const UserPage = () => {
-  return (
-    <div className="flex h-full min-h-[calc(100dvh-81px)] flex-col items-center justify-center">
-      <div className="text-2xl font-bold">User Page</div>
-      <BottomNavbar activeLabel="마이" />
-    </div>
-  );
+  // UI 확인을 위한 임시 변수 ( 사용자가 나인지 구분 )
+  const isUser = true;
+
+  return <>{isUser ? <MyPage /> : <MyPage />}</>;
 };
 
 export default UserPage;
