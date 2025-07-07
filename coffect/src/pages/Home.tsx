@@ -8,7 +8,7 @@ import TopNavbar from "../components/Home/TopNavbar";
 import CoffeeBanner from "../components/Home/CoffeeSuggestBanner";
 import CoffeeCategoryGrid from "../components/Home/CoffeeCategoryGrid";
 import ProfileModal from "../components/Home/ProfileModal";
-import ProfileSwiper from "../components/Home/ProfileSwiper";
+import ProfileFlip from "../components/Home/ProfileFlip";
 import { useState, useEffect } from "react";
 
 const Home = () => {
@@ -47,7 +47,7 @@ const Home = () => {
             onCategoryClick={() => setCurrentView("profile")} // 클릭 시 추천 프로필 뷰로 전환
           />
         ) : (
-          <ProfileSwiper />
+          <ProfileFlip />
         )}
       </main>
 
