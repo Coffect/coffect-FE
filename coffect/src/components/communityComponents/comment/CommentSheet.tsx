@@ -20,12 +20,7 @@ const CommentSheet = ({
   likes,
   comments,
 }: CommentSheetProps) => {
-  const {
-    comments: commentList,
-    newComment,
-    setNewComment,
-    handlePostComment,
-  } = useComments();
+  const { newComment, setNewComment, handlePostComment } = useComments();
 
   if (!isVisible) return null;
 
@@ -66,26 +61,6 @@ const CommentSheet = ({
             >
               게시
             </button>
-          </div>
-
-          {/****** 댓글이 보여지는 부분  ********/}
-          <div className="flex-grow overflow-y-auto p-2">
-            <p className="mb-4 font-semibold">댓글: {commentList.length}개</p>
-            <div className="space-y-4">
-              {commentList.map((comment) => (
-                <div key={comment.id} className="flex items-start gap-3">
-                  <img
-                    src={comment.user.avatar}
-                    alt={comment.user.name}
-                    className="h-10 w-10 rounded-full"
-                  />
-                  <div className="flex-grow">
-                    <p className="font-semibold">{comment.user.name}</p>
-                    <p className="text-gray-700">{comment.content}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>
