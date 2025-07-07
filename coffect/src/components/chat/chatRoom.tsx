@@ -202,17 +202,24 @@ const ChatRoom = () => {
             <Plus size={22} />
           </button>
           <input
-            className="flex-1 rounded-full px-1 py-2 text-sm outline-none placeholder:text-[rgba(172,172,172,1)]"
+            className="flex-1 rounded-full px-1 py-2 text-base outline-none placeholder:text-[rgba(172,172,172,1)]"
             placeholder="메시지를 입력해주세요"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") handleSend(inputValue);
+              if (e.key === "Enter" && inputValue.trim()) {
+                handleSend(inputValue);
+              }
             }}
+            style={{ fontSize: "16px" }}
           />
           <button
             className="ml-2 flex h-8 w-12 items-center justify-center rounded-full bg-[rgba(255,129,38,1)] text-white"
-            onClick={() => handleSend(inputValue)}
+            onClick={() => {
+              if (inputValue.trim()) {
+                handleSend(inputValue);
+              }
+            }}
           >
             <Send size={20} />
           </button>
