@@ -86,7 +86,7 @@ const ChatRoom = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-[rgba(240,240,240,1)]">
+    <div className="fixed inset-0 flex flex-col bg-[rgba(240,240,240,1)]">
       {/* Header */}
       <div className="flex items-center border-b border-gray-100 bg-white px-4 pt-6 pb-2">
         <button className="mr-2 text-2xl" onClick={() => navigate("/chat")}>
@@ -153,11 +153,11 @@ const ChatRoom = () => {
         username={user.username}
       />
       {/* 메시지 영역 */}
-      <div className="mb-[80px] flex flex-1 flex-col overflow-y-auto px-4 py-2">
+      <div className="flex-1 overflow-y-auto px-4 py-2">
         {/* 시스템 메시지 */}
         <div className="my-4 flex justify-center">
           <span className="mb-3 rounded-full px-3 text-xs text-gray-500">
-            안학님이 제안을 수락했어요!
+            인하님이 제안을 수락했어요!
           </span>
         </div>
         {/* 채팅 메시지 */}
@@ -196,7 +196,7 @@ const ChatRoom = () => {
         })}
       </div>
       {/* 입력창 */}
-      <div className="fixed bottom-0 left-0 z-10 w-full rounded-none bg-white px-0 py-3">
+      <div className="border-t border-gray-100 bg-white px-0 py-3">
         <div className="mx-auto flex w-[95%] items-center rounded-full bg-[rgba(245,245,245,1)] px-2 py-2">
           <button className="mr-2 flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(74,74,74,1)] text-white">
             <Plus size={22} />
