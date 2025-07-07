@@ -35,9 +35,9 @@ const Schedule: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="fixed inset-0 flex flex-col bg-white">
       {/* 상단 헤더 */}
-      <div className="relative mx-auto mt-5 flex w-full max-w-md flex-col items-center justify-center border-b-3 border-[rgba(245,245,245,1)] bg-white px-4 pt-6 pb-4">
+      <div className="relative flex w-full flex-col items-center justify-center border-b-3 border-[rgba(245,245,245,1)] bg-white px-4 pt-6 pb-4">
         <button
           className="absolute top-6 left-4 text-2xl text-gray-700"
           onClick={() => navigate(-1)}
@@ -72,7 +72,7 @@ const Schedule: React.FC = () => {
         </div>
       </div>
       {/* 폼 영역 */}
-      <div className="mx-auto w-full max-w-md px-4 pt-4 pb-6">
+      <div className="flex-1 overflow-y-auto px-4 pt-4 pb-6">
         <ScheduleForm
           values={form}
           onChange={setForm}
