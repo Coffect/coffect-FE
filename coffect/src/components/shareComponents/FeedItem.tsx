@@ -4,6 +4,7 @@
  */
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import FeedInteraction from "../communityComponents/feed/FeedInteraction";
 import type { Post } from "../../data/communityDummyData";
 
@@ -12,6 +13,7 @@ interface FeedItemProps {
 }
 
 const FeedItem = ({ post }: FeedItemProps) => {
+  const navigate = useNavigate();
   /*
   isExpanded : 글 내용이 최대 글자 수를 초과할 때, 더보기 버튼을 클릭하여
   글 내용을 확장하거나 축소하는 상태를 관리합니다.
@@ -23,8 +25,12 @@ const FeedItem = ({ post }: FeedItemProps) => {
     setIsExpanded((prev) => !prev);
   };
 
+  const handlePostClick = () => {
+    navigate(`/community/post/${post.id}`);
+  };
+
   return (
-    <div className="border-b-6 border-gray-300 pt-2 pb-2">
+    <div className="border-b-6 border-gray-300 pt-2 pb-2 cursor-pointer" onClick={handlePostClick}>
       {/*****  사용자 프로필 영역 / 작성 시간  *****/}
       <div className="flex items-center justify-around">
         <div className="flex items-center">
