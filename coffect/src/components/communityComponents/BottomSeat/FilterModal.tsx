@@ -60,7 +60,7 @@ const FilterModal = ({
       ></div>
 
       <div
-        className={`fixed bottom-0 left-0 z-50 h-[60%] w-full rounded-t-lg bg-white shadow-lg ${'isVisible ? "animate-slide-up" : "hidden"'}`}
+        className={`fixed right-0 bottom-[81px] left-0 z-50 mx-auto h-[50%] w-full max-w-[430px] rounded-t-lg bg-white ${isVisible ? "animate-slide-up" : "hidden"}`}
       >
         <div className="flex h-full flex-col justify-between">
           <div className="p-6">
