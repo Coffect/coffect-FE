@@ -1,9 +1,15 @@
+/*
+author : 강신욱
+description : 커뮤니티 페이지에 대한 컴포넌트입니다.
+            커뮤니티 상단 헤더, 피드 리스트, 필터 모달, 바텀 네비게이션을 포함합니다.
+*/
+
 import { useEffect, useState } from "react";
 import Header from "../components/communityComponents/Header";
 import FeedList from "../components/communityComponents/feed/FeedList";
 import FilterModal from "../components/communityComponents/bottomSeat/FilterModal";
 import BottomNavbar from "../components/shareComponents/BottomNavbar";
-import { Post, generateDummyPosts } from "../data/communityDummyData";
+import { type Post, generateDummyPosts } from "../data/communityDummyData";
 
 // 필터 타입 정의
 interface Filters {
@@ -39,7 +45,7 @@ const Community = () => {
   }, [filters]); // filters가 변경될 때마다 useEffect 실행
 
   return (
-    <div className="flex h-full flex-col bg-gray-100">
+    <div className="flex h-full flex-col bg-white">
       <Header openModal={openModal} />
 
       {/* 피드부분 */}
