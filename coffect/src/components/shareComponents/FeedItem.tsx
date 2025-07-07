@@ -1,24 +1,11 @@
-/*
-author : 강신욱
-description : 하나의 피드 UI를 구성하는 컴포넌트입니다.
-*/
+/**
+ * author: 강신욱
+ * description: 하나의 피드 UI를 구성하는 컴포넌트입니다.
+ */
 
 import { useState } from "react";
 import FeedInteraction from "../communityComponents/feed/FeedInteraction";
-
-// Post 타입 정의
-interface Post {
-  id: number;
-  user: {
-    profileImage: string;
-    nickname: string;
-  };
-  image: string;
-  title: string;
-  content: string;
-  likes: number;
-  comments: number;
-}
+import type { Post } from "../../data/communityDummyData";
 
 interface FeedItemProps {
   post: Post;
