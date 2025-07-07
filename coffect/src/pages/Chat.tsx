@@ -4,30 +4,39 @@
 
 import BottomNavbar from "../components/shareComponents/BottomNavbar";
 import { useNavigate } from "react-router-dom";
+import { Bell } from "lucide-react";
 
 const chatList = [
   {
     id: 1,
     name: "김하은",
-    job: "TESL전공",
-    message: "그럼 거기서 2시에 보시죠!",
-    time: "2m",
+    job: "디자인테크놀로지학과 21학번",
+    message: "네 그럼 거기서 2시에 봅시다!",
+    time: "지금",
     unread: true,
   },
   {
     id: 2,
-    name: "김하은",
-    job: "TESL전공",
-    message: "넵 좋습니다!",
-    time: "2m",
+    name: "김가영",
+    job: "시각디자인학과",
+    message: "넵",
+    time: "20분 전",
     unread: false,
   },
   {
     id: 3,
-    name: "김하은",
-    job: "TESL전공",
-    message: "상상님이 제안을 수락했어요!",
-    time: "2m",
+    name: "홍길동",
+    job: "컴퓨터공학과",
+    message: "흠....",
+    time: "1시간 전",
+    unread: false,
+  },
+  {
+    id: 4,
+    name: "김정우",
+    job: "천문학과",
+    message: "알겠습니다 ㅠㅠ",
+    time: "1시간 전",
     unread: false,
   },
 ];
@@ -38,20 +47,24 @@ const Chat = () => {
     <div className="fixed inset-0 flex flex-col bg-white">
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-10 pb-2">
-        <span className="text-2xl font-bold">chats</span>
+        <span className="text-2xl font-bold">채팅</span>
+        <div className="relative">
+          <Bell size={24} className="text-gray-700" />
+          <span className="absolute -top-0.5 -right-0.5 h-1 w-1 rounded-full bg-[rgba(255,53,53,1)]"></span>
+        </div>
       </div>
       {/* Chat List */}
       <div className="flex-1 overflow-y-auto px-2 pb-20">
         {chatList.map((chat) => (
           <div
             key={chat.id}
-            className="flex cursor-pointer items-start px-3 py-3 hover:bg-gray-100"
+            className="flex cursor-pointer items-start px-3 py-5 hover:bg-gray-100"
             onClick={() => navigate(`/chat/${chat.id}`)}
           >
-            {/* 아바타(임시) */}
+            {/* 임시 프로필 */}
             <div className="relative flex h-12 w-12 items-center justify-center rounded-full bg-gray-300">
               {chat.unread && (
-                <span className="absolute top-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-red-500"></span>
+                <span className="absolute top-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-[rgba(255,53,53,1)]"></span>
               )}
             </div>
             {/* 채팅 정보 */}
@@ -62,11 +75,12 @@ const Chat = () => {
                   {chat.job}
                 </span>
               </div>
-              <span className="text-sm text-gray-500">{chat.message}</span>
-            </div>
-            {/* 시간 */}
-            <div className="ml-2">
-              <span className="text-xs text-gray-400">{chat.time}</span>
+              <div className="flex items-center justify-between">
+                <span className="text-s py-2 text-gray-500">
+                  {chat.message}
+                </span>
+                <span className="ml-2 text-xs text-gray-400">{chat.time}</span>
+              </div>
             </div>
           </div>
         ))}

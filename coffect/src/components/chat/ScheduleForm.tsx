@@ -121,7 +121,9 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
                   : "text-gray-400"
               }
             >
-              {values.date ? formatDateToKorean(values.date) : ""}
+              {values.date
+                ? formatDateToKorean(values.date)
+                : "날짜를 선택해주세요"}
             </span>
             <span className="ml-2 text-lg text-gray-400">
               <Calendar size={20} />
