@@ -260,7 +260,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
           </button>
         ))}
         <button
-          className={`min-w-[90px] rounded-full border border-[rgba(172,172,172,1)] px-4 py-2 text-[15px] font-extrabold transition-all duration-100 ${!values.alert ? "bg-[rgba(58,58,58,1)] text-white" : "bg-white text-gray-700"}`}
+          className={`min-w-[90px] rounded-3xl border border-[rgba(172,172,172,1)] px-4 py-3 text-[15px] font-extrabold transition-all duration-100 ${!values.alert ? "bg-[rgba(58,58,58,1)] text-white" : "bg-white text-gray-700"}`}
           onClick={() => onChange({ ...values, alert: null })}
           type="button"
         >
