@@ -1,30 +1,15 @@
+// author : 앨리스/박은지
+// description : [커피챗 일정 등록 완료] 모달 컴포넌트
+// 날짜를 한글로 표시
+
 import React from "react";
-import { Calendar } from "lucide-react";
+import { MailCheck } from "lucide-react";
+import { formatKoreanDate } from "../../utils/dateUtils";
 
 interface ScheduleCompleteModalProps {
   date: string;
   time: string;
   onClose: () => void;
-}
-
-// 날짜를 한글 형식으로 변환하는 함수
-function formatKoreanDate(dateStr: string) {
-  if (!dateStr) return "";
-  const date = new Date(dateStr);
-  if (isNaN(date.getTime())) return dateStr;
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  const week = [
-    "일요일",
-    "월요일",
-    "화요일",
-    "수요일",
-    "목요일",
-    "금요일",
-    "토요일",
-  ];
-  const dayOfWeek = week[date.getDay()];
-  return `${month}월 ${day}일 ${dayOfWeek}`;
 }
 
 const ScheduleCompleteModal: React.FC<ScheduleCompleteModalProps> = ({
@@ -33,32 +18,26 @@ const ScheduleCompleteModal: React.FC<ScheduleCompleteModalProps> = ({
   onClose,
 }) => {
   return (
-    <div className="bg-opacity-30 fixed inset-0 z-50 flex items-center justify-center bg-black">
-      <div className="w-60 rounded-lg border bg-white p-3 shadow-lg">
-        <div className="flex flex-col items-center">
-          {/* 달력 아이콘 */}
-          <div className="p-3">
-            <span role="img" aria-label="calendar" style={{ fontSize: 40 }}>
-              <Calendar />
-            </span>
-          </div>
-          <div className="mb-5 text-center text-base font-bold">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+      <div className="flex min-h-[300px] w-[100vw] max-w-[80vw] flex-col items-center">
+        <div className="flex min-h-[300px] w-full flex-col items-center rounded-2xl rounded-b-none bg-white px-6 pt-10 pb-3">
+          <div className="mb-2 text-center text-base leading-snug font-extrabold text-gray-900">
             {formatKoreanDate(date)} {time}
-            <br />
-            커피챗 일정을 만들었어요!
           </div>
-          <div className="text-center text-xs text-gray-500">
-            대화창 상단과 홈화면 상단 캘린더 아이콘에서
-            <br />
-            언제나 일정 확인 및 수정이 가능해요!
+          <div className="mb-3 text-center text-base leading-snug font-extrabold text-gray-900">
+            커피챗 일정이 만들어졌어요!
           </div>
-          <button
-            className="mt-7 w-full rounded bg-gray-800 py-2 text-xs font-bold text-white hover:bg-gray-700"
-            onClick={onClose}
-          >
-            확인했어요!
-          </button>
+          <div className="mb-2 text-center text-xs font-bold text-gray-500">
+            언제나 일정 확인 및 수정이 가능해요
+          </div>
+          <MailCheck size={100} className="mt-4 text-black" />
         </div>
+        <button
+          className="w-full rounded-2xl rounded-t-none bg-[rgba(45,45,45,1)] py-3 text-base font-extrabold text-white"
+          onClick={onClose}
+        >
+          확인했어요
+        </button>
       </div>
     </div>
   );
