@@ -1,0 +1,55 @@
+/*
+author : 강신욱
+description : 댓글 데이터와 관련 로직을 관리하는 커스텀 훅입니다.
+*/
+import { useState } from "react";
+import type { Comment } from "../types/commentTypes";
+
+// 더미 데이터
+const dummyComments: Comment[] = [
+  {
+    id: 1,
+    user: { name: "shinwookKang", avatar: "https://via.placeholder.com/40" },
+    content:
+      "햇살이 유리창을 타고 들어와 방 안을 따뜻하게 채운다. 오늘도 작은 기쁨을 하나씩 찾아가는 하루.",
+  },
+  {
+    id: 2,
+    user: { name: "jehaPark", avatar: "https://via.placeholder.com/40" },
+    content: "좋은 글 감사합니다~",
+  },
+  {
+    id: 3,
+    user: { name: "jehaPark", avatar: "https://via.placeholder.com/40" },
+    content: " 안녕하세요~!",
+  },
+];
+
+/*
+comments : 댓글 목록을 관리하는 상태입니다.
+newComment : 새로 작성할 댓글 내용을 관리하는 상태입니다.
+ */
+export const useComments = () => {
+  const [comments, setComments] = useState<Comment[]>(dummyComments);
+  const [newComment, setNewComment] = useState("");
+
+  const handlePostComment = () => {
+    if (newComment.trim() === "") return;
+
+    const newCommentData: Comment = {
+      id: Date.now(),
+      user: { name: "CurrentUser", avatar: "https://via.placeholder.com/40" },
+      content: newComment,
+    };
+
+    setComments([newCommentData, ...comments]);
+    setNewComment("");
+  };
+
+  return {
+    comments,
+    newComment,
+    setNewComment,
+    handlePostComment,
+  };
+};

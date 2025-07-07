@@ -2,9 +2,13 @@
 author : 강신욱
 description : 피드의 하단(좋아요 수, 댓글 수, 인용, 공유 수, 저장)버튼에 대한 컴포넌트입니다. 
 */
+import { useState } from "react";
+import { Heart, MessageCircle, Bookmark } from "lucide-react";
+import CommentSheet from "../comment/CommentSheet";
 
 // 공통 스타일 변수 정의
-const buttonStyle = "text-sm text-gray-600 hover:text-blue-500";
+const buttonStyle =
+  "text-sm text-gray-600 hover:text-blue-500 flex items-center gap-1";
 
 interface FeedInteractionProps {
   likes: number;
@@ -12,18 +16,58 @@ interface FeedInteractionProps {
 }
 
 const FeedInteraction = ({ likes, comments }: FeedInteractionProps) => {
+  const [isLiked, setIsLiked] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isCommentSheetVisible, setIsCommentSheetVisible] = useState(false);
+
+  const handleLikeClick = () => {
+    setIsLiked(!isLiked);
+  };
+
+  const handleBookmarkClick = () => {
+    setIsBookmarked(!isBookmarked);
+  };
+
+  const handleCommentClick = () => {
+    setIsCommentSheetVisible(true);
+  };
+
+  const handleCloseCommentSheet = () => {
+    setIsCommentSheetVisible(false);
+  };
+
   return (
-    <div className="mr-4 ml-4 flex items-center justify-between">
-      <div className="itmes-center flex gap-2">
-        <button className={buttonStyle}>좋아요: {likes}</button>
-        <button className={buttonStyle}>댓글: {comments}</button>
-        <button className={buttonStyle}>인용</button>
-        <button className={buttonStyle}>공유: num</button>
+    <>
+      <div className="mr-4 ml-4 flex h-8 items-center justify-between">
+        <div className="flex items-center gap-4">
+          <button className={buttonStyle} onClick={handleLikeClick}>
+            <Heart
+              size={20}
+              fill={isLiked ? "red" : "none"}
+              color={isLiked ? "red" : "currentColor"}
+            />
+            <span>{likes}</span>
+          </button>
+          <button className={buttonStyle} onClick={handleCommentClick}>
+            <MessageCircle size={20} />
+            <span>{comments}</span>
+          </button>
+        </div>
+        <button className={buttonStyle} onClick={handleBookmarkClick}>
+          <Bookmark
+            size={20}
+            fill={isBookmarked ? "black" : "none"}
+            color={isBookmarked ? "black" : "currentColor"}
+          />
+        </button>
       </div>
-      <div className="flex items-center">
-        <button className={buttonStyle}>저장</button>
-      </div>
-    </div>
+      <CommentSheet
+        isVisible={isCommentSheetVisible}
+        onClose={handleCloseCommentSheet}
+        likes={likes}
+        comments={comments}
+      />
+    </>
   );
 };
 
