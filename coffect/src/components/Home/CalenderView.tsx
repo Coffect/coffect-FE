@@ -1,3 +1,7 @@
+/*
+  author      : 이희선
+  description : 전체 일정 목록을 보여주는 화면 컴포넌트
+*/
 import React from "react";
 import TopNavbar from "./TopNavbar";
 import { Clock } from "lucide-react";
@@ -8,7 +12,7 @@ interface ScheduleItem {
   date: string; // YYYY.MM.DD
   daysAway: number; // 몇 일 뒤
   time: string; // HH:mm
-  participants: string[]; // 아바타 URL 목록
+  participants: string[]; // 프로필 URL
   title: string;
   location: string;
 }
@@ -54,7 +58,7 @@ const dummySchedules: ScheduleItem[] = [
 ];
 
 /**
- * 캘린더 뷰 컴포넌트
+ * 일정 뷰 컴포넌트
  */
 const CalendarView: React.FC = () => {
   return (
