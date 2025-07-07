@@ -1,14 +1,17 @@
 /* author : 강신욱
 description : 글 작성을 관리하는 컨테이너 컴포넌트입니다.
 */
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BottomNavbar from "../../shareComponents/BottomNavbar";
 import WritePostUI from "./WritePostUI";
+import UploadSuccessModal from "./UploadSuccessModal";
 import { useWritePost } from "../../../hooks/useWritePost";
 
 const WritePost: React.FC = () => {
   const navigate = useNavigate();
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+
   const {
     postType,
     setPostType,
@@ -28,13 +31,28 @@ const WritePost: React.FC = () => {
     navigate("/community");
   };
 
-  /***** 업로드 버튼 클릭 시 글의 종류, 제목, 내용, 주제를 콘솔에 출력하는 로직입니다. (후에 API 연동 예정) ******/
+  /***** 업로드 버튼 클릭 시 성공 모달을 여는 로직입니다. ******/
   const handleUpload = () => {
+    // 실제 API 호출 로직이 여기에 들어갈 수 있습니다.
+    // API 호출 성공 시 아래 setIsSuccessModalOpen(true) 호출
     console.log("글 종류:", postType);
     console.log("제목:", title);
     console.log("내용:", content);
     console.log("글 주제:", topic);
-    // 여기에 API 호출 로직을 추가할 수 있습니다.
+    setIsSuccessModalOpen(true); // 성공 모달 열기
+  };
+
+  /***** '내 글 확인하기' 버튼 클릭 시 로직입니다. ******/
+  const handleViewPost = () => {
+    setIsSuccessModalOpen(false);
+    // TODO: 작성된 글로 이동하는 로직 추가
+    console.log("내 글 확인하기 클릭");
+  };
+
+  /***** '홈으로' 버튼 클릭 시 커뮤니티 홈으로 이동하는 로직입니다. ******/
+  const handleGoHome = () => {
+    setIsSuccessModalOpen(false);
+    navigate("/community"); // 커뮤니티 홈으로 이동
   };
 
   return (
@@ -53,6 +71,11 @@ const WritePost: React.FC = () => {
         onUpload={handleUpload}
       />
       <BottomNavbar activeLabel="커뮤니티" />
+      <UploadSuccessModal
+        isOpen={isSuccessModalOpen}
+        onViewPost={handleViewPost}
+        onGoHome={handleGoHome}
+      />
     </>
   );
 };
