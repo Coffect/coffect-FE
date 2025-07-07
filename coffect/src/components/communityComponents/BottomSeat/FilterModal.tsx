@@ -60,14 +60,14 @@ const FilterModal = ({
       ></div>
 
       <div
-        className={`fixed bottom-0 left-0 z-50 h-[60%] w-full rounded-t-lg bg-white shadow-lg ${
-          isVisible ? "animate-slide-up" : "hidden"
-        }`}
+        className={`fixed bottom-0 left-0 z-50 h-[60%] w-full rounded-t-lg bg-white shadow-lg ${'isVisible ? "animate-slide-up" : "hidden"'}`}
       >
         <div className="flex h-full flex-col justify-between">
           <div className="p-6">
             <div className="mb-4 flex items-center justify-between pb-4">
-              <h2 className="text-lg font-bold">글 카테고리 선택하기</h2>
+              <h2 className="h-[30px] w-[70%] text-lg font-bold">
+                글 카테고리 선택하기
+              </h2>
               <button
                 className="text-sm text-gray-600 underline underline-offset-2 hover:text-gray-800"
                 onClick={handleReset}
@@ -79,12 +79,12 @@ const FilterModal = ({
             <ChipGroup
               title="글 종류 선택"
               options={[
-                "아티클",
-                "팀원모집",
-                "질문",
-                "도움 필요",
-                "후기글",
-                "팁 공유",
+                "아티클 ✍🏻",
+                "팀원 모집 👬",
+                "질문 👤",
+                "도움 필요 🤩",
+                "후기글 ☕",
+                "팁 공유 📌",
               ]}
               selectedOption={selectedType || ""}
               onSelect={(type) =>
@@ -103,6 +103,7 @@ const FilterModal = ({
                 "취업",
                 "창업",
                 "학교",
+                "기타",
               ]}
               selectedOption={selectedTopic || ""}
               onSelect={(topic) =>
@@ -116,7 +117,7 @@ const FilterModal = ({
               className={`border-4 px-4 py-2 ${
                 selectedType || selectedTopic
                   ? "bg-gray-500 text-white"
-                  : "cursor-not-allowed"
+                  : "cursor-not-allowed bg-gray-200"
               }`}
               disabled={!selectedType && !selectedTopic}
               onClick={handleApplyFilter}
