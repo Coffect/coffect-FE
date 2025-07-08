@@ -27,17 +27,17 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="relative mx-auto flex h-screen w-full flex-col overflow-x-hidden overflow-y-auto bg-white">
+    <div className="relative mx-auto flex h-full w-full flex-col overflow-x-hidden overflow-y-auto bg-[#F5F5F5]">
       {/* 프로필 작성 유도 모달 */}
       <ProfileModal isOpen={showModal} onClose={() => setShowModal(false)} />
 
       {/* 상단 네비게이션  */}
-      <div className="fixed top-0 left-0 z-40 h-[8vh] w-full">
+      <div className="flex">
         <TopNavbar pageType="home" />
       </div>
 
       {/* 메인 콘텐츠 영역 */}
-      <main className="flex-1 items-center overflow-y-auto px-[5vw] pt-[10vh]">
+      <main className="flex-1 items-center overflow-y-auto px-[2vw]">
         {/* 추천 배너 슬라이드 */}
         <CoffeeBanner />
 
@@ -52,7 +52,7 @@ const Home = () => {
       </main>
 
       {/* 하단 네비게이션 (고정 위치) */}
-      <div className="fixed bottom-0 left-0 z-40 h-[9.3vh] w-full">
+      <div className="flex w-full">
         <BottomNavbar activeLabel="홈" />
       </div>
     </div>

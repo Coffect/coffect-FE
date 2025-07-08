@@ -31,7 +31,7 @@ const TopNavbar = ({ pageType }: TopNavbarProps) => {
     - calendar, alarm: 좌측 뒤로가기 + 중앙 타이틀 + 우측 공백 (정렬 맞춤용)
   */
   return (
-    <div className="flex w-full items-center justify-between bg-white px-[4vw] py-[3vh]">
+    <div className="flex h-[70px] w-full items-center justify-between bg-[#F5F5F5] px-[5%]">
       {pageType === "home" ? (
         <>
           {/* 좌측 로고 텍스트 */}
@@ -41,9 +41,12 @@ const TopNavbar = ({ pageType }: TopNavbarProps) => {
           <div className="flex items-center gap-[3vw]">
             <CalendarDays
               className={iconClass}
-              onClick={() => navigate("/calendar")}
+              onClick={() => navigate("/home/calendar")}
             />
-            <Bell className={iconClass} onClick={() => navigate("/alarm")} />
+            <Bell
+              className={iconClass}
+              onClick={() => navigate("/home/alarm")}
+            />
           </div>
         </>
       ) : (
@@ -54,12 +57,12 @@ const TopNavbar = ({ pageType }: TopNavbarProps) => {
           </button>
 
           {/* 중앙: 현재 페이지에 맞는 타이틀 표시 */}
-          <h1 className="text-lg font-semibold">
-            {pageType === "calendar" ? "캘린더" : "알림"}
+          <h1 className="text-xl font-bold text-black antialiased">
+            {pageType === "calendar" ? "일정" : "알림"}
           </h1>
 
           {/* 우측: 좌우 정렬 유지용 빈 공간 */}
-          <div className="h-[6vw] w-[6vw]" />
+          <div className="h-[6vw] w-[3vw]" />
         </>
       )}
     </div>
