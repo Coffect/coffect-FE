@@ -5,7 +5,6 @@
                 - 각 제안에 대해 메시지 확인/삭제/대화 시작 가능
 */
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useState, useRef } from "react";
 import "swiper/css";
@@ -17,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 // 커피챗 제안 베너 데이터 타입 정의
 interface Suggestion {
   id: number;
+  name: string;
   message: string;
   image: string;
 }
@@ -29,12 +29,14 @@ const CoffeeSuggestBanner = () => {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([
     {
       id: 1,
-      message: "하은님의 커피챗 제안이 도착했어요!",
+      name: "하은",
+      message: "커피챗 제안이 도착했어요!",
       image: "https://picsum.photos/200?random=1",
     },
     {
       id: 2,
-      message: "희선님의 커피챗 제안이 도착했어요!",
+      name: "김라떼",
+      message: "커피챗 제안이 도착했어요!",
       image: "https://picsum.photos/200?random=2",
     },
   ]);
@@ -69,74 +71,53 @@ const CoffeeSuggestBanner = () => {
   };
 
   return (
-    <div className="relative h-[15vh] w-full overflow-hidden">
-      {/* 왼쪽 슬라이드 버튼 */}
-      <button
-        onClick={() => swiperRef.current?.slidePrev()}
-        className="absolute top-1/2 -left-[3vw] z-10 -translate-y-1/2"
-        aria-label="이전"
-      >
-        <ChevronLeft className="h-[10vw] w-[10vw] text-gray-400" />
-      </button>
-
-      {/* 오른쪽 슬라이드 버튼 */}
-      <button
-        onClick={() => swiperRef.current?.slideNext()}
-        className="absolute top-1/2 -right-[3vw] z-10 -translate-y-1/2"
-        aria-label="다음"
-      >
-        <ChevronRight className="h-[10vw] w-[10vw] text-gray-400" />
-      </button>
-
+    <div className="mt-[3%] flex w-full items-center justify-center overflow-hidden">
       {/* 커피쳇 제안 베너 슬라이드 */}
-      <div className="absolute inset-0 top-3/24 flex items-center justify-center">
-        <div className="h-full w-[90%]">
-          <Swiper
-            className="h-full w-full"
-            spaceBetween={16}
-            slidesPerView={1}
-            onSwiper={(sw) => (swiperRef.current = sw)} // Swiper 인스턴스 저장
-          >
-            {/* 제안 하나씩 렌더링 */}
-            {suggestions.map((user) => (
-              <SwiperSlide
-                key={user.id}
-                className="flex h-full items-center justify-center"
-              >
-                {/* 제안 카드 */}
-                <div className="flex w-full items-center gap-[1vw] rounded-[3vw] bg-gray-200 px-[3vw] py-[2vh]">
-                  {/* 프로필 이미지 */}
-                  <img
-                    src={user.image}
-                    alt="프로필 사진"
-                    className="h-[15vw] w-[15vw] rounded-full object-cover"
-                  />
+      <div className="flex h-auto w-[95%]">
+        <Swiper
+          className="h-auto w-full"
+          spaceBetween={16}
+          slidesPerView={1}
+          onSwiper={(sw) => (swiperRef.current = sw)} // Swiper 인스턴스 저장
+        >
+          {/* 제안 하나씩 렌더링 */}
+          {suggestions.map((user) => (
+            <SwiperSlide
+              key={user.id}
+              className="flex items-center justify-center"
+            >
+              {/* 제안 카드 */}
+              <div className="flex w-full items-center gap-[3vw] rounded-[20px] bg-white px-[6%] py-[4%] shadow-[0_0_20px_rgba(189,179,170,0.2)]">
+                {/* 프로필 이미지 */}
+                <img
+                  src={user.image}
+                  alt="프로필 사진"
+                  className="aspect-[1/1] w-[20%] rounded-full object-cover p-0.5"
+                />
 
-                  {/* 메시지 내용 + 버튼 */}
-                  <div className="flex flex-col justify-center gap-[1.3vh]">
-                    <span className="text-[3.6vw] font-bold">
-                      {user.message}
-                    </span>
-                    <div className="flex w-full justify-center gap-[7%] text-[3vw]">
-                      {/* 프로필 보기 -> 라우팅예정 */}
-                      <button className="rounded-[0.5vw] bg-gray-300 px-[4vw] py-[1.2vh]">
-                        프로필 보기
-                      </button>
+                {/* 메시지 내용 + 버튼 */}
+                <div className="flex w-0 flex-1 flex-col justify-center">
+                  <p className="mb-[3%] overflow-hidden text-sm text-ellipsis whitespace-nowrap">
+                    <span className="font-bold">{user.name}</span>님의{" "}
+                    {user.message}
+                  </p>
 
-                      {/* 메시지 확인 버튼 */}
-                      <button
-                        onClick={() => setCheckedMessage(user)}
-                        className="rounded-[0.5vw] bg-gray-300 px-[2vw] py-[1.2vh]"
-                      >
-                        메시지 확인하기
-                      </button>
-                    </div>
+                  <div className="flex justify-start">
+                    <button className="rounded-lg bg-[#2D2D2D] px-4 py-1.5 text-xs text-white">
+                      프로필 보기
+                    </button>
+                    <button
+                      onClick={() => setCheckedMessage(user)}
+                      className="ml-[3%] rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs text-gray-500 hover:bg-gray-100"
+                    >
+                      메시지 확인하기
+                    </button>
                   </div>
                 </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
 
       {/* 메시지 확인 모달 (커피챗 제안 확인) */}
@@ -145,7 +126,7 @@ const CoffeeSuggestBanner = () => {
           // UI 작동 실험용 더미 데이터
           message={{
             id: checkedMessage.id,
-            name: checkedMessage.message.split("님")[0],
+            name: checkedMessage.name.split("님")[0],
             time: `요청시간 2025. 7. 7. 오전 2:00`,
             intro: `안녕하세요! 사람과 이야기를 나누는 것을 좋아하고,\n새로운 것을 배우는 데 늘 열려 있는 뉴비입니다.\n즐겁고 의미 있는 경험을 함께 만들고 싶어요!`,
           }}
@@ -158,7 +139,7 @@ const CoffeeSuggestBanner = () => {
       {/* 제안 삭제 확인 모달 */}
       {pendingDeleteId != null && checkedMessage && (
         <DeleteSuggestModal
-          messageName={checkedMessage.message.split("님")[0]}
+          messageName={checkedMessage.name}
           onDelete={handleConfirmDelete}
           onCancel={() => setPendingDeleteId(null)}
         />
