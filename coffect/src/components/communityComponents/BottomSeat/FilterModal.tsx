@@ -5,6 +5,7 @@ description : Header(고정바) 에서 토글 버튼 클릭 시 나오는 모달
 import { useState } from "react";
 import "./FilterModalAnimation.css";
 import ChipGroup from "../common/ChipGroup";
+import { X } from "lucide-react";
 
 /*
 type: 글의 종류 (아티클, 팀원 모집 등)
@@ -53,85 +54,77 @@ const FilterModal = ({
   if (!isVisible) return null;
 
   return (
-    <>
-      <div
-        className="fixed inset-0 z-40 backdrop-grayscale-500"
-        onClick={onClose}
-      ></div>
+    <div>
+      <div className="fixed inset-0 z-40" onClick={onClose}></div>
 
       <div
-        className={`fixed right-0 bottom-[81px] left-0 z-50 mx-auto h-[50%] w-full max-w-[430px] rounded-t-lg bg-white ${isVisible ? "animate-slide-up" : "hidden"}`}
+        className={`fixed right-0 bottom-[81px] left-0 z-50 mx-auto h-[58.75%] w-full max-w-[430px] rounded-t-lg bg-white ${isVisible ? "animate-slide-up" : "hidden"}`}
       >
         <div className="flex h-full flex-col justify-between">
           <div className="p-6">
-            <div className="mb-4 flex items-center justify-between pb-4">
-              <h2 className="h-[30px] w-[70%] text-lg font-bold">
-                글 카테고리 선택하기
-              </h2>
-              <button
-                className="text-sm text-gray-600 underline underline-offset-2 hover:text-gray-800"
-                onClick={handleReset}
-              >
-                초기화
+            <div className="flex justify-end">
+              <button onClick={onClose} className="text-gray-600">
+                <X size={24} />
               </button>
             </div>
+            <h2 className="mb-6 text-lg font-bold">글 카테고리 선택하기</h2>
 
-            <ChipGroup
-              title="글 종류 선택"
-              options={[
-                "아티클 ✍🏻",
-                "팀원 모집 👬",
-                "질문 👤",
-                "도움 필요 🤩",
-                "후기글 ☕",
-                "팁 공유 📌",
-              ]}
-              selectedOption={selectedType || ""}
-              onSelect={(type) =>
-                setSelectedType(type === selectedType ? null : type)
-              }
-            />
+            <div className="flex flex-col gap-4">
+              <ChipGroup
+                title="글 종류 선택"
+                options={[
+                  "아티클 ✍🏻",
+                  "팀원 모집 👬",
+                  "질문 👤",
+                  "도움 필요 🤩",
+                  "후기글 ☕",
+                  "팁 공유 📌",
+                ]}
+                selectedOption={selectedType || ""}
+                onSelect={(type) =>
+                  setSelectedType(type === selectedType ? null : type)
+                }
+              />
 
-            <ChipGroup
-              title="글 주제 선택"
-              options={[
-                "프로덕트",
-                "개발",
-                "디자인",
-                "기획",
-                "인사이트",
-                "취업",
-                "창업",
-                "학교",
-                "기타",
-              ]}
-              selectedOption={selectedTopic || ""}
-              onSelect={(topic) =>
-                setSelectedTopic(topic === selectedTopic ? null : topic)
-              }
-            />
+              <ChipGroup
+                title="글 주제 선택"
+                options={[
+                  "프로덕트",
+                  "개발",
+                  "디자인",
+                  "기획",
+                  "인사이트",
+                  "취업",
+                  "창업",
+                  "학교",
+                  "기타",
+                ]}
+                selectedOption={selectedTopic || ""}
+                onSelect={(topic) =>
+                  setSelectedTopic(topic === selectedTopic ? null : topic)
+                }
+              />
+            </div>
           </div>
 
-          <div className="flex items-center justify-center-safe gap-3 p-4">
+          <div className="flex h-[16%] w-full justify-center gap-3 p-4">
             <button
-              className={`border-4 px-4 py-2 ${
-                selectedType || selectedTopic
-                  ? "bg-gray-500 text-white"
-                  : "cursor-not-allowed bg-gray-200"
-              }`}
+              className={`flex-1 rounded-md px-4 py-2 ${selectedType || selectedTopic ? "bg-[#3a3a3a] text-white" : "cursor-not-allowed bg-gray-200"}`}
               disabled={!selectedType && !selectedTopic}
               onClick={handleApplyFilter}
             >
               필터 적용하기
             </button>
-            <button className="border-4 px-4 py-2" onClick={onClose}>
-              취소
+            <button
+              className="flex-1 rounded-md border border-gray-300 px-4 py-2 text-gray-500"
+              onClick={handleReset}
+            >
+              초기화
             </button>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
-
 export default FilterModal;

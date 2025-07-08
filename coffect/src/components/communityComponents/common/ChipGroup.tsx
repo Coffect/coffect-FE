@@ -27,15 +27,15 @@ const ChipGroup: React.FC<ChipGroupProps> = ({
   const sliceEnd = title === "글 주제 선택" ? 4 : 3;
   return (
     <div className="mb-4">
-      <h2 className="w-[318px] h-[27px] mb-2 text-left font-bold">{title}</h2>
+      <h2 className="mb-2 h-[27px] w-[318px] text-left font-bold">{title}</h2>
       <div className="flex flex-col gap-2">
         <div className="flex flex-wrap justify-start gap-2">
           {options.slice(0, sliceEnd).map((option) => (
             <button
               key={option}
               onClick={() => onSelect(option)}
-              className={`border border-gray-300 rounded-md px-3 py-1.5 text-sm ${
-                selectedOption === option ? "bg-gray-700 text-white" : ""
+              className={`rounded-md border border-gray-300 px-3 py-1.5 text-sm ${
+                selectedOption === option ? "bg-[#3a3a3a] text-white" : ""
               }`}
             >
               {option}
@@ -47,8 +47,8 @@ const ChipGroup: React.FC<ChipGroupProps> = ({
             <button
               key={option}
               onClick={() => onSelect(option)}
-              className={`border border-gray-300 rounded-md px-3 py-1.5 text-sm ${
-                selectedOption === option ? "bg-gray-700 text-white" : ""
+              className={`rounded-md border border-gray-300 px-3 py-1.5 text-sm ${
+                selectedOption === option ? "bg-[#3a3a3a] text-white" : ""
               }`}
             >
               {option}
