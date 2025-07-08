@@ -10,6 +10,7 @@ import FeedList from "../components/communityComponents/feed/FeedList";
 import FilterModal from "../components/communityComponents/bottomSeat/FilterModal";
 import BottomNavbar from "../components/shareComponents/BottomNavbar";
 import { type Post, generateDummyPosts } from "../data/communityDummyData";
+import FloatingWriteButton from "../components/communityComponents/FloatingWriteButton";
 
 // 필터 타입 정의
 interface Filters {
@@ -45,7 +46,7 @@ const Community = () => {
   }, [filters]); // filters가 변경될 때마다 useEffect 실행
 
   return (
-    <div className="flex h-full flex-col bg-white">
+    <div className="relative flex h-full flex-col bg-white">
       <Header openModal={openModal} />
 
       {/* 피드부분 */}
@@ -61,6 +62,7 @@ const Community = () => {
         initialFilters={filters}
       />
       <BottomNavbar activeLabel="커뮤니티" />
+      <FloatingWriteButton />
     </div>
   );
 };
