@@ -17,30 +17,29 @@ const CoffeeSuggestCompleteModal: React.FC<CoffeeSuggestCompleteModalProps> = ({
   return (
     // 전체 화면 덮는 반투명 레이어
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-      {/* 모달 본문 컨테이너 */}
-      <div className="w-[90%] border border-gray-800 bg-white p-[5vw]">
-        {/* 제목 영역 */}
-        <div className="mt-[10vh] mb-[2vh] flex items-center justify-center gap-[2vw]">
-          ☕
-          <h3 className="text-[4vw] font-extrabold text-gray-800">
-            커피챗 제안이 전송되었어요!
-          </h3>
+      {/* 모달 컨테이너 */}
+      <div className="flex aspect-square w-[305px] flex-col justify-between rounded-xl bg-white shadow-[0_0_24px_rgba(28,28,34,0.25)]">
+        {/* 상단 콘텐츠 */}
+        <div className="px-[4%] pt-[25%] pb-[5%] text-center">
+          {/* 아이콘 + 타이틀 */}
+          <div className="mb-[4%] flex items-center justify-center gap-[2%]">
+            <span className="text-2xl">☕</span>
+            <h3 className="text-lg font-bold">커피챗 제안이 전송되었어요!</h3>
+          </div>
+
+          {/* 설명 문구 */}
+          <p className="mt-[6%] text-sm leading-relaxed font-semibold whitespace-pre-line text-[#787891]">
+            답변을 기다리는 동안{"\n"}또 다른 친구에게 보내볼까요?
+          </p>
         </div>
 
-        {/* 설명 텍스트 */}
-        <p className="mb-[12vh] text-center text-[3vw] font-bold text-gray-600">
-          답변을 기다리는 동안, 또 다른 친구에게 보내볼까요?
-        </p>
-
-        {/* 확인 버튼 */}
-        <div className="flex justify-center">
-          <button
-            onClick={onClose}
-            className="w-full rounded-[1vw] bg-black py-[1.5vh] text-[3.5vw] font-semibold text-white"
-          >
-            창 닫기
-          </button>
-        </div>
+        {/* 하단 단일 확인 버튼 */}
+        <button
+          onClick={onClose}
+          className="h-[50px] w-full rounded-b-xl bg-[#2D2D2D] text-base text-white"
+        >
+          확인
+        </button>
       </div>
     </div>
   );

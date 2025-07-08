@@ -32,52 +32,51 @@ const MessageModal: React.FC<MessageModalProps> = ({
 }) => {
   return (
     // 전체 화면을 덮는 반투명 배경 (모달 레이어)
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
       {/* 모달 본문 컨테이너 */}
-      <div className="relative w-[90%] rounded-[1vw] bg-white p-[5vw]">
-        {/* 메시지 삭제 버튼 (우측 상단) */}
-        <button
-          onClick={() => onDelete(message.id)}
-          className="absolute top-[2vw] right-[2vw]"
-          aria-label="메시지 삭제"
-        >
-          <Trash2 className="h-[5vw] w-[5vw] text-gray-500" />
-        </button>
-
+      <div className="relative flex w-[305px] flex-col justify-between rounded-xl bg-white shadow-[0_0_24px_rgba(28,28,34,0.25)]">
         {/* 수신 시간 */}
-        <div className="mb-[2vh] text-[3.4vw] text-gray-600">
+        <div className="px-[5%] pt-[5.5%] text-xs text-gray-600">
           {message.time}
         </div>
+        {/* 삭제 버튼 (우상단) */}
+        <button
+          onClick={() => onDelete(message.id)}
+          className="absolute top-[5%] right-[4%]"
+          aria-label="메시지 삭제"
+        >
+          <Trash2 className="h-5 w-5 text-gray-400" />
+        </button>
 
-        {/* 메시지 타이틀 */}
-        <div className="mb-[2vh] text-[4vw] font-semibold">
-          🍒{message.name}님의 커피쳇 제안이 도착했어요!
+        {/* 상단 콘텐츠 */}
+        <div className="mt-[8%] px-[4%] text-center">
+          {/* 타이틀 */}
+          <h3 className="text-sm font-bold text-gray-800">
+            🍒 {message.name}님의 커피챗 제안이 도착했어요!
+          </h3>
+
+          {/* 메시지 본문 */}
+          <p className="my-[10%] text-xs leading-snug whitespace-pre-line text-gray-700">
+            {message.intro}
+          </p>
         </div>
 
-        {/* 구분선 */}
-        <hr className="border-t border-gray-300" />
+        {/* 버튼 영역 */}
+        <div className="mt-[6%] flex h-[50px] w-full overflow-hidden text-sm">
+          {/* 닫기 버튼 */}
+          <button
+            onClick={onClose}
+            className="flex-11 rounded-bl-xl border border-[#F7F7F8] bg-white text-[#787891]"
+          >
+            창 닫기
+          </button>
 
-        {/* 메시지 본문 */}
-        <p className="mt-[2vh] mb-[4vh] text-[3vw] leading-tight whitespace-pre-line text-gray-700">
-          {message.intro}
-        </p>
-
-        {/* 버튼 영역: 대화 시작 / 창 닫기 */}
-        <div className="flex justify-center gap-[4vw]">
           {/* 대화 시작 버튼 */}
           <button
             onClick={onChat}
-            className="flex-1 rounded-[1vw] bg-black py-[1.5vh] text-[3.5vw] text-white"
+            className="flex-19 rounded-br-xl bg-[#2D2D2D] text-white"
           >
             대화 시작하기
-          </button>
-
-          {/* 창 닫기 버튼 */}
-          <button
-            onClick={onClose}
-            className="flex-1 rounded-[1vw] border border-gray-400 py-[1.5vh] text-[3.5vw] text-gray-700"
-          >
-            창 닫기
           </button>
         </div>
       </div>
