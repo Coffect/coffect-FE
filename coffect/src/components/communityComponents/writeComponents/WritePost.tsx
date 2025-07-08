@@ -3,7 +3,6 @@ description : 글 작성을 관리하는 컨테이너 컴포넌트입니다.
 */
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import BottomNavbar from "../../shareComponents/BottomNavbar";
 import WritePostUI from "./WritePostUI";
 import UploadSuccessModal from "./UploadSuccessModal";
 import { useWritePost } from "../../../hooks/useWritePost";
@@ -70,7 +69,6 @@ const WritePost: React.FC = () => {
         handleBackClick={handleBackClick}
         onUpload={handleUpload}
       />
-      <BottomNavbar activeLabel="커뮤니티" />
       <UploadSuccessModal
         isOpen={isSuccessModalOpen}
         onViewPost={handleViewPost}
