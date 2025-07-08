@@ -21,7 +21,8 @@ const FeedItem = ({ post }: FeedItemProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const MAX_CONTENT_LENGTH = 100; // 최대 글자 수 설정
 
-  const handleToggleContent = () => {
+  const handleToggleContent = (event: React.MouseEvent) => {
+    event.stopPropagation();
     setIsExpanded((prev) => !prev);
   };
 

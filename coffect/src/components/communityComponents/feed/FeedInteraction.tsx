@@ -20,15 +20,18 @@ const FeedInteraction = ({ likes, comments }: FeedInteractionProps) => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isCommentSheetVisible, setIsCommentSheetVisible] = useState(false);
 
-  const handleLikeClick = () => {
+  const handleLikeClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
     setIsLiked(!isLiked);
   };
 
-  const handleBookmarkClick = () => {
+  const handleBookmarkClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
     setIsBookmarked(!isBookmarked);
   };
 
-  const handleCommentClick = () => {
+  const handleCommentClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
     setIsCommentSheetVisible(true);
   };
 
