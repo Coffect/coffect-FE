@@ -1,4 +1,4 @@
-/**
+/*
  * author: 강신욱
  * description: 하나의 피드 UI를 구성하는 컴포넌트입니다.
  */
@@ -30,30 +30,32 @@ const FeedItem = ({ post }: FeedItemProps) => {
   };
 
   return (
-    <div className="border-b-6 border-gray-300 pt-2 pb-2 cursor-pointer" onClick={handlePostClick}>
-      {/*****  사용자 프로필 영역 / 작성 시간  *****/}
-      <div className="flex items-center justify-around">
+    <div className="border-b-6 border-gray-300 pb-2" onClick={handlePostClick}>
+      {/*****  사용자 프로필 영역 / 작성 시간 / 팔로우 버튼 *****/}
+      <div className="flex items-center justify-between px-4 py-2">
         <div className="flex items-center">
           <img
             src={post.user.profileImage}
             alt="프로필 사진"
-            className="mr-4 h-12 w-12 rounded-full"
+            className="mr-3 h-full w-14 rounded-full object-cover"
           />
           <div>
-            <h3 className="text-lg font-bold">{post.user.nickname}</h3>
-            <p className="text-sm text-gray-700">{post.title}</p>
+            <h3 className="text-md font-bold">{post.user.nickname}</h3>
+            <p className="text-sm text-gray-500">{post.user.major} 20학번</p>
+
+            <p className="text-sm text-gray-500">2일 전</p>
           </div>
         </div>
         <div>
-          <span className="text-sm text-gray-500">
-            {new Date().toLocaleDateString()} (임의작성)
-          </span>
+          <button className="h-[50%] rounded-sm bg-[#4a4a4a] px-4 py-1 text-sm text-white">
+            팔로우
+          </button>
         </div>
       </div>
 
       {/******  글 및 사진 영역  *******/}
-      <div className="m-3">
-        <div className="mb-2 items-center text-sm">
+      <div className="px-4 py-2">
+        <div className="mb-2 pb-1 text-sm">
           <span>
             {isExpanded || post.content.length <= MAX_CONTENT_LENGTH
               ? post.content
@@ -80,7 +82,9 @@ const FeedItem = ({ post }: FeedItemProps) => {
       </div>
 
       {/***** 하단 인터랙션 아이콘 *****/}
-      <FeedInteraction likes={post.likes} comments={post.comments} />
+      <div className="px-4">
+        <FeedInteraction likes={post.likes} comments={post.comments} />
+      </div>
     </div>
   );
 };

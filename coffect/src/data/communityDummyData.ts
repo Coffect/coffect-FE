@@ -15,6 +15,7 @@ export interface Post {
   type: string; // 게시글 종류 추가
   topic: string; // 게시글 주제 추가
   postedDate: Date; // 게시일 추가
+  daysAgo: number; // 며칠 전 작성되었는지 추가
 }
 
 // 필터 타입 정의
@@ -60,7 +61,7 @@ export const generateDummyPosts = (filters: Filters): Post[] => {
         profileImage: `https://randomuser.me/api/portraits/men/${i}.jpg`,
         nickname: nicknames[i % nicknames.length],
         major: majors[i % majors.length],
-        studentId: `20${10 + i}12345`,
+        studentId: 20,
       },
       image: `https://picsum.photos/400/300?random=${i + 1}`,
       title: `[${postTopic}] 게시물 제목 ${i + 1}`,
@@ -71,6 +72,7 @@ export const generateDummyPosts = (filters: Filters): Post[] => {
       type: postType,
       topic: postTopic,
       postedDate: postedDate,
+      daysAgo: randomDaysAgo,
     };
   });
 };
