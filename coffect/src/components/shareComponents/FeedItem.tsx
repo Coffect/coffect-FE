@@ -1,7 +1,7 @@
 /*
  * author: 강신욱
  * description: 피드 목록에 표시되는 개별 게시글 아이템 컴포넌트입니다.
- * 공용 컴포넌트인 PostAuthorInfo와 PostBody를 조합하여 UI를 구성합니다.
+                공용 컴포넌트인 PostAuthorInfo와 PostBody를 조합하여 UI를 구성합니다.
  */
 import { useNavigate } from "react-router-dom";
 import type { Post } from "../../data/communityDummyData";
@@ -25,7 +25,6 @@ const getTimeAgo = (date: Date): string => {
 };
 
 const FeedItem = ({ post }: FeedItemProps) => {
-  // react-router-dom의 useNavigate 훅을 사용하여 페이지 이동을 처리합니다.
   const navigate = useNavigate();
 
   // 게시글 아이템 클릭 시 해당 게시글의 상세 페이지로 이동하는 함수입니다.
@@ -37,7 +36,6 @@ const FeedItem = ({ post }: FeedItemProps) => {
   const timeAgo = getTimeAgo(post.postedDate);
 
   return (
-    // 전체 컨테이너입니다. 클릭 시 handlePostClick 함수가 호출됩니다.
     // UI 하단에 회색 줄을 추가하여 각 피드 아이템을 구분합니다.
     <div className="border-b border-gray-200 pb-2">
       {/* 

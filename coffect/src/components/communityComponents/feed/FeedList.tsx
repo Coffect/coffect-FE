@@ -17,6 +17,10 @@ interface Post {
   content: string;
   likes: number;
   comments: number;
+  type: string;
+  topic: string;
+  postedDate: string;
+  daysAgo: number;
 }
 
 interface FeedListProps {
