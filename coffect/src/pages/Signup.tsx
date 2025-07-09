@@ -10,7 +10,6 @@ import SplashScreen from "../components/Signup/SplashScreen";
 import LoginChoice from "../components/Signup/LoginChoice";
 import TermsAgreement from "../components/Signup/TermsAgreement";
 import SchoolSelection from "../components/Signup/SchoolSelection";
-import MajorYearSelection from "../components/Signup/MajorYearSelection";
 import EmailVerification from "../components/Signup/EmailVerification";
 import CodeInput from "../components/Signup/CodeInput";
 import AccountSetup from "../components/Signup/AccountSetup";
@@ -19,9 +18,10 @@ import Completion from "../components/Signup/Completion";
 
 const Signup = () => {
   const navigate = useNavigate();
-  // 현재 단계 상태 (1~10)
+  // 현재 단계 페이지 (1~9)
   const [step, setStep] = useState<number>(1);
   // 회원가입 중 입력된 데이터 누적 저장
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [form, setForm] = useState<Partial<SignupData>>({});
 
   // 다음 단계로 이동
@@ -36,69 +36,55 @@ const Signup = () => {
     <div className="flex h-full w-full flex-col items-center justify-center">
       {/* 1. 시작 화면 */}
       {step === 1 && <SplashScreen onNext={goNext} />}
-
       {/* 2. 회원가입/로그인 선택 화면 */}
       {step === 2 && (
         <LoginChoice onSignUp={goNext} onLogin={() => navigate("/login")} />
       )}
-
       {/* 3. 약관 동의 화면 */}
       {step === 3 && <TermsAgreement onNext={goNext} />}
 
-      {/* 4. 학교 선택 화면 */}
+      {/* 4. 학교 선택 + 전공/학번 입력 화면 */}
       {step === 4 && (
         <SchoolSelection
           onNext={goNext}
-          onChange={(school) => update({ school })}
+          onChange={(school, major, studentId) =>
+            update({ school, major, studentId })
+          }
         />
       )}
 
-      {/* 5. 전공/학번 입력 화면 */}
+      {/* 5. 이메일 인증 화면 */}
       {step === 5 && (
-        <MajorYearSelection
-          school={form.school!}
-          onNext={goNext}
-          onBack={goBack}
-          onChange={(fields) => update(fields)}
-        />
-      )}
-
-      {/* 6. 이메일 인증 화면 */}
-      {step === 6 && (
         <EmailVerification
           onNext={goNext}
           onChange={(email) => update({ email })}
         />
       )}
-
-      {/* 7. 이메일 인증 코드 입력 화면 */}
-      {step === 7 && (
+      {/* 6. 이메일 인증 코드 입력 화면 */}
+      {step === 6 && (
         <CodeInput
           onNext={goNext}
           onBack={goBack}
           onChange={(code) => update({ authCode: code })}
         />
       )}
-
-      {/* 8. 계정 정보 설정(아이디/비밀번호) 화면 */}
-      {step === 8 && (
+      {/* 7. 계정 정보 설정(아이디/비밀번호) 화면 */}
+      {step === 7 && (
         <AccountSetup
           onNext={goNext}
           onBack={goBack}
           onChange={(fields) => update(fields)}
         />
       )}
-
-      {/* 9. 관심사 선택 화면 */}
-      {step === 9 && (
+      {/* 8. 관심사 선택 화면 */}
+      {step === 8 && (
         <InterestsSelection
           onNext={goNext}
           onChange={(list) => update({ interests: list })}
         />
       )}
-
-      {/* 10. 가입 완료 화면 */}
-      {step === 10 && <Completion />}
+      {/* 9. 가입 완료 화면 */}
+      {step === 9 && <Completion />}
     </div>
   );
 };

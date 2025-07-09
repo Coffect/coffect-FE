@@ -3,7 +3,7 @@ export interface SignupData {
   authCode: string;
   school: string;
   major: string;
-  year: string;
+  studentId: string;
   username: string;
   password: string;
   interests: string[];
