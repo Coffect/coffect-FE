@@ -17,14 +17,9 @@ const UploadSuccessModal: React.FC<UploadSuccessModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="bg-opacity-10 fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md">
-      <div className="flex w-80 flex-col items-center gap-5 rounded-lg bg-white p-6 shadow-lg">
-        {/* 이미지 Placeholder */}
-        <div className="mb-2 flex h-20 w-20 items-center justify-center rounded-full bg-gray-200">
-          <span className="text-xs text-gray-500">Image</span>
-        </div>
-
-        <h2 className="text-lg font-bold">하은님의 글이 게시되었어요.</h2>
+    <div className="bg-opacity-10 fixed inset-0 z-50 flex w-full items-center justify-center backdrop-brightness-30">
+      <div className="flex w-80 flex-col items-center gap-5 rounded-2xl bg-white p-6 shadow-lg">
+        <h2 className="text-lg font-bold">글이 게시되었어요.</h2>
         <div className="mb-4 text-center text-sm text-gray-500">
           나의 가치관과 생각을 들어내는 글은
           <br />더 많은 유저들에게 자기 어필을 할 수 있어요!
