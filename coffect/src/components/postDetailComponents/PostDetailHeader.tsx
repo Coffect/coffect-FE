@@ -3,6 +3,7 @@
  * description: 게시글 상세 페이지의 헤더 컴포넌트입니다.
  * 뒤로 가기 기능을 제공합니다.
  */
+
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -19,7 +20,6 @@ const PostDetailHeader = () => {
       <button onClick={handleGoBack} className="mr-4">
         <ChevronLeft className="h-6 w-6" />
       </button>
-      {/* 필요하다면 여기에 페이지 제목 등을 추가할 수 있습니다. */}
     </header>
   );
 };

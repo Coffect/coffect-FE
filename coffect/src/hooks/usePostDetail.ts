@@ -19,17 +19,20 @@ const getTimeAgo = (date: Date): string => {
   return `${diffDays}일 전`;
 };
 
+// 게시글 상세 페이지의 데이터를 가져오는 함수
 export const usePostDetail = () => {
+  // URL에서 게시글 ID를 가져옵니다.
   const { id } = useParams<{ id: string }>();
   const postId = Number(id);
 
-  // Find the specific post from the dummy data
+  // 모든 게시글 데이터를 가져옵니다.
   const allPosts = generateDummyPosts({ type: null, topic: null });
   const post = allPosts.find((p) => p.id === postId);
 
-  // Get comments using the existing useComments hook
+  // 댓글 목록을 가져옵니다.
   const { comments: commentList } = useComments();
 
+  // 게시글이 존재하지 않을 경우 빈 객체를 반환합니다.
   const timeAgo = post ? getTimeAgo(post.postedDate) : "";
 
   return {

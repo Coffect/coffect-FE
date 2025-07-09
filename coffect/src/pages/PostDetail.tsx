@@ -1,8 +1,8 @@
 /*
  * author: 강신욱
  * description: 게시글 상세 페이지의 메인 컨테이너 컴포넌트입니다.
- * 데이터 로직은 usePostDetail 훅에 위임하고,
- * UI는 공용 컴포넌트와 상세 페이지 전용 컴포넌트들을 조합하여 구성합니다.
+                데이터 로직은 usePostDetail 훅에 위임하고,
+                UI는 공용 컴포넌트와 상세 페이지 전용 컴포넌트들을 조합하여 구성합니다.
  */
 import { usePostDetail } from "../hooks/usePostDetail";
 import PostAuthorInfo from "../components/shareComponents/post/PostAuthorInfo";

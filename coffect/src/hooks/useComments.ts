@@ -7,12 +7,7 @@ import type { Comment } from "../types/commentTypes";
 
 // 더미 댓글 데이터 생성 함수
 const generateDummyComments = (): Comment[] => {
-  const majors = [
-    "컴퓨터공학과",
-    "소프트웨어학과",
-    "정보통신공학과",
-    "전자공학과",
-  ];
+  const majors = ["컴퓨터공학과", "영문학과", "정보통신공학과", "전자공학과"];
   const nicknames = [
     "김철수",
     "이영희",
@@ -20,7 +15,6 @@ const generateDummyComments = (): Comment[] => {
     "최지영",
     "정대현",
     "한아름",
-    "강신욱",
     "신짱구",
     "봉미선",
     "맹구",
