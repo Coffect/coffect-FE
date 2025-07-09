@@ -1,91 +1,64 @@
 /*
  * author: 강신욱
- * description: 하나의 피드 UI를 구성하는 컴포넌트입니다.
+ * description: 피드 목록에 표시되는 개별 게시글 아이템 컴포넌트입니다.
+ * 공용 컴포넌트인 PostAuthorInfo와 PostBody를 조합하여 UI를 구성합니다.
  */
-
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import FeedInteraction from "../communityComponents/feed/FeedInteraction";
 import type { Post } from "../../data/communityDummyData";
+import PostAuthorInfo from "./post/PostAuthorInfo";
+import PostBody from "./post/PostBody";
 
+// FeedItem이 받을 props 타입을 정의합니다.
 interface FeedItemProps {
   post: Post;
 }
 
+// 날짜를 'X일 전' 형식으로 변환하는 간단한 유틸리티 함수입니다.
+// (실제 애플리케이션에서는 이 함수를 별도의 유틸리티 파일로 분리하는 것이 좋습니다.)
+const getTimeAgo = (date: Date): string => {
+  const now = new Date();
+  const diffTime = Math.abs(now.getTime() - date.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  if (diffDays === 0) return "오늘";
+  if (diffDays === 1) return "어제";
+  return `${diffDays}일 전`;
+};
+
 const FeedItem = ({ post }: FeedItemProps) => {
+  // react-router-dom의 useNavigate 훅을 사용하여 페이지 이동을 처리합니다.
   const navigate = useNavigate();
-  /*
-  isExpanded : 글 내용이 최대 글자 수를 초과할 때, 더보기 버튼을 클릭하여
-  글 내용을 확장하거나 축소하는 상태를 관리합니다.
-   */
-  const [isExpanded, setIsExpanded] = useState(false);
-  const MAX_CONTENT_LENGTH = 100; // 최대 글자 수 설정
 
-  const handleToggleContent = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    setIsExpanded((prev) => !prev);
-  };
-
+  // 게시글 아이템 클릭 시 해당 게시글의 상세 페이지로 이동하는 함수입니다.
   const handlePostClick = () => {
     navigate(`/community/post/${post.id}`);
   };
 
+  // 작성 시간을 "X일 전" 형식의 문자열로 변환합니다.
+  const timeAgo = getTimeAgo(post.postedDate);
+
   return (
-    <div className="border-b-6 border-gray-300 pb-2" onClick={handlePostClick}>
-      {/*****  사용자 프로필 영역 / 작성 시간 / 팔로우 버튼 *****/}
-      <div className="flex items-center justify-between px-4 py-2">
-        <div className="flex items-center">
-          <img
-            src={post.user.profileImage}
-            alt="프로필 사진"
-            className="mr-3 h-full w-14 rounded-full object-cover"
-          />
-          <div>
-            <h3 className="text-md font-bold">{post.user.nickname}</h3>
-            <p className="text-sm text-gray-500">{post.user.major} 20학번</p>
+    // 전체 컨테이너입니다. 클릭 시 handlePostClick 함수가 호출됩니다.
+    // UI 하단에 회색 줄을 추가하여 각 피드 아이템을 구분합니다.
+    <div className="border-b border-gray-200 pb-2">
+      {/* 
+        작성자 정보를 표시하는 공용 컴포넌트입니다.
+        user와 timeAgo 정보를 props로 전달합니다.
+        자식 요소로 팔로우 버튼을 전달하여, PostAuthorInfo 컴포넌트의 오른쪽에 표시되도록 합니다.
+      */}
+      <PostAuthorInfo user={post.user} timeAgo={timeAgo}>
+        <button className="rounded-md bg-gray-700 px-4 py-1.5 text-sm font-semibold text-white">
+          팔로우
+        </button>
+      </PostAuthorInfo>
 
-            <p className="text-sm text-gray-500">2일 전</p>
-          </div>
-        </div>
-        <div>
-          <button className="h-[50%] rounded-sm bg-[#4a4a4a] px-4 py-1 text-sm text-white">
-            팔로우
-          </button>
-        </div>
-      </div>
-
-      {/******  글 및 사진 영역  *******/}
-      <div className="px-4 py-2">
-        <div className="mb-2 pb-1 text-sm">
-          <span>
-            {isExpanded || post.content.length <= MAX_CONTENT_LENGTH
-              ? post.content
-              : `${post.content.slice(0, MAX_CONTENT_LENGTH)}...`}
-          </span>
-          {post.content.length > MAX_CONTENT_LENGTH && (
-            <button
-              className="ml-2 text-gray-500"
-              onClick={handleToggleContent}
-            >
-              {isExpanded ? "접기" : "더보기"}
-            </button>
-          )}
-        </div>
-
-        {/***** 사진 영역 *****/}
-        {post.image && (
-          <img
-            src={post.image}
-            alt="게시글 이미지"
-            className="w-full rounded-lg object-cover"
-          />
-        )}
-      </div>
-
-      {/***** 하단 인터랙션 아이콘 *****/}
-      <div className="px-4">
-        <FeedInteraction likes={post.likes} comments={post.comments} />
-      </div>
+      {/* 
+        게시글 본문을 표시하는 공용 컴포넌트입니다.
+        post 객체 전체를 전달하고, onContentClick 핸들러를 지정하여
+        본문 영역 클릭 시에도 상세 페이지로 이동하도록 합니다.
+        isDetailView prop은 명시적으로 false로 전달되거나 생략되어(기본값 false)
+        글 내용이 100자로 제한되고 '더보기' 버튼이 표시됩니다.
+      */}
+      <PostBody post={post} onContentClick={handlePostClick} />
     </div>
   );
 };
