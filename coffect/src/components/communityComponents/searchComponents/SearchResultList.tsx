@@ -28,7 +28,7 @@ const SearchResultList: React.FC<SearchResultListProps> = ({
   const navigate = useNavigate();
 
   const handleUserClick = (userId: string) => {
-    navigate(`/profile/${userId}`);
+    navigate(`/userpage/${userId}`);
   };
 
   return (

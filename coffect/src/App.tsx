@@ -5,8 +5,9 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Chat from "./pages/Chat";
-import Search from "./pages/Search";
+
 import CommunityRoutes from "./routes/CommunityRoutes";
+import CommunitySearchRoutes from "./routes/CommunitySearchRoutes";
 import userPageRoutes from "./routes/userPageRoutes";
 
 const router = createBrowserRouter([
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
         element: <Login />,
       },
       {
+        path: "chat",
+        element: <Chat />,
+      },
+      {
         path: "signup",
         element: <Signup />,
       },
@@ -27,14 +32,7 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       ...CommunityRoutes,
-      {
-        path: "chat",
-        element: <Chat />,
-      },
-      {
-        path: "community/search",
-        element: <Search />,
-      },
+      ...CommunitySearchRoutes,
       ...userPageRoutes,
     ],
   },
