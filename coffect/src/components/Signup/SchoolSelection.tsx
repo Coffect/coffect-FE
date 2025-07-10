@@ -6,6 +6,7 @@ description : 학교 선택 화면 (타이핑으로 입력 및 검색 + 자동�
 
 import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
+import { isValidStudentId } from "../../utils/validation"; // 경로에 맞게 조정
 
 // 학교 타입 정의: 이름과 주소
 type School = { name: string; address: string };
@@ -48,6 +49,12 @@ const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
   // 입력한 학번
   const [studentId, setStudentId] = useState<string>("");
 
+  //학번 유효성 검사
+  const isStudentIdValid = isValidStudentId(studentId);
+
+  //제출버튼 클릭 여부
+  const [, setHasTriedSubmit] = useState<boolean>(false); // ✅ 추가
+
   // query나 dropdown 상태가 변경되면 자동완성 필터링 실행
   useEffect(() => {
     if (query && showDropdown) {
@@ -87,9 +94,19 @@ const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
     }
   };
 
-  // 다음 버튼 활성화 조건: 모든 필수 입력값이 채워졌을 때
+  // 다음 버튼 활성화 조건: 모든 필수 입력값이 채워져 있고 학번 유효성 검사를 만족할 때
   const isNextEnabled =
-    selected !== "" && major.trim() !== "" && studentId.trim() !== "";
+    selected !== "" && major.trim() !== "" && isStudentIdValid;
+
+  // 다음 버튼 클릭 핸들러
+  const handleNext = () => {
+    setHasTriedSubmit(true);
+
+    if (isNextEnabled) {
+      onChange(selected, major, studentId);
+      onNext();
+    }
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-white px-6">
@@ -147,7 +164,7 @@ const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
               value={studentId}
               onChange={(e) => setStudentId(e.target.value)}
               placeholder="학번을 입력해주세요"
-              className="mb-[2rem] w-full rounded-lg border border-gray-300 px-4 py-2.5 text-base focus:border-[2.5px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-base focus:border-[2.5px] focus:border-gray-900 focus:ring-0 focus:outline-none"
             />
           </div>
         )}
@@ -155,10 +172,7 @@ const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
 
       {/* 다음 버튼 */}
       <button
-        onClick={() => {
-          onChange(selected, major, studentId);
-          onNext();
-        }}
+        onClick={handleNext}
         disabled={!isNextEnabled}
         className={`mt-auto mb-8 w-full rounded-xl px-3 py-3 text-center text-lg text-gray-700 ${
           isNextEnabled ? "bg-black text-white" : "bg-[#E4E4E4]"
