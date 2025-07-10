@@ -6,56 +6,54 @@ description : 이메일 인증 코드 발송 화면
 import { useState } from "react";
 import { isValidEmail } from "../../utils/validation";
 
-/*
- EmailVerification 컴포넌트가 받을 props 타입을 정의
-    onNext   – 다음 단계로 이동
-    onChange – 입력한 이메일을 부모에게 전달
-*/
 type Props = {
-  onNext: () => void;
-  onChange: (email: string) => void;
+  onNext: () => void; // 다음 단계로 이동
+  onChange: (email: string) => void; // 입력한 이메일을 부모로 전달
 };
 
-const EmailVerification = ({ onNext, onChange }: Props) => {
-  // 이메일 입력 상태 관리
-  const [email, setEmail] = useState("");
+const EmailVerification: React.FC<Props> = ({ onNext, onChange }) => {
+  // 이메일 입력값 상태 관리
+  const [email, setEmail] = useState<string>("");
 
-  // 인증 코드 발송 및 다음 단계로 이동
-  const handleSend = () => {
-    onChange(email);
-    // sendCode(email) // 서버 api 연결 후 사용 예정
-    onNext();
+  // 입력된 이메일이 유효한지 여부 판단
+  const valid = isValidEmail(email);
+
+  // 인증 코드 발송 및 다음 단계로 이동하는 핸들러
+  const handleSend = (): void => {
+    onChange(email); // 부모 컴포넌트에 이메일 전달
+    // sendCode(email) // 서버 API 연결 후 사용 예정
+    onNext(); // 다음 화면으로 이동
   };
 
   return (
-    <div className="min-h-screen w-full bg-white px-[6%] py-[8%] text-left">
+    <div className="flex min-h-screen w-full flex-col bg-white px-6 py-8">
       {/* 타이틀 */}
-      <h2 className="mb-[10%] text-[4.5vw] leading-snug font-bold">
-        정확한 확인을 위해,
+      <h2 className="mb-6 self-start text-center text-xl leading-snug font-bold">
+        정확한 확인을 위해
         <br />
         학교 이메일 인증을 할게요!
       </h2>
 
       {/* 이메일 입력 필드 */}
-      <div className="mb-[8%]">
-        <label className="mb-[2%] block text-[3.5vw] text-gray-700">
+      <div className="mb-6">
+        <label className="mb-2 block text-base font-semibold text-gray-700">
           학교 이메일
         </label>
         <input
           type="email"
-          placeholder="ex. abc1203@sookmyung.ac.kr"
+          placeholder="abc1203@sookmyung.ac.kr"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded border border-gray-300 px-[4%] py-[3%] text-[3.5vw]"
+          onChange={(e) => setEmail(e.target.value)} // 이메일 업데이트
+          className="w-full rounded border border-gray-300 px-4 py-3 text-base focus:border-[2.5px] focus:border-gray-900 focus:ring-0 focus:outline-none"
         />
       </div>
 
       {/* 인증코드 발송 버튼 */}
       <button
         onClick={handleSend}
-        disabled={!isValidEmail(email)}
-        className={`w-full rounded py-[4%] text-[4vw] text-white ${
-          isValidEmail(email) ? "bg-black" : "bg-gray-300"
+        disabled={!valid}
+        className={`mt-auto w-full rounded-xl px-3 py-3 text-center text-lg ${
+          valid ? "bg-black text-white" : "bg-[#E4E4E4] text-black"
         }`}
       >
         인증코드 발송하기

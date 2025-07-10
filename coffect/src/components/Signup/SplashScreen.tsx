@@ -12,7 +12,7 @@ const SplashScreen = ({ onNext }: Props) => {
   useEffect(() => {
     const timer = setTimeout(onNext, 2000);
     return () => clearTimeout(timer);
-  }, []);
+  });
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-start bg-white px-[2%] pt-[50%] text-center">

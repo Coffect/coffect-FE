@@ -30,9 +30,11 @@ const MyPage = () => {
               <div className="mb-2 ml-2 h-20 w-20 rounded-full bg-gray-200 sm:h-28 sm:w-28" />
               {/* 프로필 정보 */}
               <div className="flex flex-1 flex-col justify-center gap-2">
-                <div className="flex items-end justify-center gap-1">
-                  <span className="text-xl font-bold">재하</span>
-                  <span className="text-xs text-gray-500">
+                <div className="flex flex-wrap items-end justify-center gap-1">
+                  <span className="text-xl font-bold whitespace-nowrap">
+                    재하
+                  </span>
+                  <span className="text-xs whitespace-nowrap text-gray-500">
                     컴퓨터과학전공 19학번
                   </span>
                 </div>
