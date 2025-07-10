@@ -6,7 +6,7 @@ import { SlidersHorizontal } from "lucide-react";
 
 // 공통 스타일 변수 정의
 const buttonStyle =
-  "w-[17.95%] h-[65%] text-sm text-gray-600 border border-gray-300  rounded-lg";
+  "flex h-[65%] w-[17.95%] items-center justify-center rounded-lg border border-gray-300 text-sm text-gray-600";
 const containerStyle = "flex items-center";
 
 interface HeaderProps {
