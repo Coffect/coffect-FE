@@ -46,11 +46,6 @@ const WritePost: React.FC = () => {
     setIsSuccessModalOpen(false);
     // TODO: 작성된 글로 이동하는 로직 추가
     console.log("내 글 확인하기 클릭");
-  };
-
-  /***** '홈으로' 버튼 클릭 시 커뮤니티 홈으로 이동하는 로직입니다. ******/
-  const handleGoHome = () => {
-    setIsSuccessModalOpen(false);
     navigate("/community"); // 커뮤니티 홈으로 이동
   };
 
@@ -72,7 +67,6 @@ const WritePost: React.FC = () => {
       <UploadSuccessModal
         isOpen={isSuccessModalOpen}
         onViewPost={handleViewPost}
-        onGoHome={handleGoHome}
       />
     </>
   );
