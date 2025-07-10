@@ -59,7 +59,7 @@ const PostBody: React.FC<PostBodyProps> = ({
       onClick={onContentClick}
     >
       {/* 글 내용 */}
-      <div className="mb-2 py-2 text-sm">
+      <div className="relative mb-2 py-2 text-sm">
         <span
           ref={contentRef}
           className={`leading-normal whitespace-pre-wrap ${
@@ -83,12 +83,17 @@ const PostBody: React.FC<PostBodyProps> = ({
           {post.content}
         </span>
         {!isDetailView && isClamped && !showMore && (
-          <button
-            onClick={handleShowMore}
-            className="ml-1 text-blue-500 hover:underline"
-          >
-            더보기
-          </button>
+          <>
+            <span className="absolute right-0 bottom-0 bg-gradient-to-l from-white via-white to-transparent pr-12">
+              &nbsp; {/* This is for the gradient to have some space */}
+            </span>
+            <button
+              onClick={handleShowMore}
+              className="ml-1 text-gray-500 hover:underline"
+            >
+              더보기
+            </button>
+          </>
         )}
       </div>
 

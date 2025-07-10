@@ -1,8 +1,8 @@
 /*
 author : 강신욱
-description : 텍스트를 지정된 줄 수로 자르는 커스텀 훅입니다.
+description : 텍스트를 지정된 줄 수로 자르는 커스텀 훅입니다. (말줄임을 위한 훅입니다.)
               이 훅은 텍스트가 컨테이너의 최대 줄 수를 초과할 경우 텍스트를 자르고, 잘린 텍스트와 잘림 여부를 반환합니다.
-              이 훅은 주로 긴 텍스트를 표시할 때 유용하며, 텍스트가 잘렸는지 여부를 확인할 수 있습니다.
+              이 훅은 주로 긴 텍스트를 표시할 때 유용하며(말줄임 제공), 텍스트가 잘렸는지 여부를 확인할 수 있습니다.
 */
 
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -25,8 +25,8 @@ const useTextTruncate = ({
   maxLines,
   containerRef,
 }: UseTextTruncateProps): TruncateResult => {
-  // 잘린 텍스트 상태 (초기값은 원본 텍스트)
-  const [truncatedText, setTruncatedText] = useState(text);
+  // 잘린 텍스트 상태 (초기값은 원본 텍스트 -> 빈 string : 원본 텍스트 일 시 커뮤니티 페이지 전환 시 전체 텍스트가 잠깐 보이는 현상 방지)
+  const [truncatedText, setTruncatedText] = useState("");
   // 텍스트가 잘렸는지 여부 상태
   const [isTruncated, setIsTruncated] = useState(false);
   // 텍스트 측정을 위한 숨겨진 canvas 요소 참조
@@ -116,14 +116,24 @@ const useTextTruncate = ({
     }
 
     // 3. 최종적으로 잘린 텍스트 설정
-    let finalTruncatedText = bestTruncatedText;
-    if (finalTruncatedText.length < text.length) {
-      // 단어 중간에 잘리는 것을 방지하기 위해 마지막 공백을 찾아 자릅니다.
-      const lastSpaceIndex = finalTruncatedText.lastIndexOf(" ");
-      if (lastSpaceIndex !== -1) {
-        finalTruncatedText = finalTruncatedText.substring(0, lastSpaceIndex); // 마지막 단어는 자르지 않음
+    const suffix = "... 더보기";
+    let adjustedText = bestTruncatedText;
+
+    // "... 더보기"를 추가할 공간을 확보하기 위해 텍스트를 끝에서부터 줄여나갑니다.
+    // adjustedText에 suffix를 더한 높이가 maxContentHeight를 넘지 않을 때까지 반복합니다.
+    while (adjustedText.length > 0) {
+      const testText = adjustedText + suffix;
+      const metrics = measureText(testText, font, containerWidth);
+      if (metrics.height <= maxContentHeight) {
+        // 높이가 충분하면 루프를 중단합니다.
+        break;
       }
-      setTruncatedText(finalTruncatedText + "..."); // 잘린 텍스트 뒤에 '...' 추가
+      // 한 글자씩 줄여나갑니다.
+      adjustedText = adjustedText.slice(0, -1);
+    }
+
+    if (adjustedText.length < text.length) {
+      setTruncatedText(adjustedText + suffix);
       setIsTruncated(true); // 텍스트가 잘렸음을 표시
     } else {
       setTruncatedText(text);
