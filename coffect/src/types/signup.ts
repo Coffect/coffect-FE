@@ -4,7 +4,9 @@ export interface SignupData {
   school: string;
   major: string;
   studentId: string;
-  username: string;
+  userid: string;
   password: string;
+  username: string;
+  avatar?: string;
   interests: string[];
 }
