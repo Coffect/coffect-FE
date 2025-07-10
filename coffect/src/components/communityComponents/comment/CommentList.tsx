@@ -1,3 +1,8 @@
+/*
+author: 강신욱
+description: 댓글 목록을 표시하는 컴포넌트입니다.
+ */
+
 import type { Comment } from "../../../hooks/useComments";
 
 interface CommentListProps {
