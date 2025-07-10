@@ -3,8 +3,8 @@
 // 날짜, 시간, 장소, 약속 전 알림 설정 입력 필드 및 완료/취소 버튼
 
 import React from "react";
-import { DayPicker } from "react-day-picker";
-import "react-day-picker/dist/style.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { Calendar, ChevronDown } from "lucide-react";
 
 export interface ScheduleFormValues {
@@ -31,10 +31,11 @@ const formatDateToKorean = (date: Date | string | undefined): string => {
   const dateObj = date instanceof Date ? date : new Date(date);
   if (isNaN(dateObj.getTime())) return "";
 
+  const year = dateObj.getFullYear();
   const month = dateObj.getMonth() + 1;
   const day = dateObj.getDate();
 
-  return `${month}월 ${day}일`;
+  return `${year}년 ${month}월 ${day}일`;
 };
 
 const alertOptions = ["5분 전", "15분 전", "30분 전", "1시간 전"];
@@ -109,48 +110,71 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
           언제 만날까요?
         </div>
         <div className="relative" ref={calendarRef}>
-          <button
-            className="flex w-full items-center justify-between rounded-lg border-2 border-[rgba(228,228,228,1)] bg-white px-4 py-3 text-left text-[15px] text-gray-900"
-            onClick={() => setShowCalendarPicker((prev) => !prev)}
-            type="button"
-          >
-            <span
-              className={
-                values.date
-                  ? "font-extrabold text-[rgba(18,18,18,1)]"
-                  : "text-gray-400"
+          <DatePicker
+            selected={undefined}
+            onChange={(date) => {
+              onChange({ ...values, date: date || undefined });
+              setShowCalendarPicker(false);
+            }}
+            open={showCalendarPicker}
+            onInputClick={() => setShowCalendarPicker(true)}
+            onClickOutside={() => setShowCalendarPicker(false)}
+            dateFormat="M월 d일"
+            className="w-full"
+            wrapperClassName="w-full"
+            popperClassName="z-50"
+            popperPlacement="bottom-start"
+            customInput={
+              <button
+                className="flex w-full items-center justify-between rounded-lg border-2 border-[rgba(228,228,228,1)] bg-white px-4 py-3 text-left text-[15px] text-gray-900"
+                type="button"
+              >
+                <span
+                  className={
+                    values.date
+                      ? "font-extrabold text-[rgba(18,18,18,1)]"
+                      : "text-gray-400"
+                  }
+                >
+                  {values.date ? formatDateToKorean(values.date) : ""}
+                </span>
+                <span className="ml-2 text-lg text-gray-400">
+                  <Calendar size={20} />
+                </span>
+              </button>
+            }
+            calendarClassName="iphone-calendar"
+            dayClassName={(date) => {
+              // 정확히 같은 날짜(년, 월, 일 모두)일 때만 선택된 상태로 표시
+              const selected =
+                values.date instanceof Date &&
+                date.getDate() === values.date.getDate() &&
+                date.getMonth() === values.date.getMonth() &&
+                date.getFullYear() === values.date.getFullYear();
+
+              // 선택된 날짜가 있으면 해당 날짜를 주황색으로, 없으면 오늘 날짜를 주황색으로
+              if (selected) {
+                return "custom-selected-day";
               }
-            >
-              {values.date
-                ? formatDateToKorean(values.date)
-                : "날짜를 선택해주세요"}
-            </span>
-            <span className="ml-2 text-lg text-gray-400">
-              <Calendar size={20} />
-            </span>
-          </button>
-          {showCalendarPicker && (
-            <div
-              className="absolute top-full right-0 left-0 z-30 mt-1 rounded border bg-white p-2 shadow"
-              style={{
-                width: "100%",
-                minWidth: 0,
-                maxWidth: "100%",
-                boxSizing: "border-box",
-              }}
-            >
-              <DayPicker
-                mode="single"
-                selected={values.date instanceof Date ? values.date : undefined}
-                onSelect={(selected) => {
-                  onChange({ ...values, date: selected });
-                  setShowCalendarPicker(false);
-                }}
-                className="w-full"
-                style={{ width: "100%" }}
-              />
-            </div>
-          )}
+
+              // 선택된 날짜가 없을 때 오늘 날짜를 주황색으로 표시
+              if (!values.date) {
+                const today = new Date();
+                const isToday =
+                  date.getDate() === today.getDate() &&
+                  date.getMonth() === today.getMonth() &&
+                  date.getFullYear() === today.getFullYear();
+                return isToday ? "custom-selected-day" : "";
+              }
+
+              return "";
+            }}
+            showPopperArrow={false}
+            inline={false}
+            closeOnScroll={false}
+            shouldCloseOnSelect={true}
+            openToDate={values.date instanceof Date ? values.date : new Date()}
+          />
         </div>
       </div>
       {/* 시간 선택 */}
