@@ -297,7 +297,12 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
       <div className="mt-8 flex gap-3">
         {onCancel && (
           <button
-            className="flex-1 rounded-lg bg-gray-200 py-3 text-base font-bold text-gray-700"
+            className={
+              cancelLabel === "일정 삭제하기"
+                ? "basis-2/5 rounded-xl border-2 border-[#FF3535] bg-white py-3 text-sm font-bold text-[#FF3535]"
+                : "flex-1 rounded-lg bg-gray-200 py-3 text-base font-bold text-gray-700"
+            }
+            style={cancelLabel === "일정 삭제하기" ? { minWidth: 0 } : {}}
             onClick={onCancel}
             type="button"
           >
@@ -306,7 +311,12 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
         )}
         {onComplete && (
           <button
-            className={`flex-1 rounded-lg py-3 text-base font-bold transition-colors duration-100 ${isCompleteEnabled ? "bg-[rgba(45,45,45,1)] text-white" : "bg-gray-300 text-gray-400"}`}
+            className={
+              completeLabel === "수정하기"
+                ? `basis-3/5 rounded-xl bg-[#2D2D2D] py-3 text-sm font-bold text-white`
+                : `flex-1 rounded-lg py-3 text-base font-bold transition-colors duration-100 ${isCompleteEnabled ? "bg-[rgba(45,45,45,1)] text-white" : "bg-gray-300 text-gray-400"}`
+            }
+            style={completeLabel === "수정하기" ? { minWidth: 0 } : {}}
             onClick={isCompleteEnabled ? onComplete : undefined}
             type="button"
             disabled={!isCompleteEnabled}

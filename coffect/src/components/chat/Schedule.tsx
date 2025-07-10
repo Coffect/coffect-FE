@@ -3,26 +3,47 @@
 // 일정 등록 폼, 완료 모달 연결
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import ScheduleForm from "./ScheduleForm";
 import type { ScheduleFormValues } from "./ScheduleForm";
 import ScheduleCompleteModal from "./ScheduleCompleteModal";
+import DeleteScheduleModal from "./DeleteScheduleModal";
 import { X } from "lucide-react";
-import { formatKoreanDate, formatKoreanDateShort } from "../../utils/dateUtils";
 
 const MY_PROFILE_IMG = "https://i.pravatar.cc/40?u=me";
 const OTHER_PROFILE_IMG = "https://i.pravatar.cc/40?u=other";
 const NICKNAME = "김라떼";
 
 const Schedule: React.FC = () => {
-  const [form, setForm] = useState<ScheduleFormValues>({
-    date: undefined,
-    time: "",
-    place: "",
-    alert: null,
+  const location = useLocation();
+  const [form, setForm] = useState<ScheduleFormValues>(() => {
+    // 기존 일정이 있는지 확인 (수정하기)
+    const sch = location.state?.schedule;
+    if (sch) {
+      // 날짜가 string이면 Date 객체로 변환
+      let dateValue: Date | string | undefined = sch.date;
+      if (typeof sch.date === "string") {
+        const parsed = new Date(sch.date);
+        dateValue = isNaN(parsed.getTime()) ? undefined : parsed;
+      }
+      return {
+        date: dateValue,
+        time: sch.time,
+        place: sch.place || "",
+        alert: sch.alert || "5분 전",
+      };
+    }
+    return {
+      date: undefined,
+      time: "",
+      place: "",
+      alert: "5분 전",
+    };
   });
   const [showComplete, setShowComplete] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const navigate = useNavigate();
+  const isEdit = Boolean(location.state?.schedule);
 
   // 폼 초기화 함수
   const resetForm = () => {
@@ -32,6 +53,18 @@ const Schedule: React.FC = () => {
       place: "",
       alert: null,
     });
+  };
+
+  // 일정 삭제하기
+  const handleDelete = () => {
+    setShowDeleteModal(false);
+    // chatRoom으로 이동하면서 일정 정보 없음 상태로 전달
+    navigate("/chat/room", { state: { schedule: null } });
+  };
+
+  // 일정 수정하기
+  const handleEdit = () => {
+    setShowComplete(true);
   };
 
   return (
@@ -77,26 +110,55 @@ const Schedule: React.FC = () => {
           values={form}
           onChange={setForm}
           showTimeDropdown={true}
-          onComplete={() => setShowComplete(true)}
+          onComplete={isEdit ? handleEdit : () => setShowComplete(true)}
+          completeLabel={isEdit ? "수정하기" : undefined}
+          onCancel={isEdit ? () => setShowDeleteModal(true) : undefined}
+          cancelLabel={isEdit ? "일정 삭제하기" : undefined}
         />
         {showComplete && (
           <ScheduleCompleteModal
-            date={formatKoreanDate(form.date?.toString() || "")}
+            date={
+              form.date
+                ? typeof form.date === "string"
+                  ? form.date
+                  : form.date.toLocaleDateString("ko-KR", {
+                      month: "long",
+                      day: "numeric",
+                    })
+                : ""
+            }
             time={form.time}
             onClose={() => {
               setShowComplete(false);
-              // 폼 초기화
               resetForm();
-              // chatRoom으로 이동하면서 일정 정보 전달
               navigate("/chat/room", {
                 state: {
                   schedule: {
-                    date: formatKoreanDateShort(form.date?.toString() || ""),
+                    date: form.date,
                     time: form.time,
+                    place: form.place,
+                    alert: form.alert,
                   },
                 },
               });
             }}
+          />
+        )}
+        {isEdit && showDeleteModal && (
+          <DeleteScheduleModal
+            date={
+              form.date
+                ? typeof form.date === "string"
+                  ? form.date
+                  : form.date.toLocaleDateString("ko-KR", {
+                      month: "long",
+                      day: "numeric",
+                    })
+                : ""
+            }
+            time={form.time}
+            onDelete={handleDelete}
+            onClose={() => setShowDeleteModal(false)}
           />
         )}
       </div>
