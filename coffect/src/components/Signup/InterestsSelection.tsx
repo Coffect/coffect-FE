@@ -1,21 +1,15 @@
 /*
 author : 썬더
-description : 관심사 선택 화면
+description : 관심사 선택 화면 
 */
 
 import { useState } from "react";
 
-/*
-  InterestsSelection 컴포넌트가 받을 props 타입을 정의
-    onNext   – 선택 완료 후 다음 단계로 이동
-    onChange – 선택된 관심사 목록을 부모에게 전달
-*/
 type Props = {
   onNext: () => void;
   onChange: (list: string[]) => void;
 };
 
-// 선택 가능한 관심사 목록 (최대 4개 선택)
 const OPTIONS = [
   "창업",
   "개발",
@@ -34,42 +28,24 @@ const OPTIONS = [
   "네트워킹",
 ];
 
-// 최대 선택 개수 상수
 const MAX_SELECTION = 4;
 
 const InterestsSelection = ({ onNext, onChange }: Props) => {
-  // 선택된 관심사 상태
   const [selected, setSelected] = useState<string[]>([]);
-  // 유효성 검사 및 에러 메시지 상태
   const [error, setError] = useState("");
 
-  /**
-   * 관심사 토글 함수
-   * - 이미 선택된 항목은 해제
-   * - 선택 개수가 MAX_SELECTION 초과 시 에러 발생
-   */
   const toggle = (item: string) => {
     setError("");
     setSelected((prev) => {
-      if (prev.includes(item)) {
-        // 이미 선택된 항목 해제
-        return prev.filter((i) => i !== item);
-      }
+      if (prev.includes(item)) return prev.filter((i) => i !== item);
       if (prev.length >= MAX_SELECTION) {
-        // 최대 개수 초과 시 에러 메시지 설정
         setError("관심사는 최대 4개까지 선택할 수 있어요.");
         return prev;
       }
-      // 새 항목 추가
       return [...prev, item];
     });
   };
 
-  /**
-   * 저장 버튼 클릭 시 호출
-   * - 최소 1개 이상 선택되지 않으면 에러
-   * - 유효 시 부모에게 전달 후 다음 단계로 이동
-   */
   const handleSubmit = () => {
     if (selected.length === 0) {
       setError("최소 1개의 관심사를 선택해주세요.");
@@ -80,50 +56,68 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
   };
 
   return (
-    <div className="min-h-screen bg-white px-[6%] py-[8%]">
-      {/* 건너뛰기 버튼 */}
-      <div className="mb-2 text-right">
-        <button onClick={onNext} className="text-sm text-gray-400 underline">
+    <div className="flex min-h-screen w-full flex-col bg-white px-6 py-8 text-left">
+      {/* 상단 안내 */}
+      <p className="mb-[5%] text-xs font-semibold text-orange-500">최대 4개</p>
+      <h2 className="mb-[0.5rem] text-lg leading-snug font-bold">
+        관심사를 알려주세요
+        <br />
+        <span className="text-lg font-bold">비슷한 친구들을 추천해줄게요!</span>
+      </h2>
+      <p className="mb-[2rem] text-sm text-[#848484]">
+        나중에 언제든지 변경 가능해요
+      </p>
+
+      {/* 관심사 태그 리스트 */}
+      <div className="mb-4 flex flex-wrap justify-start gap-2 pr-[20%]">
+        {OPTIONS.map((opt) => {
+          const isSelected = selected.includes(opt);
+          const isFirst = selected[0] === opt;
+
+          return (
+            <button
+              key={opt}
+              onClick={() => toggle(opt)}
+              className={`inline-block rounded-lg px-[9%] py-[4%] text-sm transition-all ${
+                isSelected
+                  ? isFirst
+                    ? "bg-orange-500 text-white" // 첫 선택 강조
+                    : "bg-black text-white"
+                  : "bg-[#F5F5F5] text-black"
+              }`}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* 에러 메시지 */}
+      {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
+
+      {/* 저장 버튼 */}
+      {/* 하단 버튼 그룹 */}
+      <div className="mt-auto flex w-full gap-2">
+        {/* 건너뛰기 버튼 */}
+        <button
+          onClick={onNext}
+          className="flex-1 rounded-xl border border-[#D9D9D9] bg-white py-3 text-center text-base text-gray-500"
+        >
           건너뛰기
         </button>
+
+        {/* 다음 버튼 */}
+        <button
+          onClick={handleSubmit}
+          className={`flex-2 rounded-xl py-3 text-center text-base font-medium ${
+            selected.length > 0
+              ? "bg-black text-white"
+              : "bg-[#E4E4E4] text-gray-500"
+          }`}
+        >
+          다음
+        </button>
       </div>
-
-      {/* 안내 문구 */}
-      <h2 className="mb-4 text-[4.5vw] leading-snug font-bold">
-        관심사가 맞는 친구들을 추천해줄게요!
-        <br />
-        <span className="text-[3.5vw] font-normal text-gray-500">
-          언제든지 변경 가능해요. (최대 4개 선택)
-        </span>
-      </h2>
-
-      {/* 관심사 옵션 버튼 */}
-      <div className="mb-4 grid grid-cols-3 gap-2">
-        {OPTIONS.map((opt) => (
-          <button
-            key={opt}
-            onClick={() => toggle(opt)}
-            className={`rounded border px-2 py-2 text-[3.8vw] ${
-              selected.includes(opt)
-                ? "border-black bg-black text-white"
-                : "border-gray-300 bg-white text-black"
-            }`}
-          >
-            {opt}
-          </button>
-        ))}
-      </div>
-
-      {/* 에러 메시지 표시(최대개수초과/선택x) */}
-      {error && <div className="mb-4 text-[3.5vw] text-red-500">{error}</div>}
-
-      {/* 저장(완료) 버튼 */}
-      <button
-        onClick={handleSubmit}
-        className="w-full rounded bg-black py-3 text-[4vw] text-white"
-      >
-        저장하기
-      </button>
     </div>
   );
 };
