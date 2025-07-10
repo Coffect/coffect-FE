@@ -7,6 +7,7 @@ import Signup from "./pages/Signup";
 import Community from "./pages/Community";
 import Chat from "./pages/Chat";
 import userPageRoutes from "./routes/userPageRoutes";
+import homePageRoutes from "./routes/homePageRoutes";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,7 @@ const router = createBrowserRouter([
         element: <Chat />,
       },
       ...userPageRoutes,
+      ...homePageRoutes,
     ],
   },
 ]);

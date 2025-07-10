@@ -1,0 +1,87 @@
+/*
+  author      : 이희선
+  description : 받은 메시지를 보여주는 모달 컴포넌트입니다.
+                - 커피챗 제안 내용을 확인할 수 있으며,
+                - 대화 시작, 삭제, 닫기 기능이 제공됩니다.
+*/
+
+import { Trash2 } from "lucide-react";
+
+// 메시지 객체 타입 정의
+interface Message {
+  id: number; // 메시지 고유 ID
+  name: string; // 보낸 사람 이름
+  time: string; // 수신 시간
+  intro: string; // 메시지 본문 (제안 내용)
+}
+
+// 모달 컴포넌트 props 타입 정의
+interface MessageModalProps {
+  message: Message; // 메시지 데이터
+  onClose: () => void; // 모달 닫기 핸들러
+  onDelete: (id: number) => void; // 메시지 삭제 핸들러
+  onChat: () => void; // 채팅 시작 핸들러
+}
+
+// 모달 컴포넌트 정의
+const MessageModal: React.FC<MessageModalProps> = ({
+  message,
+  onClose,
+  onDelete,
+  onChat,
+}) => {
+  return (
+    // 전체 화면을 덮는 반투명 배경 (모달 레이어)
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+      {/* 모달 본문 컨테이너 */}
+      <div className="relative flex w-[305px] flex-col justify-between rounded-xl bg-white shadow-[0_0_24px_rgba(28,28,34,0.25)]">
+        {/* 수신 시간 */}
+        <div className="px-[5%] pt-[5.5%] text-xs text-gray-600">
+          {message.time}
+        </div>
+        {/* 삭제 버튼 (우상단) */}
+        <button
+          onClick={() => onDelete(message.id)}
+          className="absolute top-[5%] right-[4%]"
+          aria-label="메시지 삭제"
+        >
+          <Trash2 className="h-5 w-5 text-gray-400" />
+        </button>
+
+        {/* 상단 콘텐츠 */}
+        <div className="mt-[8%] px-[4%] text-center">
+          {/* 타이틀 */}
+          <h3 className="text-sm font-bold text-gray-800">
+            🍒 {message.name}님의 커피챗 제안이 도착했어요!
+          </h3>
+
+          {/* 메시지 본문 */}
+          <p className="my-[10%] text-xs leading-snug whitespace-pre-line text-gray-700">
+            {message.intro}
+          </p>
+        </div>
+
+        {/* 버튼 영역 */}
+        <div className="mt-[6%] flex h-[50px] w-full overflow-hidden text-sm">
+          {/* 닫기 버튼 */}
+          <button
+            onClick={onClose}
+            className="flex-11 rounded-bl-xl border border-[#F7F7F8] bg-white text-[#787891]"
+          >
+            창 닫기
+          </button>
+
+          {/* 대화 시작 버튼 */}
+          <button
+            onClick={onChat}
+            className="flex-19 rounded-br-xl bg-[#2D2D2D] text-white"
+          >
+            대화 시작하기
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MessageModal;
