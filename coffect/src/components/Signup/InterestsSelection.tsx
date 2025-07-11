@@ -71,9 +71,9 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-white px-6 py-8 text-left">
+    <div className="flex h-full w-full flex-col bg-white px-[6%] py-[12%] text-left text-xs">
       {/* 상단 안내문 */}
-      <p className="mb-[5%] text-xs font-semibold text-orange-500">최대 4개</p>
+      <p className="mb-[3%] text-xs font-semibold text-orange-500">최대 4개</p>
       <h2 className="mb-[0.5rem] text-lg leading-snug font-bold">
         관심사를 알려주세요
         <br />
@@ -111,26 +111,28 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
       {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
 
       {/* 하단 버튼 그룹 */}
-      <div className="mt-auto flex w-full gap-2">
-        {/* 건너뛰기 버튼 */}
-        <button
-          onClick={onNext}
-          className="flex-1 rounded-xl border border-[#D9D9D9] bg-white py-3 text-center text-base text-gray-500"
-        >
-          건너뛰기
-        </button>
+      <div className="absolute bottom-[4%] left-0 w-full px-[6%]">
+        <div className="mt-auto flex w-full gap-2">
+          {/* 건너뛰기 버튼 */}
+          <button
+            onClick={onNext}
+            className="flex-1 rounded-xl border border-[#D9D9D9] py-[4%] text-center text-sm text-gray-700"
+          >
+            건너뛰기
+          </button>
 
-        {/* 다음 버튼: 선택된 항목이 없으면 비활성화 색상 */}
-        <button
-          onClick={handleSubmit}
-          className={`flex-2 rounded-xl py-3 text-center text-base font-medium ${
-            selected.length > 0
-              ? "bg-black text-white"
-              : "bg-[#E4E4E4] text-gray-500"
-          }`}
-        >
-          다음
-        </button>
+          {/* 다음 버튼: 선택된 항목이 없으면 비활성화 색상 */}
+          <button
+            onClick={handleSubmit}
+            className={`flex-2 rounded-xl py-[4%] text-center text-sm text-gray-700 ${
+              selected.length > 0
+                ? "bg-black text-white"
+                : "bg-[#E4E4E4] text-gray-500"
+            }`}
+          >
+            다음
+          </button>
+        </div>
       </div>
     </div>
   );

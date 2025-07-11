@@ -74,8 +74,8 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-white px-[6%] py-[8%] text-left text-xs">
-      <h2 className="mb-[10%] text-xl font-bold">
+    <div className="flex h-full w-full flex-col bg-white px-[6%] py-[8%] text-left text-xs">
+      <h2 className="mb-[10%] text-lg font-bold">
         로그인에 사용할
         <br /> 계정 정보를 설정해주세요
       </h2>
@@ -85,20 +85,20 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
         <label className="mb-2 block text-sm font-semibold text-gray-700">
           아이디
         </label>
-        <div className="flex items-center gap-[4%]">
+        <div className="flex items-center gap-[2%]">
           <input
             type="text"
             placeholder="5글자 이상"
             value={userid}
             onChange={(e) => onUseridChange(e.target.value)}
-            className="h-11 flex-1 rounded-lg border border-gray-300 bg-white px-4 text-sm placeholder-gray-400 focus:border-[2.5px] focus:border-black focus:ring-0 focus:outline-none"
+            className="w-full flex-7 rounded border border-gray-300 px-3 py-2 text-sm focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
           />
           <button
             onClick={handleCheckDuplicate}
-            className={`h-11 rounded-lg px-4 text-sm ${
+            className={`flex-3 rounded-lg py-2 text-sm ${
               isDuplicateChecked
                 ? "bg-gray-700 text-white"
-                : "bg-gray-200 text-gray-600"
+                : "bg-gray-200 text-gray-700"
             }`}
           >
             중복체크
@@ -116,7 +116,7 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
         <label className="mb-2 block text-sm font-semibold text-gray-700">
           비밀번호
         </label>
-        <div className="flex h-11 w-full items-center rounded-lg border border-gray-300 bg-white px-4 text-sm focus-within:border-[2.5px] focus-within:border-black">
+        <div className="flex w-full items-center rounded border border-gray-300 px-3 py-2 text-sm focus-within:border-[2px] focus-within:border-gray-900 focus-within:ring-0 focus-within:outline-none">
           <input
             type={showPassword ? "text" : "password"}
             placeholder="영문/숫자/특수기호 조합 8자 이상"
@@ -145,7 +145,7 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
         <label className="mb-2 block text-sm font-semibold text-gray-700">
           비밀번호 재입력
         </label>
-        <div className="flex h-11 w-full items-center rounded-lg border border-gray-300 bg-white px-4 text-sm focus-within:border-[2.5px] focus-within:border-black">
+        <div className="flex w-full items-center rounded border border-gray-300 px-3 py-2 text-sm focus-within:border-[2px] focus-within:border-gray-900 focus-within:ring-0 focus-within:outline-none">
           <input
             type={showConfirm ? "text" : "password"}
             placeholder="비밀번호를 다시 입력해주세요."
@@ -169,14 +169,16 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
       </div>
 
       {/* 다음 버튼 */}
-      <button
-        onClick={handleNext}
-        className={`mt-auto h-12 w-full rounded-lg text-sm font-medium ${
-          canProceed ? "bg-black text-white" : "bg-[#E4E4E4] text-gray-500"
-        }`}
-      >
-        다음
-      </button>
+      <div className="absolute bottom-[4%] left-0 w-full px-[6%]">
+        <button
+          onClick={handleNext}
+          className={`w-full rounded-xl py-[4%] text-center text-sm text-gray-700 ${
+            canProceed ? "bg-black text-white" : "bg-[#E4E4E4] text-gray-500"
+          }`}
+        >
+          다음
+        </button>
+      </div>
     </div>
   );
 };
