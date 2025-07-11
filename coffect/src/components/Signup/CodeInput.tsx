@@ -54,53 +54,55 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, onChange }) => {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-white px-6 py-8">
-      {/* 안내 문구 */}
-      <h2 className="mb-4 self-start text-left text-xl leading-snug font-bold">
-        이메일로 받은 인증코드를
-        <br /> 입력해주세요!
-      </h2>
-      <p className="mb-16 text-base text-gray-500">
-        받지 못했다면 스팸함을 확인해주세요
-      </p>
-
-      {/* 5칸 입력 필드 */}
-      <div className="mb-6 flex justify-between gap-3">
-        {code.map((digit, i) => (
-          <input
-            key={i}
-            type="text"
-            inputMode="numeric"
-            maxLength={1}
-            value={digit}
-            placeholder="–"
-            onChange={(e) => handleChange(i, e.target.value)}
-            onKeyDown={(e) => handleKeyDown(i, e)}
-            ref={(el) => {
-              inputsRef.current[i] = el;
-            }}
-            className="aspect-square w-[18%] rounded border border-gray-300 text-center text-xl focus:border-[2.5px] focus:border-gray-900 focus:ring-0 focus:outline-none"
-          />
-        ))}
-      </div>
-
-      {/* 인증코드 재발송 버튼 */}
-      <div className="mb-6 w-full text-center">
-        <button onClick={onBack} className="text-base text-gray-500 underline">
-          인증코드 재발송하기
-        </button>
+    <div className="flex h-full w-full flex-col bg-white px-[6%] py-[2%]">
+      <div className="pt-[10%]">
+        {/* 안내 문구 */}
+        <h2 className="mb-[3%] self-start text-left text-lg leading-snug font-bold">
+          이메일로 받은 인증코드를
+          <br /> 입력해주세요!
+        </h2>
+        <p className="mb-16 text-sm text-gray-500">
+          받지 못했다면 스팸함을 확인해주세요
+        </p>
+        {/* 5칸 입력 필드 */}
+        <div className="mb-6 flex justify-between gap-3">
+          {code.map((digit, i) => (
+            <input
+              key={i}
+              type="text"
+              inputMode="numeric"
+              maxLength={1}
+              value={digit}
+              placeholder="–"
+              onChange={(e) => handleChange(i, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(i, e)}
+              ref={(el) => {
+                inputsRef.current[i] = el;
+              }}
+              className="aspect-square w-[18%] rounded border border-gray-300 text-center text-xl placeholder-gray-300 focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+            />
+          ))}
+        </div>
+        {/* 인증코드 재발송 버튼 */}
+        <div className="mb-6 w-full text-center">
+          <button onClick={onBack} className="text-sm text-gray-500 underline">
+            인증코드 재발송하기
+          </button>
+        </div>
       </div>
 
       {/* 인증 완료 버튼 */}
-      <button
-        onClick={handleNext}
-        disabled={!isComplete}
-        className={`mt-auto w-full rounded-xl px-3 py-3 text-center text-lg ${
-          isComplete ? "bg-black text-white" : "bg-[#E4E4E4] text-black"
-        } `}
-      >
-        인증 완료하기
-      </button>
+      <div className="absolute bottom-[4%] left-0 w-full px-[6%]">
+        <button
+          onClick={handleNext}
+          disabled={!isComplete}
+          className={`w-full rounded-xl py-[4%] text-center text-sm text-gray-700 ${
+            isComplete ? "bg-black text-white" : "bg-[#E4E4E4] text-black"
+          } `}
+        >
+          인증 완료하기
+        </button>
+      </div>
     </div>
   );
 };

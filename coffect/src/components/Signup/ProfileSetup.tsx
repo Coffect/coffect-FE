@@ -47,72 +47,74 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-white px-6 py-8">
-      {/* 제목 */}
-      <h2 className="mb-10 self-start text-center text-xl leading-snug font-bold">
-        나의 프로필을 설정해주세요!
-      </h2>
-
-      {/* 프로필 이미지 업로드 */}
-      <div className="mb-10 flex justify-center">
-        <div className="relative">
-          <div
-            className="flex h-[10rem] w-[10rem] items-center justify-center overflow-hidden rounded-full bg-gray-200"
-            onClick={handleAvatarClick}
-          >
-            {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt="avatar"
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="text-gray-400">👤</div>
-            )}
+    <div className="flex h-full w-full flex-col bg-white px-[6%] py-[2%]">
+      <div className="pt-[10%]">
+        {/* 제목 */}
+        <h2 className="mb-10 self-start text-left text-lg leading-snug font-bold">
+          나의 프로필을 설정해주세요!
+        </h2>
+        {/* 프로필 이미지 업로드 */}
+        <div className="mb-10 flex justify-center">
+          <div className="relative">
+            <div
+              className="flex h-[7rem] w-[7rem] items-center justify-center overflow-hidden rounded-full bg-gray-200"
+              onClick={handleAvatarClick}
+            >
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt="avatar"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="text-gray-400">👤</div>
+              )}
+            </div>
+            <button
+              onClick={handleAvatarClick}
+              className="absolute right-0 bottom-0 mt-2 h-[2rem] w-[2rem] rounded-full bg-black pl-[6px] text-white"
+            >
+              <Pencil size={20} />
+            </button>
           </div>
-          <button
-            onClick={handleAvatarClick}
-            className="absolute right-0 bottom-0 mt-2 h-[3rem] w-[3rem] rounded-full bg-black pl-[8px] text-white"
-          >
-            <Pencil size={32} />
-          </button>
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            className="hidden"
+            multiple={false}
+            onChange={handleFileChange}
+          />
         </div>
-        <input
-          type="file"
-          accept="image/*"
-          ref={fileInputRef}
-          className="hidden"
-          multiple={false}
-          onChange={handleFileChange}
-        />
-      </div>
-
-      {/* 이름 입력 */}
-      <div className="mb-auto">
-        <label className="mb-2 block text-lg font-bold text-gray-700">
-          이름
-        </label>
-        <input
-          type="text"
-          placeholder="이름을 입력해주세요"
-          value={name}
-          onChange={(e) => handleNameChange(e.target.value)} // 이름 업데이트
-          className="w-full rounded-lg border border-gray-300 px-4 py-3 text-base focus:border-[2.5px] focus:border-gray-900 focus:ring-0 focus:outline-none"
-        />
-        {nameError && (
-          <p className="mt-1 text-xs text-red-500">이름을 입력해주세요.</p>
-        )}
+        {/* 이름 입력 */}
+        <div className="mb-auto">
+          <label className="mb-[3%] block text-[1rem] font-bold text-gray-700">
+            이름
+          </label>
+          <input
+            type="text"
+            placeholder="이름을 입력해주세요"
+            value={name}
+            onChange={(e) => handleNameChange(e.target.value)} // 이름 업데이트
+            className="w-full flex-7 rounded border border-gray-300 px-3 py-2 text-sm focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+          />
+          {nameError && (
+            <p className="mt-1 text-xs text-red-500">이름을 입력해주세요.</p>
+          )}
+        </div>
       </div>
 
       {/* 다음 버튼 */}
-      <button
-        onClick={handleNext}
-        className={`mt-auto w-full rounded-xl px-3 py-3 text-center text-lg ${
-          name.trim() ? "bg-black text-white" : "bg-[#E4E4E4] text-gray-500"
-        }`}
-      >
-        다음
-      </button>
+      <div className="absolute bottom-[4%] left-0 w-full px-[6%]">
+        <button
+          onClick={handleNext}
+          className={`mt-auto w-full rounded-xl px-3 py-3 text-center text-lg ${
+            name.trim() ? "bg-black text-white" : "bg-[#E4E4E4] text-gray-500"
+          }`}
+        >
+          다음
+        </button>
+      </div>
     </div>
   );
 };
