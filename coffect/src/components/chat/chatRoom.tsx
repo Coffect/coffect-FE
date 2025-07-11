@@ -87,6 +87,37 @@ const ChatRoom = () => {
     interests: ["디자인", "개발", "경영", "글쓰기"],
   };
 
+  useEffect(() => {
+    function hasScale(
+      event: TouchEvent,
+    ): event is TouchEvent & { scale: number } {
+      return (
+        "scale" in event &&
+        typeof (event as Record<string, unknown>).scale === "number"
+      );
+    }
+    const handleTouchMove = (event: TouchEvent) => {
+      if (hasScale(event) && event.scale !== 1) {
+        event.preventDefault();
+      }
+    };
+
+    let lastTouchEnd = 0;
+    const handleTouchEnd = (event: TouchEvent) => {
+      const now = new Date().getTime();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    };
+    document.addEventListener("touchmove", handleTouchMove, { passive: false });
+    document.addEventListener("touchend", handleTouchEnd, false);
+    return () => {
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, []);
+
   return (
     <div className="fixed inset-0 flex flex-col bg-[rgba(240,240,240,1)]">
       {/* Header */}
