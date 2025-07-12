@@ -1,0 +1,89 @@
+/* Chat 전용 캘린더 스타일 */
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected,
+.react-datepicker__day--today {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+.iphone-calendar {
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.iphone-calendar .react-datepicker__header {
+  background: transparent;
+  border: none;
+}
+
+.iphone-calendar .react-datepicker__current-month {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111111;
+  margin-bottom: 10px;
+}
+
+.iphone-calendar .react-datepicker__day-names,
+.iphone-calendar .react-datepicker__month,
+.iphone-calendar .react-datepicker__week {
+  margin: 0;
+}
+
+.iphone-calendar .react-datepicker__day-name {
+  color: #8e8e93;
+  font-size: 14px;
+  font-weight: 500;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  margin: 0;
+}
+
+.iphone-calendar .react-datepicker__day {
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  margin: 0;
+  font-size: 16px;
+  color: #4c4c53;
+  border-radius: 50%;
+}
+
+.iphone-calendar .react-datepicker__day--outside-month {
+  color: #c7c7cc;
+}
+
+.iphone-calendar .custom-selected-day {
+  background: rgb(255, 150, 74) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+.iphone-calendar .react-datepicker__navigation {
+  top: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .iphone-calendar .react-datepicker__day {
+    width: 44px;
+    height: 44px;
+    line-height: 44px;
+    font-size: 18px;
+  }
+  .iphone-calendar .react-datepicker__day-name {
+    width: 44px;
+    height: 44px;
+    line-height: 44px;
+    font-size: 16px;
+  }
+}
