@@ -2,7 +2,7 @@
 // description : 채팅방 페이지
 // 채팅방 내부 메시지 영역, 팝업 모달 연결, 일정 정보 표시
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ChevronLeft, Calendar, Mail } from "lucide-react";
 import useCurrentTime from "./hooks/useCurrentTime";
@@ -40,6 +40,7 @@ const ChatRoom = () => {
       });
     }
   }, [location.state]);
+
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -73,14 +74,23 @@ const ChatRoom = () => {
       mine: false,
     },
   ]);
+
+  // 메시지가 추가될 때마다 최신 메시지로 스크롤
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   const [inputValue, setInputValue] = useState("");
   const getCurrentTime = useCurrentTime();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
   const handleSend = useHandleSend(
     messages,
     setMessages,
     setInputValue,
     getCurrentTime,
   );
+
   const user = {
     username: "김라떼",
     info: "이런 주제에 관심 있어요!",
@@ -119,7 +129,7 @@ const ChatRoom = () => {
   }, []);
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-[rgba(240,240,240,1)]">
+    <div className="flex h-full w-full flex-col bg-[rgba(240,240,240,1)]">
       {/* Header */}
       <div className="flex items-center border-b border-gray-100 bg-white px-4 pt-6 pb-2">
         <button className="mr-2 text-2xl" onClick={() => navigate("/chat")}>
@@ -240,6 +250,8 @@ const ChatRoom = () => {
             </div>
           );
         })}
+        {/* 스크롤 타겟 */}
+        <div ref={messagesEndRef} />
       </div>
       {/* 입력창 */}
       <ChatInputBox
