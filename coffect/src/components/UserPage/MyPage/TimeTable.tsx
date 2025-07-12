@@ -89,8 +89,7 @@ const TimeTable = () => {
           className="pr-9 text-left text-3xl"
           onClick={() => navigate("/mypage")}
         >
-          {" "}
-          <img src={backIcon} className="h-6 w-6" />{" "}
+          <img src={backIcon} className="h-6 w-6" />
         </button>
         <div className="flex-1 items-center justify-center pr-15 text-center">
           <span className="text-lg font-semibold">내 공강 시간표</span>
