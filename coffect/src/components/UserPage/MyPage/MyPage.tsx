@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import BottomNavbar from "../../shareComponents/BottomNavbar";
 import LeaveModal from "./LeaveModal";
+import nextIcon from "../../../assets/icon/mypage/next.png";
 import coffeeRecordIcon from "../../../assets/icon/mypage/coffeeRecord.png";
 import bookmarkIcon from "../../../assets/icon/mypage/bookmark.png";
 import alarmIcon from "../../../assets/icon/mypage/alarm.png";
@@ -124,7 +125,7 @@ const MyPage = () => {
                 />
                 <span>나의 커피챗 기록</span>
               </div>
-              <span className="text-gray-400">{">"}</span>
+              <img src={nextIcon} className="h-6 w-6" />
             </button>
             <button className="flex items-center justify-between rounded-2xl bg-white px-4 py-6 text-lg font-medium transition hover:bg-gray-50">
               <div className="flex items-center gap-2">
@@ -135,7 +136,7 @@ const MyPage = () => {
                 />
                 <span>내가 저장한 콘텐츠</span>
               </div>
-              <span className="text-gray-400">{">"}</span>
+              <img src={nextIcon} className="h-6 w-6" />
             </button>
           </div>
 
