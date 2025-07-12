@@ -2,19 +2,17 @@
 /* className="bg-[var(--accent-color)] text-[var(--text-light)]" */
 
 :root {
-  /* 기본 색상 팔레트 */
-  /* ex) --primary-color: #007bff; 주 색상 (예: 버튼, 링크) */
+  /* red */
+  --noti: #ff3535;
 
-  /* 텍스트 색상 */
-  /* ex) --text-dark: #212529; 어두운 텍스트 (기본 텍스트) */
+  /* green */
 
-  /* 배경 색상 */
-  /* ex) --bg-light: #ffffff; 밝은 배경 */
-  --profile-modify: #4a4a4a;
-
-  /* 상태 색상 */
-  /* ex) --success-color: #28a745; 성공 */
-
-  /* 추가적인 그레이 스케일 */
-  /* ex) --gray-100: #f8f9fa; */
+  /* gray */
+  --gray-5: #f5f5f5;
+  --gray-30: #acacac;
+  --gray-40: #848484;
+  --gray-50: #666666;
+  --gray-70: #3a3a3a;
+  --gray-80: #2d2d2d;
+  --gray-90: #121212;
 }
