@@ -119,7 +119,11 @@ const PostBody: React.FC<PostBodyProps> = ({
       )}
 
       {/* 좋아요 및 댓글 수 표시 */}
-      <FeedInteraction likes={post.likes} comments={post.comments} />
+      <FeedInteraction
+        postId={post.id}
+        likes={post.likes}
+        comments={post.comments}
+      />
     </div>
   );
 };

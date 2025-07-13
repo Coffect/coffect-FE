@@ -3,22 +3,23 @@ author : 강신욱
 description : 피드의 하단(좋아요 수, 댓글 수, 인용, 공유 수, 저장)버튼에 대한 컴포넌트입니다. 
 */
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Heart, MessageCircle, Bookmark } from "lucide-react";
-import CommentSheet from "../comment/CommentSheet";
 
 // 공통 스타일 변수 정의
 const buttonStyle =
   "text-sm text-gray-600 hover:text-blue-500 flex items-center gap-1";
 
 interface FeedInteractionProps {
+  postId: number;
   likes: number;
   comments: number;
 }
 
-const FeedInteraction = ({ likes, comments }: FeedInteractionProps) => {
+const FeedInteraction = ({ postId, likes, comments }: FeedInteractionProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [isCommentSheetVisible, setIsCommentSheetVisible] = useState(false);
+  const navigate = useNavigate();
 
   const handleLikeClick = (event: React.MouseEvent) => {
     event.stopPropagation();
@@ -32,11 +33,7 @@ const FeedInteraction = ({ likes, comments }: FeedInteractionProps) => {
 
   const handleCommentClick = (event: React.MouseEvent) => {
     event.stopPropagation();
-    setIsCommentSheetVisible(true);
-  };
-
-  const handleCloseCommentSheet = () => {
-    setIsCommentSheetVisible(false);
+    navigate(`/community/post/${postId}`);
   };
 
   return (
@@ -64,12 +61,6 @@ const FeedInteraction = ({ likes, comments }: FeedInteractionProps) => {
           />
         </button>
       </div>
-      <CommentSheet
-        isVisible={isCommentSheetVisible}
-        onClose={handleCloseCommentSheet}
-        likes={likes}
-        comments={comments}
-      />
     </>
   );
 };
