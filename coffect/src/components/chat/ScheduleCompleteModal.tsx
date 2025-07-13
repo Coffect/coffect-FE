@@ -1,0 +1,46 @@
+// author : 앨리스/박은지
+// description : [커피챗 일정 등록 완료] 모달 컴포넌트
+// 날짜를 한글로 표시
+
+import React from "react";
+import { MailCheck } from "lucide-react";
+import { formatKoreanDate } from "../../utils/dateUtils";
+
+interface ScheduleCompleteModalProps {
+  date: string;
+  time: string;
+  onClose: () => void;
+}
+
+const ScheduleCompleteModal: React.FC<ScheduleCompleteModalProps> = ({
+  date,
+  time,
+  onClose,
+}) => {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+      <div className="flex min-h-[300px] w-[100vw] max-w-[80vw] flex-col items-center">
+        <div className="flex min-h-[300px] w-full flex-col items-center rounded-2xl rounded-b-none bg-white px-6 pt-10 pb-3">
+          <div className="mb-2 text-center text-base leading-snug font-extrabold text-gray-900">
+            {formatKoreanDate(date)} {time}
+          </div>
+          <div className="mb-3 text-center text-base leading-snug font-extrabold text-gray-900">
+            커피챗 일정이 만들어졌어요!
+          </div>
+          <div className="mb-2 text-center text-xs font-bold text-gray-500">
+            언제나 일정 확인 및 수정이 가능해요
+          </div>
+          <MailCheck size={100} className="mt-4 text-black" />
+        </div>
+        <button
+          className="w-full rounded-2xl rounded-t-none bg-[rgba(45,45,45,1)] py-3 text-base font-extrabold text-white"
+          onClick={onClose}
+        >
+          확인했어요
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default ScheduleCompleteModal;
