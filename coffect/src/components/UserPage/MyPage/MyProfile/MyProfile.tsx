@@ -61,7 +61,7 @@ export default function MyProfileUI() {
       <div className="flex items-center justify-between py-3">
         <button
           className="pr-9 text-left text-3xl"
-          onClick={() => navigate("/mypage/myprofile")}
+          onClick={() => navigate("/mypage")}
         >
           <img src={backIcon} className="h-6 w-6" />
         </button>
