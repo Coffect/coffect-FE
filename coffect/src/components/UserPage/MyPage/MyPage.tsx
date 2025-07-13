@@ -33,7 +33,7 @@ const MyPage = () => {
   return (
     <>
       <div className="flex h-full w-full flex-col">
-        <div className="flex h-full w-full flex-1 flex-col overflow-y-auto bg-[var(--gray-5)]">
+        <div className="flex h-full w-full flex-1 flex-col overflow-y-auto bg-[var(--gray-5)] pb-20">
           {/* 상단 닉네임 + 알람 */}
           <div className="mx-4 mt-4 flex items-center justify-between">
             <div className="ml-2 text-2xl font-bold text-[var(--gray-90)]">
