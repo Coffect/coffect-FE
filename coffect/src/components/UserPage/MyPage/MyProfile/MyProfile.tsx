@@ -183,30 +183,6 @@ export default function MyProfileUI() {
             <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
             <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
             <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
           </div>
         )}
 
