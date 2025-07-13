@@ -4,6 +4,7 @@ description : 회원가입 서비스 약관 동의
 */
 import { useState, useEffect } from "react";
 import { AlertCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 /** 다음 단계로 이동 */
 type Props = {
@@ -11,6 +12,7 @@ type Props = {
 };
 
 const TermsAgreement = ({ onNext }: Props) => {
+  const navigate = useNavigate();
   // 각각의 약관 체크박스 상태 관리
   const [checkedAll, setCheckedAll] = useState(false);
   const [checkedService, setCheckedService] = useState(false);
@@ -94,7 +96,12 @@ const TermsAgreement = ({ onNext }: Props) => {
             [필수] 서비스 이용약관 동의
           </span>
         </div>
-        <button className="text-[0.8rem] text-gray-400 underline">보기</button>
+        <button
+          onClick={() => navigate("/signup/terms")}
+          className="text-[0.8rem] text-gray-400 underline"
+        >
+          보기
+        </button>
       </label>
 
       <label className="mb-[6%] flex w-full items-center justify-between">
@@ -109,7 +116,12 @@ const TermsAgreement = ({ onNext }: Props) => {
             [필수] 개인정보 처리방침 동의
           </span>
         </div>
-        <button className="text-[0.8rem] text-gray-400 underline">보기</button>
+        <button
+          onClick={() => navigate("/signup/terms")}
+          className="text-[0.8rem] text-gray-400 underline"
+        >
+          보기
+        </button>
       </label>
 
       <label className="mb-[6%] flex w-full items-center">
@@ -137,7 +149,12 @@ const TermsAgreement = ({ onNext }: Props) => {
             [선택] 마케팅 정보 수신 동의
           </span>
         </div>
-        <button className="text-[0.8rem] text-gray-400 underline">보기</button>
+        <button
+          onClick={() => navigate("/signup/terms")}
+          className="text-[0.8rem] text-gray-400 underline"
+        >
+          보기
+        </button>
       </label>
 
       <label className="flex w-full items-center">
