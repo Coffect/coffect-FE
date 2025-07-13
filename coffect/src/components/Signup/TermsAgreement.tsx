@@ -47,8 +47,17 @@ const TermsAgreement = ({ onNext }: Props) => {
     checkedPush,
   ]);
 
+  useEffect(() => {
+    // 진입 시 스크롤 막기
+    document.body.style.overflow = "hidden";
+    return () => {
+      // 컴포넌트 종료 시 스크롤 다시 허용
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
   return (
-    <div className="flex min-h-screen w-full flex-col items-start justify-start bg-white px-[6%] py-[2%] text-left">
+    <div className="flex min-h-screen w-full flex-col items-start justify-start bg-white px-[6%] py-[5%] text-left">
       {/* 추후 로고로 수정 예정 */}
       <h1 className="mb-[6%] text-2xl font-bold text-gray-900">coffect</h1>
       {/* 타이틀 */}
@@ -131,7 +140,7 @@ const TermsAgreement = ({ onNext }: Props) => {
         <button className="text-[0.8rem] text-gray-400 underline">보기</button>
       </label>
 
-      <label className="mb-[6%] flex w-full items-center">
+      <label className="flex w-full items-center">
         <input
           type="checkbox"
           checked={checkedPush}
@@ -144,7 +153,7 @@ const TermsAgreement = ({ onNext }: Props) => {
       </label>
 
       {/* 안내 문구 */}
-      <div className="mt-[3%] w-full rounded bg-gray-50 p-[4%]">
+      <div className="mt-[5%] w-full rounded bg-gray-50 p-[4%]">
         <div className="mb-[2%] flex items-center space-x-1 pl-[2%] text-xs font-semibold text-gray-800">
           <AlertCircle className="h-4 w-4 text-gray-400" />
           <span>안전한 커피챗을 위한 조치</span>
@@ -157,7 +166,7 @@ const TermsAgreement = ({ onNext }: Props) => {
       </div>
 
       {/* 동의 버튼 */}
-      <div className="absolute bottom-[4%] left-0 w-full px-[6%]">
+      <div className="absolute bottom-[4%] left-1/2 w-full max-w-md -translate-x-1/2 transform px-[6%]">
         <button
           onClick={onNext}
           disabled={!allRequiredChecked}
