@@ -43,6 +43,7 @@ const CoffeeSuggestBanner = () => {
 
   const [checkedMessage, setCheckedMessage] = useState<Suggestion | null>(null); // 메시지 모달에 표시할 항목
   const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null); // 삭제 확인 모달을 위한 ID
+  const [isMessageHidden, setIsMessageHidden] = useState(false); // 삭제 확인 모달 확인 시 메시지 모달 숨김
 
   // 모달 닫기 (모두 초기화)
   const handleClose = () => {
@@ -50,9 +51,15 @@ const CoffeeSuggestBanner = () => {
     setPendingDeleteId(null);
   };
 
-  // 삭제 요청 시 → 삭제 확인 모달 띄우기
+  // 삭제 요청 시 → 메시지 모달 숨김 및 삭제 확인 모달 띄우기
   const handleDeleteRequest = (id: number) => {
+    setIsMessageHidden(true);
     setPendingDeleteId(id);
+  };
+  //삭제 취소 시 → 다시 메시지 모달 보여줌
+  const handleCancelDelete = () => {
+    setIsMessageHidden(false);
+    setPendingDeleteId(null);
   };
 
   // 삭제 확정 처리
@@ -121,14 +128,14 @@ const CoffeeSuggestBanner = () => {
       </div>
 
       {/* 메시지 확인 모달 (커피챗 제안 확인) */}
-      {checkedMessage && (
+      {checkedMessage && !isMessageHidden && (
         <MessageModal
           // UI 작동 실험용 더미 데이터
           message={{
             id: checkedMessage.id,
             name: checkedMessage.name.split("님")[0],
-            time: `요청시간 2025. 7. 7. 오전 2:00`,
-            intro: `안녕하세요! 사람과 이야기를 나누는 것을 좋아하고,\n새로운 것을 배우는 데 늘 열려 있는 뉴비입니다.\n즐겁고 의미 있는 경험을 함께 만들고 싶어요!`,
+            time: `2025.1.17. 15:00`,
+            intro: `안녕하세요! 사람과 이야기를 나누는 것을 좋아하고, 새로운 것을 배우는 데 늘 열려있는 ${checkedMessage.name}입니다. 즐겁고 의미있는 경험을 함께 만들고 싶어요! 특히 디자인, 마케팅에 관심이 많습니다! 아무나 환영이니 커피쳇 제안주세요!!`,
           }}
           onClose={handleClose}
           onDelete={() => handleDeleteRequest(checkedMessage.id)}
@@ -141,7 +148,7 @@ const CoffeeSuggestBanner = () => {
         <DeleteSuggestModal
           messageName={checkedMessage.name}
           onDelete={handleConfirmDelete}
-          onCancel={() => setPendingDeleteId(null)}
+          onCancel={handleCancelDelete}
         />
       )}
     </div>
