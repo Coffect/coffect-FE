@@ -49,6 +49,7 @@ const CoffeeSuggestBanner = () => {
   const handleClose = () => {
     setCheckedMessage(null);
     setPendingDeleteId(null);
+    setIsMessageHidden(false);
   };
 
   // 삭제 요청 시 → 메시지 모달 숨김 및 삭제 확인 모달 띄우기
@@ -66,6 +67,7 @@ const CoffeeSuggestBanner = () => {
   const handleConfirmDelete = () => {
     if (pendingDeleteId != null) {
       setSuggestions((prev) => prev.filter((s) => s.id !== pendingDeleteId));
+      setIsMessageHidden(false);
       setCheckedMessage(null);
       setPendingDeleteId(null);
     }
@@ -81,50 +83,60 @@ const CoffeeSuggestBanner = () => {
     <div className="mt-[3%] flex w-full items-center justify-center overflow-hidden">
       {/* 커피쳇 제안 베너 슬라이드 */}
       <div className="flex h-auto w-[95%]">
-        <Swiper
-          className="h-auto w-full"
-          spaceBetween={16}
-          slidesPerView={1}
-          onSwiper={(sw) => (swiperRef.current = sw)} // Swiper 인스턴스 저장
-        >
-          {/* 제안 하나씩 렌더링 */}
-          {suggestions.map((user) => (
-            <SwiperSlide
-              key={user.id}
-              className="flex items-center justify-center"
-            >
-              {/* 제안 카드 */}
-              <div className="flex w-full items-center gap-[3vw] rounded-[20px] bg-white px-[6%] py-[4%] shadow-[0_0_20px_rgba(189,179,170,0.2)]">
-                {/* 프로필 이미지 */}
-                <img
-                  src={user.image}
-                  alt="프로필 사진"
-                  className="aspect-[1/1] w-[20%] rounded-full object-cover p-0.5"
-                />
+        {suggestions.length === 0 ? (
+          <div className="w-full items-center justify-center">
+            <div className="rounded-2xl bg-white px-[6%] py-[6.5%] text-left text-sm leading-relaxed font-semibold text-gray-700 shadow-[0_0_20px_rgba(189,179,170,0.2)]">
+              아직 커피챗 제안이 오지 않았어요!
+              <br />
+              먼저 제안해보는건 어때요?
+            </div>
+          </div>
+        ) : (
+          <Swiper
+            className="h-auto w-full"
+            spaceBetween={16}
+            slidesPerView={1}
+            onSwiper={(sw) => (swiperRef.current = sw)} // Swiper 인스턴스 저장
+          >
+            {/* 제안 하나씩 렌더링 */}
+            {suggestions.map((user) => (
+              <SwiperSlide
+                key={user.id}
+                className="flex items-center justify-center"
+              >
+                {/* 제안 카드 */}
+                <div className="flex w-full items-center gap-[3vw] rounded-[20px] bg-white px-[6%] py-[4%] shadow-[0_0_20px_rgba(189,179,170,0.2)]">
+                  {/* 프로필 이미지 */}
+                  <img
+                    src={user.image}
+                    alt="프로필 사진"
+                    className="aspect-[1/1] w-[20%] rounded-full object-cover p-0.5"
+                  />
 
-                {/* 메시지 내용 + 버튼 */}
-                <div className="flex w-0 flex-1 flex-col justify-center">
-                  <p className="mb-[3%] overflow-hidden text-sm text-ellipsis whitespace-nowrap">
-                    <span className="font-bold">{user.name}</span>님의{" "}
-                    {user.message}
-                  </p>
+                  {/* 메시지 내용 + 버튼 */}
+                  <div className="flex w-0 flex-1 flex-col justify-center">
+                    <p className="mb-[3%] overflow-hidden text-sm text-ellipsis whitespace-nowrap">
+                      <span className="font-bold">{user.name}</span>님의{" "}
+                      {user.message}
+                    </p>
 
-                  <div className="flex justify-start">
-                    <button className="rounded-lg bg-[#2D2D2D] px-4 py-1.5 text-xs text-white">
-                      프로필 보기
-                    </button>
-                    <button
-                      onClick={() => setCheckedMessage(user)}
-                      className="ml-[3%] rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs text-gray-500 hover:bg-gray-100"
-                    >
-                      메시지 확인하기
-                    </button>
+                    <div className="flex justify-start">
+                      <button className="rounded-lg bg-[#2D2D2D] px-4 py-1.5 text-xs text-white">
+                        프로필 보기
+                      </button>
+                      <button
+                        onClick={() => setCheckedMessage(user)}
+                        className="ml-[3%] rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs text-gray-500 hover:bg-gray-100"
+                      >
+                        메시지 확인하기
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        )}
       </div>
 
       {/* 메시지 확인 모달 (커피챗 제안 확인) */}
