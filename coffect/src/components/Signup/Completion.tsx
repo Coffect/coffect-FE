@@ -25,7 +25,7 @@ const Completion = () => {
       <div className="mb-10 text-9xl">☕</div>
 
       {/* 하단 고정 버튼 */}
-      <div className="absolute bottom-[4%] left-0 w-full px-[6%]">
+      <div className="absolute bottom-[4%] left-1/2 w-full max-w-md -translate-x-1/2 transform px-[6%]">
         <button
           onClick={goLogin}
           className="w-full rounded-xl bg-gray-900 py-[4%] text-center text-sm text-white"

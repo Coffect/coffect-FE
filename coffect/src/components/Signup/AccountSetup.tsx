@@ -169,7 +169,7 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
       </div>
 
       {/* 다음 버튼 */}
-      <div className="absolute bottom-[4%] left-0 w-full px-[6%]">
+      <div className="absolute bottom-[4%] left-1/2 w-full max-w-md -translate-x-1/2 transform px-[6%]">
         <button
           onClick={handleNext}
           className={`w-full rounded-xl py-[4%] text-center text-sm text-gray-700 ${

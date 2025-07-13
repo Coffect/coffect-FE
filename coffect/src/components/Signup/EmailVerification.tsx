@@ -48,7 +48,7 @@ const EmailVerification: React.FC<Props> = ({ onNext, onChange }) => {
           />
         </div>
         {/* 인증코드 발송 버튼 */}
-        <div className="absolute bottom-[4%] left-0 w-full px-[6%]">
+        <div className="absolute bottom-[4%] left-1/2 w-full max-w-md -translate-x-1/2 transform px-[6%]">
           <button
             onClick={handleSend}
             disabled={!valid}

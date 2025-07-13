@@ -111,7 +111,7 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
       {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
 
       {/* 하단 버튼 그룹 */}
-      <div className="absolute bottom-[4%] left-0 w-full px-[6%]">
+      <div className="absolute bottom-[4%] left-1/2 w-full max-w-md -translate-x-1/2 transform px-[6%]">
         <div className="mt-auto flex w-full gap-2">
           {/* 건너뛰기 버튼 */}
           <button
