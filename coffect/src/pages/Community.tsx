@@ -5,12 +5,14 @@ description : 커뮤니티 페이지에 대한 컴포넌트입니다.
 */
 
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../components/communityComponents/Header";
 import FeedList from "../components/communityComponents/feed/FeedList";
 import FilterModal from "../components/communityComponents/bottomSeat/FilterModal";
 import BottomNavbar from "../components/shareComponents/BottomNavbar";
 import { type Post, generateDummyPosts } from "../data/communityDummyData";
 import FloatingWriteButton from "../components/communityComponents/FloatingWriteButton";
+import UploadSuccessModal from "../components/communityComponents/writeComponents/UploadSuccessModal";
 
 // 필터 타입 정의
 interface Filters {
@@ -22,6 +24,18 @@ const Community = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [filters, setFilters] = useState<Filters>({ type: null, topic: null });
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.state?.showSuccessModal) {
+      setIsSuccessModalOpen(true);
+      // 모달을 보여준 후에는 state를 초기화하여, 페이지 재방문시 모달이 다시 뜨지 않도록 합니다.
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   const openModal = () => setIsModalVisible(true);
   const closeModal = () => setIsModalVisible(false);
@@ -45,6 +59,10 @@ const Community = () => {
     fetchPosts();
   }, [filters]); // filters가 변경될 때마다 useEffect 실행
 
+  const handleViewPost = () => {
+    setIsSuccessModalOpen(false);
+  };
+
   return (
     <div className="relative flex h-full flex-col bg-white">
       <Header openModal={openModal} />
@@ -63,6 +81,10 @@ const Community = () => {
       />
       <BottomNavbar activeLabel="커뮤니티" />
       <FloatingWriteButton />
+      <UploadSuccessModal
+        isOpen={isSuccessModalOpen}
+        onViewPost={handleViewPost}
+      />
     </div>
   );
 };

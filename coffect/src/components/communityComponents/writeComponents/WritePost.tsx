@@ -1,15 +1,13 @@
 /* author : 강신욱
 description : 글 작성을 관리하는 컨테이너 컴포넌트입니다.
 */
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import WritePostUI from "./WritePostUI";
-import UploadSuccessModal from "./UploadSuccessModal";
 import { useWritePost } from "../../../hooks/useWritePost";
 
 const WritePost: React.FC = () => {
   const navigate = useNavigate();
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   const {
     postType,
@@ -33,20 +31,14 @@ const WritePost: React.FC = () => {
   /***** 업로드 버튼 클릭 시 성공 모달을 여는 로직입니다. ******/
   const handleUpload = () => {
     // 실제 API 호출 로직이 여기에 들어갈 수 있습니다.
-    // API 호출 성공 시 아래 setIsSuccessModalOpen(true) 호출
+    // API 호출 성공 시 아래 로직 수행
     console.log("글 종류:", postType);
     console.log("제목:", title);
     console.log("내용:", content);
     console.log("글 주제:", topic);
-    setIsSuccessModalOpen(true); // 성공 모달 열기
-  };
-
-  /***** '내 글 확인하기' 버튼 클릭 시 로직입니다. ******/
-  const handleViewPost = () => {
-    setIsSuccessModalOpen(false);
-    // TODO: 작성된 글로 이동하는 로직 추가
-    console.log("내 글 확인하기 클릭");
-    navigate("/community"); // 커뮤니티 홈으로 이동
+    
+    // 글 작성 마치고 state와 함께 커뮤니티 페이지로 이동
+    navigate("/community", { state: { showSuccessModal: true } });
   };
 
   return (
@@ -63,10 +55,6 @@ const WritePost: React.FC = () => {
         isFormValid={isFormValid}
         handleBackClick={handleBackClick}
         onUpload={handleUpload}
-      />
-      <UploadSuccessModal
-        isOpen={isSuccessModalOpen}
-        onViewPost={handleViewPost}
       />
     </>
   );
