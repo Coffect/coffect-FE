@@ -8,7 +8,7 @@ import DetailIntro from "./DetailIntro";
 import backIcon from "../../../../assets/icon/mypage/back.png";
 import profileImg from "../../../../assets/icon/mypage/profile.png";
 
-export default function MyProfileUI() {
+function MyProfile() {
   /*
   사용자의 마이페이지 프로필 화면을 렌더링하며, 탭에 따라 피드 또는 상세 소개를 보여줍니다.
   */
@@ -192,3 +192,5 @@ export default function MyProfileUI() {
     </div>
   );
 }
+
+export default MyProfile;
