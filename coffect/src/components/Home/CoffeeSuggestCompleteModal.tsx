@@ -18,7 +18,7 @@ const CoffeeSuggestCompleteModal: React.FC<CoffeeSuggestCompleteModalProps> = ({
     // 전체 화면 덮는 반투명 레이어
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
       {/* 모달 컨테이너 */}
-      <div className="flex aspect-square w-[305px] flex-col justify-between rounded-xl bg-white shadow-[0_0_24px_rgba(28,28,34,0.25)]">
+      <div className="flex aspect-square w-[305px] flex-col justify-between rounded-xl bg-[var(--gray-0)] shadow-[0_0_24px_rgba(28,28,34,0.25)]">
         {/* 상단 콘텐츠 */}
         <div className="px-[4%] pt-[25%] pb-[5%] text-center">
           {/* 아이콘 + 타이틀 */}
@@ -28,7 +28,7 @@ const CoffeeSuggestCompleteModal: React.FC<CoffeeSuggestCompleteModalProps> = ({
           </div>
 
           {/* 설명 문구 */}
-          <p className="mt-[6%] text-sm leading-relaxed font-semibold whitespace-pre-line text-[#787891]">
+          <p className="mt-[6%] text-sm leading-relaxed font-semibold whitespace-pre-line text-[var(--gray-40)]">
             답변을 기다리는 동안{"\n"}또 다른 친구에게 보내볼까요?
           </p>
         </div>
@@ -36,7 +36,7 @@ const CoffeeSuggestCompleteModal: React.FC<CoffeeSuggestCompleteModalProps> = ({
         {/* 하단 단일 확인 버튼 */}
         <button
           onClick={onClose}
-          className="h-[50px] w-full rounded-b-xl bg-[#2D2D2D] text-base text-white"
+          className="h-[50px] w-full rounded-b-xl bg-[var(--gray-90)] text-base text-[var(--gray-0)]"
         >
           확인
         </button>

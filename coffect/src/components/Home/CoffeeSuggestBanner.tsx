@@ -85,7 +85,7 @@ const CoffeeSuggestBanner = () => {
       <div className="flex h-auto w-[95%]">
         {suggestions.length === 0 ? (
           <div className="w-full items-center justify-center">
-            <div className="rounded-2xl bg-white px-[6%] py-[6.5%] text-left text-sm leading-relaxed font-semibold text-gray-700 shadow-[0_0_20px_rgba(189,179,170,0.2)]">
+            <div className="rounded-2xl bg-white px-[6%] py-[6.5%] text-left text-sm leading-relaxed font-semibold text-[var(--gray-85)] shadow-[0_0_20px_rgba(189,179,170,0.2)]">
               아직 커피챗 제안이 오지 않았어요!
               <br />
               먼저 제안해보는건 어때요?
@@ -105,7 +105,7 @@ const CoffeeSuggestBanner = () => {
                 className="flex items-center justify-center"
               >
                 {/* 제안 카드 */}
-                <div className="flex w-full items-center gap-[3vw] rounded-[20px] bg-white px-[6%] py-[4%] shadow-[0_0_20px_rgba(189,179,170,0.2)]">
+                <div className="flex w-full items-center gap-[1rem] rounded-[20px] bg-white px-[6%] py-[4%] shadow-[0_0_20px_rgba(189,179,170,0.2)]">
                   {/* 프로필 이미지 */}
                   <img
                     src={user.image}
@@ -115,18 +115,20 @@ const CoffeeSuggestBanner = () => {
 
                   {/* 메시지 내용 + 버튼 */}
                   <div className="flex w-0 flex-1 flex-col justify-center">
-                    <p className="mb-[3%] overflow-hidden text-sm text-ellipsis whitespace-nowrap">
-                      <span className="font-bold">{user.name}</span>님의{" "}
-                      {user.message}
+                    <p className="mb-[3%] overflow-hidden text-[0.8rem] text-ellipsis whitespace-nowrap text-[var(--gray-70)]">
+                      <span className="font-bold text-[var(--gray-85)]">
+                        {user.name}
+                      </span>
+                      님의 {user.message}
                     </p>
 
                     <div className="flex justify-start">
-                      <button className="rounded-lg bg-[#2D2D2D] px-4 py-1.5 text-xs text-white">
+                      <button className="rounded-lg bg-[var(--gray-80)] px-4 py-1.5 text-[0.7rem] text-[var(--gray-0)]">
                         프로필 보기
                       </button>
                       <button
                         onClick={() => setCheckedMessage(user)}
-                        className="ml-[3%] rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs text-gray-500 hover:bg-gray-100"
+                        className="bg--[var(--gray-0)] ml-[3%] rounded-lg border border-[var(--gray-20)] px-3 py-1.5 text-[0.7rem] text-[var(--gray-50)] hover:bg-[var(--gray-10)]"
                       >
                         메시지 확인하기
                       </button>

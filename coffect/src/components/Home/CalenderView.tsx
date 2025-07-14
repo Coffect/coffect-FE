@@ -62,35 +62,38 @@ const dummySchedules: ScheduleItem[] = [
  */
 const CalendarView: React.FC = () => {
   return (
-    <div className="relative flex h-screen w-full flex-col overflow-hidden bg-white">
+    <div className="relative flex h-screen w-full flex-col overflow-hidden bg-[var(--gray-0)]">
       {/* 상단 네비바 */}
       <div className="flex">
         <TopNavbar pageType="calendar" />
       </div>
 
       {/* 메인: 일정 리스트 */}
-      <main className="flex-1 overflow-y-auto bg-gray-100">
+      <main className="flex-1 overflow-y-auto bg-[var(--gray-5)]">
         {dummySchedules.length === 0 ? (
           // 일정이 없을 경우: NoSchedule 컴포넌트 렌더링
           <NoSchedule />
         ) : (
           // 일정이 있을 경우: 리스트 렌더링
           <div>
-            <div className="flex flex-col px-[5vw]">
-              <h1 className="mt-[5vh] mb-[1vh] ml-[1vw] text-left text-xl font-bold">
+            <div className="flex flex-col px-[1rem]">
+              <h1 className="mt-[1.2rem] mb-[1rem] ml-[1vw] text-left text-xl font-bold">
                 <span className="text-orange-500">이인하</span>님의 커피챗 일정
               </h1>
             </div>
             <div className="flex flex-col items-center py-4">
               <div className="w-[90%] max-w-md space-y-4">
                 {dummySchedules.map((item) => (
-                  <div key={item.id} className="rounded-xl bg-white p-4 shadow">
+                  <div
+                    key={item.id}
+                    className="rounded-xl bg-[var(--gray-0)] p-4 shadow"
+                  >
                     <div className="mb-3 flex items-center justify-between">
                       <div>
-                        <span className="rounded-full bg-gray-500 px-2 py-1 text-xs text-white">
+                        <span className="rounded-full bg-[var(--gray-60)] px-2 py-1 text-xs text-[var(--gray-0)]">
                           {item.date}
                         </span>
-                        <span className="ml-1 rounded-full bg-orange-500 px-2 py-1 text-xs text-white">
+                        <span className="ml-1 rounded-full bg-orange-500 px-2 py-1 text-xs text-[var(--gray-0)]">
                           {item.daysAway}일 뒤
                         </span>
                       </div>
@@ -111,12 +114,12 @@ const CalendarView: React.FC = () => {
                         ))}
                       </div>
                       <div>
-                        <div className="text-base font-semibold">
+                        <div className="text-base font-semibold text-[var(--gray-90)]">
                           {item.title}
                         </div>
                       </div>
                     </div>
-                    <div className="my-1 text-sm text-gray-800">
+                    <div className="my-1 text-sm text-[var(--gray-60)]">
                       {item.location}
                     </div>
                   </div>
