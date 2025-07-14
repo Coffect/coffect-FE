@@ -2,7 +2,7 @@
 // description : 채팅방 페이지
 // 채팅방 내부 메시지 영역, 팝업 모달 연결, 일정 정보 표시
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ChevronLeft, Calendar, Mail } from "lucide-react";
 import useCurrentTime from "./hooks/useCurrentTime";
@@ -11,10 +11,20 @@ import RequestModal from "./RequestModal";
 import useHandleSend from "./hooks/useHandleSend";
 import ChatInterestTags from "./ChatInterestTags";
 import ChatInputBox from "./ChatInputBox";
+import MessageBubble from "./MessageBubble";
+import usePreventZoom from "./hooks/usePreventZoom";
+import useAutoScroll from "./hooks/useAutoScroll";
+
+function getMessageMargin(idx: number, messages: Array<{ mine: boolean }>) {
+  if (idx === 0) return "mt-4";
+  const prev = messages[idx - 1];
+  return prev && prev.mine !== messages[idx].mine ? "mt-6" : "mt-2";
+}
 
 const ChatRoom = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  usePreventZoom();
   const {
     isOpen: isModalOpen,
     open: openModal,
@@ -22,67 +32,67 @@ const ChatRoom = () => {
   } = useModal();
 
   // 일정 정보 (전달받은 일정이 있으면 표시)
-  const [schedule, setSchedule] = useState<{
+  const [schedule] = useState<{
     date: string | Date;
     time: string;
     place?: string;
     alert?: string | null;
-  } | null>(null);
-
-  useEffect(() => {
-    // location.state에서 일정 정보 가져오기
+  } | null>(() => {
     if (location.state?.schedule) {
-      setSchedule({
+      return {
         date: location.state.schedule.date,
         time: location.state.schedule.time,
         place: location.state.schedule.place || "",
         alert: location.state.schedule.alert || null,
-      });
+      };
     }
-  }, [location.state]);
+    return null;
+  });
 
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: "안녕하세요! 꼭 한번 커피챗 해보고 싶어서 제안드렸습니다 :)",
+      text: "안녕하세요!",
       time: "오전 11:47",
       mine: false,
     },
-    { id: 2, text: "안녕하세요!", time: "오전 11:47", mine: true },
     {
-      id: 3,
+      id: 2,
+      text: "꼭 한번 커피챗 해보고 싶어서 제안드렸습니다 :)",
+      time: "오전 11:47",
+      mine: false,
+    },
+    { id: 3, text: "안녕하세요!", time: "오전 11:47", mine: true },
+    {
+      id: 4,
       text: "네 좋아요!\n이번주에 시간 언제 가능하세요?",
       time: "오전 11:47",
       mine: true,
     },
     {
-      id: 4,
+      id: 5,
       text: "목요일 두시 공강이신걸로 아는데 그때 어떠세요??",
       time: "오전 11:48",
       mine: false,
     },
     {
-      id: 5,
+      id: 6,
       text: "좋습니다!\n정문 앞 스벅에서 만나요!!",
       time: "오전 11:49",
       mine: true,
     },
     {
-      id: 6,
+      id: 7,
       text: "네 그럼 거기서 2시에 봅시다!",
       time: "오전 11:49",
       mine: false,
     },
   ]);
 
-  // 메시지가 추가될 때마다 최신 메시지로 스크롤
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
   const [inputValue, setInputValue] = useState("");
   const getCurrentTime = useCurrentTime();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  useAutoScroll(messagesEndRef, [messages]);
 
   const handleSend = useHandleSend(
     messages,
@@ -96,37 +106,6 @@ const ChatRoom = () => {
     info: "이런 주제에 관심 있어요!",
     interests: ["디자인", "개발", "경영", "글쓰기"],
   };
-
-  useEffect(() => {
-    function hasScale(
-      event: TouchEvent,
-    ): event is TouchEvent & { scale: number } {
-      return (
-        "scale" in event &&
-        typeof (event as Record<string, unknown>).scale === "number"
-      );
-    }
-    const handleTouchMove = (event: TouchEvent) => {
-      if (hasScale(event) && event.scale !== 1) {
-        event.preventDefault();
-      }
-    };
-
-    let lastTouchEnd = 0;
-    const handleTouchEnd = (event: TouchEvent) => {
-      const now = new Date().getTime();
-      if (now - lastTouchEnd <= 300) {
-        event.preventDefault();
-      }
-      lastTouchEnd = now;
-    };
-    document.addEventListener("touchmove", handleTouchMove, { passive: false });
-    document.addEventListener("touchend", handleTouchEnd, false);
-    return () => {
-      document.removeEventListener("touchmove", handleTouchMove);
-      document.removeEventListener("touchend", handleTouchEnd);
-    };
-  }, []);
 
   return (
     <div className="flex h-full w-full flex-col bg-[rgba(240,240,240,1)]">
@@ -217,39 +196,21 @@ const ChatRoom = () => {
           </span>
         </div>
         {/* 채팅 메시지 */}
-        {messages.map((msg, idx) => {
-          const prev = messages[idx - 1];
-          let margin = "";
-          if (idx !== 0) {
-            margin = prev && prev.mine !== msg.mine ? "mt-6" : "mt-2";
-          }
-          return (
-            <div
-              key={msg.id}
-              className={`flex w-full ${margin} ${msg.mine ? "justify-end" : "justify-start"}`}
-            >
-              {msg.mine ? (
-                <div className="flex items-end gap-2">
-                  <span className="mb-1 text-[11px] text-[rgba(132,132,132,1)]">
-                    {msg.time}
-                  </span>
-                  <div className="max-w-[75%] rounded-lg bg-[rgba(58,58,58,1)] px-4 py-2 text-xs leading-relaxed whitespace-pre-line text-white">
-                    {msg.text}
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-end gap-2">
-                  <div className="max-w-[75%] rounded-lg bg-[rgba(255,255,255,1)] px-3 py-2 text-xs leading-relaxed whitespace-pre-line text-[rgba(45,45,45,1)]">
-                    {msg.text}
-                  </div>
-                  <span className="mb-1 text-[11px] text-[rgba(132,132,132,1)]">
-                    {msg.time}
-                  </span>
-                </div>
-              )}
-            </div>
-          );
-        })}
+        {messages.map((msg, idx) => (
+          <div
+            key={msg.id}
+            className={`w-full ${getMessageMargin(idx, messages)} ${msg.mine ? "justify-end" : "justify-start"} flex`}
+          >
+            <MessageBubble
+              text={msg.text}
+              time={msg.time}
+              mine={msg.mine}
+              showProfile={
+                !msg.mine && (!messages[idx - 1] || messages[idx - 1].mine)
+              }
+            />
+          </div>
+        ))}
         {/* 스크롤 타겟 */}
         <div ref={messagesEndRef} />
       </div>

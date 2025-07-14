@@ -3,7 +3,7 @@
 // 날짜를 한글로 표시
 
 import React from "react";
-import { MailCheck } from "lucide-react";
+import ScheduleCompleteImg from "../../assets/icon/chat/ScheduleComplete.png";
 import { formatKoreanDate } from "../../utils/dateUtils";
 
 interface ScheduleCompleteModalProps {
@@ -30,7 +30,11 @@ const ScheduleCompleteModal: React.FC<ScheduleCompleteModalProps> = ({
           <div className="mb-2 text-center text-xs font-bold text-gray-500">
             언제나 일정 확인 및 수정이 가능해요
           </div>
-          <MailCheck size={100} className="mt-4 text-black" />
+          <img
+            src={ScheduleCompleteImg}
+            alt="일정 완료"
+            className="mt-4 h-[100px] w-[100px] object-contain"
+          />
         </div>
         <button
           className="w-full rounded-2xl rounded-t-none bg-[rgba(45,45,45,1)] py-3 text-base font-extrabold text-white"

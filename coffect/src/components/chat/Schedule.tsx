@@ -146,19 +146,21 @@ const Schedule: React.FC = () => {
         )}
         {isEdit && showDeleteModal && (
           <DeleteScheduleModal
-            date={
+            scheduleText={
               form.date
-                ? typeof form.date === "string"
-                  ? form.date
-                  : form.date.toLocaleDateString("ko-KR", {
-                      month: "long",
-                      day: "numeric",
-                    })
+                ? `${
+                    typeof form.date === "string"
+                      ? form.date
+                      : form.date.toLocaleDateString("ko-KR", {
+                          month: "long",
+                          day: "numeric",
+                          weekday: "long",
+                        })
+                  } ${form.time}`
                 : ""
             }
-            time={form.time}
             onDelete={handleDelete}
-            onClose={() => setShowDeleteModal(false)}
+            onCancel={() => setShowDeleteModal(false)}
           />
         )}
       </div>
