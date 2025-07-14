@@ -19,9 +19,14 @@ const MyPage = () => {
   return (
     <>
       <div className="flex h-full w-full flex-col">
-        <div className="flex h-full w-full flex-1 flex-col overflow-y-auto bg-white">
-          {/* 상단 닉네임 */}
-          <div className="mt-4 ml-4 text-2xl font-bold">jeha_0714</div>
+        <div className="flex h-full w-full flex-1 flex-col overflow-y-auto bg-[var(--gray-5)] pb-20">
+          {/* 상단 닉네임 + 알람 */}
+          <div className="mx-4 mt-4 flex items-center justify-between">
+            <div className="ml-2 text-2xl font-bold text-[var(--gray-90)]">
+              jeha_0714
+            </div>
+            <img src={alarmIcon} className="h-7 w-7" />
+          </div>
 
           {/* 프로필 카드 */}
           <div className="mx-4 mt-4 flex flex-col items-center rounded-none border border-black p-4">
