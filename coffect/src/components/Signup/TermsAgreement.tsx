@@ -61,9 +61,9 @@ const TermsAgreement = ({ onNext }: Props) => {
   return (
     <div className="flex min-h-screen w-full flex-col items-start justify-start bg-white px-[6%] py-[5%] text-left">
       {/* 추후 로고로 수정 예정 */}
-      <h1 className="mb-[6%] text-2xl font-bold text-gray-900">coffect</h1>
+      <h1 className="mb-[6%] text-2xl font-bold text-black">coffect</h1>
       {/* 타이틀 */}
-      <h2 className="mb-[8%] text-lg leading-tight font-bold">
+      <h2 className="mb-[8%] text-lg leading-tight font-bold text-[var(--gray-90)]">
         서비스 이용을 위해 <br />
         약관에 동의해주세요
       </h2>
@@ -74,14 +74,14 @@ const TermsAgreement = ({ onNext }: Props) => {
           type="checkbox"
           checked={checkedAll}
           onChange={handleAllChange}
-          className="mr-[1rem] aspect-square w-5 border-gray-100 accent-black"
+          className="mr-[1rem] aspect-square w-5 border-[var(--gray-20)] accent-black"
         />
-        <span className="text-[0.9rem] font-bold">
+        <span className="text-[0.9rem] font-bold text-[var(--gray-90)]">
           모두 동의(선택 정보 포함)
         </span>
       </label>
 
-      <div className="mb-[8%] w-full border-t border-gray-300" />
+      <div className="mb-[8%] w-full border-t border-[var(--gray-10)]" />
 
       {/* 필수 약관 목록 */}
       <label className="mb-[6%] flex w-full items-center justify-between">
@@ -90,15 +90,15 @@ const TermsAgreement = ({ onNext }: Props) => {
             type="checkbox"
             checked={checkedService}
             onChange={() => setCheckedService((prev) => !prev)}
-            className="mr-[1rem] aspect-square w-5 border-gray-100 accent-black"
+            className="mr-[1rem] aspect-square w-5 border-[var(--gray-20)] accent-black"
           />
-          <span className="text-[0.8rem] font-semibold">
+          <span className="text-[0.8rem] font-semibold text-[var(--gray-90)]">
             [필수] 서비스 이용약관 동의
           </span>
         </div>
         <button
           onClick={() => navigate("/signup/terms")}
-          className="text-[0.8rem] text-gray-400 underline"
+          className="text-[0.8rem] text-[var(--gray-40)] underline"
         >
           보기
         </button>
@@ -110,15 +110,15 @@ const TermsAgreement = ({ onNext }: Props) => {
             type="checkbox"
             checked={checkedPrivacy}
             onChange={() => setCheckedPrivacy((prev) => !prev)}
-            className="mr-[1rem] aspect-square w-5 border-gray-100 accent-black"
+            className="mr-[1rem] aspect-square w-5 border-[var(--gray-20)] accent-black"
           />
-          <span className="text-[0.8rem] font-semibold">
+          <span className="text-[0.8rem] font-semibold text-[var(--gray-90)]">
             [필수] 개인정보 처리방침 동의
           </span>
         </div>
         <button
           onClick={() => navigate("/signup/terms")}
-          className="text-[0.8rem] text-gray-400 underline"
+          className="text-[0.8rem] text-[var(--gray-40)] underline"
         >
           보기
         </button>
@@ -129,9 +129,9 @@ const TermsAgreement = ({ onNext }: Props) => {
           type="checkbox"
           checked={checkedOver14}
           onChange={() => setCheckedOver14((prev) => !prev)}
-          className="mr-[1rem] aspect-square w-5 border-gray-100 accent-black"
+          className="mr-[1rem] aspect-square w-5 border-[var(--gray-20)] accent-black"
         />
-        <span className="text-[0.8rem] font-semibold">
+        <span className="text-[0.8rem] font-semibold text-[var(--gray-90)]">
           [필수] 만 14세 이상입니다
         </span>
       </label>
@@ -143,15 +143,15 @@ const TermsAgreement = ({ onNext }: Props) => {
             type="checkbox"
             checked={checkedMarketing}
             onChange={() => setCheckedMarketing((prev) => !prev)}
-            className="mr-[1rem] aspect-square w-5 border-gray-100 accent-black"
+            className="mr-[1rem] aspect-square w-5 border-[var(--gray-20)] accent-black"
           />
-          <span className="text-[0.8rem] font-semibold">
+          <span className="text-[0.8rem] font-semibold text-[var(--gray-90)]">
             [선택] 마케팅 정보 수신 동의
           </span>
         </div>
         <button
           onClick={() => navigate("/signup/terms")}
-          className="text-[0.8rem] text-gray-400 underline"
+          className="text-[0.8rem] text-[var(--gray-40)] underline"
         >
           보기
         </button>
@@ -162,20 +162,20 @@ const TermsAgreement = ({ onNext }: Props) => {
           type="checkbox"
           checked={checkedPush}
           onChange={() => setCheckedPush((prev) => !prev)}
-          className="mr-[1rem] aspect-square w-5 border-gray-100 accent-black"
+          className="mr-[1rem] aspect-square w-5 border-[var(--gray-20)] accent-black"
         />
-        <span className="text-[0.8rem] font-semibold">
+        <span className="text-[0.8rem] font-semibold text-[var(--gray-90)]">
           [선택] 푸시 알림 수신 동의
         </span>
       </label>
 
       {/* 안내 문구 */}
-      <div className="mt-[5%] w-full rounded bg-gray-50 p-[4%]">
-        <div className="mb-[2%] flex items-center space-x-1 pl-[2%] text-xs font-semibold text-gray-800">
+      <div className="mt-[5%] w-full rounded bg-[var(--gray-5)] p-[4%]">
+        <div className="mb-[2%] flex items-center space-x-1 pl-[2%] text-xs font-semibold text-[var(--gray-50)]">
           <AlertCircle className="h-4 w-4 text-gray-400" />
           <span>안전한 커피챗을 위한 조치</span>
         </div>
-        <ul className="list-disc pl-[6%] text-[0.5rem] leading-loose text-gray-500">
+        <ul className="list-disc pl-[6%] text-[0.5rem] leading-loose text-[var(--gray-50)]">
           <li>실명과 학교 인증이 완료된 사용자만 이용 가능</li>
           <li>선택항목 미동의 시 서비스 이용에 제한될 수 있음</li>
           <li>개인정보 보호를 위해 연락처는 자동으로 공유되지 않음</li>
@@ -187,8 +187,10 @@ const TermsAgreement = ({ onNext }: Props) => {
         <button
           onClick={onNext}
           disabled={!allRequiredChecked}
-          className={`w-full rounded-xl py-[4%] text-sm text-gray-700 ${
-            allRequiredChecked ? "bg-black text-white" : "bg-[#E4E4E4]"
+          className={`w-full rounded-xl py-[4%] text-sm ${
+            allRequiredChecked
+              ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
+              : "bg-[var(--gray-10)] text-[var(--gray-50)]"
           }`}
         >
           회원가입

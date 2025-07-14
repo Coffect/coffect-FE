@@ -5,21 +5,23 @@ const TermsDetail = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="relative h-screen bg-white">
+    <div className="relative h-screen bg-[var(--gray-0)]">
       {/* 상단바 */}
-      <div className="fixed top-0 left-1/2 z-10 w-full max-w-md -translate-x-1/2 bg-white">
+      <div className="fixed top-0 left-1/2 z-10 w-full max-w-md -translate-x-1/2 bg-[var(--gray-0)]">
         <TopNavbar title="" onBack={() => navigate(-1)} />
       </div>
 
       {/* 콘텐츠 */}
       <div
-        className="absolute top-[60px] w-full overflow-y-auto bg-white px-6 py-5"
+        className="absolute top-[60px] w-full overflow-y-auto bg-[var(--gray-0)] px-6 py-5"
         style={{ height: `calc(100vh - 60px)` }}
       >
         {/* 제목 */}
-        <h1 className="text-lg font-bold">서비스 이용 약관</h1>
+        <h1 className="text-lg font-bold text-[var(--gray-90)]">
+          서비스 이용 약관
+        </h1>
         {/* 본문 */}
-        <div className="mt-4 text-xs leading-relaxed whitespace-pre-wrap">
+        <div className="mt-4 text-xs leading-relaxed whitespace-pre-wrap text-[var(--gray-50)]">
           <h2 className="mt-4 text-sm font-semibold">제 1장 이용계약</h2>
           <div className="mt-4">
             선거운동은 각급 선거관리위원회의 관리하에 법률이 정하는 범위안에서
@@ -46,7 +48,7 @@ const TermsDetail = () => {
           </div>
         </div>
 
-        <div className="text-xs leading-relaxed whitespace-pre-wrap">
+        <div className="text-xs leading-relaxed whitespace-pre-wrap text-[var(--gray-50)]">
           <h2 className="mt-4 text-sm font-semibold">제 2장 이용계약</h2>
           <div className="mt-4">
             선거운동은 각급 선거관리위원회의 관리하에 법률이 정하는 범위안에서

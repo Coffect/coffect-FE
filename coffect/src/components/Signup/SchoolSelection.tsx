@@ -110,7 +110,7 @@ const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
 
   return (
     <div className="flex h-full w-full flex-col bg-white px-[6%] py-[2%]">
-      <div className="pt-[10%]">
+      <div className="pt-[10%] text-[var(--gray-90)]">
         <h2 className="text-lg leading-snug font-bold">
           <span className="text-xl">👋</span>반가워요!
         </h2>
@@ -125,25 +125,27 @@ const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
             onChange={(e) => handleQueryChange(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="재학 중인 학교를 입력해주세요"
-            className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+            className="w-full rounded border border-[var(--gray-10)] px-3 py-2 text-sm text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
           />
-          <Search className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+          <Search className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-[var(--gray-50)]" />
         </div>
 
         {/* 자동완성 드롭다운 */}
         {showDropdown && filtered.length > 0 && (
-          <ul className="mt-2 max-h-48 w-full overflow-y-auto rounded border border-gray-300">
+          <ul className="mt-1.5 max-h-48 w-full overflow-y-auto">
             {filtered.map((s, idx) => (
               <li
                 key={s.name}
                 onClick={() => selectSchool(s)}
                 onMouseEnter={() => setHighlightedIndex(idx)}
-                className={`cursor-pointer px-4 py-2 ${
-                  idx === highlightedIndex ? "bg-gray-100" : ""
+                className={`cursor-pointer rounded-xl px-4 py-3 ${
+                  idx === highlightedIndex ? "bg-[var(--gray-5)]" : ""
                 }`}
               >
-                <p className="text-sm">{s.name}</p>
-                <p className="text-xs text-gray-500">{s.address}</p>
+                <p className="text=[var(--gray-90)] text-sm">{s.name}</p>
+                <p className="mt-0.5 text-xs text-[var(--gray-40)]">
+                  {s.address}
+                </p>
               </li>
             ))}
           </ul>
@@ -152,7 +154,7 @@ const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
         {/* 전공 & 학번 입력 폼 (학교 선택 시에만 노출) */}
         {selected && (
           <div className="mt-10">
-            <h3 className="mb-[0.5rem] text-[1rem] leading-snug font-semibold">
+            <h3 className="mb-[0.5rem] text-[1rem] leading-snug font-semibold text-[var(--gray-90)]">
               전공
             </h3>
             <input
@@ -160,10 +162,10 @@ const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
               value={major}
               onChange={(e) => setMajor(e.target.value)}
               placeholder="전공을 입력해주세요"
-              className="mb-[2rem] w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+              className="mb-[2rem] w-full rounded border border-[var(--gray-10)] px-3 py-2 text-sm text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
             />
 
-            <h3 className="mb-[0.5rem] text-[1rem] leading-snug font-semibold">
+            <h3 className="mb-[0.5rem] text-[1rem] leading-snug font-semibold text-[var(--gray-90)]">
               학번
             </h3>
             <input
@@ -171,7 +173,7 @@ const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
               value={studentId}
               onChange={(e) => setStudentId(e.target.value)}
               placeholder="학번을 입력해주세요"
-              className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+              className="w-full rounded border border-[var(--gray-10)] px-3 py-2 text-sm text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
             />
           </div>
         )}
@@ -182,8 +184,10 @@ const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
         <button
           onClick={handleNext}
           disabled={!isNextEnabled}
-          className={`w-full rounded-xl py-[4%] text-center text-sm text-gray-700 ${
-            isNextEnabled ? "bg-black text-white" : "bg-[#E4E4E4]"
+          className={`w-full rounded-xl py-[4%] text-center text-sm ${
+            isNextEnabled
+              ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
+              : "bg-[var(--gray-10)] text-[var(--gray-50)]"
           }`}
         >
           다음

@@ -15,7 +15,7 @@ const StepProgressBar: React.FC<Props> = ({ totalSteps, currentStep }) => {
         <div
           key={idx}
           className={`mx-[2px] h-1 flex-1 rounded-full ${
-            idx < currentStep ? "bg-black" : "bg-gray-200"
+            idx < currentStep ? "bg-[var(--gray-70)]" : "bg-[var(--gray-10)]"
           }`}
         />
       ))}

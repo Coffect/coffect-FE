@@ -25,11 +25,11 @@ const SplashScreen = ({ onNext }: Props) => {
     }
   }, [onNext]);
   return (
-    <div className="flex h-full w-full flex-col items-center justify-start bg-white px-[2%] pt-[50%] text-center">
+    <div className="flex h-full w-full flex-col items-center justify-start bg-[var(--gray-0)] px-[2%] pt-[50%] text-center">
       {/* 추후 로고로 수정 예정 */}
-      <h1 className="mb-[2%] text-5xl font-bold text-gray-900">coffect</h1>
+      <h1 className="mb-[2%] text-5xl font-bold text-black">coffect</h1>
       {/* 설명 문구 */}
-      <p className="text-lg font-medium text-[#4A4A4A]">
+      <p className="text-lg font-medium text-[var(--gray-60)]">
         공강 시간을 더 생산적이게
       </p>
     </div>

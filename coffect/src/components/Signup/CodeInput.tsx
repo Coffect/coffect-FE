@@ -54,14 +54,14 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, onChange }) => {
   };
 
   return (
-    <div className="flex h-full w-full flex-col bg-white px-[6%] py-[2%]">
-      <div className="pt-[10%]">
+    <div className="flex h-full w-full flex-col bg-[var(--gray-0)] px-[6%] py-[2%]">
+      <div className="pt-[10%] text-[var(--gray-90)]">
         {/* 안내 문구 */}
         <h2 className="mb-[3%] self-start text-left text-lg leading-snug font-bold">
           이메일로 받은 인증코드를
           <br /> 입력해주세요!
         </h2>
-        <p className="mb-16 text-sm text-gray-500">
+        <p className="mb-16 text-sm text-[var(--gray-40)]">
           받지 못했다면 스팸함을 확인해주세요
         </p>
         {/* 5칸 입력 필드 */}
@@ -79,13 +79,16 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, onChange }) => {
               ref={(el) => {
                 inputsRef.current[i] = el;
               }}
-              className="aspect-square w-[18%] rounded border border-gray-300 text-center text-xl placeholder-gray-300 focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+              className="aspect-square w-[18%] rounded border border-[var(--gray-30)] text-center text-xl text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
             />
           ))}
         </div>
         {/* 인증코드 재발송 버튼 */}
         <div className="mb-6 w-full text-center">
-          <button onClick={onBack} className="text-sm text-gray-500 underline">
+          <button
+            onClick={onBack}
+            className="text-sm text-[var(--gray-70)] underline"
+          >
             인증코드 재발송하기
           </button>
         </div>
@@ -96,8 +99,10 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, onChange }) => {
         <button
           onClick={handleNext}
           disabled={!isComplete}
-          className={`w-full rounded-xl py-[4%] text-center text-sm text-gray-700 ${
-            isComplete ? "bg-black text-white" : "bg-[#E4E4E4] text-black"
+          className={`w-full rounded-xl py-[4%] text-center text-sm ${
+            isComplete
+              ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
+              : "bg-[var(--gray-10)] text-[var(--gray-50)]"
           } `}
         >
           인증 완료하기
