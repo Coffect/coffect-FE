@@ -1,4 +1,3 @@
-import BottomNavbar from "../components/shareComponents/BottomNavbar";
 import LoginChoice from "../components/Login/Login";
 import { useNavigate } from "react-router-dom";
 
@@ -19,7 +18,6 @@ const Login = () => {
           navigate("/signup");
         }}
       />
-      <BottomNavbar />
     </div>
   );
 };
