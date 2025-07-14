@@ -70,7 +70,7 @@ const Signup: React.FC = () => {
         {step === 1 && <SplashScreen onNext={goNext} />}
         {/* 2. 회원가입/로그인 선택 화면 */}
         {step === 2 && (
-          <LoginChoice onSignUp={goNext} onLogin={() => navigate("/login")} />
+          <LoginChoice onSignUp={goNext} onLogin={() => navigate("/home")} />
         )}
         {/* 3. 약관 동의 화면 */}
         {step === 3 && <TermsAgreement onNext={goNext} />}
