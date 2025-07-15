@@ -262,7 +262,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
         </div>
         <input
           type="text"
-          className="w-full rounded-lg border-2 border-[var(--gray-10)] bg-[var(--white)] px-4 py-3 text-[16px] font-medium text-[var(--gray-30)] placeholder:text-[var(--gray-border-2)]"
+          className="w-full rounded-lg border-2 border-[var(--gray-10)] bg-[var(--white)] px-4 py-3 text-[16px] font-extrabold text-[var(--gray-80)] placeholder:text-[var(--gray-30)]"
           value={values.place}
           onChange={(e) => onChange({ ...values, place: e.target.value })}
           placeholder="장소를 입력해주세요"
@@ -320,7 +320,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
             className={
               completeLabel === "수정하기"
                 ? `basis-3/5 rounded-xl bg-[var(--gray-80)] py-3 text-sm font-bold text-[var(--white)]`
-                : `flex-1 rounded-lg py-3 text-base font-bold transition-colors duration-100 ${isCompleteEnabled ? "bg-[var(--gray-70)] text-[var(--white)]" : "bg-[var(--gray-30)] text-[var(--gray-40)]"}`
+                : `flex-1 rounded-lg py-3 text-base font-bold transition-colors duration-100 ${isCompleteEnabled ? "bg-[var(--gray-70)] text-[var(--white)]" : "bg-[var(--gray-10)] text-[var(--gray-50)]"}`
             }
             style={completeLabel === "수정하기" ? { minWidth: 0 } : {}}
             onClick={isCompleteEnabled ? onComplete : undefined}

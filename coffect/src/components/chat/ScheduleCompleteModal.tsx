@@ -33,7 +33,7 @@ const ScheduleCompleteModal: React.FC<ScheduleCompleteModalProps> = ({
           <img
             src={ScheduleCompleteImg}
             alt="일정 완료"
-            className="mt-4 h-[100px] w-[100px] object-contain"
+            className="mt-1 mb-4 h-[100px] w-[100px] object-contain"
           />
         </div>
         <button
