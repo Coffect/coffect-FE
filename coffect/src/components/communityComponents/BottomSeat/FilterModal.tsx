@@ -61,7 +61,7 @@ const FilterModal = ({
       ></div>
 
       <div
-        className={`fixed right-0 bottom-0 left-0 z-50 mx-auto h-[58.75%] w-full max-w-[430px] rounded-t-lg bg-white ${isVisible ? "animate-slide-up" : "hidden"} flex flex-col`}
+        className={`fixed right-0 bottom-0 left-0 z-60 mx-auto h-[58.75%] w-full max-w-[430px] rounded-t-lg bg-white ${isVisible ? "animate-slide-up" : "hidden"} flex flex-col`}
       >
         {/* 글 카테고리 선택하기 Text */}
         <div className="flex-shrink-0 p-6 pb-4">
