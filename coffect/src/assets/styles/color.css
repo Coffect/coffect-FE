@@ -2,6 +2,56 @@
 /* className="bg-[var(--accent-color)] text-[var(--text-light)]" */
 
 :root {
+  /* red */
+  --noti: #ff3535;
+
+  /* green */
+
   /* gray */
   --gray-0: #ffffff;
+  --gray-5: #f5f5f5;
+  --gray-10: #e4e4e4;
+  --gray-20: #cacaca;
+  --gray-30: #acacac;
+  --gray-40: #848484;
+  --gray-50: #666666;
+  --gray-60: #4a4a4a;
+  --gray-70: #3a3a3a;
+  --gray-80: #2d2d2d;
+  --gray-90: #121212;
+
+  /* */
+  --timetable-cell: #c4edbc;
+
+  /* interesting keyword */
+  --startup-bg: #ffe7df;
+  --startup-text: #ff703e;
+  --development-bg: #ddf6d9;
+  --development-text: #487e3d;
+  --design-bg: #fff0c8;
+  --design-text: #ff8126;
+  --plan-bg: #ffe3eb;
+  --plan-text: #ff608d;
+  --ai-bg: #ffe4de;
+  --ai-text: #f87c5b;
+  --write-bg: #f4e5ff;
+  --write-text: #8957ad;
+  --read-bg: #d5f1ff;
+  --read-text: #00a4ef;
+  --marketing-bg: #d5daff;
+  --marketing-text: #445aff;
+  --trip-bg: #d6fff9;
+  --trip-text: #08bca4;
+  --data-bg: #ebeaff;
+  --data-text: #6964b3;
+  --hw-bg: #fffddb;
+  --hw-text: #a69f20;
+  --movie-bg: #dafffb;
+  --movie-text: #0d6259;
+  --language-bg: #feecff;
+  --language-text: #e34feb;
+  --music-bg: #d9e9f1;
+  --music-text: #1b7ca4;
+  --networking-bg: #f7f7f7;
+  --networking-text: #837c7c;
 }
