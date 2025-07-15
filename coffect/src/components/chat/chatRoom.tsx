@@ -167,6 +167,17 @@ const ChatRoom = () => {
               </span>
             </button>
           )}
+          {schedule && (
+            <button
+              className="flex min-w-0 flex-1 items-center justify-center gap-2 overflow-hidden rounded-md border border-gray-200 bg-white py-2 text-xs font-bold text-ellipsis whitespace-nowrap text-gray-700 sm:text-sm"
+              onClick={openModal}
+            >
+              <Mail size={16} className="mr-1 text-gray-400" />
+              <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
+                상대 요청 보기
+              </span>
+            </button>
+          )}
         </div>
         {/* 커피챗 일정 등록/상대 요청 보기 버튼 */}
         {!schedule && (

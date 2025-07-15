@@ -19,8 +19,8 @@ const ScheduleCompleteModal: React.FC<ScheduleCompleteModalProps> = ({
 }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-      <div className="flex min-h-[300px] w-[100vw] max-w-[80vw] flex-col items-center">
-        <div className="flex min-h-[300px] w-full flex-col items-center rounded-2xl rounded-b-none bg-white px-6 pt-10 pb-3">
+      <div className="mx-auto flex w-[90%] max-w-[340px] min-w-[200px] flex-col items-center">
+        <div className="flex w-full flex-col items-center rounded-2xl rounded-b-none bg-white px-6 pt-10 pb-3">
           <div className="mb-2 text-center text-base leading-snug font-extrabold text-gray-900">
             {formatKoreanDate(date)} {time}
           </div>

@@ -187,7 +187,12 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
           <div className="relative" ref={dropdownRef}>
             {!isCustomTime ? (
               <button
-                className="flex w-full items-center justify-between rounded-lg border-2 border-[rgba(228,228,228,1)] bg-white px-4 py-3 text-left text-[15px] font-extrabold text-[rgba(18,18,18,1)]"
+                className={
+                  "flex w-full items-center justify-between rounded-lg border-2 border-[rgba(228,228,228,1)] bg-white px-4 py-3 text-left text-[15px] font-extrabold text-[rgba(18,18,18,1)]" +
+                  (openDropdown && !isCustomTime
+                    ? " rounded-b-none border-b-1"
+                    : "")
+                }
                 onClick={() => setOpenDropdown((prev) => !prev)}
                 type="button"
               >
@@ -206,7 +211,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
               </button>
             ) : (
               <input
-                className="w-full rounded-lg border border-gray-200 px-4 py-4 text-[15px] font-extrabold text-[rgba(18,18,18,1)]"
+                className="w-full rounded-lg border border-gray-200 px-4 py-4 text-[16px] font-extrabold text-[rgba(18,18,18,1)]"
                 type="text"
                 placeholder="직접 입력 (예: 15:10)"
                 value={customTime}
@@ -216,7 +221,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
               />
             )}
             {openDropdown && !isCustomTime && (
-              <div className="absolute top-full right-0 left-0 z-20 mt-1 max-h-60 overflow-y-auto rounded border bg-white shadow">
+              <div className="absolute top-full right-0 left-0 z-20 max-h-60 overflow-y-auto rounded-lg rounded-t-none border-2 border-t-0 border-[rgba(228,228,228,1)] bg-white shadow">
                 {timeOptions.map((opt) => (
                   <button
                     key={opt}
@@ -300,7 +305,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
           <button
             className={
               cancelLabel === "일정 삭제하기"
-                ? "basis-2/5 rounded-xl border-2 border-[#FF3535] bg-white py-3 text-sm font-bold text-[#FF3535]"
+                ? "basis-2/5 rounded-xl border-1 border-[#FF3535] bg-white py-3 text-sm font-bold text-[#FF3535]"
                 : "flex-1 rounded-lg bg-gray-200 py-3 text-base font-bold text-gray-700"
             }
             style={cancelLabel === "일정 삭제하기" ? { minWidth: 0 } : {}}
