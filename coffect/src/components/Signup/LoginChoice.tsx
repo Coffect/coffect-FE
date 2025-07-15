@@ -61,7 +61,7 @@ const LoginChoice: React.FC<LoginChoiceProps> = ({ onSignUp, onLogin }) => {
       {/* 회원가입 버튼 */}
       <button
         onClick={onSignUp}
-        className="w-full max-w-[90%] rounded-lg border border-[var(--gray-30)] py-[4%] text-lg text-[var(--gray-50)]"
+        className="mb-10 w-full max-w-[90%] rounded-lg border border-[var(--gray-30)] py-[4%] text-lg text-[var(--gray-50)]"
       >
         학교 이메일로 가입하기
       </button>
