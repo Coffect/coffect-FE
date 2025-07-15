@@ -20,6 +20,7 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const trySend = () => {
     if (imageFile) {
@@ -30,6 +31,8 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
     }
     if (inputValue.trim().length === 0) return; // 공백만 입력된 경우 막기
     handleSend(inputValue); // 공백 포함 원본 그대로 전송
+    setInputValue("");
+    inputRef.current?.focus(); // 채팅을 전송 후에도 입력창 포커스 유지
   };
 
   const handlePlusClick = () => {
@@ -85,6 +88,7 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
             onChange={handleFileChange}
           />
           <input
+            ref={inputRef}
             className="flex-1 rounded-full px-1 py-2 text-base outline-none placeholder:text-[rgba(172,172,172,1)]"
             placeholder="메시지를 입력해주세요"
             value={inputValue}

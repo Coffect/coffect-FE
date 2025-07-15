@@ -104,7 +104,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
   const isCompleteEnabled = Boolean(values.date && values.time && values.place);
 
   return (
-    <div>
+    <div className="flex h-full flex-col">
       {/* 날짜 선택 */}
       <div className="mb-8">
         <div className="mt-5 mb-2 text-base font-extrabold text-gray-800">
@@ -295,7 +295,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
         </button>
       </div>
       {/* 완료/취소 버튼 */}
-      <div className="mt-8 flex gap-3">
+      <div className="mt-auto flex w-full min-w-0 flex-nowrap justify-end gap-3 px-0">
         {onCancel && (
           <button
             className={
