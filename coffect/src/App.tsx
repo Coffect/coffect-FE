@@ -8,6 +8,7 @@ import Community from "./pages/Community";
 import ChatRouter from "./routes/ChatRouter";
 import userPageRoutes from "./routes/userPageRoutes";
 import homePageRoutes from "./routes/homePageRoutes";
+import signupRoutes from "./routes/signupRoutes";
 
 const router = createBrowserRouter([
   {
@@ -36,6 +37,7 @@ const router = createBrowserRouter([
       },
       ...userPageRoutes,
       ...homePageRoutes,
+      ...signupRoutes,
     ],
   },
 ]);

@@ -6,6 +6,7 @@ description : 프로필 설정 화면 (프로필 사진 선택 및 사용자 이
 import React, { useState, useRef } from "react";
 import type { SignupData } from "../../types/signup";
 import { Pencil } from "lucide-react";
+import defaultAvatar from "../../assets/icon/Signup/DefaultAvatar.png";
 
 type Props = {
   onNext: () => void; // 다음 단계로 이동
@@ -47,72 +48,82 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-white px-6 py-8">
-      {/* 제목 */}
-      <h2 className="mb-10 self-start text-center text-xl leading-snug font-bold">
-        나의 프로필을 설정해주세요!
-      </h2>
-
-      {/* 프로필 이미지 업로드 */}
-      <div className="mb-10 flex justify-center">
-        <div className="relative">
-          <div
-            className="flex h-[10rem] w-[10rem] items-center justify-center overflow-hidden rounded-full bg-gray-200"
-            onClick={handleAvatarClick}
-          >
-            {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt="avatar"
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="text-gray-400">👤</div>
-            )}
+    <div className="flex h-full w-full flex-col bg-white px-[6%] py-[2%]">
+      <div className="pt-[10%] text-[var(--gray-90)]">
+        {/* 제목 */}
+        <h2 className="mb-10 self-start text-left text-lg leading-snug font-bold">
+          나의 프로필을 설정해주세요!
+        </h2>
+        {/* 프로필 이미지 업로드 */}
+        <div className="mb-10 flex justify-center">
+          <div className="relative">
+            <div
+              className="flex h-[7rem] w-[7rem] items-center justify-center overflow-hidden rounded-full bg-[var(--gray-10)]"
+              onClick={handleAvatarClick}
+            >
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt="avatar"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <img
+                  src={defaultAvatar}
+                  alt="기본 프로필"
+                  className="h-full w-full object-cover"
+                />
+              )}
+            </div>
+            <button
+              onClick={handleAvatarClick}
+              className="absolute right-0 bottom-0 mt-2 h-[2rem] w-[2rem] rounded-full bg-[var(--gray-70)] pl-[6px] text-[var(--gray-0)]"
+            >
+              <Pencil size={20} />
+            </button>
           </div>
-          <button
-            onClick={handleAvatarClick}
-            className="absolute right-0 bottom-0 mt-2 h-[3rem] w-[3rem] rounded-full bg-black pl-[8px] text-white"
-          >
-            <Pencil size={32} />
-          </button>
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            className="hidden"
+            multiple={false}
+            onChange={handleFileChange}
+          />
         </div>
-        <input
-          type="file"
-          accept="image/*"
-          ref={fileInputRef}
-          className="hidden"
-          multiple={false}
-          onChange={handleFileChange}
-        />
-      </div>
-
-      {/* 이름 입력 */}
-      <div className="mb-auto">
-        <label className="mb-2 block text-lg font-bold text-gray-700">
-          이름
-        </label>
-        <input
-          type="text"
-          placeholder="이름을 입력해주세요"
-          value={name}
-          onChange={(e) => handleNameChange(e.target.value)} // 이름 업데이트
-          className="w-full rounded-lg border border-gray-300 px-4 py-3 text-base focus:border-[2.5px] focus:border-gray-900 focus:ring-0 focus:outline-none"
-        />
-        {nameError && (
-          <p className="mt-1 text-xs text-red-500">이름을 입력해주세요.</p>
-        )}
+        {/* 이름 입력 */}
+        <div className="mb-auto">
+          <label className="mb-[3%] block text-[1rem] font-bold text-[var(--gray-90)]">
+            이름
+          </label>
+          <input
+            type="text"
+            placeholder="이름을 입력해주세요"
+            value={name}
+            onChange={(e) => handleNameChange(e.target.value)} // 이름 업데이트
+            className="w-full flex-7 rounded border border-[var(--gray-10)] px-3 py-2 text-sm text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+          />
+          {nameError && (
+            <p className="mt-1 text-xs text-[var(--noti)]">
+              이름을 입력해주세요.
+            </p>
+          )}
+        </div>
       </div>
 
       {/* 다음 버튼 */}
-      <button
-        onClick={handleNext}
-        className={`mt-auto w-full rounded-xl px-3 py-3 text-center text-lg ${
-          name.trim() ? "bg-black text-white" : "bg-[#E4E4E4] text-gray-500"
-        }`}
-      >
-        다음
-      </button>
+      <div className="absolute bottom-[4%] left-1/2 w-full max-w-md -translate-x-1/2 transform px-[6%]">
+        <button
+          onClick={handleNext}
+          className={`w-full rounded-xl py-[4%] text-center text-sm ${
+            name.trim()
+              ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
+              : "bg-[var(--gray-10)] text-[var(--gray-50)]"
+          }`}
+        >
+          다음
+        </button>
+      </div>
     </div>
   );
 };
