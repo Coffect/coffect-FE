@@ -13,7 +13,7 @@ const RequestModal = ({ isOpen, onClose, username }: RequestModalProps) => {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="relative w-[80%] max-w-md rounded-2xl bg-white p-5 py-7 shadow-lg">
+      <div className="relative w-[90vw] max-w-[280px] rounded-2xl bg-white px-4 py-6 shadow-lg sm:max-w-[340px]">
         <button className="absolute top-3 right-3" onClick={onClose}>
           <X size={24} />
         </button>

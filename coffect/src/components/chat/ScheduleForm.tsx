@@ -146,7 +146,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
             }
             calendarClassName="iphone-calendar"
             dayClassName={(date) => {
-              // 정확히 같은 날짜(년, 월, 일 모두)일 때만 선택된 상태로 표시
+              // 정확히 같은 날짜(년, 월, 일)일 때만 선택된 상태로 표시
               const selected =
                 values.date instanceof Date &&
                 date.getDate() === values.date.getDate() &&

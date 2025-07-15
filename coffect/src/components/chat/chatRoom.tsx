@@ -140,17 +140,17 @@ const ChatRoom = () => {
           <ChatInterestTags interests={user.interests} />
         </div>
         {/* 일정 정보 표시 */}
-        {schedule && (
-          <div className="flex items-center gap-3">
+        <div className="flex w-full items-center gap-2">
+          {schedule && (
             <button
-              className="flex items-center rounded-md border border-gray-200 bg-white px-3 py-2 text-sm font-bold whitespace-nowrap text-gray-700"
+              className="flex min-w-0 flex-1 items-center justify-center gap-2 overflow-hidden rounded-md border border-gray-200 bg-white py-2 text-xs font-bold text-ellipsis whitespace-nowrap text-gray-700 sm:text-sm"
               onClick={() =>
                 navigate("/chat/schedule", { state: { schedule } })
               }
               style={{ cursor: "pointer" }}
             >
-              <Calendar size={18} className="mr-3 text-gray-400" />
-              <span className="whitespace-nowrap">
+              <Calendar size={18} className="mr-1 text-gray-400" />
+              <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
                 {schedule.date
                   ? typeof schedule.date === "string"
                     ? schedule.date.replace(/ /g, "\u00A0")
@@ -166,15 +166,8 @@ const ChatRoom = () => {
                 {schedule.time}
               </span>
             </button>
-            <button
-              className="flex items-center rounded-md border border-gray-200 bg-white px-4 py-2 text-sm font-bold whitespace-nowrap text-gray-700"
-              onClick={openModal}
-            >
-              <Mail size={16} className="mr-3 text-gray-400" />
-              <span className="whitespace-nowrap">상대 요청 보기</span>
-            </button>
-          </div>
-        )}
+          )}
+        </div>
         {/* 커피챗 일정 등록/상대 요청 보기 버튼 */}
         {!schedule && (
           <div className="flex gap-2">
