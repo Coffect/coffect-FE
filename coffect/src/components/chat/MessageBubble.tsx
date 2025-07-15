@@ -13,10 +13,9 @@ interface MessageBubbleProps {
 
 const bubbleBase =
   "max-w-[75%] rounded-lg px-3 py-2 text-xs leading-relaxed whitespace-pre-line";
-const myBubble = `${bubbleBase} bg-[rgba(58,58,58,1)] text-white px-4`;
-const otherBubble = `${bubbleBase} bg-white text-[rgba(45,45,45,1)]`;
-const timeText =
-  "mb-1 text-[11px] text-[rgba(132,132,132,1)] whitespace-nowrap";
+const myBubble = `${bubbleBase} bg-[var(--gray-80)] text-[var(--white)] px-4`;
+const otherBubble = `${bubbleBase} bg-[var(--white)] text-[var(--gray-80)]`;
+const timeText = "mb-1 text-[11px] text-[var(--gray-40)] whitespace-nowrap";
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({
   text,
@@ -35,9 +34,9 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   return (
     <div className="flex flex-row items-start gap-2">
       {showProfile ? (
-        <div className="h-7 w-7 flex-shrink-0 rounded-full border border-gray-200 bg-gray-300" />
+        <div className="h-8 w-8 flex-shrink-0 rounded-full border border-[var(--gray-10)] bg-[var(--gray-20)]" />
       ) : (
-        <div className="h-7 w-7 flex-shrink-0" />
+        <div className="h-8 w-8 flex-shrink-0" />
       )}
       <div className="flex flex-row items-end">
         <div className={otherBubble}>{text}</div>

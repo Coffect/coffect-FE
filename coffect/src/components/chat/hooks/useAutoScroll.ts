@@ -6,9 +6,9 @@ import type { RefObject } from "react";
 
 export default function useAutoScroll(
   ref: RefObject<HTMLDivElement | null>,
-  deps: unknown[],
+  messages: unknown[],
 ) {
   useEffect(() => {
     ref.current?.scrollIntoView({ behavior: "smooth" });
-  }, deps);
+  }, [ref, messages]);
 }

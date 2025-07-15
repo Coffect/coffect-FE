@@ -23,12 +23,12 @@ const ImageMessageBubble: React.FC<ImageMessageBubbleProps> = ({
   >
     {/* 상대방이 이미지를 보냈을 때 프로필과 같이 띄어지기 */}
     {!mine && showProfile && (
-      <div className="h-7 w-7 flex-shrink-0 rounded-full border border-gray-200 bg-gray-300" />
+      <div className="h-8 w-8 flex-shrink-0 rounded-full border border-[var(--gray-10)] bg-[var(--gray-30)]" />
     )}
     <img
       src={imageUrl}
       alt="전송된 이미지"
-      className="max-h-[160px] max-w-[160px] rounded-lg border object-cover"
+      className="max-h-[160px] max-w-[160px] rounded-lg border border-[var(--gray-10)] object-cover"
     />
   </div>
 );
