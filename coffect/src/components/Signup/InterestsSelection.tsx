@@ -10,6 +10,8 @@ type Props = {
   onNext: () => void; // 다음 단계 이동 함수
   onChange: (list: string[]) => void; // 선택된 관심사 목록 전달 함수
 };
+// 화면 세로 길이 600이하인지 측정
+const isShort = typeof window !== "undefined" && window.innerHeight < 600;
 
 // 선택 가능한 관심사 목록
 const OPTIONS = [
@@ -79,7 +81,7 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
         <br />
         <span className="text-lg font-bold">비슷한 친구들을 추천해줄게요!</span>
       </h2>
-      <p className="mb-[2rem] text-sm text-[var(--gray-40)]">
+      <p className="mb-[1.5rem] text-sm text-[var(--gray-40)]">
         나중에 언제든지 변경 가능해요
       </p>
 
@@ -93,13 +95,13 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
             <button
               key={opt}
               onClick={() => toggle(opt)}
-              className={`inline-block rounded-lg px-[9%] py-[4%] text-sm transition-all ${
+              className={`inline-block rounded-lg text-sm transition-all ${
                 isSelected
                   ? isFirst
                     ? "bg-orange-500 text-[var(--gray-0)]" // 첫 선택 항목은 주황색 강조
                     : "bg-[var(--gray-70)] text-[var(--gray-0)]" // 나머지는 검정
                   : "bg-[var(--gray-5)] text-[var(--gray-70)]" // 미선택 항목은 회색
-              }`}
+              } ${isShort ? "px-[4%] py-[2%]" : "px-[8%] py-[4%]"}`} // 세로 길이에 따라 다른 여백 적용
             >
               {opt}
             </button>
