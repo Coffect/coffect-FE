@@ -44,7 +44,7 @@ const chatList = [
 const Chat = () => {
   const navigate = useNavigate();
   return (
-    <div className="flex h-full w-full flex-col bg-white pb-20">
+    <div className="flex h-full w-full flex-col bg-white">
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-10 pb-2">
         <span className="text-2xl font-bold">채팅</span>
