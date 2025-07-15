@@ -26,38 +26,42 @@ const EmailVerification: React.FC<Props> = ({ onNext, onChange }) => {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-white px-6 py-8">
-      {/* 타이틀 */}
-      <h2 className="mb-6 self-start text-center text-xl leading-snug font-bold">
-        정확한 확인을 위해
-        <br />
-        학교 이메일 인증을 할게요!
-      </h2>
-
-      {/* 이메일 입력 필드 */}
-      <div className="mb-6">
-        <label className="mb-2 block text-base font-semibold text-gray-700">
-          학교 이메일
-        </label>
-        <input
-          type="email"
-          placeholder="abc1203@sookmyung.ac.kr"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)} // 이메일 업데이트
-          className="w-full rounded border border-gray-300 px-4 py-3 text-base focus:border-[2.5px] focus:border-gray-900 focus:ring-0 focus:outline-none"
-        />
+    <div className="flex h-full w-full flex-col bg-[var(--gray-0)] px-[6%] py-[2%]">
+      <div className="pt-[10%] text-[var(--gray-90)]">
+        {/* 타이틀 */}
+        <h2 className="mb-6 self-start text-left text-lg leading-snug font-bold">
+          <span className="text-xl">📬</span>정확한 확인을 위해
+          <br />
+          학교 이메일 인증을 할게요!
+        </h2>
+        {/* 이메일 입력 필드 */}
+        <div className="mt-[10%]">
+          <label className="mb-2 block text-[1rem] font-semibold text-[var(--gray-90)]">
+            학교 이메일
+          </label>
+          <input
+            type="email"
+            placeholder="abc1203@sookmyung.ac.kr"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)} // 이메일 업데이트
+            className="w-full rounded border border-[var(--gray-10)] px-3 py-2 text-sm text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+          />
+        </div>
+        {/* 인증코드 발송 버튼 */}
+        <div className="absolute bottom-[4%] left-1/2 w-full max-w-md -translate-x-1/2 transform px-[6%]">
+          <button
+            onClick={handleSend}
+            disabled={!valid}
+            className={`w-full rounded-xl py-[4%] text-center text-sm ${
+              valid
+                ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
+                : "bg-[var(--gray-10)] text-[var(--gray-50)]"
+            }`}
+          >
+            인증코드 발송하기
+          </button>
+        </div>
       </div>
-
-      {/* 인증코드 발송 버튼 */}
-      <button
-        onClick={handleSend}
-        disabled={!valid}
-        className={`mt-auto w-full rounded-xl px-3 py-3 text-center text-lg ${
-          valid ? "bg-black text-white" : "bg-[#E4E4E4] text-black"
-        }`}
-      >
-        인증코드 발송하기
-      </button>
     </div>
   );
 };
