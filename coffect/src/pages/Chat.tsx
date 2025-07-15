@@ -4,7 +4,8 @@
 
 import BottomNavbar from "../components/shareComponents/BottomNavbar";
 import { useNavigate } from "react-router-dom";
-import { Bell, Mail } from "lucide-react";
+import { Bell } from "lucide-react";
+import EmptyChatList from "../assets/icon/chat/EmptyChatList.png";
 
 const chatList = [
   {
@@ -68,7 +69,11 @@ const Chat = () => {
             </span>
 
             <div className="mt-2 flex flex-col items-center">
-              <Mail size={80} />
+              <img
+                src={EmptyChatList}
+                alt="빈 채팅 목록"
+                className="h-[100px] w-[100px]"
+              />
             </div>
           </div>
         ) : (
