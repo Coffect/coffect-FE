@@ -4,10 +4,11 @@ import RootLayout from "./components/layout/RootLayout";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Chat from "./pages/Chat";
-
 import CommunityRoutes from "./routes/CommunityRoutes";
+import ChatRouter from "./routes/ChatRouter";
 import userPageRoutes from "./routes/userPageRoutes";
+import homePageRoutes from "./routes/homePageRoutes";
+import signupRoutes from "./routes/signupRoutes";
 
 const router = createBrowserRouter([
   {
@@ -27,11 +28,13 @@ const router = createBrowserRouter([
         element: <Signup />,
       },
       {
-        path: "home",
-        element: <Home />,
+        path: "/chat/*",
+        element: <ChatRouter />,
       },
       ...CommunityRoutes,
       ...userPageRoutes,
+      ...homePageRoutes,
+      ...signupRoutes,
     ],
   },
 ]);
