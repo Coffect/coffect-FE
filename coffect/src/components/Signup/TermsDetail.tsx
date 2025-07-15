@@ -7,7 +7,7 @@ const TermsDetail = () => {
   return (
     <div className="relative h-screen bg-[var(--gray-0)]">
       {/* 상단바 */}
-      <div className="fixed top-0 left-1/2 z-10 w-full max-w-md -translate-x-1/2 bg-[var(--gray-0)]">
+      <div className="abosolute box-border w-full max-w-md bg-[var(--gray-0)]">
         <TopNavbar title="" onBack={() => navigate(-1)} />
       </div>
 
