@@ -68,9 +68,9 @@ const Schedule: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-white">
+    <div className="flex h-full w-full flex-col bg-white">
       {/* 상단 헤더 */}
-      <div className="relative flex w-full flex-col items-center justify-center border-b-3 border-[rgba(245,245,245,1)] bg-white px-4 pt-6 pb-4">
+      <div className="relative flex w-full flex-col items-center justify-center bg-white px-4 pt-6 pb-4">
         <button
           className="absolute top-6 left-4 text-2xl text-gray-700"
           onClick={() => navigate(-1)}
