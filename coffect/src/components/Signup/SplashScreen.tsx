@@ -29,7 +29,7 @@ const SplashScreen = ({ onNext }: Props) => {
       {/* 추후 로고로 수정 예정 */}
       <h1 className="mb-[2%] text-5xl font-bold text-black">coffect</h1>
       {/* 설명 문구 */}
-      <p className="text-lg font-medium text-[var(--gray-60)]">
+      <p className="text-xl font-medium text-[var(--gray-60)]">
         공강 시간을 더 생산적이게
       </p>
     </div>

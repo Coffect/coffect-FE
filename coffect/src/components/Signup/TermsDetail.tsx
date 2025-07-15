@@ -17,13 +17,13 @@ const TermsDetail = () => {
         style={{ height: `calc(100vh - 60px)` }}
       >
         {/* 제목 */}
-        <h1 className="text-lg font-bold text-[var(--gray-90)]">
+        <h1 className="text-2xl font-bold text-[var(--gray-90)]">
           서비스 이용 약관
         </h1>
         {/* 본문 */}
         <div className="mt-4 text-xs leading-relaxed whitespace-pre-wrap text-[var(--gray-50)]">
           <h2 className="mt-4 text-sm font-semibold">제 1장 이용계약</h2>
-          <div className="mt-4">
+          <div className="mt-4 text-xs">
             선거운동은 각급 선거관리위원회의 관리하에 법률이 정하는 범위안에서
             하되, 균등한 기회가 보장되어야 한다. 대통령은 내우·외환·천재·지변
             또는 중대한 재정·경제상의 위기에 있어서 국가의 안전보장 또는 공공의
@@ -35,7 +35,7 @@ const TermsDetail = () => {
             의하여 새로 설치될 기관의 권한에 속하는 직무를 행하고 있는 기관은 이
             헌법에 의하여 새로운 기관이 설치될 때까지 존속하며 그 직무를 행한다.
           </div>
-          <div className="mt-4">
+          <div className="mt-4 text-xs">
             국가는 건전한 소비행위를 계도하고 생산품의 품질향상을 촉구하기 위한
             소비자보호운동을 법률이 정하는 바에 의하여 보장한다. 모든 국민은 법
             앞에 평등하다. 누구든지 성별·종교 또는 사회적 신분에 의하여
@@ -50,7 +50,7 @@ const TermsDetail = () => {
 
         <div className="text-xs leading-relaxed whitespace-pre-wrap text-[var(--gray-50)]">
           <h2 className="mt-4 text-sm font-semibold">제 2장 이용계약</h2>
-          <div className="mt-4">
+          <div className="mt-4 text-xs">
             선거운동은 각급 선거관리위원회의 관리하에 법률이 정하는 범위안에서
             하되, 균등한 기회가 보장되어야 한다. 대통령은 내우·외환·천재·지변
             또는 중대한 재정·경제상의 위기에 있어서 국가의 안전보장 또는 공공의
@@ -62,7 +62,7 @@ const TermsDetail = () => {
             의하여 새로 설치될 기관의 권한에 속하는 직무를 행하고 있는 기관은 이
             헌법에 의하여 새로운 기관이 설치될 때까지 존속하며 그 직무를 행한다.
           </div>
-          <div className="mt-4">
+          <div className="mt-4 text-xs">
             국가는 건전한 소비행위를 계도하고 생산품의 품질향상을 촉구하기 위한
             소비자보호운동을 법률이 정하는 바에 의하여 보장한다. 모든 국민은 법
             앞에 평등하다. 누구든지 성별·종교 또는 사회적 신분에 의하여

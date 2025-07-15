@@ -75,14 +75,14 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
 
   return (
     <div className="flex h-full w-full flex-col bg-white px-[6%] py-[8%] text-left text-xs">
-      <h2 className="mb-[10%] text-lg font-bold text-[var(--gray-90)]">
+      <h2 className="mb-[10%] text-2xl font-bold text-[var(--gray-90)]">
         로그인에 사용할
         <br /> 계정 정보를 설정해주세요
       </h2>
 
       {/* 아이디 입력 및 중복체크 버튼 */}
       <div className="mb-[10%]">
-        <label className="mb-2 block text-sm font-semibold text-[var(--gray-90)]">
+        <label className="mb-2 block text-lg font-semibold text-[var(--gray-90)]">
           아이디
         </label>
         <div className="flex items-center gap-[2%]">
@@ -91,11 +91,11 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
             placeholder="5글자 이상"
             value={userid}
             onChange={(e) => onUseridChange(e.target.value)}
-            className="w-full flex-7 rounded border border-[var(--gray-10)] px-3 py-2 text-sm text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+            className="w-full flex-7 rounded border border-[var(--gray-10)] px-3 py-2 text-base text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
           />
           <button
             onClick={handleCheckDuplicate}
-            className={`flex-3 rounded-lg py-2 text-sm ${
+            className={`flex-3 rounded-lg py-2 text-base ${
               isDuplicateChecked
                 ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
                 : "bg-[var(--gray-10)] text-[var(--gray-90)]"
@@ -105,7 +105,7 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
           </button>
         </div>
         {useridError && (
-          <p className="mt-1 text-xs text-[var(--noti)]">
+          <p className="mt-1 text-sm text-[var(--noti)]">
             영문/숫자/언더바 조합 5글자 이상
           </p>
         )}
@@ -113,10 +113,10 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
 
       {/* 비밀번호 입력 */}
       <div className="mb-[10%]">
-        <label className="mb-2 block text-sm font-semibold text-[var(--gray-90)]">
+        <label className="mb-2 block text-lg font-semibold text-[var(--gray-90)]">
           비밀번호
         </label>
-        <div className="flex w-full items-center rounded border border-[var(--gray-10)] px-3 py-2 text-sm text-[var(--gray-90)] focus-within:border-[2px] focus-within:border-gray-900 focus-within:ring-0 focus-within:outline-none">
+        <div className="flex w-full items-center rounded border border-[var(--gray-10)] px-3 py-2 text-base text-[var(--gray-90)] focus-within:border-[2px] focus-within:border-gray-900 focus-within:ring-0 focus-within:outline-none">
           <input
             type={showPassword ? "text" : "password"}
             placeholder="영문/숫자/특수기호 조합 8자 이상"
@@ -134,7 +134,7 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
         </div>
 
         {passwordError && (
-          <p className="mt-1 text-xs text-[var(--noti)]">
+          <p className="mt-1 text-sm text-[var(--noti)]">
             영문/숫자/특수기호 조합 8글자 이상
           </p>
         )}
@@ -142,7 +142,7 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
 
       {/* 비밀번호 재입력 */}
       <div className="mb-auto">
-        <label className="mb-2 block text-sm font-semibold text-[var(--gray-90)]">
+        <label className="mb-2 block text-lg font-semibold text-[var(--gray-90)]">
           비밀번호 재입력
         </label>
         <div className="flex w-full items-center rounded border border-[var(--gray-10)] px-3 py-2 text-sm text-[var(--gray-90)] focus-within:border-[2px] focus-within:border-gray-900 focus-within:ring-0 focus-within:outline-none">
@@ -151,7 +151,7 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
             placeholder="비밀번호를 다시 입력해주세요."
             value={confirm}
             onChange={(e) => onConfirmChange(e.target.value)}
-            className="flex-1 bg-transparent text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:outline-none"
+            className="flex-1 bg-transparent text-base text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:outline-none"
           />
           <button
             type="button"
@@ -162,7 +162,7 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
           </button>
         </div>
         {confirmError && (
-          <p className="mt-1 text-xs text-[var(--noti)]">
+          <p className="mt-1 text-sm text-[var(--noti)]">
             비밀번호와 일치하지 않습니다
           </p>
         )}
@@ -172,7 +172,7 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
       <div className="absolute bottom-[4%] left-1/2 w-full max-w-md -translate-x-1/2 transform px-[6%]">
         <button
           onClick={handleNext}
-          className={`w-full rounded-xl py-[4%] text-center text-sm ${
+          className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
             canProceed
               ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
               : "bg-[var(--gray-10)] text-[var(--gray-50)]"

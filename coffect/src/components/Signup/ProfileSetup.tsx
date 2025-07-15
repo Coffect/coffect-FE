@@ -51,7 +51,7 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
     <div className="flex h-full w-full flex-col bg-white px-[6%] py-[2%]">
       <div className="pt-[10%] text-[var(--gray-90)]">
         {/* 제목 */}
-        <h2 className="mb-10 self-start text-left text-lg leading-snug font-bold">
+        <h2 className="mb-10 self-start text-left text-2xl leading-snug font-bold">
           나의 프로필을 설정해주세요!
         </h2>
         {/* 프로필 이미지 업로드 */}
@@ -93,7 +93,7 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
         </div>
         {/* 이름 입력 */}
         <div className="mb-auto">
-          <label className="mb-[3%] block text-[1rem] font-bold text-[var(--gray-90)]">
+          <label className="mb-[3%] block text-lg font-semibold text-[var(--gray-90)]">
             이름
           </label>
           <input
@@ -101,7 +101,7 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
             placeholder="이름을 입력해주세요"
             value={name}
             onChange={(e) => handleNameChange(e.target.value)} // 이름 업데이트
-            className="w-full flex-7 rounded border border-[var(--gray-10)] px-3 py-2 text-sm text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+            className="w-full flex-7 rounded border border-[var(--gray-10)] px-3 py-2 text-base text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
           />
           {nameError && (
             <p className="mt-1 text-xs text-[var(--noti)]">
@@ -115,7 +115,7 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
       <div className="absolute bottom-[4%] left-1/2 w-full max-w-md -translate-x-1/2 transform px-[6%]">
         <button
           onClick={handleNext}
-          className={`w-full rounded-xl py-[4%] text-center text-sm ${
+          className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
             name.trim()
               ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
               : "bg-[var(--gray-10)] text-[var(--gray-50)]"

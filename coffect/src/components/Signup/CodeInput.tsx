@@ -57,11 +57,11 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, onChange }) => {
     <div className="flex h-full w-full flex-col bg-[var(--gray-0)] px-[6%] py-[2%]">
       <div className="pt-[10%] text-[var(--gray-90)]">
         {/* 안내 문구 */}
-        <h2 className="mb-[3%] self-start text-left text-lg leading-snug font-bold">
+        <h2 className="mb-[3%] self-start text-left text-2xl leading-snug font-bold">
           이메일로 받은 인증코드를
           <br /> 입력해주세요!
         </h2>
-        <p className="mb-16 text-sm text-[var(--gray-40)]">
+        <p className="mb-16 text-base text-[var(--gray-40)]">
           받지 못했다면 스팸함을 확인해주세요
         </p>
         {/* 5칸 입력 필드 */}
@@ -87,7 +87,7 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, onChange }) => {
         <div className="mb-6 w-full text-center">
           <button
             onClick={onBack}
-            className="text-sm text-[var(--gray-70)] underline"
+            className="text-base text-[var(--gray-70)] underline"
           >
             인증코드 재발송하기
           </button>
@@ -99,7 +99,7 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, onChange }) => {
         <button
           onClick={handleNext}
           disabled={!isComplete}
-          className={`w-full rounded-xl py-[4%] text-center text-sm ${
+          className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
             isComplete
               ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
               : "bg-[var(--gray-10)] text-[var(--gray-50)]"

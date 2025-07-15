@@ -75,13 +75,15 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
   return (
     <div className="flex h-full w-full flex-col bg-white px-[6%] py-[12%] text-left text-xs">
       {/* 상단 안내문 */}
-      <p className="mb-[3%] text-xs font-semibold text-orange-500">최대 4개</p>
-      <h2 className="mb-[0.5rem] text-lg leading-snug font-bold">
+      <p className="mb-[3%] text-sm font-bold text-orange-500">최대 4개</p>
+      <h2 className="mb-[0.5rem] text-2xl leading-snug font-bold">
         관심사를 알려주세요
         <br />
-        <span className="text-lg font-bold">비슷한 친구들을 추천해줄게요!</span>
+        <span className="text-2xl font-bold">
+          비슷한 친구들을 추천해줄게요!
+        </span>
       </h2>
-      <p className="mb-[1.5rem] text-sm text-[var(--gray-40)]">
+      <p className="mb-[1.5rem] text-base font-medium text-[var(--gray-40)]">
         나중에 언제든지 변경 가능해요
       </p>
 
@@ -95,7 +97,7 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
             <button
               key={opt}
               onClick={() => toggle(opt)}
-              className={`inline-block rounded-lg text-sm transition-all ${
+              className={`inline-block rounded-lg text-lg font-medium transition-all ${
                 isSelected
                   ? isFirst
                     ? "bg-orange-500 text-[var(--gray-0)]" // 첫 선택 항목은 주황색 강조
@@ -118,7 +120,7 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
           {/* 건너뛰기 버튼 */}
           <button
             onClick={onNext}
-            className="flex-1 rounded-xl border border-[var(--gray-20)] py-[4%] text-center text-sm text-[var(--gray-50)]"
+            className="flex-1 rounded-xl border border-[var(--gray-20)] py-[4%] text-center text-lg font-semibold text-[var(--gray-50)]"
           >
             건너뛰기
           </button>
@@ -126,7 +128,7 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
           {/* 다음 버튼: 선택된 항목이 없으면 비활성화 색상 */}
           <button
             onClick={handleSubmit}
-            className={`flex-2 rounded-xl py-[4%] text-center text-sm ${
+            className={`flex-2 rounded-xl py-[4%] text-center text-lg font-semibold ${
               selected.length > 0
                 ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
                 : "bg-[var(--gray-10)] text-[var(--gray-50)]"
