@@ -75,7 +75,7 @@ const dummyData: UserProfile[] = [
     year: "21학번",
     tags: ["디자인", "개발", "창업", "글쓰기"],
     intro:
-      "안녕하세요! 사람과 이야기를 나누는 것을\n좋아하고, 새로운 것을 배우는 데 늘 열려 있는 있습니다.\n즐겁고 의미있는 경험을 함께 만들고 싶어요!\n특히 디자인, 마케팅에 관심이 많습니다!\n아무나 환영이니 커피쳇 제안주세요!!",
+      "안녕하세요! 사람과 이야기를 나누는 것을\n좋아하고, 새로운 것을 배우는 데 늘 열려 있어요.\n즐겁고 의미있는 경험을 함께 만들고 싶어요!\n특히 디자인, 마케팅에 관심이 많습니다!\n아무나 환영이니 커피쳇 제안주세요!!",
     image: "https://picsum.photos/200?random=3",
     answers: [
       {
@@ -186,11 +186,11 @@ const ProfileFlip: React.FC = () => {
   // 카드가 모두 제거되었을 경우
   if (!current) {
     return (
-      <div className="mt-[15%] flex flex-col items-center justify-center p-[5vw] text-center">
-        <h3 className="mt-[2%] text-lg font-bold text-[var(--gray-90)]">
+      <div className="mt-[15%] mb-20 flex flex-col items-center justify-center pt-[5vh] text-center">
+        <h3 className="mt-[2%] text-xl font-bold text-[var(--gray-90)]">
           오늘의 추천을 모두 확인했어요!
         </h3>
-        <p className="mt-[2%] mb-[7%] text-sm text-[var(--gray-40)]">
+        <p className="mt-[2%] mb-[7%] text-base font-medium text-[var(--gray-40)]">
           내일 오전 9시에 새로운 추천을 받을 수 있어요!
         </p>
         <img
@@ -201,13 +201,13 @@ const ProfileFlip: React.FC = () => {
 
         <button
           onClick={() => navigate("/community")}
-          className="mt-[10%] rounded-lg bg-[var(--gray-70)] px-[6%] py-[2%] text-sm text-[var(--gray-0)]"
+          className="mt-[8%] rounded-lg bg-[var(--gray-70)] px-[6%] py-[3%] text-base text-[var(--gray-0)]"
         >
           커뮤니티 둘러보기
         </button>
         <button
           onClick={() => navigate("/userpage")}
-          className="mt-[3%] rounded-lg border border-[var(--gray-30)] px-[5%] py-[2%] text-sm text-[var(--gray-60)]"
+          className="mt-[3%] rounded-lg border-[1.5px] border-[var(--gray-30)] px-[4%] py-[3%] text-base text-[var(--gray-60)]"
         >
           내 프로필 더 꾸미기
         </button>
@@ -219,48 +219,48 @@ const ProfileFlip: React.FC = () => {
     <div className="mt-[3%]">
       {/* 프로필 카드 */}
       <div
-        className="mx-auto h-full w-[95%] overflow-hidden rounded-3xl bg-white p-[3%]"
+        className="mx-auto h-full w-full overflow-hidden rounded-3xl bg-white p-[3%]"
         onClick={() => handleCardClick(current)}
       >
         {/* 상단 이미지 영역 */}
-        <div className="relative w-full overflow-hidden rounded-3xl">
+        <div className="relative aspect-[3/2] w-full overflow-hidden rounded-3xl">
           <img
             src={current.image}
             alt="프로필 사진"
-            className="aspect-[3/2] w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover"
           />
-          <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent px-[4%] py-[3%]">
-            <div className="text-lg font-bold text-white">
+          <div className="absolute bottom-0 left-0 w-full rounded-b-3xl bg-gradient-to-t from-black/70 to-transparent px-[4%] py-[5%]">
+            <div className="text-[22px] font-bold text-white">
               {current.name}
-              <span className="ml-[3%] text-xs font-normal text-white">
+              <span className="ml-[3%] text-sm font-medium text-white">
                 {current.major} {current.year}
               </span>
             </div>
           </div>
         </div>
         {/* 하단 태그 + 소개 */}
-        <div className="flex flex-wrap px-[4.5%] pt-[3%] pb-[1%]">
+        <div className="flex flex-wrap pt-[3%] pb-[1%]">
           {current.tags.map((tag, idx) => (
             <span
               key={idx}
-              className={`mr-[2%] mb-[2%] rounded-lg px-[3%] py-[1.5%] text-xs font-semibold ${getTagColor(
+              className={`mr-[2%] mb-[2%] rounded-[7px] px-[3%] py-[1.5%] text-sm font-medium ${getTagColor(
                 tag,
               )}`}
             >
               {tag}
             </span>
           ))}
-          <p className="mt-[0.1rem] line-clamp-3 text-[0.65rem] leading-normal whitespace-pre-line text-black">
+          <p className="mt-[0.1rem] line-clamp-3 text-base leading-normal text-[var(--gray-80)]">
             {current.intro}
           </p>
           {/* 하단 버튼 3개 (스킵 / 제안 / 팔로우) */}
           <div
-            className="mx-auto mt-[0.5rem] flex gap-[1.5rem]"
+            className="mx-auto mt-[1rem] mb-[1rem] flex gap-[1rem]"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => handleSkip(current.id)}
-              className="flex aspect-square w-[50px] items-center justify-center rounded-full bg-white text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
+              className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-white text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
             >
               <img
                 src={CardLeftImage}
@@ -270,7 +270,7 @@ const ProfileFlip: React.FC = () => {
             </button>
             <button
               onClick={() => handleSuggestClick(current.id)}
-              className="flex aspect-square w-[50px] items-center justify-center rounded-full bg-orange-500 text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
+              className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-orange-500 text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
             >
               <img
                 src={CardMidImage}
@@ -280,7 +280,7 @@ const ProfileFlip: React.FC = () => {
             </button>
             <button
               onClick={(e) => e.stopPropagation()}
-              className="flex aspect-square w-[50px] items-center justify-center rounded-full bg-white text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
+              className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-white text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
             >
               <img
                 src={CardRightImage}
@@ -292,7 +292,7 @@ const ProfileFlip: React.FC = () => {
         </div>
         {/* 페이징 도트 (총 3개, 스킵 횟수에 활성 위치 이동) */}
       </div>
-      <div className="mt-[0.5rem] flex justify-center gap-[6px]">
+      <div className="mt-[0.7rem] mb-[0.5rem] flex justify-center gap-[6px]">
         {Array.from({ length: 3 }).map((_, idx) => (
           <span
             key={idx}

@@ -7,7 +7,7 @@ import NoAlarmImage from "../../assets/Home/NoAlarm.png";
 const NoAlarm = () => {
   return (
     <div className="flex h-full w-full flex-col items-center justify-center text-center">
-      <p className="mb-4 text-lg font-bold text-[var(--gray-90)]">
+      <p className="mb-10 text-xl font-bold text-[var(--gray-90)]">
         확인할 알림이 없어요!
       </p>
       <img

@@ -25,7 +25,7 @@ const CoffeeCategoryGrid: React.FC = () => {
       {/* 상단 타이틀 */}
       <div className="flex flex-col items-start px-[2%]">
         {/* 인사 텍스트 */}
-        <p className="text-[0.9rem] leading-snug font-bold text-[var(--gray-90)]">
+        <p className="text-xl leading-snug font-bold text-[var(--gray-90)]">
           안녕하세요 <span className="text-orange-500">인하</span>님
           <br />
           오늘은 어떤 커피챗을 해볼까요?
@@ -38,7 +38,7 @@ const CoffeeCategoryGrid: React.FC = () => {
           <button
             key={idx}
             onClick={handleClick}
-            className="flex aspect-[4/3] w-full items-end justify-start rounded-4xl bg-[var(--gray-0)] p-[8%] text-left text-[0.95rem] leading-tight font-bold whitespace-pre-line text-[var(--gray-90)] transition active:scale-[1.1]"
+            className="flex aspect-[17/19] w-full items-end justify-start rounded-4xl bg-[var(--gray-0)] p-[8%] text-left text-[22px] leading-tight font-bold whitespace-pre-line text-[var(--gray-90)] transition active:scale-[1.1]"
           >
             {/* 줄바꿈 포함 텍스트 */}
             {label}

@@ -24,7 +24,7 @@ const CardsView = () => {
       </div>
 
       {/* 메인 콘텐츠 영역 */}
-      <main className="flex-1 items-center overflow-y-hidden px-[1rem]">
+      <main className="mb-20 flex-1 items-center overflow-auto px-[1rem]">
         {/* 추천 배너 슬라이드 */}
         <CoffeeBanner />
         {/*추천 프로필 카드들 */}

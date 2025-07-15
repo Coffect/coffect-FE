@@ -80,12 +80,12 @@ const CoffeeSuggestBanner = () => {
   };
 
   return (
-    <div className="mt-[3%] flex w-full items-center justify-center overflow-hidden">
+    <div className="mt-[2%] flex w-full items-center justify-center overflow-hidden">
       {/* 커피쳇 제안 베너 슬라이드 */}
-      <div className="flex h-auto w-[95%]">
+      <div className="flex h-auto w-full">
         {suggestions.length === 0 ? (
           <div className="w-full items-center justify-center">
-            <div className="rounded-2xl bg-white px-[6%] py-[6.5%] text-left text-sm leading-relaxed font-semibold text-[var(--gray-85)] shadow-[0_0_20px_rgba(189,179,170,0.2)]">
+            <div className="rounded-2xl bg-white px-[6%] py-[6.5%] text-left text-base leading-relaxed font-bold text-[var(--gray-85)] shadow-[0_0_20px_rgba(189,179,170,0.2)]">
               아직 커피챗 제안이 오지 않았어요!
               <br />
               먼저 제안해보는건 어때요?
@@ -105,30 +105,30 @@ const CoffeeSuggestBanner = () => {
                 className="flex items-center justify-center"
               >
                 {/* 제안 카드 */}
-                <div className="flex w-full items-center gap-[1rem] rounded-[20px] bg-white px-[6%] py-[4%] shadow-[0_0_20px_rgba(189,179,170,0.2)]">
+                <div className="flex w-full items-center gap-[12px] rounded-[20px] bg-white px-[5%] py-[4%] shadow-[0_0_20px_rgba(189,179,170,0.2)]">
                   {/* 프로필 이미지 */}
                   <img
                     src={user.image}
                     alt="프로필 사진"
-                    className="aspect-[1/1] w-[20%] rounded-full object-cover p-0.5"
+                    className="aspect-[1/1] w-[15%] rounded-full object-cover"
                   />
 
                   {/* 메시지 내용 + 버튼 */}
                   <div className="flex w-0 flex-1 flex-col justify-center">
-                    <p className="mb-[3%] overflow-hidden text-[0.8rem] text-ellipsis whitespace-nowrap text-[var(--gray-70)]">
-                      <span className="font-bold text-[var(--gray-85)]">
+                    <p className="mb-[3%] overflow-hidden text-base font-medium text-[var(--gray-70)]">
+                      <span className="text-base font-bold text-[var(--gray-85)]">
                         {user.name}
                       </span>
                       님의 {user.message}
                     </p>
 
                     <div className="flex justify-start">
-                      <button className="rounded-lg bg-[var(--gray-80)] px-4 py-1.5 text-[0.7rem] text-[var(--gray-0)]">
+                      <button className="rounded-[12px] bg-[var(--gray-80)] px-3 py-1.5 text-base font-medium text-[var(--gray-0)]">
                         프로필 보기
                       </button>
                       <button
                         onClick={() => setCheckedMessage(user)}
-                        className="bg--[var(--gray-0)] ml-[3%] rounded-lg border border-[var(--gray-20)] px-3 py-1.5 text-[0.7rem] text-[var(--gray-50)] hover:bg-[var(--gray-10)]"
+                        className="ml-[3%] rounded-[12px] border-[1.5px] border-[var(--gray-20)] bg-[var(--gray-0)] px-3 py-1.5 text-base font-medium text-[var(--gray-50)] hover:bg-[var(--gray-10)]"
                       >
                         메시지 확인하기
                       </button>

@@ -27,12 +27,12 @@ const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
         {/* 상단 아이콘 */}
         <div className="px-[6%] py-[10%]">
           {/* 타이틀 */}
-          <h3 className="mb-[3%] text-center text-lg leading-snug font-bold text-[var(--gray-90)]">
+          <h3 className="mb-[2%] text-center text-base leading-snug font-semibold text-[var(--gray-90)]">
             프로필을 완성해보세요!
           </h3>
 
           {/* 설명 문구 */}
-          <p className="mb-[4%] text-center text-[0.7rem] leading-relaxed whitespace-pre-line text-[var(--gray-50)]">
+          <p className="mb-[4%] text-center text-sm leading-relaxed font-medium whitespace-pre-line text-[var(--gray-50)]">
             더 나은 매칭을 위해{"\n"}몇 가지 질문에 답변해주시면 어떨까요?
           </p>
 
@@ -46,7 +46,7 @@ const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
         </div>
 
         {/* 버튼 영역 (나중에 / 작성하기) */}
-        <div className="flex h-[16.6%] overflow-hidden text-sm">
+        <div className="flex h-[16.6%] overflow-hidden text-base font-medium">
           {/* 나중에 버튼 → 모달 닫기 */}
           <button
             onClick={onClose}

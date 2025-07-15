@@ -23,25 +23,25 @@ const DeleteSuggestModal = ({
       {/* 모달 컨테이너 */}
       <div className="w-[305px] overflow-hidden rounded-xl bg-[var(--gray-0)] shadow-[0_0_24px_rgba(28,28,34,0.25)]">
         {/* 상단 콘텐츠 */}
-        <div className="px-[8%] pt-[15%]">
+        <div className="px-[4%] py-[13%]">
           {/* 타이틀 */}
-          <h3 className="text-center text-sm leading-snug font-bold text-[var(--gray-90)]">
+          <h3 className="text-center text-base leading-normal font-semibold text-[var(--gray-90)]">
             {messageName}님의 요청을
             <span className="text-[var(--noti)]"> 정말 삭제할까요?</span>
           </h3>
 
           {/* 설명 문구 */}
-          <p className="mt-[2%] mb-[12%] text-center text-xs leading-relaxed font-semibold whitespace-pre-line text-[var(--gray-40)]">
+          <p className="mt-[2%] text-center text-sm leading-normal font-medium text-[var(--gray-40)]">
             한 번 삭제한 요청은 다시 복구할 수 없어요!
           </p>
         </div>
 
         {/* 버튼 영역 (취소 / 삭제하기) */}
-        <div className="flex h-[50px] overflow-hidden text-sm">
+        <div className="flex h-[50px] overflow-hidden text-base">
           {/* 취소 버튼 */}
           <button
             onClick={onCancel}
-            className="flex-1 rounded-bl-xl bg-[var(--gray-0)] text-[var(--gray-40)]"
+            className="flex-1 rounded-bl-xl bg-[var(--gray-0)] font-medium text-[var(--gray-40)]"
           >
             취소하기
           </button>
@@ -49,7 +49,7 @@ const DeleteSuggestModal = ({
           {/* 삭제 버튼 */}
           <button
             onClick={onDelete}
-            className="flex-1 rounded-br-xl bg-[var(--gray-80)] text-[var(--gray-0)]"
+            className="flex-1 rounded-br-xl bg-[var(--gray-80)] font-semibold text-[var(--gray-0)]"
           >
             삭제하기
           </button>

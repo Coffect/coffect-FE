@@ -115,32 +115,32 @@ const CardDetailView = () => {
             alt="프로필 이미지"
             className="h-full w-full object-cover"
           />
-          <div className="absolute bottom-1/10 left-1/2 z-20 -translate-x-1/2 transform rounded-xl bg-black/60 px-3 py-1 text-xs whitespace-nowrap text-[var(--gray-0)]">
+          <div className="absolute bottom-1/10 left-1/2 z-20 -translate-x-1/2 transform rounded-xl bg-black/60 px-3 py-1 text-sm font-medium whitespace-nowrap text-[var(--gray-0)]">
             인하님과 비슷한 관심사를 가졌어요!
           </div>
         </div>
 
         {/* 상세 정보, 구분선 */}
-        <div className="relative z-10 -mt-[5%] divide-y-2 divide-[var(--gray-5)] rounded-t-3xl bg-[var(--gray-0)] px-6 pt-5 pb-5">
+        <div className="relative z-10 -mt-[5%] divide-y-2 divide-[var(--gray-5)] rounded-t-3xl bg-[var(--gray-0)] px-4 pt-8">
           {/* 이름 및 학과/학번 */}
-          <div className="pb-4">
-            <h2 className="text-lg font-semibold text-[var(--gray-80)]">
+          <div className="pb-6">
+            <h2 className="text-[22px] font-bold text-[var(--gray-80)]">
               {profile.name}
-              <span className="ml-2 text-xs font-normal text-[var(--gray-40)]">
+              <span className="ml-2 text-sm font-medium text-[var(--gray-40)]">
                 {profile.major} {profile.year}
               </span>
             </h2>
           </div>
           {/* 관심 키워드 */}
           <div className="pt-4 pb-4">
-            <h3 className="mb-3 flex items-center gap-1 text-sm font-semibold">
+            <h3 className="mb-4 flex items-center gap-1 text-lg font-semibold">
               <span>💡</span> 관심 키워드
             </h3>
             <div className="flex flex-wrap gap-2">
               {profile.tags.map((tag, i) => (
                 <span
                   key={i}
-                  className={`rounded-full px-3 py-1 text-xs font-semibold ${getTagColor(
+                  className={`rounded-7px px-3 py-1 text-sm font-medium ${getTagColor(
                     tag,
                   )}`}
                 >
@@ -151,10 +151,10 @@ const CardDetailView = () => {
           </div>
           {/* 자기소개 */}
           <div className="pt-4 pb-4">
-            <h3 className="mb-2 flex items-center gap-1 text-sm font-semibold text-[var(--gray-90)]">
-              <span>👋</span> 자기소개
+            <h3 className="mb-4 flex items-center gap-1 text-lg font-semibold text-[var(--gray-90)]">
+              👋자기소개
             </h3>
-            <p className="text-xs leading-normal whitespace-pre-line text-[var(--gray-60)]">
+            <p className="text-[16px] leading-normal font-medium whitespace-pre-line text-[var(--gray-60)]">
               {profile.intro}
             </p>
           </div>
@@ -162,10 +162,10 @@ const CardDetailView = () => {
           <div className="pt-4 pb-4">
             {profile.answers.map((qa, idx) => (
               <div key={idx} className={idx > 0 ? "mt-6" : ""}>
-                <p className="text-xs font-semibold text-[var(--gray-40)]">
+                <p className="text-base font-medium text-[var(--gray-40)]">
                   Q. {qa.question}
                 </p>
-                <p className="mt-1 text-xs font-medium whitespace-pre-line text-[var(--gray-70)]">
+                <p className="mt-1 text-base font-medium whitespace-pre-line text-[var(--gray-70)]">
                   {qa.answer}
                 </p>
               </div>
@@ -174,10 +174,10 @@ const CardDetailView = () => {
         </div>
       </div>
       {/* 하단 버튼 바 (고정) */}
-      <div className="flex flex-none justify-around bg-[var(--gray-0)] px-20 py-4 shadow-inner">
+      <div className="flex flex-none justify-around bg-[var(--gray-0)] px-20 py-3.5">
         <button
           onClick={() => handleSkipClick}
-          className="flex aspect-square w-[50px] items-center justify-center rounded-full bg-[var(--gray-0)] text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
+          className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-[var(--gray-0)] text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
         >
           <img
             src={CardLeftImage}
@@ -187,7 +187,7 @@ const CardDetailView = () => {
         </button>
         <button
           onClick={() => handleSuggestClick}
-          className="flex aspect-square w-[50px] items-center justify-center rounded-full bg-orange-500 text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
+          className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-orange-500 text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
         >
           <img
             src={CardMidImage}
@@ -195,7 +195,7 @@ const CardDetailView = () => {
             className="h-[40%] w-[40%] object-contain"
           />
         </button>
-        <button className="flex aspect-square w-[50px] items-center justify-center rounded-full bg-[var(--gray-0)] text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]">
+        <button className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-[var(--gray-0)] text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]">
           <img
             src={CardRightImage}
             alt="follow"

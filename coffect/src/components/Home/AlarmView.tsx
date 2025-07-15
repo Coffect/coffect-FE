@@ -52,7 +52,7 @@ const AlarmItemView = ({
   unread,
 }: AlarmItem) => {
   return (
-    <div className="flex items-center gap-3 border-b-2 border-[var(--gray-10)] bg-[var(--gray-0)] px-4 py-4">
+    <div className="flex items-center gap-[12px] border-b-2 border-[var(--gray-10)] bg-[var(--gray-0)] px-1 py-4">
       {/* 프로필 이미지 + 빨간 점 */}
       <div className="relative">
         <img
@@ -67,11 +67,13 @@ const AlarmItemView = ({
 
       {/* 텍스트 내용 */}
       <div className="flex flex-col">
-        <p className="text-[0.8rem] font-semibold text-[var(--gray-90)]">
+        <p className="text-base font-medium text-[var(--gray-90)]">
           <span>{username}님이</span>
           {message}
         </p>
-        <p className="mt-[0.3rem] text-xs text-[var(--gray-40)]">{time}</p>
+        <p className="mt-[0.3rem] text-sm font-medium text-[var(--gray-40)]">
+          {time}
+        </p>
       </div>
     </div>
   );
@@ -80,18 +82,21 @@ const AlarmItemView = ({
 // 전체 알림 리스트 화면
 const AlarmView = () => {
   return (
-    <div className="flex h-full w-full flex-col overflow-y-auto bg-[var(--gray-0)]">
+    <div className="relative flex h-screen w-full flex-col bg-[var(--gray-0)]">
       {/* 상단바 */}
       <div className="flex">
         <TopNavbar pageType="alarm" />
       </div>
-
       {/* 알림 리스트 or 빈 상태 */}
-      {dummyAlarms.length === 0 ? (
-        <NoAlarm />
-      ) : (
-        dummyAlarms.map((alarm) => <AlarmItemView key={alarm.id} {...alarm} />)
-      )}
+      <div className="flex-1 overflow-y-auto">
+        {dummyAlarms.length === 0 ? (
+          <NoAlarm />
+        ) : (
+          dummyAlarms.map((alarm) => (
+            <AlarmItemView key={alarm.id} {...alarm} />
+          ))
+        )}
+      </div>
     </div>
   );
 };
