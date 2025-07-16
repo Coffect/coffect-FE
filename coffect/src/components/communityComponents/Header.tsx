@@ -15,7 +15,7 @@ interface HeaderProps {
 
 const Header = ({ openModal }: HeaderProps) => {
   return (
-    <div className="sticky top-0 z-10 flex h-[15%] w-full flex-col border-b-gray-700 bg-white">
+    <div className="sticky top-0 z-10 flex h-[15%] max-h-[120px] w-full flex-col border-b-gray-700 bg-white">
       <div className="flex h-full w-full flex-col">
         {/***** 상단바 : Coffect / 검색 / 글쓰기 UI *****/}
         <div className={`${containerStyle} h-[50%] justify-between p-6`}>
