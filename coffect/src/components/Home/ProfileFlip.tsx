@@ -186,7 +186,7 @@ const ProfileFlip: React.FC = () => {
   // 카드가 모두 제거되었을 경우
   if (!current) {
     return (
-      <div className="mt-[15%] mb-20 flex flex-col items-center justify-center pt-[5vh] text-center">
+      <div className="mt-[15%] flex flex-col items-center justify-center pt-[5vh] pb-20 text-center">
         <h3 className="mt-[2%] text-xl font-bold text-[var(--gray-90)]">
           오늘의 추천을 모두 확인했어요!
         </h3>
