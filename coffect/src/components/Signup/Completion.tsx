@@ -21,8 +21,8 @@ const Completion = () => {
   }, []);
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-white">
-      <div className="h-full overflow-y-auto px-[6%] pt-[50%] text-center">
+    <div className="relative flex h-[90vh] w-full flex-col justify-between bg-white">
+      <div className="h-full flex-1 overflow-y-auto px-[6%] pt-[50%] text-center">
         {/* 타이틀 */}
         <h2 className="mb-[4%] text-3xl font-bold">회원가입이 완료되었어요!</h2>
 
@@ -38,16 +38,16 @@ const Completion = () => {
           alt="회원가입 완료 이미지"
           className="mx-auto mb-10 w-[50%]"
         />
+      </div>
 
-        {/* 하단 고정 버튼 */}
-        <div className="flex w-full pt-55 pb-20">
-          <button
-            onClick={goLogin}
-            className="w-full rounded-xl bg-[var(--gray-90)] py-[4%] text-center text-lg text-[var(--gray-0)]"
-          >
-            로그인 하러가기
-          </button>
-        </div>
+      {/* 하단 고정 버튼 */}
+      <div className="flex w-full px-[6%]">
+        <button
+          onClick={goLogin}
+          className="w-full rounded-xl bg-[var(--gray-90)] py-[4%] text-center text-lg text-[var(--gray-0)]"
+        >
+          로그인 하러가기
+        </button>
       </div>
     </div>
   );
