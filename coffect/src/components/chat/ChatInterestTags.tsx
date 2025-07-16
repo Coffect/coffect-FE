@@ -4,10 +4,10 @@
 import React from "react";
 
 const TAG_COLORS = [
-  "bg-[rgba(255,240,200,1)] text-[rgba(255,129,38,1)]",
-  "bg-[rgba(221,246,217,1)] text-[rgba(72,126,61,1)]",
-  "bg-[rgba(255,231,223,1)] text-[rgba(255,112,62,1)]",
-  "bg-[rgba(244,229,255,1)] text-[rgba(137,87,173,1)]",
+  "bg-[var(--design-bg)] text-[var(--design-text)]",
+  "bg-[var(--development-bg)] text-[var(--development-text)]",
+  "bg-[var(--startup-bg)] text-[var(--startup-text)]",
+  "bg-[var(--write-bg)] text-[var(--write-text)]",
 ];
 
 const ChatInterestTags: React.FC<{ interests: string[] }> = ({ interests }) => (
@@ -15,7 +15,7 @@ const ChatInterestTags: React.FC<{ interests: string[] }> = ({ interests }) => (
     {interests.map((tag, i) => (
       <span
         key={tag}
-        className={`rounded-md px-3 py-1 text-xs font-medium ${TAG_COLORS[i % TAG_COLORS.length]}`}
+        className={`rounded-md px-3 py-1 text-xs font-semibold ${TAG_COLORS[i % TAG_COLORS.length]}`}
       >
         {tag}
       </span>
