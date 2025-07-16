@@ -24,7 +24,7 @@ const LoginChoice: React.FC<LoginChoiceProps> = ({ onSignUp, onLogin }) => {
       {/* 추후 로고로 수정 예정 */}
       <h1 className="mb-[2%] text-5xl font-bold text-black">coffect</h1>
       {/* 설명 문구 */}
-      <p className="mb-[25%] text-lg font-medium text-[var(--gray-60)]">
+      <p className="mb-[25%] text-xl font-medium text-[var(--gray-60)]">
         공강 시간을 더 생산적이게
       </p>
       {/* 아이디/비밀번호 입력창 */}
@@ -45,7 +45,7 @@ const LoginChoice: React.FC<LoginChoiceProps> = ({ onSignUp, onLogin }) => {
       {/* 로그인 버튼 */}
       <button
         onClick={() => onLogin(email, password)}
-        className="w-full max-w-[90%] rounded-lg bg-[var(--gray-80)] py-[4%] text-white"
+        className="w-full max-w-[90%] rounded-lg bg-[var(--gray-80)] py-[4%] text-lg text-white"
       >
         로그인
       </button>
@@ -61,7 +61,7 @@ const LoginChoice: React.FC<LoginChoiceProps> = ({ onSignUp, onLogin }) => {
       {/* 회원가입 버튼 */}
       <button
         onClick={onSignUp}
-        className="w-full max-w-[90%] rounded-lg border border-[var(--gray-30)] py-[4%] text-[var(--gray-50)]"
+        className="mb-3 w-full max-w-[90%] rounded-lg border border-[var(--gray-30)] py-[4%] text-lg text-[var(--gray-50)]"
       >
         학교 이메일로 가입하기
       </button>
