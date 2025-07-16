@@ -84,7 +84,7 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
 
   return (
     <div className="relative h-screen w-full bg-white">
-      <div className="h-full overflow-y-auto px-[6%] pt-[60px] pb-[120px]">
+      <div className="h-full overflow-y-auto px-[6%] pt-[60px]">
         <h2 className="mb-[10%] text-2xl font-bold text-[var(--gray-90)]">
           로그인에 사용할
           <br /> 계정 정보를 설정해주세요
@@ -175,7 +175,7 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
           )}
         </div>
         {/* 다음 버튼 */}
-        <div className="flex w-full pt-60">
+        <div className="flex w-full pt-60 pb-20">
           <button
             onClick={handleNext}
             className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${

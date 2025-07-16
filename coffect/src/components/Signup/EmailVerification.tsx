@@ -35,7 +35,7 @@ const EmailVerification: React.FC<Props> = ({ onNext, onChange }) => {
   }, []);
 
   return (
-    <div className="relative flex h-screen w-full flex-col bg-white px-[6%] pt-[2%] pb-10">
+    <div className="relative flex h-screen w-full flex-col bg-white px-[6%] pt-[2%]">
       <div className="flex-1 overflow-y-auto">
         <div className="pt-[10%] text-[var(--gray-90)]">
           {/* 타이틀 */}
@@ -58,7 +58,7 @@ const EmailVerification: React.FC<Props> = ({ onNext, onChange }) => {
             />
           </div>
           {/* 인증코드 발송 버튼 */}
-          <div className="flex w-full pt-120">
+          <div className="flex w-full pt-120 pb-20">
             <button
               onClick={handleSend}
               disabled={!valid}

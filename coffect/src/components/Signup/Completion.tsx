@@ -40,7 +40,7 @@ const Completion = () => {
         />
 
         {/* 하단 고정 버튼 */}
-        <div className="flex w-full pt-55">
+        <div className="flex w-full pt-55 pb-20">
           <button
             onClick={goLogin}
             className="w-full rounded-xl bg-[var(--gray-90)] py-[4%] text-center text-lg text-[var(--gray-0)]"

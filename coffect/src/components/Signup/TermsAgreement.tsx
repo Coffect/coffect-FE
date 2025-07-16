@@ -59,7 +59,7 @@ const TermsAgreement = ({ onNext }: Props) => {
   }, []);
 
   return (
-    <div className="relative h-[90vh] w-full flex-col items-start justify-start overflow-auto bg-white px-[6%] py-[5%] text-left">
+    <div className="relative h-[90vh] w-full flex-col items-start justify-start overflow-auto bg-white px-[6%] pt-[5%] text-left">
       <div className="overflow-y-auto">
         {/* 추후 로고로 수정 예정 */}
         <div className="px-[6%]">
@@ -177,7 +177,7 @@ const TermsAgreement = ({ onNext }: Props) => {
           </div>
         </div>
         {/* 회원가입 버튼 */}
-        <div className="flex w-full pt-20 pb-10">
+        <div className="flex w-full pt-20 pb-3">
           <button
             onClick={onNext}
             disabled={!allRequiredChecked}

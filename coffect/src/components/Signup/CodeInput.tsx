@@ -64,7 +64,7 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, onChange }) => {
 
   return (
     <div className="relative h-screen w-full bg-white">
-      <div className="h-full overflow-y-auto px-[6%] pb-[120px]">
+      <div className="h-full overflow-y-auto px-[6%]">
         {" "}
         <div className="pt-[10%] text-[var(--gray-90)]">
           {/* 안내 문구 */}
@@ -105,7 +105,7 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, onChange }) => {
           </div>
         </div>
         {/* 인증 완료 버튼 */}
-        <div className="flex w-full pt-92">
+        <div className="flex w-full pt-92 pb-20">
           <button
             onClick={handleNext}
             disabled={!isComplete}

@@ -58,7 +58,7 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
 
   return (
     <div className="relative h-screen w-full bg-white">
-      <div className="h-full overflow-y-auto px-[6%] pb-[120px]">
+      <div className="h-full overflow-y-auto px-[6%]">
         <div className="pt-[10%] text-[var(--gray-90)]">
           {/* 제목 */}
           <h2 className="mb-10 self-start text-left text-2xl leading-snug font-bold">
@@ -122,7 +122,7 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
         </div>
 
         {/* 다음 버튼 */}
-        <div className="flex w-full pt-90">
+        <div className="flex w-full pt-90 pb-20">
           <button
             onClick={handleNext}
             className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${

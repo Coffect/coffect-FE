@@ -82,7 +82,7 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
 
   return (
     <div className="relative h-screen w-full bg-white">
-      <div className="h-full overflow-y-auto px-[6%] pt-[60px] pb-[120px]">
+      <div className="h-full overflow-y-auto px-[6%] pt-[60px]">
         <p className="mb-[3%] text-sm font-bold text-orange-500">최대 4개</p>
         <h2 className="mb-[0.5rem] text-2xl leading-snug font-bold">
           관심사를 알려주세요
@@ -123,7 +123,7 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
         {error && <p className="mb-4 text-sm text-[var(--noti)]">{error}</p>}
 
         {/* 하단 버튼 그룹 */}
-        <div className="flex w-full pt-30">
+        <div className="flex w-full pt-30 pb-20">
           <div className="mt-auto flex w-full gap-2">
             {/* 건너뛰기 버튼 */}
             <button

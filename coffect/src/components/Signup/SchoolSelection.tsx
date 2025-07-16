@@ -53,7 +53,7 @@ const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
   const isStudentIdValid = isValidStudentId(studentId);
 
   //제출버튼 클릭 여부
-  const [, setHasTriedSubmit] = useState<boolean>(false); // ✅ 추가
+  const [, setHasTriedSubmit] = useState<boolean>(false);
 
   // query나 dropdown 상태가 변경되면 자동완성 필터링 실행
   useEffect(() => {
@@ -189,7 +189,7 @@ const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
         </div>
 
         {/* 다음 버튼 */}
-        <div className={`w-full pt-70 pb-20 ${selected ? "pt-75" : "pt-130"}`}>
+        <div className={`w-full pb-20 ${selected ? "pt-75" : "pt-130"}`}>
           <button
             onClick={handleNext}
             disabled={!isNextEnabled}
