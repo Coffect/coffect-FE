@@ -59,8 +59,8 @@ const TermsAgreement = ({ onNext }: Props) => {
   }, []);
 
   return (
-    <div className="relative w-full flex-col items-start justify-start overflow-auto bg-white px-[6%] py-[5%] text-left">
-      <div className="h-[90vh] overflow-y-auto">
+    <div className="relative h-[90vh] w-full flex-col items-start justify-start overflow-auto bg-white px-[6%] py-[5%] text-left">
+      <div className="overflow-y-auto">
         {/* 추후 로고로 수정 예정 */}
         <div className="px-[6%]">
           <h1 className="mb-[6%] text-2xl font-bold text-black">coffect</h1>
