@@ -1,12 +1,121 @@
-import BottomNavbar from "../components/shareComponents/BottomNavbar";
+/*
+author : 썬더
+description : 회원가입 플로우 전체를 제어하는 페이지입니다.
+*/
 
-const Signup = () => {
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import type { SignupData } from "../types/signup";
+import SplashScreen from "../components/Signup/SplashScreen";
+import LoginChoice from "../components/Signup/LoginChoice";
+import TermsAgreement from "../components/Signup/TermsAgreement";
+import SchoolSelection from "../components/Signup/SchoolSelection";
+import EmailVerification from "../components/Signup/EmailVerification";
+import CodeInput from "../components/Signup/CodeInput";
+import AccountSetup from "../components/Signup/AccountSetup";
+import ProfileSetup from "../components/Signup/ProfileSetup";
+import InterestsSelection from "../components/Signup/InterestsSelection";
+import Completion from "../components/Signup/Completion";
+import TopNavbar from "../components/Signup/TopNavbar";
+
+const Signup: React.FC = () => {
+  const navigate = useNavigate();
+  // 현재 단계 페이지 (1~10)
+  const [step, setStep] = useState<number>(1);
+  // 회원가입 중 입력된 데이터 누적 저장
+  const [, setForm] = useState<Partial<SignupData>>({});
+
+  /* 다음 단계로 이동 */
+  const goNext = () => setStep((prev) => prev + 1);
+  /* 이전 단계로 이동 */
+  const goBack = () => setStep((prev) => prev - 1);
+  /* form 상태 업데이트 (부분 필드 병합) */
+  const update = (fields: Partial<SignupData>) =>
+    setForm((prev) => ({ ...prev, ...fields }));
+
+  /*TopNavBar에 들어갈 제목 내용*/
+  const stepTitles: Record<number, string> = {
+    3: "",
+    4: "학교 선택",
+    5: "이메일 인증",
+    6: "이메일 인증코드",
+    7: "계정 정보 설정",
+    8: "프로필 설정",
+    9: "관심사 설정",
+  };
+
+  // step -> progress 단계 변환 (Top바 아래부분 진행바 표시)
+  const getProgressStep = (step: number): number => {
+    if (step === 4) return 1;
+    if (step === 5 || step === 6) return 2;
+    if (step === 7) return 3;
+    if (step === 8) return 4;
+    return 5;
+  };
+
   return (
-    <div className="flex flex-col justify-center items-center w-full h-full">
-      <div className="flex overflow-y-auto flex-1 justify-center items-center text-2xl font-bold">
-        Signup Page
+    <div className="flex h-full w-full flex-col bg-white">
+      {/* step 4~9에서만 TopNavbar + Progress 표시 */}
+      {step >= 3 && step <= 10 && (
+        <TopNavbar
+          title={stepTitles[step]}
+          onBack={goBack}
+          showProgress={step >= 4 && step <= 9}
+          step={getProgressStep(step)}
+          totalSteps={5}
+        />
+      )}
+      <div className="flex flex-1 flex-col items-center justify-center">
+        {/* 1. 시작 화면 */}
+        {step === 1 && <SplashScreen onNext={goNext} />}
+        {/* 2. 회원가입/로그인 선택 화면 */}
+        {step === 2 && (
+          <LoginChoice onSignUp={goNext} onLogin={() => navigate("/home")} />
+        )}
+        {/* 3. 약관 동의 화면 */}
+        {step === 3 && <TermsAgreement onNext={goNext} />}
+        {/* 4. 학교 선택 + 전공/학번 입력 화면 */}
+        {step === 4 && (
+          <SchoolSelection
+            onNext={goNext}
+            onChange={(school, major, studentId) =>
+              update({ school, major, studentId })
+            }
+          />
+        )}
+        {/* 5. 이메일 인증 화면 */}
+        {step === 5 && (
+          <EmailVerification
+            onNext={goNext}
+            onChange={(email) => update({ email })}
+          />
+        )}
+        {/* 6. 이메일 인증 코드 입력 화면 */}
+        {step === 6 && (
+          <CodeInput
+            onNext={goNext}
+            onBack={goBack}
+            onChange={(code) => update({ authCode: code })}
+          />
+        )}
+        {/* 7. 계정 정보 설정 화면 */}
+        {step === 7 && (
+          <AccountSetup onNext={goNext} onChange={(fields) => update(fields)} />
+        )}
+        {/* 8. 프로필 설정 화면 */}
+        {step === 8 && (
+          <ProfileSetup onNext={goNext} onChange={(fields) => update(fields)} />
+        )}
+        {/* 9. 관심사 선택 화면 */}
+        {step === 9 && (
+          <InterestsSelection
+            onNext={goNext}
+            onChange={(list) => update({ interests: list })}
+          />
+        )}
+        {/* 10. 가입 완료 화면 */}
+        {step === 10 && <Completion />}
       </div>
-      <BottomNavbar />
     </div>
   );
 };

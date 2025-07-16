@@ -2,19 +2,64 @@
 /* className="bg-[var(--accent-color)] text-[var(--text-light)]" */
 
 :root {
-  /* 기본 색상 팔레트 */
-  /* ex) --primary-color: #007bff; 주 색상 (예: 버튼, 링크) */
 
-  /* 텍스트 색상 */
-  /* ex) --text-dark: #212529; 어두운 텍스트 (기본 텍스트) */
+  /* orange */
+  --orange-500: #ff8126;
 
-  /* 배경 색상 */
-  /* ex) --bg-light: #ffffff; 밝은 배경 */
-  --profile-modify: #4a4a4a;
+  /* red */
+  --noti: #ff3535;
 
-  /* 상태 색상 */
-  /* ex) --success-color: #28a745; 성공 */
+  /* green */
 
-  /* 추가적인 그레이 스케일 */
-  /* ex) --gray-100: #f8f9fa; */
+  /* gray */
+  --gray-0: #ffffff;
+  --gray-5: #f5f5f5;
+  --gray-10: #e4e4e4;
+  --gray-20: #cacaca;
+  --gray-30: #acacac;
+  --gray-40: #848484;
+  --gray-50: #666666;
+  --gray-60: #4a4a4a;
+  --gray-70: #3a3a3a;
+  --gray-80: #2d2d2d;
+  --gray-85: #222222;
+  --gray-90: #121212;
+
+  /* white */
+  --white: #ffffff;
+  /* */
+  --timetable-cell: #c4edbc;
+
+  /* interesting keyword */
+  --startup-bg: #ffe7df;
+  --startup-text: #ff703e;
+  --development-bg: #ddf6d9;
+  --development-text: #487e3d;
+  --design-bg: #fff0c8;
+  --design-text: #ff8126;
+  --plan-bg: #ffe3eb;
+  --plan-text: #ff608d;
+  --ai-bg: #ffe4de;
+  --ai-text: #f87c5b;
+  --write-bg: #f4e5ff;
+  --write-text: #8957ad;
+  --read-bg: #d5f1ff;
+  --read-text: #00a4ef;
+  --marketing-bg: #d5daff;
+  --marketing-text: #445aff;
+  --trip-bg: #d6fff9;
+  --trip-text: #08bca4;
+  --data-bg: #ebeaff;
+  --data-text: #6964b3;
+  --hw-bg: #fffddb;
+  --hw-text: #a69f20;
+  --movie-bg: #dafffb;
+  --movie-text: #0d6259;
+  --language-bg: #feecff;
+  --language-text: #e34feb;
+  --music-bg: #d9e9f1;
+  --music-text: #1b7ca4;
+  --networking-bg: #f7f7f7;
+  --networking-text: #837c7c;
+
 }

@@ -7,6 +7,11 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import BottomNavbar from "../../shareComponents/BottomNavbar";
 import LeaveModal from "./LeaveModal";
+import nextIcon from "../../../assets/icon/mypage/next.png";
+import coffeeRecordIcon from "../../../assets/icon/mypage/coffeeRecord.png";
+import bookmarkIcon from "../../../assets/icon/mypage/bookmark.png";
+import alarmIcon from "../../../assets/icon/mypage/alarm.png";
+import profileImg from "../../../assets/icon/mypage/profile.png";
 
 /*
 마이페이지 메인 화면을 렌더링하는 함수형 컴포넌트입니다.
@@ -16,40 +21,75 @@ const MyPage = () => {
   // 회원탈퇴 모달 오픈 상태
   const [showModal, setShowModal] = useState<boolean>(false);
 
+  function formatCount(num: number): string {
+    if (num >= 1_000_000_000_000)
+      return Math.floor(num / 1_000_000_000_000) + "T+";
+    if (num >= 1_000_000_000) return Math.floor(num / 1_000_000_000) + "B+";
+    if (num >= 1_000_000) return Math.floor(num / 1_000_000) + "M+";
+    if (num >= 1_000) return Math.floor(num / 1_000) + "K+";
+    return num.toString();
+  }
+
   return (
     <>
       <div className="flex h-full w-full flex-col">
-        <div className="flex h-full w-full flex-1 flex-col overflow-y-auto bg-white">
-          {/* 상단 닉네임 */}
-          <div className="mt-4 ml-4 text-2xl font-bold">jeha_0714</div>
+        <div className="flex h-full w-full flex-1 flex-col overflow-y-auto bg-[var(--gray-5)] pb-20">
+          {/* 상단 닉네임 + 알람 */}
+          <div className="mx-4 mt-4 flex items-center justify-between">
+            <div className="ml-2 text-2xl font-bold text-[var(--gray-90)]">
+              jeha_0714
+            </div>
+            <img src={alarmIcon} className="h-7 w-7" />
+          </div>
 
           {/* 프로필 카드 */}
-          <div className="mx-4 mt-4 flex flex-col items-center rounded-none border border-black p-4">
-            <div className="flex w-full flex-row items-center justify-around">
+          <div className="mx-4 mt-4 flex flex-col items-center rounded-2xl bg-white p-4 pt-2">
+            <div className="my-4 flex w-full flex-row items-center justify-around gap-2">
               {/* 프로필 이미지 */}
-              <div className="mb-2 ml-2 h-20 w-20 rounded-full bg-gray-200 sm:h-28 sm:w-28" />
+              <img
+                src={profileImg}
+                // className="h-25 min-h-[100px] w-25 min-w-[100px] rounded-full"
+                className="max-h-[100px] min-h-[80px] max-w-[100px] min-w-[80px] rounded-full"
+              />
               {/* 프로필 정보 */}
-              <div className="flex flex-1 flex-col justify-center gap-2">
-                <div className="flex flex-wrap items-end justify-center gap-1">
-                  <span className="text-xl font-bold whitespace-nowrap">
+              <div className="flex flex-1 flex-col justify-center gap-2 px-2">
+                <div className="flex flex-col items-start justify-center gap-1">
+                  <span className="text-xl font-bold text-[var(--gray-90)]">
                     재하
                   </span>
-                  <span className="text-xs whitespace-nowrap text-gray-500">
-                    컴퓨터과학전공 19학번
-                  </span>
+                  <div className="flex flex-wrap gap-1">
+                    <span className="text-xs text-[var(--gray-50)]">
+                      디자인테크놀로지학과
+                    </span>
+                    <span className="text-xs text-[var(--gray-50)]">
+                      19학번
+                    </span>
+                  </div>
                 </div>
-                <div className="flex justify-evenly">
+                <div className="flex justify-between">
                   <div className="flex flex-col items-center">
-                    <span className="font-bold">3</span>
-                    <span className="text-xs text-gray-500">포스트</span>
+                    <span className="text-lg font-semibold text-[var(--gray-70)]">
+                      {formatCount(999456)}
+                    </span>
+                    <span className="text-sm text-[var(--gray-50)]">
+                      포스트
+                    </span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <span className="font-bold">3</span>
-                    <span className="text-xs text-gray-500">팔로워</span>
+                    <span className="text-lg font-semibold text-[var(--gray-70)]">
+                      {formatCount(999456)}
+                    </span>
+                    <span className="text-sm text-[var(--gray-50)]">
+                      팔로워
+                    </span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <span className="font-bold">3</span>
-                    <span className="text-xs text-gray-500">팔로잉</span>
+                    <span className="text-lg font-semibold text-[var(--gray-70)]">
+                      {formatCount(999456)}
+                    </span>
+                    <span className="text-sm text-[var(--gray-50)]">
+                      팔로잉
+                    </span>
                   </div>
                 </div>
               </div>
@@ -57,13 +97,13 @@ const MyPage = () => {
             {/* 프로필/시간표 버튼 */}
             <div className="mt-2 flex w-full gap-2">
               <button
-                className="flex-1 rounded bg-black py-2 font-semibold text-white transition hover:bg-gray-800"
+                className="text-md flex-1 rounded-xl bg-[var(--gray-80)] py-3 text-white transition hover:bg-gray-800"
                 onClick={() => navigate(`/mypage/myprofile`)}
               >
                 내 프로필
               </button>
               <button
-                className="flex-1 rounded bg-black py-2 font-semibold text-white transition hover:bg-gray-800"
+                className="text-md flex-1 rounded-xl border border-[var(--gray-30)] bg-white py-3 text-[var(--gray-50)] transition hover:bg-gray-100"
                 onClick={() => navigate(`/mypage/timetable`)}
               >
                 내 시간표
@@ -71,39 +111,48 @@ const MyPage = () => {
             </div>
           </div>
 
-          {/* 커피챗 기록 섹션 */}
-          <div
-            className="mx-4 mt-6"
-            onClick={() => navigate(`/mypage/chatrecord`)}
-          >
-            <div className="mb-2 flex items-center justify-between">
-              <button className="font-bold transition hover:text-blue-600">
-                커피챗 기록
-              </button>
-              <span className="text-2xl text-gray-500">&gt;</span>
-            </div>
-            {/* 최근 커피챗 기록 카드 3개 미리보기 (더미) */}
-            <div className="flex gap-3">
-              <div className="aspect-[11/12] min-w-0 flex-1 rounded-lg bg-gray-200" />
-              <div className="aspect-[11/12] min-w-0 flex-1 rounded-lg bg-gray-200" />
-              <div className="aspect-[11/12] min-w-0 flex-1 rounded-lg bg-gray-200" />
-            </div>
-          </div>
-
-          {/* 저장한 콘텐츠, 로그아웃, 회원탈퇴 섹션 */}
-          <div className="mx-4 mt-8 flex flex-col gap-2 border-t border-gray-200 pt-4">
-            <button className="flex cursor-pointer items-center justify-between rounded px-2 py-2 transition hover:bg-gray-100">
-              <span>저장한 콘텐츠 조회</span>
-              <span className="text-xl text-gray-500">&gt;</span>
-            </button>
-            <button className="rounded px-2 py-2 text-left text-gray-400 transition hover:text-red-500">
-              로그아웃
+          {/* 버튼 리스트: 나의 커피챗 기록, 내가 저장한 콘텐츠 */}
+          <div className="mx-4 mt-4 flex flex-col gap-3 text-lg text-[var(--gray-90)]">
+            <button
+              className="flex items-center justify-between rounded-2xl bg-white px-4 py-6 text-lg font-medium transition hover:bg-gray-50"
+              onClick={() => navigate(`/mypage/chatrecord`)}
+            >
+              <div className="flex items-center gap-2">
+                <img
+                  src={coffeeRecordIcon}
+                  alt="커피챗 기록"
+                  className="h-6 w-6"
+                />
+                <span>나의 커피챗 기록</span>
+              </div>
+              <img src={nextIcon} className="h-6 w-6" />
             </button>
             <button
-              className="rounded px-2 py-2 text-left text-gray-400 transition hover:text-red-500"
+              className="flex items-center justify-between rounded-2xl bg-white px-4 py-6 text-lg font-medium transition hover:bg-gray-50"
+              onClick={() => navigate("/mypage/bookmark")}
+            >
+              <div className="flex items-center gap-2">
+                <img
+                  src={bookmarkIcon}
+                  alt="저장한 콘텐츠"
+                  className="h-6 w-6"
+                />
+                <span>내가 저장한 콘텐츠</span>
+              </div>
+              <img src={nextIcon} className="h-6 w-6" />
+            </button>
+          </div>
+
+          {/* 회원탈퇴, 로그아웃 버튼 */}
+          <div className="mx-4 mt-4 flex flex-col gap-2 text-lg text-[var(--gray-40)]">
+            <button
+              className="flex items-center gap-2 rounded-lg px-4 py-4 text-left transition hover:bg-gray-200 hover:text-red-500"
               onClick={() => setShowModal(true)}
             >
-              회원탈퇴
+              <span>회원탈퇴</span>
+            </button>
+            <button className="flex items-center gap-2 rounded-lg px-4 py-4 text-left transition hover:bg-gray-200 hover:text-red-500">
+              <span>로그아웃</span>
             </button>
           </div>
         </div>
@@ -111,11 +160,7 @@ const MyPage = () => {
         <BottomNavbar activeLabel="마이" />
       </div>
       {/* 회원탈퇴 모달 */}
-      <LeaveModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        onConfirm={() => navigate("/mypage/leave")}
-      />
+      <LeaveModal open={showModal} onClose={() => setShowModal(false)} />
     </>
   );
 };
