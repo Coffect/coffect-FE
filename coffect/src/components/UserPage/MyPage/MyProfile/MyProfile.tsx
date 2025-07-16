@@ -229,7 +229,7 @@ function MyProfile() {
       </div>
 
       {/* Content Area: 탭에 따라 내용 분기 */}
-      <div className="overflow-auto-y flex flex-1 flex-col py-5">
+      <div className="flex flex-1 flex-col overflow-y-auto py-5">
         {/* 내 피드 탭이 활성화된 경우 피드 내용 출력 */}
         {activeTab === "피드" &&
           (myDummyPosts.length === 0 ? (
