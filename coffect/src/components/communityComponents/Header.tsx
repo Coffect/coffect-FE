@@ -6,7 +6,7 @@ import { SlidersHorizontal } from "lucide-react";
 
 // 공통 스타일 변수 정의
 const buttonStyle =
-  "flex h-[65%] w-[17.95%] items-center justify-center rounded-lg border border-gray-300 text-sm text-gray-600";
+  "flex h-[65%] w-[20%] items-center justify-center rounded-lg border border-gray-300 text-sm text-[##4a4a4a] font-semibold ";
 const containerStyle = "flex items-center";
 
 interface HeaderProps {
@@ -30,12 +30,12 @@ const Header = ({ openModal }: HeaderProps) => {
           >
             <SlidersHorizontal size={16} className="text-gray-600" />
           </button>
-          <button className={`${buttonStyle} w-[18%]`}>최신순</button>
-          <button className={`${buttonStyle} w-[18%]`}>인기순</button>
+          <button className={`${buttonStyle} `}>최신순</button>
+          <button className={`${buttonStyle} `}>인기순</button>
         </div>
       </div>
       {/* 구분선 */}
-      <div className="h-[7.3%] w-full bg-[#F5F5F5]"></div>
+      <div className="h-[7.3%] min-h-[6px] w-full bg-[#F5F5F5]"></div>
     </div>
   );
 };
