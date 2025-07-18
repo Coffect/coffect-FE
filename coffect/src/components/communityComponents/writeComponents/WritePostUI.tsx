@@ -65,37 +65,40 @@ const WritePostUI: React.FC<WritePostUIProps> = ({
         </div>
         <div className="mb-4 h-[0.8px] w-full bg-[#acacac]"></div>
 
-        <div className="px-4">
-          <ChipGroup
-            title="글 종류"
-            options={[
-              "아티클 ✍🏻",
-              "팀원 모집 👬",
-              "질문 👤",
-              "도움 필요 🤩",
-              "후기글 ☕",
-              "팁 공유 📌",
-            ]}
-            selectedOption={postType}
-            onSelect={setPostType}
-          />
-
-          <ChipGroup
-            title="글 주제"
-            options={[
-              "프로덕트",
-              "개발",
-              "디자인",
-              "기획",
-              "인사이트",
-              "취업",
-              "창업",
-              "학교",
-              "기타",
-            ]}
-            selectedOption={topic}
-            onSelect={handleTopicSelect}
-          />
+        <div>
+          <div className="px-4 pt-4">
+            <ChipGroup
+              title="글 종류"
+              options={[
+                "아티클 ✍🏻",
+                "팀원 모집 👬",
+                "질문 👤",
+                "도움 필요 🤩",
+                "후기글 ☕",
+                "팁 공유 📌",
+              ]}
+              selectedOption={postType}
+              onSelect={setPostType}
+            />
+            <div className="pt-4">
+              <ChipGroup
+                title="글 주제"
+                options={[
+                  "프로덕트",
+                  "개발",
+                  "디자인",
+                  "기획",
+                  "인사이트",
+                  "취업",
+                  "창업",
+                  "학교",
+                  "기타",
+                ]}
+                selectedOption={topic}
+                onSelect={handleTopicSelect}
+              />
+            </div>
+          </div>
         </div>
       </main>
     </div>
