@@ -40,12 +40,12 @@ const WritePostUI: React.FC<WritePostUIProps> = ({
           <input
             type="text"
             placeholder="제목을 입력하세요"
-            className="mb-3 w-full font-semibold focus:outline-none"
+            className="mb-3 w-full text-xl font-bold placeholder:text-xl placeholder:font-bold placeholder:text-[#121212] focus:outline-none"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
-        <div className="mb-4 h-[1px] w-full bg-gray-500"></div>
+        <div className="mb-4 h-[0.8px] w-full bg-[#acacac]"></div>
 
         <div className="px-4">
           <textarea
@@ -63,7 +63,7 @@ const WritePostUI: React.FC<WritePostUIProps> = ({
             </button>
           </div>
         </div>
-        <div className="mb-4 h-[1px] w-full bg-gray-500"></div>
+        <div className="mb-4 h-[0.8px] w-full bg-[#acacac]"></div>
 
         <div className="px-4">
           <ChipGroup
@@ -81,7 +81,7 @@ const WritePostUI: React.FC<WritePostUIProps> = ({
           />
 
           <ChipGroup
-            title="글 주제 선택"
+            title="글 주제"
             options={[
               "프로덕트",
               "개발",
