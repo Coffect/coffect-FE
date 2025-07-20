@@ -115,8 +115,12 @@ const CardDetailView = () => {
             alt="프로필 이미지"
             className="h-full w-full object-cover"
           />
-          <div className="absolute bottom-1/10 left-1/2 z-20 -translate-x-1/2 transform rounded-xl bg-black/60 px-3 py-1 text-sm font-medium whitespace-nowrap text-[var(--gray-0)]">
-            인하님과 비슷한 관심사를 가졌어요!
+          {/******나중에 api 생기면 인하 부분 유저의 이름 불러올것!(프로필 카드 이름 아님 기억하기) *******/}
+          <div className="absolute bottom-1/10 left-1/2 z-20 -translate-x-1/2 transform rounded-xl bg-black/60 px-3 py-1 text-sm font-medium whitespace-nowrap">
+            <span className="text-[var(--gray-0)]">인하</span>
+            <span className="text-[var(--gray-20)]">
+              님과 비슷한 관심사를 가졌어요!
+            </span>
           </div>
         </div>
 
@@ -140,7 +144,7 @@ const CardDetailView = () => {
               {profile.tags.map((tag, i) => (
                 <span
                   key={i}
-                  className={`rounded-7px px-3 py-1 text-sm font-medium ${getTagColor(
+                  className={`rounded-[7px] px-2.5 py-1 text-sm font-medium ${getTagColor(
                     tag,
                   )}`}
                 >
@@ -152,7 +156,7 @@ const CardDetailView = () => {
           {/* 자기소개 */}
           <div className="pt-4 pb-4">
             <h3 className="mb-4 flex items-center gap-1 text-lg font-semibold text-[var(--gray-90)]">
-              👋자기소개
+              👋 자기소개
             </h3>
             <p className="text-[16px] leading-normal font-medium whitespace-pre-line text-[var(--gray-60)]">
               {profile.intro}
