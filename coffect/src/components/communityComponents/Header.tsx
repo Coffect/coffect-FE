@@ -23,7 +23,7 @@ const Header = ({ openModal }: HeaderProps) => {
         </div>
 
         {/***** 필터바 : 필터 / 최신순 / 인기순 / 내학교 UI *****/}
-        <div className={`${containerStyle} h-[50%] justify-start gap-2 px-6`}>
+        <div className={`${containerStyle} h-[50%] justify-start gap-1 px-6`}>
           <button
             onClick={openModal}
             className="flex h-[65%] w-[12%] items-center justify-center rounded-lg border border-gray-300 text-sm text-gray-600"
