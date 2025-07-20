@@ -32,7 +32,11 @@ const TopNavbar = ({ pageType }: TopNavbarProps) => {
     - calendar, alarm: 좌측 뒤로가기 + 중앙 타이틀 + 우측 공백 (정렬 맞춤용)
   */
   return (
-    <div className="flex h-[60px] w-full items-center justify-between bg-[var(--gray-5)] px-[5%]">
+    <div
+      className={`flex h-[60px] w-full items-center justify-between px-[5%] ${
+        pageType === "alarm" ? "bg-[var(--gray-0)]" : "bg-[var(--gray-5)]"
+      }`}
+    >
       {pageType === "home" ? (
         <>
           {/* 좌측 로고 텍스트 */}
