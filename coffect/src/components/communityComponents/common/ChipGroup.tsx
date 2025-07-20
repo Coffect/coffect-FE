@@ -25,31 +25,35 @@ const ChipGroup: React.FC<ChipGroupProps> = ({
   selectedOption,
   onSelect,
 }) => {
-  const sliceEnd = title === "글 주제 선택" ? 4 : 3;
+  const sliceEnd = title === "글 주제" ? 4 : 3;
+  const baseStyle =
+    "text-md rounded-md border border-[var(--gray-30)] px-3 py-2";
+  const selectedStyle = "bg-[var(--gray-70)] text-[var(--white)]";
+
   return (
     <div className="mb-4">
       <h2 className="mb-2 h-[27px] w-full text-left font-bold">{title}</h2>
       <div className="flex flex-col gap-2">
-        <div className="flex flex-wrap justify-start gap-2">
+        <div className="flex flex-wrap justify-start gap-1">
           {options.slice(0, sliceEnd).map((option) => (
             <button
               key={option}
               onClick={() => onSelect(option)}
-              className={`rounded-md border border-gray-300 px-3 py-1.5 text-sm ${
-                selectedOption === option ? "bg-[#3a3a3a] text-white" : ""
+              className={`${baseStyle} ${
+                selectedOption === option ? selectedStyle : ""
               }`}
             >
               {option}
             </button>
           ))}
         </div>
-        <div className="flex flex-wrap justify-start gap-2">
+        <div className="flex flex-wrap justify-start gap-1">
           {options.slice(sliceEnd).map((option) => (
             <button
               key={option}
               onClick={() => onSelect(option)}
-              className={`rounded-md border border-gray-300 px-3 py-1.5 text-sm ${
-                selectedOption === option ? "bg-[#3a3a3a] text-white" : ""
+              className={`${baseStyle} ${
+                selectedOption === option ? selectedStyle : ""
               }`}
             >
               {option}
