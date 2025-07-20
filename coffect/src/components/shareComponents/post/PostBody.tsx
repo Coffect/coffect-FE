@@ -59,7 +59,7 @@ const PostBody: React.FC<PostBodyProps> = ({
       onClick={onContentClick}
     >
       {/* 글 내용 */}
-      <div className="relative mb-2 py-2 text-sm">
+      <div className="relative mb-2 pt-2 text-sm">
         <span
           ref={contentRef}
           className={`leading-normal whitespace-pre-wrap ${
@@ -97,6 +97,18 @@ const PostBody: React.FC<PostBodyProps> = ({
         )}
       </div>
 
+      {/* 게시글 종류 및 주제 태그 (상세 페이지에서만 보입니다) */}
+      {isDetailView && (
+        <div className="my-3 flex gap-1.5">
+          <span className="text-md inline-flex items-center justify-center rounded-lg border border-[var(--gray-5)] bg-[var(--gray-5)] px-3 py-1.5 text-[var(--gray-70)]">
+            {post.type}
+          </span>
+          <span className="text-md inline-flex items-center justify-center rounded-lg border border-[var(--gray-5)] bg-[var(--gray-5)] px-3 py-1.5 text-[var(--gray-70)]">
+            {post.topic}
+          </span>
+        </div>
+      )}
+
       {/* 게시글에 이미지가 있을 경우 표시합니다. */}
       {post.image && (
         <img
@@ -104,18 +116,6 @@ const PostBody: React.FC<PostBodyProps> = ({
           alt="게시글 이미지"
           className="w-full rounded-lg object-cover"
         />
-      )}
-
-      {/* 게시글 종류 및 주제 태그 (상세 페이지에서만 보입니다) */}
-      {isDetailView && (
-        <div className="my-3 flex gap-2">
-          <span className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-3 py-1 text-sm text-gray-700">
-            {post.type}
-          </span>
-          <span className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-3 py-1 text-sm text-gray-700">
-            {post.topic}
-          </span>
-        </div>
       )}
 
       {/* 좋아요 및 댓글 수 표시 */}
