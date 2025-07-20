@@ -232,7 +232,7 @@ const ProfileFlip: React.FC = () => {
           <div className="absolute bottom-0 left-0 w-full rounded-b-3xl bg-gradient-to-t from-black/70 to-transparent px-[4%] py-[5%]">
             <div className="text-[22px] font-bold text-white">
               {current.name}
-              <span className="ml-[3%] text-sm font-medium text-white">
+              <span className="ml-[3%] text-sm font-medium text-[var(--gray-10)]">
                 {current.major} {current.year}
               </span>
             </div>
@@ -297,7 +297,9 @@ const ProfileFlip: React.FC = () => {
           <span
             key={idx}
             className={`h-[8px] rounded-full transition-all duration-300 ${
-              idx === skipped ? "w-[15px] bg-orange-400" : "w-[8px] bg-gray-300"
+              idx === skipped
+                ? "w-[15px] bg-orange-400"
+                : "w-[8px] bg-[var(--gray-20)]"
             }`}
           />
         ))}
