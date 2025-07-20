@@ -12,7 +12,7 @@ interface CommentListProps {
 const CommentList = ({ commentList }: CommentListProps) => {
   return (
     <div className="flex-grow overflow-y-auto p-2">
-      <p className="mb-4 font-semibold">댓글: {commentList.length}개</p>
+      <p className="mb-4 font-semibold">댓글 {commentList.length}개</p>
       <div className="space-y-4">
         {commentList.map((comment) => (
           <div key={comment.id} className="flex items-start gap-3">
