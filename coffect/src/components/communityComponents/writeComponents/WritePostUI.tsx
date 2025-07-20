@@ -36,25 +36,25 @@ const WritePostUI: React.FC<WritePostUIProps> = ({
         </button>
       </header>
       <main className="flex-grow">
-        <div className="px-4">
+        <div className="flex items-center justify-center px-4 py-4 text-center">
           <input
             type="text"
             placeholder="제목을 입력하세요"
-            className="mb-3 w-full text-xl font-bold placeholder:text-xl placeholder:font-bold placeholder:text-[#121212] focus:outline-none"
+            className="w-full text-xl font-bold placeholder:text-xl placeholder:font-bold placeholder:text-[#121212] focus:outline-none"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
-        <div className="mb-4 h-[0.8px] w-full bg-[#acacac]"></div>
+        <div className="h-[0.8px] w-full bg-[#acacac]"></div>
 
-        <div className="px-4">
+        <div className="p-4">
           <textarea
             placeholder="오늘은 어떤 글을 써볼까요?"
             className="h-55 w-full rounded focus:outline-none"
             value={content}
             onChange={(e) => setContent(() => e.target.value)}
           />
-          <div className="mt-4 mb-2 flex items-center space-x-4 pb-2">
+          <div className="my-2 flex items-center space-x-4">
             <button className="rounded px-1 text-sm">
               <Image />
             </button>
