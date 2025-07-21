@@ -12,7 +12,7 @@ interface FeedListProps {
 
 const FeedList = ({ posts }: FeedListProps) => {
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-4 pt-3">
       {posts.map((post) => (
         <FeedItem key={post.id} post={post} />
       ))}

@@ -53,7 +53,7 @@ const PostDetail = () => {
         화면 하단에 고정되는 댓글 입력창입니다.
         max-w-[430px]는 RootLayout과 동일한 너비 제한을 적용하기 위함입니다.
       */}
-      <div className="fixed bottom-0 left-1/2 w-full max-w-[430px] -translate-x-1/2 border-t border-gray-200 bg-white p-2">
+      <div className="fixed bottom-0 left-1/2 w-full max-w-[430px] -translate-x-1/2 border-t border-gray-200 bg-white p-3 pb-4">
         <CommentInput postId={postId} />
       </div>
     </div>
