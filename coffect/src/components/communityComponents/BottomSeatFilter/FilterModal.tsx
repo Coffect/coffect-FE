@@ -1,57 +1,40 @@
-/* author : 강신욱
-description : Header(고정바) 에서 토글 버튼 클릭 시 나오는 모달 컴포넌트 입니다. 
+/** 
+@author : 강신욱
+@description : Header(고정바) 에서 토글 버튼 클릭 시 나오는 모달 컴포넌트 입니다. 
+
+역할: 순수 UI 표시. 
+데이터나 로직 없이 props로 받은 내용을 화면에 그리기만 하는 'Dumb Component' 역할.
 */
 
-import { useState } from "react";
 import "./FilterModalAnimation.css";
-import ChipGroup from "../Filter/ChipGroup";
+import ChipGroup from "../ChipFilterComponent/ChipGroup";
 import { X } from "lucide-react";
-import { postTypeOptions, postTopicOptions } from "../Filter/filterData";
+import {
+  postTypeOptions,
+  postTopicOptions,
+} from "../ChipFilterComponent/filterData";
 
-/*
-type: 글의 종류 (아티클, 팀원 모집 등)
-topic: 글의 주제 (프로덕트, 개발 등)
- */
-interface Filters {
-  type: string | null;
-  topic: string | null;
-}
-
-/*
-isVisible: 모달의 표시 여부 (ex: true= 모달 표시 / false= 모달 숨김)
-onClose: 모달 닫기 함수 (ex: 모달 외부 클릭 시 모달 닫기)
-onApply: 필터 적용 함수 (ex: 선택한 필터 값으로 게시물 필터링)
-initialFilters: 초기 필터 값 (ex: { type: null, topic: null })
- */
 interface FilterModalProps {
   isVisible: boolean;
   onClose: () => void;
-  onApply: (filters: Filters) => void;
-  initialFilters: Filters;
+  onApply: () => void;
+  onReset: () => void;
+  selectedType: string | null;
+  selectedTopic: string | null;
+  onTypeSelect: (option: string) => void;
+  onTopicSelect: (option: string) => void;
 }
 
 const FilterModal = ({
   isVisible,
   onClose,
   onApply,
-  initialFilters,
+  onReset,
+  selectedType,
+  selectedTopic,
+  onTypeSelect,
+  onTopicSelect,
 }: FilterModalProps) => {
-  const [selectedType, setSelectedType] = useState<string | null>(
-    initialFilters.type,
-  );
-  const [selectedTopic, setSelectedTopic] = useState<string | null>(
-    initialFilters.topic,
-  );
-
-  const handleApplyFilter = () => {
-    onApply({ type: selectedType, topic: selectedTopic });
-  };
-
-  const handleReset = () => {
-    setSelectedType(null);
-    setSelectedTopic(null);
-  };
-
   if (!isVisible) return null;
 
   return (
@@ -87,9 +70,7 @@ const FilterModal = ({
               <ChipGroup
                 options={postTypeOptions}
                 selectedOption={selectedType}
-                onSelect={(option) =>
-                  setSelectedType(option === selectedType ? null : option)
-                }
+                onSelect={onTypeSelect}
               />
             </div>
 
@@ -103,9 +84,7 @@ const FilterModal = ({
               <ChipGroup
                 options={postTopicOptions}
                 selectedOption={selectedTopic}
-                onSelect={(option) =>
-                  setSelectedTopic(option === selectedTopic ? null : option)
-                }
+                onSelect={onTopicSelect}
               />
             </div>
           </div>
@@ -117,13 +96,13 @@ const FilterModal = ({
             <button
               className={`flex-1 rounded-md px-4 py-2 ${selectedType || selectedTopic ? "bg-[#3a3a3a] text-white" : "cursor-not-allowed bg-gray-200"}`}
               disabled={!selectedType && !selectedTopic}
-              onClick={handleApplyFilter}
+              onClick={onApply}
             >
               필터 적용하기
             </button>
             <button
               className="flex-1 rounded-md border border-gray-300 px-4 py-2 text-gray-500"
-              onClick={handleReset}
+              onClick={onReset}
             >
               초기화
             </button>
