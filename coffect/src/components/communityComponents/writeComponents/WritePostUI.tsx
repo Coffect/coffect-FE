@@ -2,9 +2,12 @@
 description : 글 작성 페이지의 UI를 담당하는 프레젠테이션 컴포넌트입니다.
 */
 import React from "react";
-import ChipGroup from "../Filter/ChipGroup";
+import ChipGroup from "../ChipFilterComponent/ChipGroup";
 import type { WritePostUIProps } from "../../../types/writePostTypes";
-import { postTypeOptions, postTopicOptions } from "../Filter/filterData";
+import {
+  postTypeOptions,
+  postTopicOptions,
+} from "../ChipFilterComponent/filterData";
 //** 수정 사항 : Image와 Link icon이 디자인과 같지 않습니다.
 import { ChevronLeft, Image, Link } from "lucide-react";
 

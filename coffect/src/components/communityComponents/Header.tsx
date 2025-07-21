@@ -1,5 +1,6 @@
 /* author : 강신욱
 description : community 상단 고정바 컴포넌트입니다. 
+//Header UI
 */
 
 import { SlidersHorizontal } from "lucide-react";
