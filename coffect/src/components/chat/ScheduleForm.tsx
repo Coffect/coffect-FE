@@ -94,14 +94,23 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
     onChange({ ...values, time });
   };
 
-  // 시간 직접 입력 input에서 포커스를 잃었을 때 호출
+  // 시간 형식 검증 함수
+  const validateTimeFormat = (time: string): boolean => {
+    const timeRegex = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/;
+    return timeRegex.test(time);
+  };
+
   const handleCustomTimeBlur = () => {
-    handleTimeChange(customTime);
+    if (customTime.trim() && validateTimeFormat(customTime.trim())) {
+      handleTimeChange(customTime.trim());
+    }
     setIsCustomTime(false);
   };
 
   // 완료 버튼 활성화 조건
-  const isCompleteEnabled = Boolean(values.date && values.time && values.place);
+  const isCompleteEnabled = Boolean(
+    values.date && values.time && values.place.trim().length > 0,
+  );
 
   return (
     <div className="flex h-full flex-col">
@@ -125,6 +134,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
             wrapperClassName="w-full"
             popperClassName="z-50"
             popperPlacement="bottom-start"
+            minDate={new Date()}
             customInput={
               <button
                 className="flex w-full items-center justify-between rounded-lg border-2 border-[var(--gray-10)] bg-[var(--white)] px-4 py-3 text-left text-[15px] text-[var(--gray-90)]"
@@ -180,8 +190,15 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
       </div>
       {/* 시간 선택 */}
       <div className="mb-8">
-        <div className="mb-2 text-base font-extrabold text-[var(--gray-80)]">
-          몇 시에 만날까요?
+        <div className="mb-2 flex items-center justify-between">
+          <div className="text-base font-extrabold text-[var(--gray-80)]">
+            몇 시에 만날까요?
+          </div>
+          {customTime.trim() && !validateTimeFormat(customTime.trim()) && (
+            <div className="mt-1 text-xs text-[var(--noti)]">
+              올바른 형식으로 입력해주세요.
+            </div>
+          )}
         </div>
         {showTimeDropdown ? (
           <div className="relative" ref={dropdownRef}>
@@ -211,9 +228,9 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
               </button>
             ) : (
               <input
-                className="w-full rounded-lg border border-[var(--gray-10)] px-4 py-4 text-[16px] font-extrabold text-[var(--gray-80)]"
+                className="w-full rounded-lg border border-[var(--gray-10)] px-4 py-3 text-[16px] font-extrabold text-[var(--gray-80)]"
                 type="text"
-                placeholder="직접 입력 (예: 15:10)"
+                placeholder="직접 입력 (예: 15:30)"
                 value={customTime}
                 onChange={(e) => setCustomTime(e.target.value)}
                 onBlur={handleCustomTimeBlur}

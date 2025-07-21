@@ -20,7 +20,7 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const trySend = () => {
     if (imageFile) {
@@ -87,16 +87,21 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
             style={{ display: "none" }}
             onChange={handleFileChange}
           />
-          <input
+          <textarea
             ref={inputRef}
-            className="flex-1 rounded-full px-1 py-2 text-base outline-none placeholder:text-[rgba(172,172,172,1)]"
+            className="flex-1 resize-none rounded-full px-3 py-2 text-base outline-none placeholder:text-[var(--gray-40)]"
             placeholder="메시지를 입력해주세요"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") trySend();
+              // Enter로 전송, Shift+Enter로 줄바꿈
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                trySend();
+              }
             }}
-            style={{ fontSize: "16px" }}
+            style={{ fontSize: "16px", minHeight: "40px", maxHeight: "120px" }}
+            rows={1}
           />
           {inputValue.trim().length > 0 && (
             <button

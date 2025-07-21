@@ -9,6 +9,7 @@ interface MessageBubbleProps {
   time: string;
   mine: boolean;
   showProfile: boolean;
+  showTime?: boolean;
 }
 
 const bubbleBase =
@@ -22,11 +23,14 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   time,
   mine,
   showProfile,
+  showTime = true,
 }) => {
   if (mine) {
     return (
       <div className="flex items-end justify-end gap-2">
-        <span className={`mr-1 ${timeText}`}>{time}</span>
+        <span className={`mr-1 ${timeText} ${!showTime ? "invisible" : ""}`}>
+          {showTime ? time : "\u00A0"}
+        </span>
         <div className={myBubble}>{text}</div>
       </div>
     );
@@ -38,9 +42,13 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
       ) : (
         <div className="h-8 w-8 flex-shrink-0" />
       )}
-      <div className="flex flex-row items-end">
+      <div className="flex min-w-0 flex-row items-end">
         <div className={otherBubble}>{text}</div>
-        <span className={`ml-1 self-end ${timeText}`}>{time}</span>
+        <span
+          className={`ml-1 flex-shrink-0 self-end ${timeText} ${!showTime ? "invisible" : ""}`}
+        >
+          {showTime ? time : "\u00A0"}
+        </span>
       </div>
     </div>
   );
