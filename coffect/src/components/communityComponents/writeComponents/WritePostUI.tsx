@@ -2,8 +2,9 @@
 description : 글 작성 페이지의 UI를 담당하는 프레젠테이션 컴포넌트입니다.
 */
 import React from "react";
-import ChipGroup from "../common/ChipGroup";
+import ChipGroup from "../Filter/ChipGroup";
 import type { WritePostUIProps } from "../../../types/writePostTypes";
+import { postTypeOptions, postTopicOptions } from "../Filter/filterData";
 //** 수정 사항 : Image와 Link icon이 디자인과 같지 않습니다.
 import { ChevronLeft, Image, Link } from "lucide-react";
 
@@ -67,33 +68,18 @@ const WritePostUI: React.FC<WritePostUIProps> = ({
 
         <div>
           <div className="px-4 pt-4">
-            <ChipGroup
-              title="글 종류"
-              options={[
-                "아티클 ✍🏻",
-                "팀원 모집 👬",
-                "질문 👤",
-                "도움 필요 🤩",
-                "후기글 ☕",
-                "팁 공유 📌",
-              ]}
-              selectedOption={postType}
-              onSelect={setPostType}
-            />
-            <div className="pt-4">
+            <div className="mb-4">
+              <h3 className="mb-5 text-base font-semibold">글 종류</h3>
               <ChipGroup
-                title="글 주제"
-                options={[
-                  "프로덕트",
-                  "개발",
-                  "디자인",
-                  "기획",
-                  "인사이트",
-                  "취업",
-                  "창업",
-                  "학교",
-                  "기타",
-                ]}
+                options={postTypeOptions}
+                selectedOption={postType}
+                onSelect={setPostType}
+              />
+            </div>
+            <div className="pt-4">
+              <h3 className="mb-5 text-base font-semibold">글 주제</h3>
+              <ChipGroup
+                options={postTopicOptions}
                 selectedOption={topic}
                 onSelect={handleTopicSelect}
               />

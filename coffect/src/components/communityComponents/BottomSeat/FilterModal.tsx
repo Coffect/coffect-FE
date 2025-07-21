@@ -4,8 +4,9 @@ description : Header(고정바) 에서 토글 버튼 클릭 시 나오는 모달
 
 import { useState } from "react";
 import "./FilterModalAnimation.css";
-import ChipGroup from "../common/ChipGroup";
+import ChipGroup from "../Filter/ChipGroup";
 import { X } from "lucide-react";
+import { postTypeOptions, postTopicOptions } from "../Filter/filterData";
 
 /*
 type: 글의 종류 (아티클, 팀원 모집 등)
@@ -76,40 +77,37 @@ const FilterModal = ({
         {/* 디바이스가 작으면 Scroll 이 생기도록 함. (선택 부분) */}
         <div className="flex-grow overflow-y-auto px-6">
           <div className="flex flex-col gap-4">
-            <ChipGroup
-              title="글 종류 선택"
-              options={[
-                "아티클 ✍🏻",
-                "팀원 모집 👬",
-                "질문 👤",
-                "도움 필요 🤩",
-                "후기글 ☕",
-                "팁 공유 📌",
-              ]}
-              selectedOption={selectedType || ""}
-              onSelect={(type) =>
-                setSelectedType(type === selectedType ? null : type)
-              }
-            />
+            <div>
+              <h3 className="mb-2 flex items-center justify-between text-base font-semibold">
+                글 종류 선택
+                <span className="text-sm font-normal text-gray-500">
+                  (최대 1개만 선택 가능)
+                </span>
+              </h3>
+              <ChipGroup
+                options={postTypeOptions}
+                selectedOption={selectedType}
+                onSelect={(option) =>
+                  setSelectedType(option === selectedType ? null : option)
+                }
+              />
+            </div>
 
-            <ChipGroup
-              title="글 주제 선택"
-              options={[
-                "프로덕트",
-                "개발",
-                "디자인",
-                "기획",
-                "인사이트",
-                "취업",
-                "창업",
-                "학교",
-                "기타",
-              ]}
-              selectedOption={selectedTopic || ""}
-              onSelect={(topic) =>
-                setSelectedTopic(topic === selectedTopic ? null : topic)
-              }
-            />
+            <div>
+              <h3 className="mb-2 flex items-center justify-between text-base font-semibold">
+                글 주제 선택
+                <span className="text-sm font-normal text-gray-500">
+                  (최대 1개만 선택 가능)
+                </span>
+              </h3>
+              <ChipGroup
+                options={postTopicOptions}
+                selectedOption={selectedTopic}
+                onSelect={(option) =>
+                  setSelectedTopic(option === selectedTopic ? null : option)
+                }
+              />
+            </div>
           </div>
         </div>
 
