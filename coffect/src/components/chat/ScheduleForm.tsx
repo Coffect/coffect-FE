@@ -113,7 +113,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
   );
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col pb-2">
       {/* 날짜 선택 */}
       <div className="mb-8">
         <div className="mt-5 mb-2 text-base font-extrabold text-[var(--gray-80)]">
@@ -292,7 +292,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
       <div className="mb-5 text-xs font-semibold text-[var(--gray-50)]">
         까먹지 않게 알림을 보내드려요!
       </div>
-      <div className="mb-4 flex flex-wrap justify-start gap-x-1 gap-y-2">
+      <div className="mb-6 flex flex-wrap justify-start gap-x-1 gap-y-2">
         {alertOptions.map((option) => (
           <button
             key={option}
@@ -317,7 +317,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
         </button>
       </div>
       {/* 완료/취소 버튼 */}
-      <div className="mt-auto flex w-full min-w-0 flex-nowrap justify-end gap-3 px-0">
+      <div className="mt-auto flex w-full min-w-0 flex-nowrap justify-end gap-3 px-0 pb-4">
         {onCancel && (
           <button
             className={
