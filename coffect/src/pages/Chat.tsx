@@ -92,20 +92,20 @@ const Chat = () => {
                 )}
               </div>
               {/* 채팅 정보 */}
-              <div className="ml-3 flex flex-1 flex-col">
+              <div className="ml-3 flex min-w-0 flex-1 flex-col">
                 <div className="flex min-w-0 items-center">
                   <span className="mr-2 flex-shrink-0 text-lg font-bold whitespace-nowrap text-[var(--gray-90)]">
                     {chat.name}
                   </span>
-                  <span className="max-w-[80px] truncate overflow-hidden text-sm font-medium text-ellipsis whitespace-nowrap text-[var(--gray-50)]">
+                  <span className="min-w-0 flex-1 truncate overflow-hidden text-sm font-medium text-ellipsis whitespace-nowrap text-[var(--gray-50)]">
                     {chat.job}
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-s max-w-[160px] min-w-0 flex-1 truncate overflow-hidden py-1 text-ellipsis whitespace-nowrap text-[var(--gray-70)]">
+                <div className="flex min-w-0 items-center justify-between">
+                  <span className="text-s min-w-0 flex-1 truncate overflow-hidden py-1 text-ellipsis whitespace-nowrap text-[var(--gray-70)]">
                     {chat.message}
                   </span>
-                  <span className="ml-1 truncate overflow-hidden text-sm text-ellipsis whitespace-nowrap text-[var(--gray-40)]">
+                  <span className="ml-2 flex-shrink-0 truncate overflow-hidden text-sm text-ellipsis whitespace-nowrap text-[var(--gray-40)]">
                     {chat.time}
                   </span>
                 </div>

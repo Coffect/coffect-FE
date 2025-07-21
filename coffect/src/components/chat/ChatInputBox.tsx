@@ -98,13 +98,15 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
             }}
             style={{ fontSize: "16px" }}
           />
-          <button
-            className="ml-2 flex h-8 w-12 items-center justify-center rounded-full bg-[rgba(255,129,38,1)] text-white"
-            onClick={trySend}
-            type="button"
-          >
-            <Send size={20} />
-          </button>
+          {inputValue.trim().length > 0 && (
+            <button
+              className="ml-2 flex h-8 w-12 items-center justify-center rounded-full bg-[var(--orange-500)] text-white"
+              onClick={trySend}
+              type="button"
+            >
+              <Send size={20} />
+            </button>
+          )}
         </div>
       </div>
     </div>

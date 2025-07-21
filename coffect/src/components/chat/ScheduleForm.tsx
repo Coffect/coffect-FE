@@ -269,7 +269,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
         />
       </div>
       {/* 약속 전 알림 */}
-      <div className="mb-2 text-lg font-extrabold text-[var(--gray-90)]">
+      <div className="text-lg font-extrabold text-[var(--gray-90)]">
         약속 전 알림 설정
       </div>
       <div className="mb-5 text-xs font-semibold text-[var(--gray-50)]">
@@ -279,7 +279,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
         {alertOptions.map((option) => (
           <button
             key={option}
-            className={`min-w-[80px] rounded-3xl border px-4 py-3 text-[15px] font-medium transition-all duration-100 ${values.alert === option ? "border-[var(--gray-30)] bg-[var(--gray-70)] text-[var(--white)]" : "border-[var(--gray-30)] bg-[var(--white)] text-[var(--gray-70)]"}`}
+            className={`min-w-[80px] rounded-3xl border px-4 py-3 text-[15px] font-medium transition-all duration-100 ${values.alert === option ? "bg-[var(--gray-70)] text-[var(--white)]" : "border-[var(--gray-30)] bg-[var(--white)] text-[var(--gray-70)]"}`}
             onClick={() =>
               onChange({
                 ...values,
