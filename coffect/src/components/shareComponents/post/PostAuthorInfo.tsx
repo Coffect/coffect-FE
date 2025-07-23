@@ -32,12 +32,22 @@ const PostAuthorInfo: React.FC<PostAuthorInfoProps> = ({
           className="mr-3 h-15 w-auto rounded-full object-cover"
         />
         {/* 작성자의 닉네임, 전공, 학번 및 게시글 작성 시간을 표시합니다. */}
-        <div>
-          <h3 className="text-sm font-semibold text-black">{user.nickname}</h3>
-          <p className="text-sm text-gray-500">
-            {user.major} {user.studentId}
-          </p>
-          <p className="text-sm text-gray-500">{timeAgo}</p>
+        <div className="flex flex-col">
+          <div className="mb-1.5">
+            <h3 className="text-[16px] font-semibold text-black">
+              {user.nickname}
+            </h3>
+          </div>
+          <div>
+            <div className="mb-1.5">
+              <p className="text-[12px] text-gray-500">
+                {user.major} {user.studentId}
+              </p>
+            </div>
+            <div>
+              <p className="text-[12px] text-gray-500">{timeAgo}</p>
+            </div>
+          </div>
         </div>
       </div>
       {/* children으로 전달된 요소(예: 팔로우 버튼)를 오른쪽에 표시합니다. */}
