@@ -58,6 +58,10 @@ const PostBody: React.FC<PostBodyProps> = ({
       className={`px-4 pb-2 ${onContentClick ? "cursor-pointer" : ""}`}
       onClick={onContentClick}
     >
+      {/* 글 제목 */}
+      <h2 className="pt-2 text-[18px] font-semibold text-[var(--gray-90)]">
+        {post.title}
+      </h2>
       {/* 글 내용 */}
       <div className="relative mb-2 pt-2 text-[16px]">
         <span
