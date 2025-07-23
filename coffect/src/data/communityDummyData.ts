@@ -1,28 +1,11 @@
-// Post ( 피드 API 호출 ) 타입 정의
-export interface Post {
-  id: number;
-  user: {
-    profileImage: string;
-    nickname: string;
-    major: string; // 학과 추가
-    studentId: string; // 학번 추가
-  };
-  image: string;
-  title: string;
-  content: string;
-  likes: number;
-  comments: number;
-  type: string; // 게시글 종류 추가
-  topic: string; // 게시글 주제 추가
-  postedDate: Date; // 게시일 추가
-  daysAgo: number; // 며칠 전 작성되었는지 추가
-}
+/**
+ * @author : 흥부/강신욱
+ * @description : 커뮤니티 게시글 더미 데이터를 생성하는 함수입니다.
+ *               주어진 필터에 따라 게시글의 타입과 주제를 설정하고, 랜덤한 날짜와 사용자 정보를 포함합니다.
+ */
 
-// 필터 타입 정의
-interface Filters {
-  type: string | null;
-  topic: string | null;
-}
+// src/types/community/index.ts에서 Post와 Filters 타입을 가져옵니다.
+import type { Post, Filters } from "../types/community";
 
 export const generateDummyPosts = (filters: Filters): Post[] => {
   const majors = [
