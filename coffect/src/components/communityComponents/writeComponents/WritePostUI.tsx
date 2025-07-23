@@ -49,7 +49,7 @@ const WritePostUI: React.FC<WritePostUIProps> = ({
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
-        <div className="h-[0.8px] w-full bg-[#acacac]"></div>
+        <div className="h-[0.8px] w-full bg-[var(--gray-5)]"></div>
 
         <div className="p-4">
           <textarea
@@ -67,7 +67,7 @@ const WritePostUI: React.FC<WritePostUIProps> = ({
             </button>
           </div>
         </div>
-        <div className="mb-4 h-[0.8px] w-full bg-[#acacac]"></div>
+        <div className="mb-4 h-[0.8px] w-full bg-[var(--gray-5)]"></div>
 
         <div>
           <div className="px-4 pt-4">
