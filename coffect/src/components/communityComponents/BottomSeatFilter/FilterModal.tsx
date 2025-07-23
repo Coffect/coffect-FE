@@ -45,10 +45,10 @@ const FilterModal = ({
       ></div>
 
       <div
-        className={`fixed right-0 bottom-0 left-0 z-60 mx-auto h-[58.75%] w-full max-w-[430px] rounded-t-lg bg-white ${isVisible ? "animate-slide-up" : "hidden"} flex flex-col`}
+        className={`fixed right-0 bottom-0 left-0 z-60 mx-auto h-[58.75%] w-full max-w-[430px] rounded-t-3xl bg-white ${isVisible ? "animate-slide-up" : "hidden"} flex flex-col`}
       >
         {/* 글 카테고리 선택하기 Text */}
-        <div className="flex-shrink-0 p-6 pb-4">
+        <div className="flex-shrink-0 p-4 pr-6 pb-1 pl-6">
           <div className="flex justify-end">
             <button onClick={onClose} className="text-gray-600">
               <X size={24} />
@@ -61,12 +61,14 @@ const FilterModal = ({
         <div className="flex-grow overflow-y-auto px-6">
           <div className="flex flex-col gap-4">
             <div>
-              <h3 className="mb-2 flex items-center justify-between text-base font-semibold">
-                글 종류 선택
-                <span className="text-sm font-normal text-gray-500">
-                  (최대 1개만 선택 가능)
-                </span>
-              </h3>
+              <div className="mb-2 flex">
+                <h3 className="flex items-end text-base font-semibold">
+                  글 종류 선택
+                  <span className="ml-2 text-[12px] font-normal text-gray-500">
+                    최대 1개
+                  </span>
+                </h3>
+              </div>
               <ChipGroup
                 options={postTypeOptions}
                 selectedOption={selectedType}
@@ -75,12 +77,14 @@ const FilterModal = ({
             </div>
 
             <div>
-              <h3 className="mb-2 flex items-center justify-between text-base font-semibold">
-                글 주제 선택
-                <span className="text-sm font-normal text-gray-500">
-                  (최대 1개만 선택 가능)
-                </span>
-              </h3>
+              <div className="mb-2 flex">
+                <h3 className="flex items-end text-base font-semibold">
+                  글 주제 선택
+                  <span className="ml-2 text-[12px] font-normal text-gray-500">
+                    최대 1개
+                  </span>
+                </h3>
+              </div>
               <ChipGroup
                 options={postTopicOptions}
                 selectedOption={selectedTopic}
@@ -92,16 +96,16 @@ const FilterModal = ({
 
         {/* 적용하기 / 초기화 버튼 부분 */}
         <div className="w-full flex-shrink-0 p-4">
-          <div className="flex justify-center gap-3">
+          <div className="flex justify-center gap-2">
             <button
-              className={`flex-1 rounded-md px-4 py-2 ${selectedType || selectedTopic ? "bg-[#3a3a3a] text-white" : "cursor-not-allowed bg-gray-200"}`}
+              className={`flex-1 rounded-md px-12 py-4 ${selectedType || selectedTopic ? "bg-[#3a3a3a] text-white" : "cursor-not-allowed bg-gray-200"}`}
               disabled={!selectedType && !selectedTopic}
               onClick={onApply}
             >
               필터 적용하기
             </button>
             <button
-              className="flex-1 rounded-md border border-gray-300 px-4 py-2 text-gray-500"
+              className="flex-1 rounded-md border border-[var(--gray-30)] px-4 py-2 text-[var(--gray-50)]"
               onClick={onReset}
             >
               초기화
