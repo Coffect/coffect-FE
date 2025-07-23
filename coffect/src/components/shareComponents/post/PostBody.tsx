@@ -1,7 +1,7 @@
-/*
- * author: 강신욱
- * description: 게시글의 본문, 이미지, 태그, 인터랙션(좋아요/댓글)을 표시하는 공용 컴포넌트입니다.
- * isDetailView prop을 통해 피드에서의 모습(line-clamp 적용)과 상세 페이지에서의 모습(전체 내용 표시)을 제어할 수 있습니다.
+/**
+ * @author: 강신욱
+ * @description: 게시글의 본문, 이미지, 태그, 인터랙션(좋아요/댓글)을 표시하는 공용 컴포넌트입니다.
+ * @isDetailView prop을 통해 피드에서의 모습(line-clamp 적용)과 상세 페이지에서의 모습(전체 내용 표시)을 제어할 수 있습니다.
  */
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import FeedInteraction from "../../communityComponents/feed/FeedInteraction";
@@ -59,10 +59,10 @@ const PostBody: React.FC<PostBodyProps> = ({
       onClick={onContentClick}
     >
       {/* 글 내용 */}
-      <div className="relative mb-2 pt-2 text-sm">
+      <div className="relative mb-2 pt-2 text-[16px]">
         <span
           ref={contentRef}
-          className={`leading-normal whitespace-pre-wrap ${
+          className={`text-md text-[16px] leading-6 whitespace-pre-wrap text-[var(--gray-70)] ${
             !isDetailView && isClamped && !showMore
               ? "display-webkit-box webkit-line-clamp-3 webkit-box-orient-vertical overflow-hidden text-ellipsis"
               : ""
@@ -100,10 +100,10 @@ const PostBody: React.FC<PostBodyProps> = ({
       {/* 게시글 종류 및 주제 태그 (상세 페이지에서만 보입니다) */}
       {isDetailView && (
         <div className="my-3 flex gap-1.5">
-          <span className="text-md inline-flex items-center justify-center rounded-lg border border-[var(--gray-5)] bg-[var(--gray-5)] px-3 py-1.5 text-[var(--gray-70)]">
+          <span className="inline-flex items-center justify-center rounded-lg border border-[var(--gray-5)] bg-[var(--gray-5)] px-3 py-1.5 text-[14px] text-[var(--gray-70)]">
             {post.type}
           </span>
-          <span className="text-md inline-flex items-center justify-center rounded-lg border border-[var(--gray-5)] bg-[var(--gray-5)] px-3 py-1.5 text-[var(--gray-70)]">
+          <span className="inline-flex items-center justify-center rounded-lg border border-[var(--gray-5)] bg-[var(--gray-5)] px-3 py-1.5 text-[14px] text-[var(--gray-70)]">
             {post.topic}
           </span>
         </div>
