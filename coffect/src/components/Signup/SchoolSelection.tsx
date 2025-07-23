@@ -117,13 +117,11 @@ const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
   }, []);
 
   return (
-    <div className="relative flex h-screen w-full flex-col bg-white px-[6%] pt-[2%]">
+    <div className="relative flex h-screen w-full flex-col bg-white px-[4%] pt-[2%]">
       <div className="flex-1 overflow-y-auto">
         <div className="pt-[10%] text-[var(--gray-90)]">
-          <h2 className="text-lg leading-snug font-bold">
-            <span className="text-2xl font-bold">👋</span>반가워요!
-          </h2>
-          <p className="text-2xl font-bold">
+          <h2 className="leading text-[22px] font-bold">👋 반가워요!</h2>
+          <p className="mt-3 text-[22px] font-bold">
             {selected ? "전공과 학번을 알려주세요!" : "어느 학교 학생이신가요?"}
           </p>
           {/* 학교 검색 입력창 */}
@@ -134,14 +132,14 @@ const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
               onChange={(e) => handleQueryChange(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="재학 중인 학교를 입력해주세요"
-              className="w-full rounded border border-[var(--gray-10)] px-3 py-2 text-base text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+              className="h-[48px] w-full rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
             />
             <Search className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-[var(--gray-50)]" />
           </div>
 
           {/* 자동완성 드롭다운 */}
           {showDropdown && filtered.length > 0 && (
-            <ul className="mt-1.5 max-h-48 w-full overflow-y-auto">
+            <ul className="mt-1.5 w-full overflow-y-auto">
               {filtered.map((s, idx) => (
                 <li
                   key={s.name}
@@ -171,7 +169,7 @@ const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
                 value={major}
                 onChange={(e) => setMajor(e.target.value)}
                 placeholder="전공을 입력해주세요"
-                className="mb-[2rem] w-full rounded border border-[var(--gray-10)] px-3 py-2 text-base text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+                className="mb-[2rem] h-[48px] w-full rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
               />
 
               <h3 className="mb-[0.5rem] text-lg leading-snug font-semibold text-[var(--gray-90)]">
@@ -182,7 +180,7 @@ const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
                 value={studentId}
                 onChange={(e) => setStudentId(e.target.value)}
                 placeholder="학번을 입력해주세요"
-                className="w-full rounded border border-[var(--gray-10)] px-3 py-2 text-base text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+                className="h-[48px] w-full rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
               />
             </div>
           )}

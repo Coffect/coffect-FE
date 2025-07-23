@@ -63,12 +63,11 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, onChange }) => {
   }, []);
 
   return (
-    <div className="relative h-screen w-full bg-white">
-      <div className="h-full overflow-y-auto px-[6%]">
-        {" "}
+    <div className="relative flex h-screen w-full flex-col bg-white px-[4%] pt-[2%]">
+      <div className="h-full flex-1 overflow-y-auto">
         <div className="pt-[10%] text-[var(--gray-90)]">
           {/* 안내 문구 */}
-          <h2 className="mb-[3%] self-start text-left text-2xl leading-snug font-bold">
+          <h2 className="mb-[3%] self-start text-left text-[22px] leading-snug font-bold">
             이메일로 받은 인증코드를
             <br /> 입력해주세요!
           </h2>
@@ -100,7 +99,7 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, onChange }) => {
               onClick={onBack}
               className="text-base text-[var(--gray-70)] underline"
             >
-              인증코드 재발송하기
+              이메일 다시 적기
             </button>
           </div>
         </div>

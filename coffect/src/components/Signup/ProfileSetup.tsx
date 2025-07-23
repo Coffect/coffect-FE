@@ -57,18 +57,18 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
   }, []);
 
   return (
-    <div className="relative h-screen w-full bg-white">
-      <div className="h-full overflow-y-auto px-[6%]">
+    <div className="relative flex h-screen w-full flex-col bg-white px-[4%] pt-[2%]">
+      <div className="h-full flex-1 overflow-y-auto">
         <div className="pt-[10%] text-[var(--gray-90)]">
           {/* 제목 */}
-          <h2 className="mb-10 self-start text-left text-2xl leading-snug font-bold">
+          <h2 className="mb-10 self-start text-left text-[22px] font-bold">
             나의 프로필을 설정해주세요!
           </h2>
           {/* 프로필 이미지 업로드 */}
           <div className="mb-10 flex justify-center">
             <div className="relative">
               <div
-                className="flex h-[7rem] w-[7rem] items-center justify-center overflow-hidden rounded-full bg-[var(--gray-10)]"
+                className="flex h-[7.5rem] w-[7.5rem] items-center justify-center overflow-hidden rounded-full bg-[var(--gray-10)]"
                 onClick={handleAvatarClick}
               >
                 {avatarUrl ? (
@@ -87,7 +87,7 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
               </div>
               <button
                 onClick={handleAvatarClick}
-                className="absolute right-0 bottom-0 mt-2 h-[2rem] w-[2rem] rounded-full bg-[var(--gray-70)] pl-[6px] text-[var(--gray-0)]"
+                className="absolute right-1 bottom-1 mt-2 h-[2rem] w-[2rem] rounded-full bg-[var(--gray-70)] pl-[6px] text-[var(--gray-0)]"
               >
                 <Pencil size={20} />
               </button>
@@ -102,8 +102,9 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
             />
           </div>
           {/* 이름 입력 */}
-          <div className="mb-auto">
-            <label className="mb-[3%] block text-lg font-semibold text-[var(--gray-90)]">
+
+          <div>
+            <label className="mb-2 block text-lg font-semibold text-[var(--gray-90)]">
               이름
             </label>
             <input
@@ -111,7 +112,7 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
               placeholder="이름을 입력해주세요"
               value={name}
               onChange={(e) => handleNameChange(e.target.value)} // 이름 업데이트
-              className="w-full flex-7 rounded border border-[var(--gray-10)] px-3 py-2 text-base text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+              className="flex h-[48px] w-full items-center rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-normal text-[var(--gray-90)] placeholder-[var(--gray-30)] focus-within:border-[2px] focus-within:border-gray-900 focus:ring-0 focus:outline-none"
             />
             {nameError && (
               <p className="mt-1 text-xs text-[var(--noti)]">

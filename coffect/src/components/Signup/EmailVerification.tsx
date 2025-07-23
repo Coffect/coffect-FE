@@ -35,11 +35,11 @@ const EmailVerification: React.FC<Props> = ({ onNext, onChange }) => {
   }, []);
 
   return (
-    <div className="relative flex h-screen w-full flex-col bg-white px-[6%] pt-[2%]">
+    <div className="relative flex h-screen w-full flex-col bg-white px-[3%] pt-[2%]">
       <div className="flex-1 overflow-y-auto">
         <div className="pt-[10%] text-[var(--gray-90)]">
           {/* 타이틀 */}
-          <h2 className="mb-6 self-start text-left text-2xl leading-snug font-bold">
+          <h2 className="mb-6 self-start text-left text-[22px] leading-snug font-bold">
             📬 정확한 확인을 위해
             <br />
             학교 이메일 인증을 할게요!
@@ -54,7 +54,7 @@ const EmailVerification: React.FC<Props> = ({ onNext, onChange }) => {
               placeholder="abc1203@sookmyung.ac.kr"
               value={email}
               onChange={(e) => setEmail(e.target.value)} // 이메일 업데이트
-              className="w-full rounded border border-[var(--gray-10)] px-3 py-2 text-base text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+              className="h-[48px] w-full rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
             />
           </div>
           {/* 인증코드 발송 버튼 */}

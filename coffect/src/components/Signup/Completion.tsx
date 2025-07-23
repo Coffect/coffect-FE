@@ -21,27 +21,28 @@ const Completion = () => {
   }, []);
 
   return (
-    <div className="relative flex h-[90vh] w-full flex-col justify-between bg-white">
-      <div className="h-full flex-1 overflow-y-auto px-[6%] pt-[50%] text-center">
-        {/* 타이틀 */}
-        <h2 className="mb-[4%] text-3xl font-bold">회원가입이 완료되었어요!</h2>
-
-        {/* 서브 문구 */}
-        <p className="mb-8 text-center text-base leading-snug font-medium text-[var(--gray-40)]">
-          지금 바로 학교 친구들과 <br />
-          인사이트 가득한 대화를 나눠보세요!
-        </p>
-
+    <div className="relative flex h-screen w-full flex-col bg-white px-[4%]">
+      <div className="flex flex-1 flex-col items-center justify-center overflow-y-auto pb-[8rem] text-center">
         {/* 아이콘 */}
         <img
           src={SignupEndImage}
           alt="회원가입 완료 이미지"
-          className="mx-auto mb-10 w-[50%]"
+          className="mx-auto mb-5 w-[7rem]"
         />
+        {/* 타이틀 */}
+        <h2 className="mb-[4%] text-[24px] font-bold">
+          회원가입이 완료되었어요!
+        </h2>
+
+        {/* 서브 문구 */}
+        <p className="mb-8 text-center text-base leading-snug font-normal text-[var(--gray-40)]">
+          지금 바로 학교 친구들과 <br />
+          인사이트 가득한 대화를 나눠보세요!
+        </p>
       </div>
 
       {/* 하단 고정 버튼 */}
-      <div className="flex w-full px-[6%]">
+      <div className="fixed bottom-0 left-0 w-full bg-white px-[4%] py-4">
         <button
           onClick={goLogin}
           className="w-full rounded-xl bg-[var(--gray-90)] py-[4%] text-center text-lg text-[var(--gray-0)]"
