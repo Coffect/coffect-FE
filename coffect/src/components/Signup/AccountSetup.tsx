@@ -6,7 +6,7 @@ description : 계정 정보 설정 화면 (아이디, 비밀번호 유효성 검
 import React, { useState, useEffect } from "react";
 import type { SignupData } from "../../types/signup";
 import { isValidUserId, isValidPassword } from "../../utils/validation";
-import { Eye, EyeOff } from "lucide-react"; //
+import { Eye, EyeOff } from "lucide-react";
 /*
   AccountSetup 컴포넌트가 받을 props 타입 정의
   onNext   – 입력 완료 후 다음 단계로 이동

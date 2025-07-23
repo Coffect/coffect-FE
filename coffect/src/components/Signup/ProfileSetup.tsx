@@ -6,7 +6,7 @@ description : 프로필 설정 화면 (프로필 사진 선택 및 사용자 이
 import React, { useEffect, useState, useRef } from "react";
 import type { SignupData } from "../../types/signup";
 import { Pencil } from "lucide-react";
-import defaultAvatar from "../../assets/icon/Signup/DefaultAvatar.png";
+import defaultAvatar from "../../assets/icon/signup/DefaultAvatar.png";
 
 type Props = {
   onNext: () => void; // 다음 단계로 이동

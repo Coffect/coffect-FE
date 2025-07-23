@@ -6,7 +6,7 @@ description : 학교 선택 화면 (타이핑으로 입력 및 검색 + 자동�
 
 import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
-import { isValidStudentId } from "../../utils/validation"; // 경로에 맞게 조정
+import { isValidStudentId } from "../../utils/validation";
 
 // 학교 타입 정의: 이름과 주소
 type School = { name: string; address: string };
