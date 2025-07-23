@@ -1,5 +1,7 @@
-/* author : 강신욱
-description : community 상단 고정바 컴포넌트입니다. 
+/** 
+ * @author : 강신욱
+ * @description : community 상단 고정바 컴포넌트입니다. 
+
 //Header UI
 */
 
@@ -8,9 +10,10 @@ import { useCommunityHeaderFilters } from "../../hooks/community/useCommunityHea
 
 // 공통 스타일 변수 정의
 const buttonStyle =
-  "flex h-[65%] w-[20%] items-center justify-center rounded-lg border border-[var(--gray-30)] text-sm text-[var(--gray-60)] font-semibold ";
+  "flex h-[65%] w-[20%] items-center justify-center rounded-lg border border-[var(--gray-30)] text-[16px] text-[var(--gray-60)] font-md ";
 const containerStyle = "flex items-center";
-const activeButtonStyle = "bg-[var(--gray-70)] text-white";
+const activeButtonStyle =
+  "bg-[var(--gray-70)] text-white font-semibold border-none";
 
 interface HeaderProps {
   openModal: () => void;
@@ -40,7 +43,7 @@ const Header = ({ openModal }: HeaderProps) => {
               handleFilterClick(); // 훅의 필터 핸들러 호출
               openModal(); // 기존 모달 열기 함수 호출
             }}
-            className={`flex h-[65%] w-[12%] items-center justify-center rounded-lg border border-[var(--gray-20)] text-sm ${
+            className={`flex h-[65%] w-[12%] items-center justify-center rounded-lg border border-[var(--gray-30)] text-sm ${
               activeFilter === "filter"
                 ? activeButtonStyle
                 : "text-[var(--gray-60)]"

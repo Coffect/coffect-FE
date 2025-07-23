@@ -25,8 +25,9 @@ const ChipGroup: React.FC<ChipGroupProps> = ({
   onSelect,
 }) => {
   const baseStyle =
-    "text-md rounded-md border border-[var(--gray-30)] px-3 py-2";
-  const selectedStyle = "bg-[var(--gray-70)] text-[var(--white)]";
+    "text-md rounded-md border border-[var(--gray-10)] px-3 py-2 text-[var(--gray-70)]";
+  const selectedStyle =
+    "bg-[var(--gray-70)] text-[var(--white)] border-[var(--gray-70)]";
   return (
     <div className="mb-4">
       <div className="flex flex-col gap-2">

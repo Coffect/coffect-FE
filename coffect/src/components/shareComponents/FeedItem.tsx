@@ -46,7 +46,7 @@ const FeedItem = ({ post, showFollowButton = true }: FeedItemProps) => {
       */}
       <PostAuthorInfo user={post.user} timeAgo={timeAgo}>
         {showFollowButton && (
-          <button className="rounded-md bg-gray-600 px-4 py-1.5 text-sm font-semibold text-white">
+          <button className="rounded-md bg-[var(--gray-60)] px-4 py-1.5 text-sm font-semibold text-white">
             팔로우
           </button>
         )}
