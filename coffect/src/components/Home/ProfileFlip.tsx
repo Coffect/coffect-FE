@@ -139,6 +139,8 @@ const ProfileFlip: React.FC = () => {
   const [profiles, setProfiles] = useState<UserProfile[]>(dummyData);
   // 현재 스킵된 카드 수
   const [skipped, setSkipped] = useState(0);
+  // 스킵 애니메이션 동작 여부
+  const [skipAnimation, setSkipAnimation] = useState(false);
   // 커피챗 제안 대상 프로필 ID
   const [selectedProfileId, setSelectedProfileId] = useState<number | null>(
     null,
@@ -150,8 +152,13 @@ const ProfileFlip: React.FC = () => {
 
   // 카드 제거(왼쪽 버튼)
   const handleSkip = (id: number) => {
-    setProfiles((prev) => prev.filter((p) => p.id !== id));
-    setSkipped((prev) => prev + 1);
+    setSkipAnimation(true);
+    //애니메이션 중에 삭제 방지를 위해
+    setTimeout(() => {
+      setProfiles((prev) => prev.filter((p) => p.id !== id));
+      setSkipped((prev) => prev + 1);
+      setSkipAnimation(false); // 다음 카드용 초기화
+    }, 300);
   };
   // 커피쳇 제안 모달 열기(가운데 버튼)
   const handleSuggestClick = (id: number) => {
@@ -219,7 +226,11 @@ const ProfileFlip: React.FC = () => {
     <div className="mt-[3%] px-[6%]">
       {/* 프로필 카드 */}
       <div
-        className="mx-auto h-full w-full overflow-hidden rounded-3xl bg-white p-[3%]"
+        className={`mx-auto h-full w-full transform overflow-hidden rounded-3xl bg-white p-[3%] transition-all duration-300 ease-in-out ${
+          skipAnimation
+            ? "translate-x-full opacity-0"
+            : "translate-x-0 opacity-100"
+        }`}
         onClick={() => handleCardClick(current)}
       >
         {/* 상단 이미지 영역 */}
