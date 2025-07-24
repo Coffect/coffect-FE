@@ -7,7 +7,7 @@ import { AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import CheckboxImage from "../../assets/icon/signup/checkbox.png";
 import ClickedCheckboxImage from "../../assets/icon/signup/clickCheckbox.png";
-import LogoImage from "../../assets/Home/Logo.png";
+import LogoImage from "../../assets/icon/home/Logo.png";
 
 /** 다음 단계로 이동 */
 type Props = {
