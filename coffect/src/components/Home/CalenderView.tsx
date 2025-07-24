@@ -90,15 +90,15 @@ const CalendarView: React.FC = () => {
                   >
                     <div className="mb-3 flex items-center justify-between">
                       <div>
-                        <span className="rounded-full bg-[var(--gray-60)] px-2 py-1 text-sm font-medium text-[var(--gray-0)]">
+                        <span className="rounded-[14px] bg-[var(--gray-60)] px-2 py-1 text-sm font-medium text-[var(--gray-0)]">
                           {item.date}
                         </span>
-                        <span className="ml-1 rounded-full bg-orange-500 px-2 py-1 text-sm font-semibold text-[var(--gray-0)]">
+                        <span className="ml-1 rounded-[14px] bg-orange-500 px-2 py-1 text-sm font-semibold text-[var(--gray-0)]">
                           {item.daysAway}일 뒤
                         </span>
                       </div>
-                      <div className="flex items-center text-base font-medium text-[var(--gray-50)]">
-                        <Clock className="mr-1 h-4 w-4" />
+                      <div className="flex items-center text-sm font-medium text-[var(--gray-50)]">
+                        <Clock className="mt-0.5 mr-1 h-3 w-3 text-[var(--gray-50)]" />
                         {item.time}
                       </div>
                     </div>
@@ -110,6 +110,9 @@ const CalendarView: React.FC = () => {
                             src={src}
                             alt="avatar"
                             className="h-8 w-8 rounded-full border-2 border-white"
+                            style={{
+                              zIndex: item.participants.length - idx,
+                            }}
                           />
                         ))}
                       </div>

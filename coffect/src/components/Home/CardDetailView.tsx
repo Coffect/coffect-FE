@@ -8,9 +8,6 @@
 
 import { useLocation, useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
-import CardLeftImage from "../../assets/Home/CardLeft.png";
-import CardMidImage from "../../assets/Home/CardMid.png";
-import CardRightImage from "../../assets/Home/CardRight.png";
 
 // 전달받은 프로필 타입 정의
 interface UserProfile {
@@ -67,11 +64,9 @@ const CardDetailView = () => {
   const location = useLocation(); // 전달받은 props(state)를 읽기 위함
 
   // 전달받은 상태에서 profile, onSkip, onSuggest 추출
-  const { profile, onSkip, onSuggest } =
+  const { profile } =
     (location.state as {
       profile: UserProfile;
-      onSkip?: () => void;
-      onSuggest?: () => void;
     }) || {};
   //프로필 정보가 없을 때
   if (!profile) {
@@ -85,18 +80,6 @@ const CardDetailView = () => {
   // 뒤로 가기
   const handleBack = () => navigate(-1);
 
-  // 왼쪽 버튼 클릭 시: 카드 스킵 콜백 호출 후 뒤로가기
-  const handleSkipClick = () => {
-    if (onSkip) onSkip();
-    navigate(-1);
-  };
-
-  // 가운데 버튼 클릭 시: 커피쳇 제안 모달 콜백 호출 후 뒤로가기
-  const handleSuggestClick = () => {
-    if (onSuggest) onSuggest();
-    navigate(-1);
-  };
-
   return (
     <div className="flex h-screen flex-col">
       {/* 상단 네비게이션 (뒤로가기 + 타이틀) */}
@@ -109,21 +92,25 @@ const CardDetailView = () => {
       {/* 중간 콘텐츠 (스크롤) */}
       <div className="flex-1 overflow-y-auto bg-[var(--gray-0)]">
         {/* 프로필 이미지 */}
-        <div className="relative h-[45%] w-full overflow-hidden">
+        <div className="relative h-[40%] w-full overflow-hidden">
           <img
             src={profile.image}
             alt="프로필 이미지"
             className="h-full w-full object-cover"
           />
-          <div className="absolute bottom-1/10 left-1/2 z-20 -translate-x-1/2 transform rounded-xl bg-black/60 px-3 py-1 text-sm font-medium whitespace-nowrap text-[var(--gray-0)]">
-            인하님과 비슷한 관심사를 가졌어요!
+          {/******나중에 api 생기면 인하 부분 유저의 이름 불러올것!(프로필 카드 이름 아님 기억하기) *******/}
+          <div className="absolute bottom-1/10 left-1/2 z-20 -translate-x-1/2 transform rounded-xl bg-black/60 px-3 py-1 text-sm font-medium whitespace-nowrap">
+            <span className="text-[var(--gray-0)]">인하</span>
+            <span className="text-[var(--gray-20)]">
+              님과 비슷한 관심사를 가졌어요!
+            </span>
           </div>
         </div>
 
         {/* 상세 정보, 구분선 */}
         <div className="relative z-10 -mt-[5%] divide-y-2 divide-[var(--gray-5)] rounded-t-3xl bg-[var(--gray-0)] px-4 pt-8">
           {/* 이름 및 학과/학번 */}
-          <div className="pb-6">
+          <div className="pb-6 pl-1">
             <h2 className="text-[22px] font-bold text-[var(--gray-80)]">
               {profile.name}
               <span className="ml-2 text-sm font-medium text-[var(--gray-40)]">
@@ -140,7 +127,7 @@ const CardDetailView = () => {
               {profile.tags.map((tag, i) => (
                 <span
                   key={i}
-                  className={`rounded-7px px-3 py-1 text-sm font-medium ${getTagColor(
+                  className={`rounded-[7px] px-2.5 py-1 text-sm font-medium ${getTagColor(
                     tag,
                   )}`}
                 >
@@ -152,7 +139,7 @@ const CardDetailView = () => {
           {/* 자기소개 */}
           <div className="pt-4 pb-4">
             <h3 className="mb-4 flex items-center gap-1 text-lg font-semibold text-[var(--gray-90)]">
-              👋자기소개
+              👋 자기소개
             </h3>
             <p className="text-[16px] leading-normal font-medium whitespace-pre-line text-[var(--gray-60)]">
               {profile.intro}
@@ -172,36 +159,6 @@ const CardDetailView = () => {
             ))}
           </div>
         </div>
-      </div>
-      {/* 하단 버튼 바 (고정) */}
-      <div className="flex flex-none justify-around bg-[var(--gray-0)] px-20 py-3.5">
-        <button
-          onClick={() => handleSkipClick}
-          className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-[var(--gray-0)] text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
-        >
-          <img
-            src={CardLeftImage}
-            alt="skip"
-            className="h-[40%] w-[40%] object-contain"
-          />
-        </button>
-        <button
-          onClick={() => handleSuggestClick}
-          className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-orange-500 text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
-        >
-          <img
-            src={CardMidImage}
-            alt="suggest"
-            className="h-[40%] w-[40%] object-contain"
-          />
-        </button>
-        <button className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-[var(--gray-0)] text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]">
-          <img
-            src={CardRightImage}
-            alt="follow"
-            className="h-[40%] w-[40%] object-contain"
-          />
-        </button>
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
   author      : 이희선
   description : 커피챗 일정이 없을 때의 안내 컴포넌트
 */
-import NoCalendarImage from "../../assets/Home/NoCalendar.png";
+import NoCalendarImage from "../../assets/icon/home/NoCalendar.png";
 
 const NoSchedule = () => {
   return (

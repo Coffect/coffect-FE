@@ -4,7 +4,7 @@
                 - 상대방이 커피챗 제안을 승낙했음을 알려주는 UI
                 - 대화를 시작하거나, 닫을 수 있음
 */
-import SuggestResponseImage from "../../assets/Home/SuggestResponse.png";
+import SuggestResponseImage from "../../assets/icon/home/SuggestResponse.png";
 
 // props 타입 정의
 interface CoffeeSuggestResponseModalProps {
