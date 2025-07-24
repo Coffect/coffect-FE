@@ -141,9 +141,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
         type="button"
         onClick={() => setShowTimeModal(true)}
       >
-        <span className="text-left">
-          {values.time ? values.time : "시간을 선택해주세요"}
-        </span>
+        <span className="text-left">{values.time ? values.time : ""}</span>
         <Clock size={20} className="ml-2 text-[var(--gray-40)]" />
       </button>
       <TimeScrollModal
@@ -161,7 +159,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
         </div>
         <input
           type="text"
-          className="w-full rounded-lg border-2 border-[var(--gray-10)] bg-[var(--white)] px-4 py-3 text-[16px] font-extrabold text-[var(--gray-80)] placeholder:text-[var(--gray-30)]"
+          className="w-full rounded-lg border-2 border-[var(--gray-10)] bg-[var(--white)] px-4 py-3 text-[16px] font-medium text-[var(--gray-80)] placeholder:text-[var(--gray-30)]"
           value={values.place}
           onChange={(e) => onChange({ ...values, place: e.target.value })}
           placeholder="장소를 입력해주세요"

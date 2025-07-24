@@ -141,7 +141,10 @@ const ChatRoom = () => {
         <div className="flex flex-1 flex-col items-center">
           <span className="text-base font-extrabold">{user.username}</span>
         </div>
-        <div className="ml-2 h-8 w-8 overflow-hidden rounded-full border-1 border-[var(--gray-80)] p-[1px]">
+        <div
+          className="ml-2 h-8 w-8 cursor-pointer overflow-hidden rounded-full border-1 border-[var(--gray-80)] p-[1px]"
+          onClick={() => navigate("/userpage/1")}
+        >
           <img
             src={ExampleProfile}
             alt="프로필"
