@@ -10,6 +10,7 @@ import TimeTable from "../components/UserPage/MyPage/TimeTable";
 import UserPage from "../pages/UserPage";
 import MyProfile from "../components/UserPage/MyPage/MyProfile/MyProfile";
 import Modify from "../components/UserPage/MyPage/MyProfile/Modify/Modify";
+import BookMark from "../components/UserPage/MyPage/BookMark";
 
 /*
 사용자 관련 페이지 라우트 배열을 반환합니다.
@@ -38,6 +39,10 @@ const userPageRoutes = [
   {
     path: "/mypage/chatrecord/:id",
     element: <ChatCard />,
+  },
+  {
+    path: "/mypage/bookmark",
+    element: <BookMark />,
   },
   {
     path: "/userpage/:id",

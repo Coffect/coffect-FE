@@ -3,7 +3,7 @@ author : 썬더
 description : 계정 정보 설정 화면 (아이디, 비밀번호 유효성 검사 및 설정)
 */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import type { SignupData } from "../../types/signup";
 import { isValidUserId, isValidPassword } from "../../utils/validation";
 import { Eye, EyeOff } from "lucide-react"; //
@@ -54,7 +54,7 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
     setPasswordError(newPasswordError);
     setConfirmError(newConfirmError);
     if (newUseridError || newPasswordError || newConfirmError) return;
-    onChange({ userid, password }); // 여기서도 username → userid로 변경
+    onChange({ userid, password });
     onNext();
   };
 
@@ -73,110 +73,121 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
     if (confirmError && value === password) setConfirmError(false);
   };
 
-  return (
-    <div className="flex min-h-screen w-full flex-col bg-white px-[6%] py-[8%] text-left text-xs">
-      <h2 className="mb-[10%] text-xl font-bold">
-        로그인에 사용할
-        <br /> 계정 정보를 설정해주세요
-      </h2>
+  useEffect(() => {
+    // 진입 시 스크롤 막기
+    document.body.style.overflow = "hidden";
+    return () => {
+      // 컴포넌트 종료 시 스크롤 다시 허용
+      document.body.style.overflow = "auto";
+    };
+  }, []);
 
-      {/* 아이디 입력 및 중복체크 버튼 */}
-      <div className="mb-[10%]">
-        <label className="mb-2 block text-sm font-semibold text-gray-700">
-          아이디
-        </label>
-        <div className="flex items-center gap-[4%]">
-          <input
-            type="text"
-            placeholder="5글자 이상"
-            value={userid}
-            onChange={(e) => onUseridChange(e.target.value)}
-            className="h-11 flex-1 rounded-lg border border-gray-300 bg-white px-4 text-sm placeholder-gray-400 focus:border-[2.5px] focus:border-black focus:ring-0 focus:outline-none"
-          />
+  return (
+    <div className="relative h-screen w-full bg-white">
+      <div className="h-full overflow-y-auto px-[6%] pt-[60px]">
+        <h2 className="mb-[10%] text-2xl font-bold text-[var(--gray-90)]">
+          로그인에 사용할
+          <br /> 계정 정보를 설정해주세요
+        </h2>
+        {/* 아이디 입력 및 중복체크 버튼 */}
+        <div className="mb-[10%]">
+          <label className="mb-2 block text-lg font-semibold text-[var(--gray-90)]">
+            아이디
+          </label>
+          <div className="flex items-center gap-[2%]">
+            <input
+              type="text"
+              placeholder="5글자 이상"
+              value={userid}
+              onChange={(e) => onUseridChange(e.target.value)}
+              className="w-full flex-7 rounded border border-[var(--gray-10)] px-3 py-2 text-base text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+            />
+            <button
+              onClick={handleCheckDuplicate}
+              className={`flex-3 rounded-lg py-2 text-base ${
+                isDuplicateChecked
+                  ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
+                  : "bg-[var(--gray-10)] text-[var(--gray-90)]"
+              }`}
+            >
+              중복체크
+            </button>
+          </div>
+          {useridError && (
+            <p className="mt-1 text-sm text-[var(--noti)]">
+              영문/숫자/언더바 조합 5글자 이상
+            </p>
+          )}
+        </div>
+        {/* 비밀번호 입력 */}
+        <div className="mb-[10%]">
+          <label className="mb-2 block text-lg font-semibold text-[var(--gray-90)]">
+            비밀번호
+          </label>
+          <div className="flex w-full items-center rounded border border-[var(--gray-10)] px-3 py-2 text-base text-[var(--gray-90)] focus-within:border-[2px] focus-within:border-gray-900 focus-within:ring-0 focus-within:outline-none">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="영문/숫자/특수기호 조합 8자 이상"
+              value={password}
+              onChange={(e) => onPasswordChange(e.target.value)}
+              className="flex-1 bg-transparent text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:outline-none"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="text-[var(--gray-30)]"
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+
+          {passwordError && (
+            <p className="mt-1 text-sm text-[var(--noti)]">
+              영문/숫자/특수기호 조합 8글자 이상
+            </p>
+          )}
+        </div>
+        {/* 비밀번호 재입력 */}
+        <div className="mb-auto">
+          <label className="mb-2 block text-lg font-semibold text-[var(--gray-90)]">
+            비밀번호 재입력
+          </label>
+          <div className="flex w-full items-center rounded border border-[var(--gray-10)] px-3 py-2 text-sm text-[var(--gray-90)] focus-within:border-[2px] focus-within:border-gray-900 focus-within:ring-0 focus-within:outline-none">
+            <input
+              type={showConfirm ? "text" : "password"}
+              placeholder="비밀번호를 다시 입력해주세요."
+              value={confirm}
+              onChange={(e) => onConfirmChange(e.target.value)}
+              className="flex-1 bg-transparent text-base text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:outline-none"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirm((prev) => !prev)}
+              className="text-[var(--gray-30)]"
+            >
+              {showConfirm ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+          {confirmError && (
+            <p className="mt-1 text-sm text-[var(--noti)]">
+              비밀번호와 일치하지 않습니다
+            </p>
+          )}
+        </div>
+        {/* 다음 버튼 */}
+        <div className="flex w-full pt-60 pb-20">
           <button
-            onClick={handleCheckDuplicate}
-            className={`h-11 rounded-lg px-4 text-sm ${
-              isDuplicateChecked
-                ? "bg-gray-700 text-white"
-                : "bg-gray-200 text-gray-600"
+            onClick={handleNext}
+            className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
+              canProceed
+                ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
+                : "bg-[var(--gray-10)] text-[var(--gray-50)]"
             }`}
           >
-            중복체크
+            다음
           </button>
         </div>
-        {useridError && (
-          <p className="mt-1 text-xs text-red-500">
-            영문/숫자/언더바 조합 5글자 이상
-          </p>
-        )}
       </div>
-
-      {/* 비밀번호 입력 */}
-      <div className="mb-[10%]">
-        <label className="mb-2 block text-sm font-semibold text-gray-700">
-          비밀번호
-        </label>
-        <div className="flex h-11 w-full items-center rounded-lg border border-gray-300 bg-white px-4 text-sm focus-within:border-[2.5px] focus-within:border-black">
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="영문/숫자/특수기호 조합 8자 이상"
-            value={password}
-            onChange={(e) => onPasswordChange(e.target.value)}
-            className="flex-1 bg-transparent placeholder-gray-400 focus:outline-none"
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword((prev) => !prev)}
-            className="text-gray-400"
-          >
-            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
-        </div>
-
-        {passwordError && (
-          <p className="mt-1 text-xs text-red-500">
-            영문/숫자/특수기호 조합 8글자 이상
-          </p>
-        )}
-      </div>
-
-      {/* 비밀번호 재입력 */}
-      <div className="mb-auto">
-        <label className="mb-2 block text-sm font-semibold text-gray-700">
-          비밀번호 재입력
-        </label>
-        <div className="flex h-11 w-full items-center rounded-lg border border-gray-300 bg-white px-4 text-sm focus-within:border-[2.5px] focus-within:border-black">
-          <input
-            type={showConfirm ? "text" : "password"}
-            placeholder="비밀번호를 다시 입력해주세요."
-            value={confirm}
-            onChange={(e) => onConfirmChange(e.target.value)}
-            className="flex-1 bg-transparent placeholder-gray-400 focus:outline-none"
-          />
-          <button
-            type="button"
-            onClick={() => setShowConfirm((prev) => !prev)}
-            className="text-gray-400"
-          >
-            {showConfirm ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
-        </div>
-        {confirmError && (
-          <p className="mt-1 text-xs text-red-500">
-            비밀번호와 일치하지 않습니다
-          </p>
-        )}
-      </div>
-
-      {/* 다음 버튼 */}
-      <button
-        onClick={handleNext}
-        className={`mt-auto h-12 w-full rounded-lg text-sm font-medium ${
-          canProceed ? "bg-black text-white" : "bg-[#E4E4E4] text-gray-500"
-        }`}
-      >
-        다음
-      </button>
     </div>
   );
 };

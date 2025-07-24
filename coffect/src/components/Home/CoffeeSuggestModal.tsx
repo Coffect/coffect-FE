@@ -33,17 +33,17 @@ const CoffeeSuggestModal: React.FC<CoffeeSuggestModalProps> = ({
     // 모달 배경
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
       {/* 모달 컨테이너 */}
-      <div className="flex w-[305px] flex-col items-center justify-between rounded-xl bg-white shadow-[0_0_24px_rgba(28,28,34,0.25)]">
+      <div className="flex w-[305px] flex-col items-center justify-between rounded-[20px] bg-[var(--gray-0)] shadow-[0_0_24px_rgba(28,28,34,0.25)]">
         {/* 상단 콘텐츠 */}
         {/* 제목 */}
         <div className="mt-[6%] mb-[2%] ml-[6%] flex items-center justify-center px-[4%]">
-          <h3 className="text-center text-sm font-bold">
-            커피챗 제안하기<span className="text-lg">✏️</span>
+          <h3 className="text-center text-base font-semibold text-[var(--gray-90)]">
+            커피챗 제안하기✏️
           </h3>
         </div>
 
         {/* 설명 문구 */}
-        <p className="mb-[6%] text-center text-xs leading-snug text-[#787891]">
+        <p className="mb-[6%] text-center text-sm leading-normal text-[var(--gray-50)]">
           메시지를 함께 적어서 보낼 경우
           <br />
           성사율이 높아져요!
@@ -52,7 +52,7 @@ const CoffeeSuggestModal: React.FC<CoffeeSuggestModalProps> = ({
         {/* 메시지 입력창 */}
         <textarea
           maxLength={200} //200자 제한
-          className="mb-[6%] aspect-[7/6] w-[88%] overflow-hidden rounded-md border border-gray-300 bg-[#F5F5F5] p-[4%] text-sm leading-tight focus:border-gray-400 focus:ring-1 focus:ring-gray-400 focus:outline-none"
+          className="mb-[6%] aspect-[7/6] w-[88%] overflow-hidden rounded-[13px] bg-[var(--gray-5)] p-4 text-sm leading-tight font-normal break-keep focus:border-[var(--gray-40)] focus:ring-1 focus:ring-[var(--gray-40)] focus:outline-none"
           placeholder="하고 싶은 이야기나, 공통 관심사 등을 여쭤보세요! (최대 200자)"
           value={text}
           onChange={handleChange}
@@ -63,7 +63,7 @@ const CoffeeSuggestModal: React.FC<CoffeeSuggestModalProps> = ({
           {/* 창 닫기 */}
           <button
             onClick={onCancel}
-            className="flex-11 rounded-bl-xl border-[1px] border-[#F7F7F8] bg-white text-[#787891]"
+            className="flex-1 rounded-bl-xl border border-[var(--gray-0)] bg-white font-medium text-[var(--gray-40)]"
           >
             나중에
           </button>
@@ -71,7 +71,7 @@ const CoffeeSuggestModal: React.FC<CoffeeSuggestModalProps> = ({
           {/* 제안하기 */}
           <button
             onClick={handleSubmit}
-            className="flex-19 rounded-br-xl bg-[#2D2D2D] text-white"
+            className="flex-1 rounded-br-xl bg-[var(--gray-80)] font-semibold text-[var(--gray-0)]"
           >
             제안하기
           </button>
