@@ -11,10 +11,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CoffeeSuggestModal from "./CoffeeSuggestModal";
 import CoffeeSuggestCompleteModal from "./CoffeeSuggestCompleteModal";
-import CardLeftImage from "../../assets/Home/CardLeft.png";
-import CardMidImage from "../../assets/Home/CardMid.png";
-import CardRightImage from "../../assets/Home/CardRight.png";
-import NoCardImage from "../../assets/Home/NoCard.png";
+import CardLeftImage from "../../assets/icon/home/CardLeft.png";
+import CardMidImage from "../../assets/icon/home/CardMid.png";
+import CardRightImage from "../../assets/icon/home/CardRight.png";
+import NoCardImage from "../../assets/icon/home/NoCard.png";
 
 // 유저 프로필 타입 정의
 interface UserProfile {
@@ -139,6 +139,8 @@ const ProfileFlip: React.FC = () => {
   const [profiles, setProfiles] = useState<UserProfile[]>(dummyData);
   // 현재 스킵된 카드 수
   const [skipped, setSkipped] = useState(0);
+  // 스킵 애니메이션 동작 여부
+  const [skipAnimation, setSkipAnimation] = useState(false);
   // 커피챗 제안 대상 프로필 ID
   const [selectedProfileId, setSelectedProfileId] = useState<number | null>(
     null,
@@ -150,8 +152,13 @@ const ProfileFlip: React.FC = () => {
 
   // 카드 제거(왼쪽 버튼)
   const handleSkip = (id: number) => {
-    setProfiles((prev) => prev.filter((p) => p.id !== id));
-    setSkipped((prev) => prev + 1);
+    setSkipAnimation(true);
+    //애니메이션 중에 삭제 방지를 위해
+    setTimeout(() => {
+      setProfiles((prev) => prev.filter((p) => p.id !== id));
+      setSkipped((prev) => prev + 1);
+      setSkipAnimation(false); // 다음 카드용 초기화
+    }, 300);
   };
   // 커피쳇 제안 모달 열기(가운데 버튼)
   const handleSuggestClick = (id: number) => {
@@ -216,10 +223,14 @@ const ProfileFlip: React.FC = () => {
   }
 
   return (
-    <div className="mt-[3%]">
+    <div className="mt-[3%] px-[6%]">
       {/* 프로필 카드 */}
       <div
-        className="mx-auto h-full w-full overflow-hidden rounded-3xl bg-white p-[3%]"
+        className={`mx-auto h-full w-full transform overflow-hidden rounded-3xl bg-white p-[3%] transition-all duration-300 ease-in-out ${
+          skipAnimation
+            ? "translate-x-full opacity-0"
+            : "translate-x-0 opacity-100"
+        }`}
         onClick={() => handleCardClick(current)}
       >
         {/* 상단 이미지 영역 */}
@@ -229,17 +240,20 @@ const ProfileFlip: React.FC = () => {
             alt="프로필 사진"
             className="absolute inset-0 h-full w-full object-cover"
           />
+          <div className="absolute top-3 left-3 rounded-[60px] bg-[#2D2D2D]/90 px-3 py-2 text-[14px] font-semibold text-[var(--gray-10)]">
+            {skipped + 1}/{dummyData.length}
+          </div>
           <div className="absolute bottom-0 left-0 w-full rounded-b-3xl bg-gradient-to-t from-black/70 to-transparent px-[4%] py-[5%]">
             <div className="text-[22px] font-bold text-white">
               {current.name}
-              <span className="ml-[3%] text-sm font-medium text-white">
+              <span className="ml-[3%] text-sm font-medium text-[var(--gray-10)]">
                 {current.major} {current.year}
               </span>
             </div>
           </div>
         </div>
         {/* 하단 태그 + 소개 */}
-        <div className="flex flex-wrap pt-[3%] pb-[1%]">
+        <div className="flex flex-wrap px-[2%] pt-[3%] pb-[1%]">
           {current.tags.map((tag, idx) => (
             <span
               key={idx}
@@ -250,12 +264,12 @@ const ProfileFlip: React.FC = () => {
               {tag}
             </span>
           ))}
-          <p className="mt-[0.1rem] line-clamp-3 text-base leading-normal text-[var(--gray-80)]">
+          <p className="mt-[0.2rem] line-clamp-3 text-base leading-normal font-medium text-[var(--gray-70)]">
             {current.intro}
           </p>
           {/* 하단 버튼 3개 (스킵 / 제안 / 팔로우) */}
           <div
-            className="mx-auto mt-[1rem] mb-[1rem] flex gap-[1rem]"
+            className="mx-auto mt-[1.5rem] mb-[1rem] flex gap-[1rem]"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -290,18 +304,8 @@ const ProfileFlip: React.FC = () => {
             </button>
           </div>
         </div>
-        {/* 페이징 도트 (총 3개, 스킵 횟수에 활성 위치 이동) */}
       </div>
-      <div className="mt-[0.7rem] mb-[0.5rem] flex justify-center gap-[6px]">
-        {Array.from({ length: 3 }).map((_, idx) => (
-          <span
-            key={idx}
-            className={`h-[8px] rounded-full transition-all duration-300 ${
-              idx === skipped ? "w-[15px] bg-orange-400" : "w-[8px] bg-gray-300"
-            }`}
-          />
-        ))}
-      </div>
+
       {/* 제안 작성 모달 */}
       {showSuggestModal && selectedProfileId !== null && (
         <CoffeeSuggestModal
