@@ -35,14 +35,28 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
   const isUseridValid = isValidUserId(userid);
   const isPasswordValid = isValidPassword(password);
   const isConfirmValid = password === confirm;
-
+  /*중복 확인 에러 메시지 띄우기*/
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error" | "">("");
+  const [showToast, setShowToast] = useState(false);
   /* 진행 가능 여부 */
   const canProceed = isUseridValid && isPasswordValid && isConfirmValid;
 
-  /* 아이디 중복체크 핸들러 */
+  /* 아이디 중복체크 핸들러(확인, 에러 메시지까지) */
   const handleCheckDuplicate = () => {
     // 추후 중복체크 API 구현 예정
     setIsDuplicateChecked(true);
+    const isDuplicate = userid === "thunder"; // 예시: 중복 아이디
+    if (isDuplicate) {
+      setToastMessage("이미 존재하는 아이디입니다.");
+      setToastType("error");
+    } else {
+      setToastMessage("아이디 중복 체크 완료");
+      setToastType("success");
+    }
+
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
   };
 
   /* 다음 단계 이동 핸들러 */
@@ -117,8 +131,9 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
             />
             <button
               onClick={handleCheckDuplicate}
+              disabled={userid.length < 1 || isDuplicateChecked}
               className={`h-[48px] flex-3 rounded-lg py-2 text-base font-medium ${
-                isDuplicateChecked
+                userid.length >= 1 && !isDuplicateChecked
                   ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
                   : "bg-[var(--gray-10)] text-[var(--gray-90)]"
               }`}
@@ -205,6 +220,22 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
             </p>
           )}
         </div>
+        {/* 중복확인 메시지 */}
+        {showToast && (
+          <div
+            className={`fixed bottom-[6rem] left-1/2 z-50 flex -translate-x-1/2 transform items-center gap-[4px] rounded-[16px] px-[16px] py-[9px] text-[14px] leading-[150%] font-medium whitespace-nowrap shadow-md ${
+              toastType === "success"
+                ? "bg-[var(--gray-60)] text-white"
+                : "bg-[var(--gray-60)] text-white"
+            }`}
+            style={{ fontFamily: "Pretendard" }}
+          >
+            <span className="text-sm font-medium">
+              {toastType === "success" ? "✅" : "⚠️"}
+            </span>
+            <span>{toastMessage}</span>
+          </div>
+        )}
 
         {/* 다음 버튼 */}
         <div className="fixed right-0 bottom-0 left-0 z-50 bg-white px-[4%] pt-2 pb-4">
