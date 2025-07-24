@@ -21,6 +21,9 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+  const [showImageOptions, setShowImageOptions] = useState(false);
 
   const trySend = () => {
     if (imageFile) {
@@ -36,7 +39,16 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
   };
 
   const handlePlusClick = () => {
-    fileInputRef.current?.click();
+    setShowImageOptions(true);
+  };
+
+  const handleCameraClick = () => {
+    cameraInputRef.current?.click();
+    setShowImageOptions(false);
+  };
+  const handleGalleryClick = () => {
+    galleryInputRef.current?.click();
+    setShowImageOptions(false);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,10 +92,44 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
           >
             <Plus size={22} />
           </button>
+          {/* 이미지 업로드 옵션 모달 */}
+          {showImageOptions && (
+            <div
+              className="absolute bottom-16 left-4 z-50 flex flex-col rounded-xl border border-gray-200 bg-white shadow-lg"
+              onClick={(e) => {
+                if (e.target === e.currentTarget) setShowImageOptions(false);
+              }}
+              style={{ minWidth: 180 }}
+            >
+              <button
+                className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                onClick={handleCameraClick}
+                type="button"
+              >
+                카메라로 촬영
+              </button>
+              <div className="mx-0.5 h-px bg-gray-200" />
+              <button
+                className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                onClick={handleGalleryClick}
+                type="button"
+              >
+                갤러리에서 선택
+              </button>
+            </div>
+          )}
           <input
             type="file"
             accept="image/*"
-            ref={fileInputRef}
+            ref={cameraInputRef}
+            style={{ display: "none" }}
+            capture="environment"
+            onChange={handleFileChange}
+          />
+          <input
+            type="file"
+            accept="image/*"
+            ref={galleryInputRef}
             style={{ display: "none" }}
             onChange={handleFileChange}
           />

@@ -119,74 +119,64 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
         <div className="mt-5 mb-2 text-base font-extrabold text-[var(--gray-80)]">
           언제 만날까요?
         </div>
-        <div className="relative" ref={calendarRef}>
-          <DatePicker
-            selected={undefined}
-            onChange={(date) => {
-              onChange({ ...values, date: date || undefined });
-              setShowCalendarPicker(false);
-            }}
-            open={showCalendarPicker}
-            onInputClick={() => setShowCalendarPicker(true)}
-            onClickOutside={() => setShowCalendarPicker(false)}
-            dateFormat="M월 d일"
-            className="w-full"
-            wrapperClassName="w-full"
-            popperClassName="z-50"
-            popperPlacement="bottom-start"
-            minDate={new Date()}
-            customInput={
-              <button
-                className="flex w-full items-center justify-between rounded-lg border-2 border-[var(--gray-10)] bg-[var(--white)] px-4 py-3 text-left text-[15px] text-[var(--gray-90)]"
-                type="button"
-              >
-                <span
-                  className={
-                    values.date
-                      ? "font-extrabold text-[var(--gray-80)]"
-                      : "text-[var(--gray-40)]"
-                  }
-                >
-                  {values.date ? formatDateToKorean(values.date) : ""}
-                </span>
-                <span className="ml-2 text-lg text-[var(--gray-40)]">
-                  <Calendar size={20} />
-                </span>
-              </button>
+        <button
+          className="flex w-full items-center justify-between rounded-lg border-2 border-[var(--gray-10)] bg-[var(--white)] px-4 py-3 text-left text-[15px] text-[var(--gray-90)]"
+          type="button"
+          onClick={() => setShowCalendarPicker(true)}
+        >
+          <span
+            className={
+              values.date
+                ? "font-extrabold text-[var(--gray-80)]"
+                : "text-[var(--gray-40)]"
             }
-            calendarClassName="iphone-calendar"
-            dayClassName={(date) => {
-              // 정확히 같은 날짜(년, 월, 일)일 때만 선택된 상태로 표시
-              const selected =
-                values.date instanceof Date &&
-                date.getDate() === values.date.getDate() &&
-                date.getMonth() === values.date.getMonth() &&
-                date.getFullYear() === values.date.getFullYear();
-
-              // 선택된 날짜가 있으면 해당 날짜를 주황색으로, 없으면 오늘 날짜를 주황색으로
-              if (selected) {
-                return "custom-selected-day";
-              }
-
-              // 선택된 날짜가 없을 때 오늘 날짜를 주황색으로 표시
-              if (!values.date) {
-                const today = new Date();
-                const isToday =
-                  date.getDate() === today.getDate() &&
-                  date.getMonth() === today.getMonth() &&
-                  date.getFullYear() === today.getFullYear();
-                return isToday ? "custom-selected-day" : "";
-              }
-
-              return "";
+          >
+            {values.date ? formatDateToKorean(values.date) : ""}
+          </span>
+          <span className="ml-2 text-lg text-[var(--gray-40)]">
+            <Calendar size={20} />
+          </span>
+        </button>
+        {showCalendarPicker && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setShowCalendarPicker(false);
             }}
-            showPopperArrow={false}
-            inline={false}
-            closeOnScroll={false}
-            shouldCloseOnSelect={true}
-            openToDate={values.date instanceof Date ? values.date : new Date()}
-          />
-        </div>
+          >
+            <div className="relative">
+              <DatePicker
+                selected={values.date instanceof Date ? values.date : undefined}
+                onChange={(date) => {
+                  onChange({ ...values, date: date || undefined });
+                  setShowCalendarPicker(false);
+                }}
+                inline
+                minDate={new Date()}
+                calendarClassName="iphone-calendar"
+                dayClassName={(date) => {
+                  const selected =
+                    values.date instanceof Date &&
+                    date.getDate() === values.date.getDate() &&
+                    date.getMonth() === values.date.getMonth() &&
+                    date.getFullYear() === values.date.getFullYear();
+                  if (selected) {
+                    return "custom-selected-day";
+                  }
+                  if (!values.date) {
+                    const today = new Date();
+                    const isToday =
+                      date.getDate() === today.getDate() &&
+                      date.getMonth() === today.getMonth() &&
+                      date.getFullYear() === today.getFullYear();
+                    return isToday ? "custom-selected-day" : "";
+                  }
+                  return "";
+                }}
+              />
+            </div>
+          </div>
+        )}
       </div>
       {/* 시간 선택 */}
       <div className="mb-8">
@@ -289,7 +279,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
       <div className="text-lg font-extrabold text-[var(--gray-90)]">
         약속 전 알림 설정
       </div>
-      <div className="mb-5 text-xs font-semibold text-[var(--gray-50)]">
+      <div className="mb-2 text-xs font-semibold text-[var(--gray-50)]">
         까먹지 않게 알림을 보내드려요!
       </div>
       <div className="mb-6 flex flex-wrap justify-start gap-x-1 gap-y-2">
