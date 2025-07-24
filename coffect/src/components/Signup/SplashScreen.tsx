@@ -15,11 +15,11 @@ const SplashScreen = ({ onNext }: Props) => {
       <img
         src={StartImage}
         alt="커피챗 배경"
-        className="absolute bottom-0 left-0 z-0 h-auto w-full object-cover"
+        className="absolute bottom-0 left-0 z-0 h-auto max-h-[50vh] w-full object-cover"
       />
 
       {/* 콘텐츠 영역 (로고 + 슬로건 + 버튼) */}
-      <div className="relative z-10 flex h-full w-full flex-col items-center justify-between px-[4%] pt-[60%] pb-[6%]">
+      <div className="relative z-10 flex h-full w-full flex-col items-center justify-between px-[4%] pt-[30vh] pb-[6%]">
         {/* 로고 + 슬로건 */}
         <div className="flex flex-col items-center">
           <img src={LogoImage} alt="로고" className="mb-4 w-[257px]" />
@@ -28,7 +28,7 @@ const SplashScreen = ({ onNext }: Props) => {
           </p>
         </div>
 
-        {/* 버튼 (배경 없음) */}
+        {/* 버튼 */}
         <button
           onClick={onNext}
           className="w-full rounded-xl bg-[var(--gray-90)] py-4 text-center text-[18px] font-semibold text-white"
