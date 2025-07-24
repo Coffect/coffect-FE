@@ -9,7 +9,7 @@ import SignupEndImage from "../../assets/icon/signup/SignupEnd.png";
 const Completion = () => {
   const navigate = useNavigate();
 
-  const goLogin = () => navigate("/");
+  const goLogin = () => navigate("/signup", { state: { step: 2 } });
 
   useEffect(() => {
     // 진입 시 스크롤 막기
