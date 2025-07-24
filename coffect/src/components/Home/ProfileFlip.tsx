@@ -216,7 +216,7 @@ const ProfileFlip: React.FC = () => {
   }
 
   return (
-    <div className="mt-[3%]">
+    <div className="mt-[3%] px-[6%]">
       {/* 프로필 카드 */}
       <div
         className="mx-auto h-full w-full overflow-hidden rounded-3xl bg-white p-[3%]"
@@ -229,6 +229,9 @@ const ProfileFlip: React.FC = () => {
             alt="프로필 사진"
             className="absolute inset-0 h-full w-full object-cover"
           />
+          <div className="absolute top-3 left-3 rounded-[60px] bg-[#2D2D2D]/90 px-3 py-2 text-[14px] font-semibold text-[var(--gray-10)]">
+            {skipped + 1}/{dummyData.length}
+          </div>
           <div className="absolute bottom-0 left-0 w-full rounded-b-3xl bg-gradient-to-t from-black/70 to-transparent px-[4%] py-[5%]">
             <div className="text-[22px] font-bold text-white">
               {current.name}
@@ -239,7 +242,7 @@ const ProfileFlip: React.FC = () => {
           </div>
         </div>
         {/* 하단 태그 + 소개 */}
-        <div className="flex flex-wrap pt-[3%] pb-[1%]">
+        <div className="flex flex-wrap px-[2%] pt-[3%] pb-[1%]">
           {current.tags.map((tag, idx) => (
             <span
               key={idx}
@@ -250,12 +253,12 @@ const ProfileFlip: React.FC = () => {
               {tag}
             </span>
           ))}
-          <p className="mt-[0.1rem] line-clamp-3 text-base leading-normal text-[var(--gray-80)]">
+          <p className="mt-[0.2rem] line-clamp-3 text-base leading-normal font-medium text-[var(--gray-70)]">
             {current.intro}
           </p>
           {/* 하단 버튼 3개 (스킵 / 제안 / 팔로우) */}
           <div
-            className="mx-auto mt-[1rem] mb-[1rem] flex gap-[1rem]"
+            className="mx-auto mt-[1.5rem] mb-[1rem] flex gap-[1rem]"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -290,20 +293,8 @@ const ProfileFlip: React.FC = () => {
             </button>
           </div>
         </div>
-        {/* 페이징 도트 (총 3개, 스킵 횟수에 활성 위치 이동) */}
       </div>
-      <div className="mt-[0.7rem] mb-[0.5rem] flex justify-center gap-[6px]">
-        {Array.from({ length: 3 }).map((_, idx) => (
-          <span
-            key={idx}
-            className={`h-[8px] rounded-full transition-all duration-300 ${
-              idx === skipped
-                ? "w-[15px] bg-orange-400"
-                : "w-[8px] bg-[var(--gray-20)]"
-            }`}
-          />
-        ))}
-      </div>
+
       {/* 제안 작성 모달 */}
       {showSuggestModal && selectedProfileId !== null && (
         <CoffeeSuggestModal
