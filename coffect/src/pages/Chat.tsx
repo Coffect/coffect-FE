@@ -6,6 +6,7 @@ import BottomNavbar from "../components/shareComponents/BottomNavbar";
 import { useNavigate } from "react-router-dom";
 import { Bell } from "lucide-react";
 import EmptyChatList from "../assets/icon/chat/EmptyChatList.png";
+import ExampleProfile from "../assets/icon/chat/ExampleProfile.png";
 
 const chatList = [
   {
@@ -87,6 +88,11 @@ const Chat = () => {
             >
               {/* 임시 프로필 */}
               <div className="relative flex h-13 w-13 items-center justify-center rounded-full bg-[var(--gray-20)]">
+                <img
+                  src={ExampleProfile}
+                  alt="프로필"
+                  className="h-full w-full object-cover"
+                />
                 {chat.unread && (
                   <span className="absolute -top-0 -right-1 h-4 w-4 rounded-full border-2 border-[var(--white)] bg-[var(--noti)]"></span>
                 )}
