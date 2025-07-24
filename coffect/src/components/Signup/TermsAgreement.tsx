@@ -156,7 +156,7 @@ const TermsAgreement = ({ onNext }: Props) => {
             </span>
           </div>
           <button
-            onClick={() => navigate("/signup/terms")}
+            onClick={() => navigate("/signup/terms", { state: { step: 3 } })}
             className="text-base font-medium text-[var(--gray-40)] underline"
           >
             보기

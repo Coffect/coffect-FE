@@ -1,14 +1,19 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import TopNavbar from "./TopNavbar";
 
 const TermsDetail = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const step = location.state?.step ?? 3;
 
   return (
     <div className="relative h-screen bg-[var(--gray-0)]">
       {/* 상단바 */}
       <div className="abosolute box-border w-full max-w-md bg-[var(--gray-0)]">
-        <TopNavbar title="" onBack={() => navigate(-1)} />
+        <TopNavbar
+          title=""
+          onBack={() => navigate("/signup", { state: { step } })}
+        />
       </div>
 
       {/* 콘텐츠 */}
