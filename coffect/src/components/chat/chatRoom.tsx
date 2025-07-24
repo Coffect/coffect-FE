@@ -141,11 +141,11 @@ const ChatRoom = () => {
         <div className="flex flex-1 flex-col items-center">
           <span className="text-base font-extrabold">{user.username}</span>
         </div>
-        <div className="ml-2 h-8 w-8 overflow-hidden rounded-full border border-[var(--gray-10)] bg-[var(--gray-30)]">
+        <div className="ml-2 h-8 w-8 overflow-hidden rounded-full border-1 border-[var(--gray-80)] p-[1px]">
           <img
             src={ExampleProfile}
             alt="프로필"
-            className="h-full w-full object-cover"
+            className="h-full w-full rounded-full object-cover"
           />
         </div>
       </div>
@@ -158,12 +158,12 @@ const ChatRoom = () => {
           </span>
           <button
             onClick={() => setShowInterests((prev) => !prev)}
-            className="p-1"
+            className="cursor-pointer rounded-full bg-[var(--gray-5)] p-1 text-[var(--gray-50)]"
           >
             {showInterests ? (
-              <ChevronUp size={18} />
+              <ChevronUp size={25} />
             ) : (
-              <ChevronDown size={18} />
+              <ChevronDown size={20} />
             )}
           </button>
         </div>
@@ -176,11 +176,10 @@ const ChatRoom = () => {
             <div className="flex w-full items-center gap-2">
               {schedule && (
                 <button
-                  className="flex min-w-0 flex-1 items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-xs font-bold text-ellipsis whitespace-nowrap text-[var(--gray-70)] sm:text-sm"
+                  className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-xs font-bold text-ellipsis whitespace-nowrap text-[var(--gray-90)] sm:text-sm"
                   onClick={() =>
                     navigate("/chat/schedule", { state: { schedule } })
                   }
-                  style={{ cursor: "pointer" }}
                 >
                   <Calendar size={18} className="mr-1 text-[var(--gray-40)]" />
                   <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
@@ -202,7 +201,7 @@ const ChatRoom = () => {
               )}
               {schedule && (
                 <button
-                  className="flex min-w-0 flex-1 items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-xs font-bold text-ellipsis whitespace-nowrap text-[var(--gray-70)] sm:text-sm"
+                  className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-xs font-bold text-ellipsis whitespace-nowrap text-[var(--gray-70)] sm:text-sm"
                   onClick={openModal}
                 >
                   <Mail size={16} className="mr-1 text-[var(--gray-40)]" />
