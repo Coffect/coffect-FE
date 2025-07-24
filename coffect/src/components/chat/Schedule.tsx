@@ -109,7 +109,6 @@ const Schedule: React.FC = () => {
         <ScheduleForm
           values={form}
           onChange={setForm}
-          showTimeDropdown={true}
           onComplete={isEdit ? handleEdit : () => setShowComplete(true)}
           completeLabel={isEdit ? "수정하기" : undefined}
           onCancel={isEdit ? () => setShowDeleteModal(true) : undefined}
