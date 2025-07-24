@@ -1,19 +1,16 @@
 /*
   author      : 이희선
-  description : 프로필 상세 보기 페이지 (카드 뒷면 내용)
-                - 상단바 고정
-                - 하단 버튼 바 고정 (❌, ☕, ➕)
-                - 중간 콘텐츠만 스크롤
-                - 카드 이미지 위로 둥근 모서리로 덮임
-                - 각 콘텐츠 섹션마다 회색 구분선 적용
-                - 관심 키워드에 맞는 색상 적용
+  description : 추천카드(프로필) 상세 보기 페이지 입니다.  
+                - 상단 고정 네비게이션
+                - 중단: 이미지, 자기소개, Q&A 표시
+                - 하단 고정 버튼: 스킵, 제안, 팔로우   
 */
 
 import { useLocation, useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
-import { useState } from "react";
-import CoffeeSuggestModal from "./CoffeeSuggestModal";
-import CoffeeSuggestCompleteModal from "./CoffeeSuggestCompleteModal";
+import CardLeftImage from "../../assets/Home/CardLeft.png";
+import CardMidImage from "../../assets/Home/CardMid.png";
+import CardRightImage from "../../assets/Home/CardRight.png";
 
 // 전달받은 프로필 타입 정의
 interface UserProfile {
@@ -27,85 +24,90 @@ interface UserProfile {
   answers: { question: string; answer: string }[];
 }
 
-// 태그별 Tailwind 색상 매핑 함수
+// 태그별 전역 색상 클래스 반환
 const getTagColor = (tag: string) => {
   switch (tag) {
     case "창업":
-      return "bg-orange-200 text-orange-800";
+      return "bg-[var(--startup-bg)] text-[var(--startup-text)]";
     case "개발":
-      return "bg-green-200 text-green-800";
+      return "bg-[var(--development-bg)] text-[var(--development-text)]";
     case "디자인":
-      return "bg-yellow-200 text-yellow-800";
+      return "bg-[var(--design-bg)] text-[var(--design-text)]";
     case "기획":
-      return "bg-pink-200 text-pink-800";
+      return "bg-[var(--plan-bg)] text-[var(--plan-text)]";
     case "AI":
-      return "bg-red-200 text-red-800";
+      return "bg-[var(--ai-bg)] text-[var(--ai-text)]";
     case "글쓰기":
-      return "bg-purple-200 text-purple-800";
+      return "bg-[var(--write-bg)] text-[var(--write-text)]";
     case "독서":
-      return "bg-blue-200 text-blue-800";
+      return "bg-[var(--read-bg)] text-[var(--read-text)]";
     case "마케팅":
-      return "bg-indigo-200 text-indigo-800";
+      return "bg-[var(--marketing-bg)] text-[var(--marketing-text)]";
     case "여행":
-      return "bg-teal-200 text-teal-800";
+      return "bg-[var(--trip-bg)] text-[var(--trip-text)]";
     case "데이터 분석":
-      return "bg-indigo-100 text-indigo-800";
+      return "bg-[var(--data-bg)] text-[var(--data-text)]";
     case "하드웨어":
-      return "bg-yellow-100 text-yellow-800";
+      return "bg-[var(--hw-bg)] text-[var(--hw-text)]";
     case "영화":
-      return "bg-blue-100 text-blue-800";
+      return "bg-[var(--movie-bg)] text-[var(--movie-text)]";
     case "외국어":
-      return "bg-purple-100 text-purple-800";
+      return "bg-[var(--language-bg)] text-[var(--language-text)]";
     case "악기":
-      return "bg-blue-100 text-blue-800";
+      return "bg-[var(--music-bg)] text-[var(--music-text)]";
     case "네트워킹":
-      return "bg-gray-200 text-gray-800";
+      return "bg-[var(--networking-bg)] text-[var(--networking-text)]";
     default:
-      return "bg-gray-100 text-gray-600";
+      return "bg-black text-white";
   }
 };
 
 const CardDetailView = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const profile = location.state?.profile as UserProfile | undefined;
+  const navigate = useNavigate(); // 페이지 이동 함수
+  const location = useLocation(); // 전달받은 props(state)를 읽기 위함
 
-  const [showSuggestModal, setShowSuggestModal] = useState(false);
-  const [showCompleteModal, setShowCompleteModal] = useState(false);
-
+  // 전달받은 상태에서 profile, onSkip, onSuggest 추출
+  const { profile, onSkip, onSuggest } =
+    (location.state as {
+      profile: UserProfile;
+      onSkip?: () => void;
+      onSuggest?: () => void;
+    }) || {};
+  //프로필 정보가 없을 때
   if (!profile) {
     return (
-      <div className="flex h-screen items-center justify-center text-gray-500">
+      <div className="flex h-screen items-center justify-center text-[var(--gray-90)]">
         프로필 정보를 찾을 수 없습니다.
       </div>
     );
   }
 
-  // 핸들러들
+  // 뒤로 가기
   const handleBack = () => navigate(-1);
-  const handleSkip = () => navigate(-1);
-  const handleSuggestClick = () => setShowSuggestModal(true);
-  const handleSuggestSubmit = () => {
-    setShowSuggestModal(false);
-    setShowCompleteModal(true);
+
+  // 왼쪽 버튼 클릭 시: 카드 스킵 콜백 호출 후 뒤로가기
+  const handleSkipClick = () => {
+    if (onSkip) onSkip();
+    navigate(-1);
   };
-  const handleSuggestCancel = () => setShowSuggestModal(false);
-  const handleCompleteClose = () => setShowCompleteModal(false);
-  const handleFollow = () =>
-    alert(`${profile.name}님에게 팔로우 요청을 보냈습니다.`);
+
+  // 가운데 버튼 클릭 시: 커피쳇 제안 모달 콜백 호출 후 뒤로가기
+  const handleSuggestClick = () => {
+    if (onSuggest) onSuggest();
+    navigate(-1);
+  };
 
   return (
     <div className="flex h-screen flex-col">
-      {/* 상단 네비게이션 (고정) */}
-      <div className="relative z-10 flex flex-none items-center bg-white px-4 py-3 shadow-md">
+      {/* 상단 네비게이션 (뒤로가기 + 타이틀) */}
+      <div className="relative z-10 flex flex-none items-center bg-[var(--gray-0)] px-4 py-3 shadow-md">
         <button onClick={handleBack} className="absolute left-4">
-          <ChevronLeft className="h-6 w-6 text-black" />
+          <ChevronLeft className="h-6 w-6 text-[var(--gray-90)]" />
         </button>
         <h1 className="mx-auto text-lg font-semibold">상세 정보</h1>
       </div>
-
-      {/* 중간 콘텐츠 (스크롤, 배경 흰색) */}
-      <div className="flex-1 overflow-y-auto bg-white">
+      {/* 중간 콘텐츠 (스크롤) */}
+      <div className="flex-1 overflow-y-auto bg-[var(--gray-0)]">
         {/* 프로필 이미지 */}
         <div className="relative h-[45%] w-full overflow-hidden">
           <img
@@ -113,33 +115,32 @@ const CardDetailView = () => {
             alt="프로필 이미지"
             className="h-full w-full object-cover"
           />
-          <div className="absolute bottom-1/10 left-1/2 z-20 -translate-x-1/2 transform rounded-xl bg-black/60 px-3 py-1 text-xs whitespace-nowrap text-white">
+          <div className="absolute bottom-1/10 left-1/2 z-20 -translate-x-1/2 transform rounded-xl bg-black/60 px-3 py-1 text-sm font-medium whitespace-nowrap text-[var(--gray-0)]">
             인하님과 비슷한 관심사를 가졌어요!
           </div>
         </div>
 
-        {/* 세부 내용 박스 (둥근 상단 + 구분선) */}
-        <div className="relative z-10 -mt-[5%] divide-y divide-gray-200 rounded-t-3xl bg-white px-6 pt-5 pb-5">
-          {" "}
+        {/* 상세 정보, 구분선 */}
+        <div className="relative z-10 -mt-[5%] divide-y-2 divide-[var(--gray-5)] rounded-t-3xl bg-[var(--gray-0)] px-4 pt-8">
           {/* 이름 및 학과/학번 */}
-          <div className="pb-4">
-            <h2 className="text-lg font-semibold">
+          <div className="pb-6">
+            <h2 className="text-[22px] font-bold text-[var(--gray-80)]">
               {profile.name}
-              <span className="ml-2 text-xs font-normal text-gray-500">
+              <span className="ml-2 text-sm font-medium text-[var(--gray-40)]">
                 {profile.major} {profile.year}
               </span>
             </h2>
           </div>
           {/* 관심 키워드 */}
           <div className="pt-4 pb-4">
-            <h3 className="mb-2 flex items-center gap-1 text-sm font-semibold">
+            <h3 className="mb-4 flex items-center gap-1 text-lg font-semibold">
               <span>💡</span> 관심 키워드
             </h3>
             <div className="flex flex-wrap gap-2">
               {profile.tags.map((tag, i) => (
                 <span
                   key={i}
-                  className={`rounded-full px-3 py-1 text-xs font-semibold ${getTagColor(
+                  className={`rounded-7px px-3 py-1 text-sm font-medium ${getTagColor(
                     tag,
                   )}`}
                 >
@@ -150,10 +151,10 @@ const CardDetailView = () => {
           </div>
           {/* 자기소개 */}
           <div className="pt-4 pb-4">
-            <h3 className="mb-2 flex items-center gap-1 text-sm font-semibold">
-              <span>👋</span> 자기소개
+            <h3 className="mb-4 flex items-center gap-1 text-lg font-semibold text-[var(--gray-90)]">
+              👋자기소개
             </h3>
-            <p className="text-xs leading-normal whitespace-pre-line text-gray-700">
+            <p className="text-[16px] leading-normal font-medium whitespace-pre-line text-[var(--gray-60)]">
               {profile.intro}
             </p>
           </div>
@@ -161,10 +162,10 @@ const CardDetailView = () => {
           <div className="pt-4 pb-4">
             {profile.answers.map((qa, idx) => (
               <div key={idx} className={idx > 0 ? "mt-6" : ""}>
-                <p className="text-xs font-semibold text-[#848484]">
+                <p className="text-base font-medium text-[var(--gray-40)]">
                   Q. {qa.question}
                 </p>
-                <p className="mt-1 text-xs font-medium whitespace-pre-line text-[#3A3A3A]">
+                <p className="mt-1 text-base font-medium whitespace-pre-line text-[var(--gray-70)]">
                   {qa.answer}
                 </p>
               </div>
@@ -172,41 +173,36 @@ const CardDetailView = () => {
           </div>
         </div>
       </div>
-
       {/* 하단 버튼 바 (고정) */}
-      <div className="flex flex-none justify-around bg-white px-14 py-4 shadow-inner">
+      <div className="flex flex-none justify-around bg-[var(--gray-0)] px-20 py-3.5">
         <button
-          onClick={handleSkip}
-          className="flex aspect-square w-[50px] items-center justify-center rounded-full bg-white text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
+          onClick={() => handleSkipClick}
+          className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-[var(--gray-0)] text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
         >
-          ❌
+          <img
+            src={CardLeftImage}
+            alt="skip"
+            className="h-[40%] w-[40%] object-contain"
+          />
         </button>
         <button
-          onClick={handleSuggestClick}
-          className="flex aspect-square w-[50px] items-center justify-center rounded-full bg-orange-500 text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
+          onClick={() => handleSuggestClick}
+          className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-orange-500 text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
         >
-          ☕
+          <img
+            src={CardMidImage}
+            alt="suggest"
+            className="h-[40%] w-[40%] object-contain"
+          />
         </button>
-        <button
-          onClick={handleFollow}
-          className="flex aspect-square w-[50px] items-center justify-center rounded-full bg-white text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
-        >
-          ➕
+        <button className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-[var(--gray-0)] text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]">
+          <img
+            src={CardRightImage}
+            alt="follow"
+            className="h-[40%] w-[40%] object-contain"
+          />
         </button>
       </div>
-
-      {/* 제안 모달 */}
-      {showSuggestModal && (
-        <CoffeeSuggestModal
-          onSubmit={handleSuggestSubmit}
-          onCancel={handleSuggestCancel}
-        />
-      )}
-
-      {/* 완료 모달 */}
-      {showCompleteModal && (
-        <CoffeeSuggestCompleteModal onClose={handleCompleteClose} />
-      )}
     </div>
   );
 };

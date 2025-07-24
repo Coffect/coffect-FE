@@ -2,6 +2,10 @@
 /* className="bg-[var(--accent-color)] text-[var(--text-light)]" */
 
 :root {
+
+  /* orange */
+  --orange-500: #ff8126;
+
   /* red */
   --noti: #ff3535;
 
@@ -18,6 +22,7 @@
   --gray-60: #4a4a4a;
   --gray-70: #3a3a3a;
   --gray-80: #2d2d2d;
+  --gray-85: #222222;
   --gray-90: #121212;
 
   /* white */
@@ -56,4 +61,5 @@
   --music-text: #1b7ca4;
   --networking-bg: #f7f7f7;
   --networking-text: #837c7c;
+
 }
