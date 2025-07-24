@@ -9,7 +9,7 @@ description : 회원가입 화면 이동 또는 로그인 수행 선택 컴포�
   onSignUp  – 학교 이메일로 가입하기 버튼 클릭 시 호출 -> 회원가입 페이지 이동
 */
 import { useState } from "react";
-import LogoImage from "../../assets/Home/Logo.png";
+import LogoImage from "../../assets/icon/home/Logo.png";
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 

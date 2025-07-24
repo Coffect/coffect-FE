@@ -3,7 +3,7 @@
   description : 앱 로고 + 소개 문구 + 버튼 클릭 시 다음 단계로 이동 (일러스트가 배경으로 보임)
 */
 
-import LogoImage from "../../assets/Home/Logo.png";
+import LogoImage from "../../assets/icon/home/Logo.png";
 import StartImage from "../../assets/icon/Signup/Start.png";
 
 type Props = { onNext: () => void };
