@@ -6,13 +6,13 @@ description : 커뮤니티 페이지에 대한 컴포넌트입니다.
 
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Header from "../components/communityComponents/Header";
-import FeedList from "../components/communityComponents/feed/FeedList";
-import FilterModal from "../components/communityComponents/BottomSeat/FilterModal";
-import BottomNavbar from "../components/shareComponents/BottomNavbar";
-import { type Post, generateDummyPosts } from "../data/communityDummyData";
-import FloatingWriteButton from "../components/communityComponents/FloatingWriteButton";
-import UploadSuccessModal from "../components/communityComponents/writeComponents/UploadSuccessModal";
+import Header from "@/components/communityComponents/Header";
+import FeedList from "@/components/communityComponents/feed/FeedList";
+import FilterModal from "@/components/communityComponents/BottomSeat/FilterModal";
+import BottomNavbar from "@/components/shareComponents/BottomNavbar";
+import { type Post, generateDummyPosts } from "@/data/communityDummyData";
+import FloatingWriteButton from "@/components/communityComponents/FloatingWriteButton";
+import UploadSuccessModal from "@/components/communityComponents/writeComponents/UploadSuccessModal";
 
 // 필터 타입 정의
 interface Filters {
