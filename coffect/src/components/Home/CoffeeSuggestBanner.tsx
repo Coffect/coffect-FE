@@ -12,7 +12,7 @@ import { Swiper as SwiperClass } from "swiper";
 import MessageModal from "./MessageModal";
 import DeleteSuggestModal from "./DeleteSuggestModal";
 import { useNavigate } from "react-router-dom";
-import NoSuggestImage from "../../assets/Home/NoSuggest.png";
+import NoSuggestImage from "../../assets/icon/home/NoSuggest.png";
 
 // 커피챗 제안 베너 데이터 타입 정의
 interface Suggestion {

@@ -4,7 +4,7 @@
                 - 커피챗 제안이 성공적으로 전송된 후 사용자에게 안내를 제공합니다.
                 - 확인 버튼 클릭 시 모달을 닫습니다.
 */
-import SuggestResponseImage from "../../assets/Home/SuggestResponse.png";
+import SuggestResponseImage from "../../assets/icon/home/SuggestResponse.png";
 
 // props 타입 정의
 interface CoffeeSuggestCompleteModalProps {

@@ -11,10 +11,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CoffeeSuggestModal from "./CoffeeSuggestModal";
 import CoffeeSuggestCompleteModal from "./CoffeeSuggestCompleteModal";
-import CardLeftImage from "../../assets/Home/CardLeft.png";
-import CardMidImage from "../../assets/Home/CardMid.png";
-import CardRightImage from "../../assets/Home/CardRight.png";
-import NoCardImage from "../../assets/Home/NoCard.png";
+import CardLeftImage from "../../assets/icon/home/CardLeft.png";
+import CardMidImage from "../../assets/icon/home/CardMid.png";
+import CardRightImage from "../../assets/icon/home/CardRight.png";
+import NoCardImage from "../../assets/icon/home/NoCard.png";
 
 // 유저 프로필 타입 정의
 interface UserProfile {

@@ -6,7 +6,7 @@ description : 상단 네비게이션 바 컴포넌트입니다.
 
 import { useNavigate } from "react-router-dom";
 import { CalendarDays, Bell, ChevronLeft } from "lucide-react";
-import LogoImage from "../../assets/Home/Logo.png";
+import LogoImage from "../../assets/icon/home/Logo.png";
 
 /*
   props.pageType : 'home' | 'calendar' | 'alarm' 형태로 받아 상황에 따라 상단바를 다르게 표시합니다.
