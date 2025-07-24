@@ -4,7 +4,7 @@ description : 학교 선택 화면 (타이핑으로 입력 및 검색 + 자동�
               - 학교, 전공, 학번 입력 받음
 */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
 import { isValidStudentId } from "../../utils/validation";
 
@@ -115,6 +115,9 @@ const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
       document.body.style.overflow = "auto";
     };
   }, []);
+  //입력창 클릭 시 해당 위치로 이동
+  const majorRef = useRef<HTMLInputElement>(null);
+  const studentIdRef = useRef<HTMLInputElement>(null);
 
   return (
     <div className="relative flex h-screen w-full flex-col bg-white px-[4%] pt-[2%]">
@@ -165,40 +168,61 @@ const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
                 전공
               </h3>
               <input
+                ref={majorRef}
                 type="text"
                 value={major}
                 onChange={(e) => setMajor(e.target.value)}
+                onFocus={() =>
+                  setTimeout(() => {
+                    majorRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "center",
+                    });
+                  }, 5)
+                }
                 placeholder="전공을 입력해주세요"
-                className="mb-[2rem] h-[48px] w-full rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+                className="mb-[2rem] h-[48px] w-full scroll-mb-[100px] rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
               />
 
               <h3 className="mb-[0.5rem] text-lg leading-snug font-semibold text-[var(--gray-90)]">
                 학번
               </h3>
               <input
+                ref={studentIdRef}
                 type="text"
                 value={studentId}
                 onChange={(e) => setStudentId(e.target.value)}
+                onFocus={() =>
+                  setTimeout(() => {
+                    studentIdRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "center",
+                    });
+                  }, 5)
+                }
                 placeholder="학번을 입력해주세요"
-                className="h-[48px] w-full rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+                className="h-[48px] w-full scroll-mb-[100px] rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
               />
             </div>
           )}
         </div>
+        <div className="h-[300px]" />
 
         {/* 다음 버튼 */}
-        <div className={`w-full pb-20 ${selected ? "pt-75" : "pt-130"}`}>
-          <button
-            onClick={handleNext}
-            disabled={!isNextEnabled}
-            className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
-              isNextEnabled
-                ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
-                : "bg-[var(--gray-10)] text-[var(--gray-50)]"
-            } `}
-          >
-            다음
-          </button>
+        <div className="fixed right-0 bottom-0 left-0 z-50 bg-white px-[4%] pt-2 pb-4">
+          <div className="mx-auto w-full max-w-[430px]">
+            <button
+              onClick={handleNext}
+              disabled={!isNextEnabled}
+              className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
+                isNextEnabled
+                  ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
+                  : "bg-[var(--gray-10)] text-[var(--gray-50)]"
+              }`}
+            >
+              다음
+            </button>
+          </div>
         </div>
       </div>
     </div>

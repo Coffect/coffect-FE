@@ -3,7 +3,7 @@ author : 썬더
 description : 계정 정보 설정 화면 (아이디, 비밀번호 유효성 검사 및 설정)
 */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import type { SignupData } from "../../types/signup";
 import { isValidUserId, isValidPassword } from "../../utils/validation";
 import { Eye, EyeOff } from "lucide-react";
@@ -72,6 +72,10 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
     setConfirm(value);
     if (confirmError && value === password) setConfirmError(false);
   };
+  //각 입력창에 포커스 시 해당 위치로 이동
+  const useridRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const confirmRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     // 진입 시 스크롤 막기
@@ -83,7 +87,7 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
   }, []);
 
   return (
-    <div className="relative flex h-screen w-full flex-col bg-white px-[4%] pt-[2%]">
+    <div className="relative mb-[40%] flex h-screen w-full flex-col bg-white px-[4%] pt-[2%]">
       <div className="h-full flex-1 overflow-y-auto pt-[10%]">
         <h2 className="mb-[10%] text-[22px] leading-normal font-bold text-[var(--gray-90)]">
           로그인에 사용할
@@ -96,10 +100,19 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
           </label>
           <div className="flex items-center gap-[2%]">
             <input
+              ref={useridRef}
               type="text"
               placeholder="5글자 이상"
               value={userid}
               onChange={(e) => onUseridChange(e.target.value)}
+              onFocus={() =>
+                setTimeout(() => {
+                  useridRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                  });
+                }, 5)
+              }
               className="h-[48px] w-full flex-7 rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
             />
             <button
@@ -126,11 +139,20 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
           </label>
           <div className="flex h-[48px] w-full items-center rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base text-[var(--gray-90)] focus-within:border-[2px] focus-within:border-gray-900 focus-within:ring-0 focus-within:outline-none">
             <input
+              ref={passwordRef}
               type={showPassword ? "text" : "password"}
               placeholder="영문/숫자/특수기호 조합 8자 이상"
               value={password}
               onChange={(e) => onPasswordChange(e.target.value)}
-              className="flex-1 bg-transparent font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:outline-none"
+              onFocus={() =>
+                setTimeout(() => {
+                  passwordRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                  });
+                }, 5)
+              }
+              className="flex-1 scroll-mb-[100px] bg-transparent font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:outline-none"
             />
             <button
               type="button"
@@ -154,10 +176,19 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
           </label>
           <div className="flex h-[48px] w-full items-center rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-sm text-[var(--gray-90)] focus-within:border-[2px] focus-within:border-gray-900 focus-within:ring-0 focus-within:outline-none">
             <input
+              ref={confirmRef}
               type={showConfirm ? "text" : "password"}
               placeholder="비밀번호를 다시 입력해주세요."
               value={confirm}
               onChange={(e) => onConfirmChange(e.target.value)}
+              onFocus={() =>
+                setTimeout(() => {
+                  confirmRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                  });
+                }, 5)
+              }
               className="flex-1 bg-transparent text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:outline-none"
             />
             <button
@@ -174,18 +205,21 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
             </p>
           )}
         </div>
+
         {/* 다음 버튼 */}
-        <div className="flex w-full pt-60 pb-20">
-          <button
-            onClick={handleNext}
-            className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
-              canProceed
-                ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
-                : "bg-[var(--gray-10)] text-[var(--gray-50)]"
-            }`}
-          >
-            다음
-          </button>
+        <div className="fixed right-0 bottom-0 left-0 z-50 bg-white px-[4%] pt-2 pb-4">
+          <div className="mx-auto w-full max-w-[430px]">
+            <button
+              onClick={handleNext}
+              className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
+                canProceed
+                  ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
+                  : "bg-[var(--gray-10)] text-[var(--gray-50)]"
+              }`}
+            >
+              다음
+            </button>
+          </div>
         </div>
       </div>
     </div>

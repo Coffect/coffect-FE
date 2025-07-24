@@ -185,7 +185,7 @@ const TermsAgreement = ({ onNext }: Props) => {
         </div>
       </div>
       {/* 회원가입 버튼 */}
-      <div className="flex w-full px-7 pb-3">
+      <div className="flex w-full px-7 pb-[5px]">
         <button
           onClick={onNext}
           disabled={!allRequiredChecked}

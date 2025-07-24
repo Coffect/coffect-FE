@@ -58,18 +58,20 @@ const EmailVerification: React.FC<Props> = ({ onNext, onChange }) => {
             />
           </div>
           {/* 인증코드 발송 버튼 */}
-          <div className="flex w-full pt-120 pb-20">
-            <button
-              onClick={handleSend}
-              disabled={!valid}
-              className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
-                valid
-                  ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
-                  : "bg-[var(--gray-10)] text-[var(--gray-50)]"
-              }`}
-            >
-              인증코드 발송하기
-            </button>
+          <div className="fixed right-0 bottom-0 left-0 z-50 bg-white px-[4%] pt-2 pb-4">
+            <div className="mx-auto w-full max-w-[430px]">
+              <button
+                onClick={handleSend}
+                disabled={!valid}
+                className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
+                  valid
+                    ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
+                    : "bg-[var(--gray-10)] text-[var(--gray-50)]"
+                }`}
+              >
+                인증코드 발송하기
+              </button>
+            </div>
           </div>
         </div>
       </div>
