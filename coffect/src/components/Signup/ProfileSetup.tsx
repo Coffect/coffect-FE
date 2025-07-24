@@ -141,7 +141,7 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
             <button
               onClick={handleNext}
               className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
-                name.trim()
+                name.trim() && avatarUrl
                   ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
                   : "bg-[var(--gray-10)] text-[var(--gray-50)]"
               }`}

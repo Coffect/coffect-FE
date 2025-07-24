@@ -57,6 +57,8 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
       return [...prev, item];
     });
   };
+  //선택 초기화
+  const handleReset = () => setSelected([]);
 
   // 다음 버튼 클릭 시 실행되는 함수
   const handleSubmit = () => {
@@ -79,19 +81,32 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
       document.body.style.overflow = "auto";
     };
   }, []);
+  // 에러 메시지  2초 후 자동 제거
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(""), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   return (
     <div className="relative flex h-screen w-full flex-col justify-between bg-white px-[4%] pt-[2%]">
       <div className="h-full flex-1 overflow-y-auto pt-[10%] pb-[8rem]">
-        <p className="mb-[3%] text-sm font-bold text-orange-500">최대 4개</p>
         <h2 className="mb-[0.5rem] text-[22px] leading-normal font-bold">
           관심사를 알려주세요
           <br />
           비슷한 친구들을 추천해줄게요!
         </h2>
-        <p className="mb-[1.5rem] text-base font-medium text-[var(--gray-40)]">
-          나중에 언제든지 변경 가능해요
+        <p className="mb-[4%] text-base font-semibold text-orange-500">
+          처음 키워드는 나의 대표 관심사로 표시돼요
         </p>
+
+        <button
+          onClick={handleReset}
+          className="mb-3 text-sm font-medium text-[var(--gray-50)]"
+        >
+          초기화 ⟳
+        </button>
         {/* 관심사 선택 버튼 리스트 */}
         <div className="mb-4 flex flex-wrap justify-start gap-2 pr-[20%]">
           {OPTIONS.map((opt) => {
