@@ -38,7 +38,7 @@ const CoffeeSuggestModal: React.FC<CoffeeSuggestModalProps> = ({
         {/* 제목 */}
         <div className="mt-[6%] mb-[2%] ml-[6%] flex items-center justify-center px-[4%]">
           <h3 className="text-center text-base font-semibold text-[var(--gray-90)]">
-            커피챗 제안하기✏️
+            커피챗 제안하기<span className="ml-0.5 inline-block">✏️</span>
           </h3>
         </div>
 

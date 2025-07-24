@@ -45,12 +45,9 @@ const TopNavbar = ({ pageType }: TopNavbarProps) => {
           <div className="flex items-center gap-[1rem]">
             <CalendarDays
               className={iconClass}
-              onClick={() => navigate("/home/calendar")}
+              onClick={() => navigate("/calendar")}
             />
-            <Bell
-              className={iconClass}
-              onClick={() => navigate("/home/alarm")}
-            />
+            <Bell className={iconClass} onClick={() => navigate("/alarm")} />
           </div>
         </>
       ) : (
