@@ -85,39 +85,41 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
           </div>
         )}
         <div className="flex w-full items-center rounded-full bg-[rgba(245,245,245,1)] px-2 py-2">
-          <button
-            className="mr-2 flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(74,74,74,1)] text-white"
-            onClick={handlePlusClick}
-            type="button"
-          >
-            <Plus size={22} />
-          </button>
-          {/* 이미지 업로드 옵션 모달 */}
-          {showImageOptions && (
-            <div
-              className="absolute bottom-16 left-4 z-50 flex flex-col rounded-xl border border-gray-200 bg-white shadow-lg"
-              onClick={(e) => {
-                if (e.target === e.currentTarget) setShowImageOptions(false);
-              }}
-              style={{ minWidth: 180 }}
+          <div className="relative">
+            <button
+              className="mr-2 flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(74,74,74,1)] text-white"
+              onClick={handlePlusClick}
+              type="button"
             >
-              <button
-                className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
-                onClick={handleCameraClick}
-                type="button"
+              <Plus size={22} />
+            </button>
+            {/* 이미지 업로드 옵션 모달 */}
+            {showImageOptions && (
+              <div
+                className="absolute bottom-11 -left-1 z-50 flex flex-col rounded-xl border border-[var(--gray-5)] bg-white shadow-lg"
+                onClick={(e) => {
+                  if (e.target === e.currentTarget) setShowImageOptions(false);
+                }}
+                style={{ minWidth: 180 }}
               >
-                카메라로 촬영
-              </button>
-              <div className="mx-0.5 h-px bg-gray-200" />
-              <button
-                className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
-                onClick={handleGalleryClick}
-                type="button"
-              >
-                갤러리에서 선택
-              </button>
-            </div>
-          )}
+                <button
+                  className="w-full rounded-t-xl px-3 py-2 text-left text-sm hover:bg-[var(--gray-10)]"
+                  onClick={handleCameraClick}
+                  type="button"
+                >
+                  카메라로 촬영
+                </button>
+                <div className="mx-0.5 h-px bg-[var(--gray-5)]" />
+                <button
+                  className="w-full rounded-b-xl px-3 py-2 text-left text-sm hover:bg-[var(--gray-10)]"
+                  onClick={handleGalleryClick}
+                  type="button"
+                >
+                  갤러리에서 선택
+                </button>
+              </div>
+            )}
+          </div>
           <input
             type="file"
             accept="image/*"
