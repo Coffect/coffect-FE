@@ -9,9 +9,11 @@ import type { ScheduleFormValues } from "./ScheduleForm";
 import ScheduleCompleteModal from "./ScheduleCompleteModal";
 import DeleteScheduleModal from "./DeleteScheduleModal";
 import { X } from "lucide-react";
+import ExampleProfile from "../../assets/icon/chat/ExampleProfile.png";
+import ExampleProfile2 from "../../assets/icon/chat/ExampleProfile2.png";
 
-const MY_PROFILE_IMG = "https://i.pravatar.cc/40?u=me";
-const OTHER_PROFILE_IMG = "https://i.pravatar.cc/40?u=other";
+const MY_PROFILE_IMG = ExampleProfile2;
+const OTHER_PROFILE_IMG = ExampleProfile;
 const NICKNAME = "김라떼";
 
 const Schedule: React.FC = () => {
@@ -109,7 +111,6 @@ const Schedule: React.FC = () => {
         <ScheduleForm
           values={form}
           onChange={setForm}
-          showTimeDropdown={true}
           onComplete={isEdit ? handleEdit : () => setShowComplete(true)}
           completeLabel={isEdit ? "수정하기" : undefined}
           onCancel={isEdit ? () => setShowDeleteModal(true) : undefined}

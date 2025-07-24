@@ -28,6 +28,8 @@ const generateDummyComments = (): Comment[] => {
     return {
       id: i + 1,
       user: {
+        name: nicknames[i % nicknames.length], // Added name
+        avatar: `https://randomuser.me/api/portraits/thumb/women/${i}.jpg`, // Added avatar (using thumb for variety)
         profileImage: `https://randomuser.me/api/portraits/women/${i}.jpg`,
         nickname: nicknames[i % nicknames.length],
         major: majors[i % majors.length],

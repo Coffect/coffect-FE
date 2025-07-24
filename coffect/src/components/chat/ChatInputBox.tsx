@@ -20,7 +20,10 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+  const [showImageOptions, setShowImageOptions] = useState(false);
 
   const trySend = () => {
     if (imageFile) {
@@ -36,7 +39,16 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
   };
 
   const handlePlusClick = () => {
-    fileInputRef.current?.click();
+    setShowImageOptions(true);
+  };
+
+  const handleCameraClick = () => {
+    cameraInputRef.current?.click();
+    setShowImageOptions(false);
+  };
+  const handleGalleryClick = () => {
+    galleryInputRef.current?.click();
+    setShowImageOptions(false);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,38 +85,81 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
           </div>
         )}
         <div className="flex w-full items-center rounded-full bg-[rgba(245,245,245,1)] px-2 py-2">
-          <button
-            className="mr-2 flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(74,74,74,1)] text-white"
-            onClick={handlePlusClick}
-            type="button"
-          >
-            <Plus size={22} />
-          </button>
+          <div className="relative">
+            <button
+              className="mr-2 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-[rgba(74,74,74,1)] text-white"
+              onClick={handlePlusClick}
+              type="button"
+            >
+              <Plus size={22} />
+            </button>
+            {/* 이미지 업로드 옵션 모달 */}
+            {showImageOptions && (
+              <div
+                className="absolute bottom-11 -left-1 z-50 flex flex-col rounded-xl border border-[var(--gray-5)] bg-white shadow-lg"
+                onClick={(e) => {
+                  if (e.target === e.currentTarget) setShowImageOptions(false);
+                }}
+                style={{ minWidth: 180 }}
+              >
+                <button
+                  className="w-full rounded-t-xl px-3 py-2 text-left text-sm hover:bg-[var(--gray-10)]"
+                  onClick={handleCameraClick}
+                  type="button"
+                >
+                  카메라로 촬영
+                </button>
+                <div className="mx-0.5 h-px bg-[var(--gray-5)]" />
+                <button
+                  className="w-full rounded-b-xl px-3 py-2 text-left text-sm hover:bg-[var(--gray-10)]"
+                  onClick={handleGalleryClick}
+                  type="button"
+                >
+                  갤러리에서 선택
+                </button>
+              </div>
+            )}
+          </div>
           <input
             type="file"
             accept="image/*"
-            ref={fileInputRef}
+            ref={cameraInputRef}
             style={{ display: "none" }}
+            capture="environment"
             onChange={handleFileChange}
           />
           <input
+            type="file"
+            accept="image/*"
+            ref={galleryInputRef}
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+          />
+          <textarea
             ref={inputRef}
-            className="flex-1 rounded-full px-1 py-2 text-base outline-none placeholder:text-[rgba(172,172,172,1)]"
+            className="flex-1 resize-none rounded-full px-3 py-2 text-base outline-none placeholder:text-[var(--gray-40)]"
             placeholder="메시지를 입력해주세요"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") trySend();
+              // Enter로 전송, Shift+Enter로 줄바꿈
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                trySend();
+              }
             }}
-            style={{ fontSize: "16px" }}
+            style={{ fontSize: "16px", minHeight: "40px", maxHeight: "120px" }}
+            rows={1}
           />
-          <button
-            className="ml-2 flex h-8 w-12 items-center justify-center rounded-full bg-[rgba(255,129,38,1)] text-white"
-            onClick={trySend}
-            type="button"
-          >
-            <Send size={20} />
-          </button>
+          {inputValue.trim().length > 0 && (
+            <button
+              className="ml-2 flex h-8 w-12 items-center justify-center rounded-full bg-[var(--orange-500)] text-white"
+              onClick={trySend}
+              type="button"
+            >
+              <Send size={20} />
+            </button>
+          )}
         </div>
       </div>
     </div>
