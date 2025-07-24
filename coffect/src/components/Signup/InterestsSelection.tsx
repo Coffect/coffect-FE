@@ -57,6 +57,8 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
       return [...prev, item];
     });
   };
+  //선택 초기화
+  const handleReset = () => setSelected([]);
 
   // 다음 버튼 클릭 시 실행되는 함수
   const handleSubmit = () => {
@@ -79,21 +81,32 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
       document.body.style.overflow = "auto";
     };
   }, []);
+  // 에러 메시지  2초 후 자동 제거
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(""), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   return (
-    <div className="relative flex h-[90vh] w-full flex-col justify-between bg-white">
-      <div className="flex-1 overflow-y-auto px-[6%] pt-[40px]">
-        <p className="mb-[3%] text-sm font-bold text-orange-500">최대 4개</p>
-        <h2 className="mb-[0.5rem] text-2xl leading-snug font-bold">
+    <div className="relative flex h-screen w-full flex-col justify-between bg-white px-[4%] pt-[2%]">
+      <div className="h-full flex-1 overflow-y-auto pt-[10%] pb-[8rem]">
+        <h2 className="mb-[0.5rem] text-[22px] leading-normal font-bold">
           관심사를 알려주세요
           <br />
-          <span className="text-2xl font-bold">
-            비슷한 친구들을 추천해줄게요!
-          </span>
+          비슷한 친구들을 추천해줄게요!
         </h2>
-        <p className="mb-[1.5rem] text-base font-medium text-[var(--gray-40)]">
-          나중에 언제든지 변경 가능해요
+        <p className="mb-[4%] text-base font-semibold text-orange-500">
+          처음 키워드는 나의 대표 관심사로 표시돼요
         </p>
+
+        <button
+          onClick={handleReset}
+          className="mb-3 text-sm font-medium text-[var(--gray-50)]"
+        >
+          초기화 ⟳
+        </button>
         {/* 관심사 선택 버튼 리스트 */}
         <div className="mb-4 flex flex-wrap justify-start gap-2 pr-[20%]">
           {OPTIONS.map((opt) => {
@@ -121,12 +134,12 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
         {error && <p className="mb-4 text-sm text-[var(--noti)]">{error}</p>}
       </div>
       {/* 하단 버튼 그룹 */}
-      <div className="w-full px-[6%] py-3">
+      <div className="fixed bottom-0 left-0 w-full bg-white px-[4%] py-3">
         <div className="mt-auto flex w-full gap-2">
           {/* 건너뛰기 버튼 */}
           <button
             onClick={onNext}
-            className="flex-1 rounded-xl border border-[var(--gray-20)] py-[4%] text-center text-lg font-semibold text-[var(--gray-50)]"
+            className="flex-[1.5] rounded-xl border-[1.5px] border-[var(--gray-20)] py-[4%] text-center text-lg font-semibold text-[var(--gray-50)]"
           >
             건너뛰기
           </button>
@@ -134,7 +147,7 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
           {/* 다음 버튼: 선택된 항목이 없으면 비활성화 색상 */}
           <button
             onClick={handleSubmit}
-            className={`flex-2 rounded-xl py-[4%] text-center text-lg font-semibold ${
+            className={`flex-3 rounded-xl py-[4%] text-center text-lg font-semibold ${
               selected.length > 0
                 ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
                 : "bg-[var(--gray-10)] text-[var(--gray-50)]"

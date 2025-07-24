@@ -6,7 +6,7 @@ description : 프로필 설정 화면 (프로필 사진 선택 및 사용자 이
 import React, { useEffect, useState, useRef } from "react";
 import type { SignupData } from "../../types/signup";
 import { Pencil } from "lucide-react";
-import defaultAvatar from "../../assets/icon/Signup/DefaultAvatar.png";
+import defaultAvatar from "../../assets/icon/signup/DefaultAvatar.png";
 
 type Props = {
   onNext: () => void; // 다음 단계로 이동
@@ -56,19 +56,22 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
     };
   }, []);
 
+  //입력창 포커스 시 이동 위치
+  const nameRef = useRef<HTMLInputElement>(null);
+
   return (
-    <div className="relative h-screen w-full bg-white">
-      <div className="h-full overflow-y-auto px-[6%]">
+    <div className="relative mb-[40%] flex h-screen w-full flex-col bg-white px-[4%] pt-[2%]">
+      <div className="h-full flex-1 overflow-y-auto">
         <div className="pt-[10%] text-[var(--gray-90)]">
           {/* 제목 */}
-          <h2 className="mb-10 self-start text-left text-2xl leading-snug font-bold">
+          <h2 className="mb-10 self-start text-left text-[22px] font-bold">
             나의 프로필을 설정해주세요!
           </h2>
           {/* 프로필 이미지 업로드 */}
           <div className="mb-10 flex justify-center">
             <div className="relative">
               <div
-                className="flex h-[7rem] w-[7rem] items-center justify-center overflow-hidden rounded-full bg-[var(--gray-10)]"
+                className="flex h-[7.5rem] w-[7.5rem] items-center justify-center overflow-hidden rounded-full bg-[var(--gray-10)]"
                 onClick={handleAvatarClick}
               >
                 {avatarUrl ? (
@@ -87,7 +90,7 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
               </div>
               <button
                 onClick={handleAvatarClick}
-                className="absolute right-0 bottom-0 mt-2 h-[2rem] w-[2rem] rounded-full bg-[var(--gray-70)] pl-[6px] text-[var(--gray-0)]"
+                className="absolute right-1 bottom-1 mt-2 h-[2rem] w-[2rem] rounded-full bg-[var(--gray-70)] pl-[6px] text-[var(--gray-0)]"
               >
                 <Pencil size={20} />
               </button>
@@ -102,16 +105,26 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
             />
           </div>
           {/* 이름 입력 */}
-          <div className="mb-auto">
-            <label className="mb-[3%] block text-lg font-semibold text-[var(--gray-90)]">
+
+          <div>
+            <label className="mb-2 block text-lg font-semibold text-[var(--gray-90)]">
               이름
             </label>
             <input
+              ref={nameRef}
               type="text"
               placeholder="이름을 입력해주세요"
               value={name}
-              onChange={(e) => handleNameChange(e.target.value)} // 이름 업데이트
-              className="w-full flex-7 rounded border border-[var(--gray-10)] px-3 py-2 text-base text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+              onChange={(e) => handleNameChange(e.target.value)}
+              onFocus={() =>
+                setTimeout(() => {
+                  nameRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                  });
+                }, 5)
+              }
+              className="flex h-[48px] w-full scroll-mb-[100px] items-center rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-normal text-[var(--gray-90)] placeholder-[var(--gray-30)] focus-within:border-[2px] focus-within:border-gray-900 focus:ring-0 focus:outline-none"
             />
             {nameError && (
               <p className="mt-1 text-xs text-[var(--noti)]">
@@ -122,17 +135,20 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
         </div>
 
         {/* 다음 버튼 */}
-        <div className="flex w-full pt-90 pb-20">
-          <button
-            onClick={handleNext}
-            className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
-              name.trim()
-                ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
-                : "bg-[var(--gray-10)] text-[var(--gray-50)]"
-            }`}
-          >
-            다음
-          </button>
+        <div className="fixed right-0 bottom-0 left-0 z-50 bg-white px-[4%] pt-2 pb-4">
+          <div className="mx-auto w-full max-w-[430px]">
+            {" "}
+            <button
+              onClick={handleNext}
+              className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
+                name.trim() && avatarUrl
+                  ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
+                  : "bg-[var(--gray-10)] text-[var(--gray-50)]"
+              }`}
+            >
+              다음
+            </button>
+          </div>
         </div>
       </div>
     </div>
