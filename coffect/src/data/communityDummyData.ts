@@ -44,7 +44,7 @@ export const generateDummyPosts = (filters: Filters): Post[] => {
         profileImage: `https://randomuser.me/api/portraits/men/${i}.jpg`,
         nickname: nicknames[i % nicknames.length],
         major: majors[i % majors.length],
-        studentId: 20,
+        studentId: (20 + i).toString(),
       },
       image: `https://picsum.photos/400/300?random=${i + 1}`,
       title: "안녕하세요! 좋은날씨에요",
