@@ -14,7 +14,7 @@ const PostDetailComments = ({ commentList }: PostDetailCommentsProps) => {
   return (
     <section>
       {/* 댓글 목록 위쪽의 구분선입니다. */}
-      <div className="h-px bg-gray-300"></div>
+      <div className="h-[7.3%] min-h-[6px] w-full bg-[var(--gray-5)]"></div>
       {/* 댓글 목록을 렌더링하는 영역입니다. */}
       <div className="p-4">
         <CommentList commentList={commentList} />

@@ -2,8 +2,12 @@
 description : 글 작성 페이지의 UI를 담당하는 프레젠테이션 컴포넌트입니다.
 */
 import React from "react";
-import ChipGroup from "../common/ChipGroup";
+import ChipGroup from "../ChipFilterComponent/ChipGroup";
 import type { WritePostUIProps } from "../../../types/writePostTypes";
+import {
+  postTypeOptions,
+  postTopicOptions,
+} from "../ChipFilterComponent/filterData";
 //** 수정 사항 : Image와 Link icon이 디자인과 같지 않습니다.
 import { ChevronLeft, Image, Link } from "lucide-react";
 
@@ -36,25 +40,25 @@ const WritePostUI: React.FC<WritePostUIProps> = ({
         </button>
       </header>
       <main className="flex-grow">
-        <div className="px-4">
+        <div className="flex items-center justify-center px-4 py-4 text-center">
           <input
             type="text"
             placeholder="제목을 입력하세요"
-            className="mb-3 w-full font-semibold focus:outline-none"
+            className="w-full text-xl font-bold placeholder:text-xl placeholder:font-bold placeholder:text-[#121212] focus:outline-none"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
-        <div className="mb-4 h-[1px] w-full bg-gray-500"></div>
+        <div className="h-[0.8px] w-full bg-[var(--gray-5)]"></div>
 
-        <div className="px-4">
+        <div className="p-4">
           <textarea
             placeholder="오늘은 어떤 글을 써볼까요?"
             className="h-55 w-full rounded focus:outline-none"
             value={content}
             onChange={(e) => setContent(() => e.target.value)}
           />
-          <div className="mt-4 mb-2 flex items-center space-x-4 pb-2">
+          <div className="my-2 flex items-center space-x-4">
             <button className="rounded px-1 text-sm">
               <Image />
             </button>
@@ -63,39 +67,27 @@ const WritePostUI: React.FC<WritePostUIProps> = ({
             </button>
           </div>
         </div>
-        <div className="mb-4 h-[1px] w-full bg-gray-500"></div>
+        <div className="mb-4 h-[0.8px] w-full bg-[var(--gray-5)]"></div>
 
-        <div className="px-4">
-          <ChipGroup
-            title="글 종류"
-            options={[
-              "아티클 ✍🏻",
-              "팀원 모집 👬",
-              "질문 👤",
-              "도움 필요 🤩",
-              "후기글 ☕",
-              "팁 공유 📌",
-            ]}
-            selectedOption={postType}
-            onSelect={setPostType}
-          />
-
-          <ChipGroup
-            title="글 주제 선택"
-            options={[
-              "프로덕트",
-              "개발",
-              "디자인",
-              "기획",
-              "인사이트",
-              "취업",
-              "창업",
-              "학교",
-              "기타",
-            ]}
-            selectedOption={topic}
-            onSelect={handleTopicSelect}
-          />
+        <div>
+          <div className="px-4 pt-4">
+            <div className="mb-4">
+              <h3 className="mb-5 text-base font-semibold">글 종류</h3>
+              <ChipGroup
+                options={postTypeOptions}
+                selectedOption={postType}
+                onSelect={setPostType}
+              />
+            </div>
+            <div className="pt-4">
+              <h3 className="mb-5 text-base font-semibold">글 주제</h3>
+              <ChipGroup
+                options={postTopicOptions}
+                selectedOption={topic}
+                onSelect={handleTopicSelect}
+              />
+            </div>
+          </div>
         </div>
       </main>
     </div>

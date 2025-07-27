@@ -251,7 +251,7 @@ function MyProfile() {
           ) : (
             <>
               {myDummyPosts.map((post) => (
-                <FeedItem key={post.id} post={post} />
+                <FeedItem key={post.id} post={post} showFollowButton={false} />
               ))}
             </>
           ))}

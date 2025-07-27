@@ -11,6 +11,7 @@ import PostBody from "./post/PostBody";
 // FeedItem이 받을 props 타입을 정의합니다.
 interface FeedItemProps {
   post: Post;
+  showFollowButton?: boolean; // 팔로우 버튼 표시 여부를 결정하는 prop
 }
 
 // 날짜를 'X일 전' 형식으로 변환하는 간단한 유틸리티 함수입니다.
@@ -24,7 +25,7 @@ const getTimeAgo = (date: Date): string => {
   return `${diffDays}일 전`;
 };
 
-const FeedItem = ({ post }: FeedItemProps) => {
+const FeedItem = ({ post, showFollowButton = true }: FeedItemProps) => {
   const navigate = useNavigate();
 
   // 게시글 아이템 클릭 시 해당 게시글의 상세 페이지로 이동하는 함수입니다.
@@ -44,9 +45,11 @@ const FeedItem = ({ post }: FeedItemProps) => {
         자식 요소로 팔로우 버튼을 전달하여, PostAuthorInfo 컴포넌트의 오른쪽에 표시되도록 합니다.
       */}
       <PostAuthorInfo user={post.user} timeAgo={timeAgo}>
-        <button className="rounded-md bg-gray-700 px-4 py-1.5 text-sm font-semibold text-white">
-          팔로우
-        </button>
+        {showFollowButton && (
+          <button className="rounded-md bg-[var(--gray-60)] px-4 py-1.5 text-sm font-semibold text-white">
+            팔로우
+          </button>
+        )}
       </PostAuthorInfo>
 
       {/* 
