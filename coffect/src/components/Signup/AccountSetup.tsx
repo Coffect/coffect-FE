@@ -7,6 +7,7 @@ import React, { useState, useEffect, useRef } from "react";
 import type { SignupData } from "../../types/signup";
 import { isValidUserId, isValidPassword } from "../../utils/validation";
 import { Eye, EyeOff } from "lucide-react";
+import SignupPageLayout from "./shared/SignupLayout";
 /*
   AccountSetup 컴포넌트가 받을 props 타입 정의
   onNext   – 입력 완료 후 다음 단계로 이동
@@ -101,159 +102,158 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
   }, []);
 
   return (
-    <div className="relative mb-[40%] flex h-screen w-full flex-col bg-white px-[4%] pt-[2%]">
-      <div className="h-full flex-1 overflow-y-auto pt-[10%]">
-        <h2 className="mb-[10%] text-[22px] leading-normal font-bold text-[var(--gray-90)]">
-          로그인에 사용할
-          <br /> 계정 정보를 설정해주세요
-        </h2>
-        {/* 아이디 입력 및 중복체크 버튼 */}
-        <div className="mb-[10%]">
-          <label className="mb-2 block text-lg font-semibold text-[var(--gray-90)]">
-            아이디
-          </label>
-          <div className="flex items-center gap-[2%]">
-            <input
-              ref={useridRef}
-              type="text"
-              placeholder="5글자 이상"
-              value={userid}
-              onChange={(e) => onUseridChange(e.target.value)}
-              onFocus={() =>
-                setTimeout(() => {
-                  useridRef.current?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center",
-                  });
-                }, 5)
-              }
-              className="h-[48px] w-full flex-7 rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
-            />
-            <button
-              onClick={handleCheckDuplicate}
-              disabled={userid.length < 1 || isDuplicateChecked}
-              className={`h-[48px] flex-3 rounded-lg py-2 text-base font-medium ${
-                userid.length >= 1 && !isDuplicateChecked
-                  ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
-                  : "bg-[var(--gray-10)] text-[var(--gray-90)]"
-              }`}
-            >
-              중복체크
-            </button>
-          </div>
-          {useridError && (
-            <p className="font-normalR mt-1 text-sm text-[var(--noti)]">
-              영문/숫자/언더바 조합 5글자 이상
-            </p>
-          )}
-        </div>
-        {/* 비밀번호 입력 */}
-        <div className="mb-[10%]">
-          <label className="mb-2 block text-lg font-semibold text-[var(--gray-90)]">
-            비밀번호
-          </label>
-          <div className="flex h-[48px] w-full items-center rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base text-[var(--gray-90)] focus-within:border-[2px] focus-within:border-gray-900 focus-within:ring-0 focus-within:outline-none">
-            <input
-              ref={passwordRef}
-              type={showPassword ? "text" : "password"}
-              placeholder="영문/숫자/특수기호 조합 8자 이상"
-              value={password}
-              onChange={(e) => onPasswordChange(e.target.value)}
-              onFocus={() =>
-                setTimeout(() => {
-                  passwordRef.current?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center",
-                  });
-                }, 5)
-              }
-              className="flex-1 scroll-mb-[100px] bg-transparent font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:outline-none"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              className="text-[var(--gray-30)]"
-            >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
-          </div>
+    <SignupPageLayout
+      bottomButton={
+        <button
+          onClick={handleNext}
+          disabled={!canProceed}
+          className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
+            canProceed
+              ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
+              : "bg-[var(--gray-10)] text-[var(--gray-50)]"
+          }`}
+        >
+          다음
+        </button>
+      }
+    >
+      <h2 className="mb-[10%] pt-[10%] text-[22px] leading-normal font-bold text-[var(--gray-90)]">
+        로그인에 사용할
+        <br /> 계정 정보를 설정해주세요
+      </h2>
 
-          {passwordError && (
-            <p className="mt-1 text-sm font-normal text-[var(--noti)]">
-              영문/숫자/특수기호 조합 8글자 이상
-            </p>
-          )}
-        </div>
-        {/* 비밀번호 재입력 */}
-        <div className="mb-auto">
-          <label className="mb-2 block text-lg font-semibold text-[var(--gray-90)]">
-            비밀번호 재입력
-          </label>
-          <div className="flex h-[48px] w-full items-center rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-sm text-[var(--gray-90)] focus-within:border-[2px] focus-within:border-gray-900 focus-within:ring-0 focus-within:outline-none">
-            <input
-              ref={confirmRef}
-              type={showConfirm ? "text" : "password"}
-              placeholder="비밀번호를 다시 입력해주세요."
-              value={confirm}
-              onChange={(e) => onConfirmChange(e.target.value)}
-              onFocus={() =>
-                setTimeout(() => {
-                  confirmRef.current?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center",
-                  });
-                }, 5)
-              }
-              className="flex-1 bg-transparent text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:outline-none"
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirm((prev) => !prev)}
-              className="text-[var(--gray-30)]"
-            >
-              {showConfirm ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
-          </div>
-          {confirmError && (
-            <p className="mt-1 text-sm font-normal text-[var(--noti)]">
-              비밀번호와 일치하지 않습니다
-            </p>
-          )}
-        </div>
-        {/* 중복확인 메시지 */}
-        {showToast && (
-          <div
-            className={`fixed bottom-[6rem] left-1/2 z-50 flex -translate-x-1/2 transform items-center gap-[4px] rounded-[16px] px-[16px] py-[9px] text-[14px] leading-[150%] font-medium whitespace-nowrap shadow-md ${
-              toastType === "success"
-                ? "bg-[var(--gray-60)] text-white"
-                : "bg-[var(--gray-60)] text-white"
+      {/* 아이디 입력 */}
+      <div className="mb-[10%]">
+        <label className="mb-2 block text-lg font-semibold text-[var(--gray-90)]">
+          아이디
+        </label>
+        <div className="flex items-center gap-[2%]">
+          <input
+            ref={useridRef}
+            type="text"
+            placeholder="5글자 이상"
+            value={userid}
+            onChange={(e) => onUseridChange(e.target.value)}
+            onFocus={() =>
+              setTimeout(() => {
+                useridRef.current?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }, 5)
+            }
+            className="h-[48px] w-full flex-7 rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+          />
+          <button
+            onClick={handleCheckDuplicate}
+            disabled={userid.length < 1 || isDuplicateChecked}
+            className={`h-[48px] flex-3 rounded-lg py-2 text-base font-medium ${
+              userid.length >= 1 && !isDuplicateChecked
+                ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
+                : "bg-[var(--gray-10)] text-[var(--gray-90)]"
             }`}
-            style={{ fontFamily: "Pretendard" }}
           >
-            <span className="text-sm font-medium">
-              {toastType === "success" ? "✅" : "⚠️"}
-            </span>
-            <span>{toastMessage}</span>
-          </div>
-        )}
-
-        {/* 다음 버튼 */}
-        <div className="fixed right-0 bottom-0 left-0 z-50 bg-white px-[4%] pt-2 pb-4">
-          <div className="mx-auto w-full max-w-[430px]">
-            <button
-              onClick={handleNext}
-              className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
-                canProceed
-                  ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
-                  : "bg-[var(--gray-10)] text-[var(--gray-50)]"
-              }`}
-            >
-              다음
-            </button>
-          </div>
+            중복체크
+          </button>
         </div>
+        {useridError && (
+          <p className="font-normalR mt-1 text-sm text-[var(--noti)]">
+            영문/숫자/언더바 조합 5글자 이상
+          </p>
+        )}
       </div>
-    </div>
+
+      {/* 비밀번호 입력 */}
+      <div className="mb-[10%]">
+        <label className="mb-2 block text-lg font-semibold text-[var(--gray-90)]">
+          비밀번호
+        </label>
+        <div className="flex h-[48px] w-full items-center rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base text-[var(--gray-90)] focus-within:border-[2px] focus-within:border-gray-900 focus-within:ring-0 focus-within:outline-none">
+          <input
+            ref={passwordRef}
+            type={showPassword ? "text" : "password"}
+            placeholder="영문/숫자/특수기호 조합 8자 이상"
+            value={password}
+            onChange={(e) => onPasswordChange(e.target.value)}
+            onFocus={() =>
+              setTimeout(() => {
+                passwordRef.current?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }, 5)
+            }
+            className="flex-1 scroll-mb-[100px] bg-transparent font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="text-[var(--gray-30)]"
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
+        {passwordError && (
+          <p className="mt-1 text-sm font-normal text-[var(--noti)]">
+            영문/숫자/특수기호 조합 8글자 이상
+          </p>
+        )}
+      </div>
+
+      {/* 비밀번호 재입력 */}
+      <div className="mb-auto">
+        <label className="mb-2 block text-lg font-semibold text-[var(--gray-90)]">
+          비밀번호 재입력
+        </label>
+        <div className="flex h-[48px] w-full items-center rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-sm text-[var(--gray-90)] focus-within:border-[2px] focus-within:border-gray-900 focus-within:ring-0 focus-within:outline-none">
+          <input
+            ref={confirmRef}
+            type={showConfirm ? "text" : "password"}
+            placeholder="비밀번호를 다시 입력해주세요."
+            value={confirm}
+            onChange={(e) => onConfirmChange(e.target.value)}
+            onFocus={() =>
+              setTimeout(() => {
+                confirmRef.current?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }, 5)
+            }
+            className="flex-1 bg-transparent text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirm((prev) => !prev)}
+            className="text-[var(--gray-30)]"
+          >
+            {showConfirm ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
+        {confirmError && (
+          <p className="mt-1 text-sm font-normal text-[var(--noti)]">
+            비밀번호와 일치하지 않습니다
+          </p>
+        )}
+      </div>
+
+      {/* 중복확인 토스트 메시지 */}
+      {showToast && (
+        <div
+          className={`fixed bottom-[6rem] left-1/2 z-50 flex -translate-x-1/2 transform items-center gap-[4px] rounded-[16px] px-[16px] py-[9px] text-[14px] leading-[150%] font-medium whitespace-nowrap shadow-md ${
+            toastType === "success"
+              ? "bg-[var(--gray-60)] text-white"
+              : "bg-[var(--gray-60)] text-white"
+          }`}
+          style={{ fontFamily: "Pretendard" }}
+        >
+          <span className="text-sm font-medium">
+            {toastType === "success" ? "✅" : "⚠️"}
+          </span>
+          <span>{toastMessage}</span>
+        </div>
+      )}
+    </SignupPageLayout>
   );
 };
 

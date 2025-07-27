@@ -7,6 +7,7 @@ description : 학교 선택 화면 (타이핑으로 입력 및 검색 + 자동�
 import React, { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
 import { isValidStudentId } from "../../utils/validation";
+import SignupPageLayout from "./shared/SignupLayout";
 
 // 학교 타입 정의: 이름과 주소
 type School = { name: string; address: string };
@@ -120,112 +121,110 @@ const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
   const studentIdRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="relative flex h-screen w-full flex-col bg-white px-[4%] pt-[2%]">
-      <div className="flex-1 overflow-y-auto">
-        <div className="pt-[10%] text-[var(--gray-90)]">
-          <h2 className="leading text-[22px] font-bold">👋 반가워요!</h2>
-          <p className="mt-3 text-[22px] font-bold">
-            {selected ? "전공과 학번을 알려주세요!" : "어느 학교 학생이신가요?"}
-          </p>
-          {/* 학교 검색 입력창 */}
-          <div className="relative mt-[10%]">
+    <SignupPageLayout
+      bottomButton={
+        <button
+          onClick={handleNext}
+          disabled={!isNextEnabled}
+          className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
+            isNextEnabled
+              ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
+              : "bg-[var(--gray-10)] text-[var(--gray-50)]"
+          }`}
+        >
+          다음
+        </button>
+      }
+    >
+      <div className="pt-[10%] text-[var(--gray-90)]">
+        <h2 className="leading text-[22px] font-bold">👋 반가워요!</h2>
+        <p className="mt-3 text-[22px] font-bold">
+          {selected ? "전공과 학번을 알려주세요!" : "어느 학교 학생이신가요?"}
+        </p>
+
+        {/* 학교 검색 입력창 */}
+        <div className="relative mt-[10%]">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => handleQueryChange(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="재학 중인 학교를 입력해주세요"
+            className="h-[48px] w-full rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+          />
+          <Search className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-[var(--gray-50)]" />
+        </div>
+
+        {/* 자동완성 드롭다운 */}
+        {showDropdown && filtered.length > 0 && (
+          <ul className="mt-1.5 w-full overflow-y-auto">
+            {filtered.map((s, idx) => (
+              <li
+                key={s.name}
+                onClick={() => selectSchool(s)}
+                onMouseEnter={() => setHighlightedIndex(idx)}
+                className={`cursor-pointer rounded-xl px-4 py-3 ${
+                  idx === highlightedIndex ? "bg-[var(--gray-5)]" : ""
+                }`}
+              >
+                <p className="text=[var(--gray-90)] text-base">{s.name}</p>
+                <p className="mt-0.5 text-sm text-[var(--gray-40)]">
+                  {s.address}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {/* 전공/학번 입력 (학교 선택 시) */}
+        {selected && (
+          <div className="mt-10">
+            <h3 className="mb-[0.5rem] text-lg leading-snug font-semibold text-[var(--gray-90)]">
+              전공
+            </h3>
             <input
+              ref={majorRef}
               type="text"
-              value={query}
-              onChange={(e) => handleQueryChange(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="재학 중인 학교를 입력해주세요"
-              className="h-[48px] w-full rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+              value={major}
+              onChange={(e) => setMajor(e.target.value)}
+              onFocus={() =>
+                setTimeout(() => {
+                  majorRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                  });
+                }, 5)
+              }
+              placeholder="전공을 입력해주세요"
+              className="mb-[2rem] h-[48px] w-full scroll-mb-[100px] rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
             />
-            <Search className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-[var(--gray-50)]" />
+
+            <h3 className="mb-[0.5rem] text-lg leading-snug font-semibold text-[var(--gray-90)]">
+              학번
+            </h3>
+            <input
+              ref={studentIdRef}
+              type="text"
+              value={studentId}
+              onChange={(e) => setStudentId(e.target.value)}
+              onFocus={() =>
+                setTimeout(() => {
+                  studentIdRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                  });
+                }, 5)
+              }
+              placeholder="학번을 입력해주세요"
+              className="h-[48px] w-full scroll-mb-[100px] rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+            />
           </div>
-
-          {/* 자동완성 드롭다운 */}
-          {showDropdown && filtered.length > 0 && (
-            <ul className="mt-1.5 w-full overflow-y-auto">
-              {filtered.map((s, idx) => (
-                <li
-                  key={s.name}
-                  onClick={() => selectSchool(s)}
-                  onMouseEnter={() => setHighlightedIndex(idx)}
-                  className={`cursor-pointer rounded-xl px-4 py-3 ${
-                    idx === highlightedIndex ? "bg-[var(--gray-5)]" : ""
-                  }`}
-                >
-                  <p className="text=[var(--gray-90)] text-base">{s.name}</p>
-                  <p className="mt-0.5 text-sm text-[var(--gray-40)]">
-                    {s.address}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {/* 전공 & 학번 입력 폼 (학교 선택 시에만 노출) */}
-          {selected && (
-            <div className="mt-10">
-              <h3 className="mb-[0.5rem] text-lg leading-snug font-semibold text-[var(--gray-90)]">
-                전공
-              </h3>
-              <input
-                ref={majorRef}
-                type="text"
-                value={major}
-                onChange={(e) => setMajor(e.target.value)}
-                onFocus={() =>
-                  setTimeout(() => {
-                    majorRef.current?.scrollIntoView({
-                      behavior: "smooth",
-                      block: "center",
-                    });
-                  }, 5)
-                }
-                placeholder="전공을 입력해주세요"
-                className="mb-[2rem] h-[48px] w-full scroll-mb-[100px] rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
-              />
-
-              <h3 className="mb-[0.5rem] text-lg leading-snug font-semibold text-[var(--gray-90)]">
-                학번
-              </h3>
-              <input
-                ref={studentIdRef}
-                type="text"
-                value={studentId}
-                onChange={(e) => setStudentId(e.target.value)}
-                onFocus={() =>
-                  setTimeout(() => {
-                    studentIdRef.current?.scrollIntoView({
-                      behavior: "smooth",
-                      block: "center",
-                    });
-                  }, 5)
-                }
-                placeholder="학번을 입력해주세요"
-                className="h-[48px] w-full scroll-mb-[100px] rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
-              />
-            </div>
-          )}
-        </div>
-        <div className="h-[300px]" />
-
-        {/* 다음 버튼 */}
-        <div className="fixed right-0 bottom-0 left-0 z-50 bg-white px-[4%] pt-2 pb-4">
-          <div className="mx-auto w-full max-w-[430px]">
-            <button
-              onClick={handleNext}
-              disabled={!isNextEnabled}
-              className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
-                isNextEnabled
-                  ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
-                  : "bg-[var(--gray-10)] text-[var(--gray-50)]"
-              }`}
-            >
-              다음
-            </button>
-          </div>
-        </div>
+        )}
       </div>
-    </div>
+
+      {/* 스크롤 하단 여백 확보 */}
+      <div className="h-[300px]" />
+    </SignupPageLayout>
   );
 };
 
