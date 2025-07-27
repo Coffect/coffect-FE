@@ -8,7 +8,7 @@ import backIcon from "../../../assets/icon/mypage/back.png";
 import profileImg from "../../../assets/icon/mypage/profile.png";
 import FeedItem from "../../shareComponents/FeedItem";
 import emptyFeedImg from "../../../assets/icon/mypage/emptyFeed.png";
-import type { Post } from "../../../data/communityDummyData";
+import type { Post } from "../../../types/community";
 import DetailIntro from "../MyPage/MyProfile/DetailIntro";
 
 type UserProfileTab = "피드" | "상세 소개";
@@ -19,6 +19,8 @@ const myDummyPosts: Post[] = [
     user: {
       profileImage: profileImg,
       nickname: "재하",
+      major: "컴퓨터공학과",
+      studentId: "202012345",
     },
     image: "https://picsum.photos/400/300?random=1",
     title: "창밖 풍경과 커피 한 잔",
@@ -36,6 +38,8 @@ const myDummyPosts: Post[] = [
     user: {
       profileImage: profileImg,
       nickname: "재하",
+      major: "컴퓨터공학과",
+      studentId: "202012345",
     },
     image: "https://picsum.photos/400/300?random=2",
     title: "디자인 프로젝트 회의",
@@ -53,6 +57,8 @@ const myDummyPosts: Post[] = [
     user: {
       profileImage: profileImg,
       nickname: "재하",
+      major: "컴퓨터공학과",
+      studentId: "202012345",
     },
     image: "https://picsum.photos/400/300?random=3",
     title: "새로운 영감",

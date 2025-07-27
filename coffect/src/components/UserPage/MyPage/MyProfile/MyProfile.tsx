@@ -8,7 +8,7 @@ import DetailIntro from "./DetailIntro";
 import backIcon from "../../../../assets/icon/mypage/back.png";
 import profileImg from "../../../../assets/icon/mypage/profile.png";
 import FeedItem from "../../../shareComponents/FeedItem";
-import type { Post } from "../../../../data/communityDummyData";
+import type { Post } from "../../../../types/community";
 import emptyFeedImg from "../../../../assets/icon/mypage/emptyFeed.png";
 
 type MyProfileTab = "피드" | "상세 소개";

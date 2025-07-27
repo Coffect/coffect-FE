@@ -18,7 +18,8 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
-import { type Post, generateDummyPosts } from "../../data/communityDummyData";
+import { generateDummyPosts } from "../../data/communityDummyData";
+import type { Post } from "../../types/community";
 
 // 필터의 형태를 정의하는 인터페이스입니다.
 interface Filters {

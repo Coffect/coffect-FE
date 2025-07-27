@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import FeedItem from "../../shareComponents/FeedItem";
-import type { Post } from "../../../data/communityDummyData";
+import type { Post } from "../../../types/community";
 import profileImg from "../../../assets/icon/mypage/profile.png";
 import backIcon from "../../../assets/icon/mypage/back.png";
 import emptyFeedIcon from "../../../assets/icon/mypage/emptyFeed.png";
