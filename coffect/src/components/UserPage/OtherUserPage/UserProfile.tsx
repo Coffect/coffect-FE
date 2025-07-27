@@ -4,14 +4,14 @@ description : 마이페이지 내 프로필 및 피드/상세소개 탭을 출�
 */
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import DetailIntro from "./DetailIntro";
-import backIcon from "../../../../assets/icon/mypage/back.png";
-import profileImg from "../../../../assets/icon/mypage/profile.png";
-import FeedItem from "../../../shareComponents/FeedItem";
-import type { Post } from "../../../../data/communityDummyData";
-import emptyFeedImg from "../../../../assets/icon/mypage/emptyFeed.png";
+import backIcon from "../../../assets/icon/mypage/back.png";
+import profileImg from "../../../assets/icon/mypage/profile.png";
+import FeedItem from "../../shareComponents/FeedItem";
+import emptyFeedImg from "../../../assets/icon/mypage/emptyFeed.png";
+import type { Post } from "../../../data/communityDummyData";
+import DetailIntro from "../MyPage/MyProfile/DetailIntro";
 
-type MyProfileTab = "피드" | "상세 소개";
+type UserProfileTab = "피드" | "상세 소개";
 
 const myDummyPosts: Post[] = [
   {
@@ -19,8 +19,6 @@ const myDummyPosts: Post[] = [
     user: {
       profileImage: profileImg,
       nickname: "재하",
-      major: "컴퓨터컴퓨터과학전공",
-      studentId: "19학번",
     },
     image: "https://picsum.photos/400/300?random=1",
     title: "창밖 풍경과 커피 한 잔",
@@ -38,8 +36,6 @@ const myDummyPosts: Post[] = [
     user: {
       profileImage: profileImg,
       nickname: "재하",
-      major: "컴퓨터컴퓨터과학전공",
-      studentId: "19학번",
     },
     image: "https://picsum.photos/400/300?random=2",
     title: "디자인 프로젝트 회의",
@@ -57,8 +53,6 @@ const myDummyPosts: Post[] = [
     user: {
       profileImage: profileImg,
       nickname: "재하",
-      major: "컴퓨터컴퓨터과학전공",
-      studentId: "19학번",
     },
     image: "https://picsum.photos/400/300?random=3",
     title: "새로운 영감",
@@ -73,18 +67,20 @@ const myDummyPosts: Post[] = [
   },
 ];
 
-function MyProfile() {
+function UserProfile() {
   /*
   사용자의 마이페이지 프로필 화면을 렌더링하며, 탭에 따라 피드 또는 상세 소개를 보여줍니다.
   */
   const navigate = useNavigate();
   // 현재 활성화된 탭 상태 ("피드" 또는 "상세 소개")
-  const [activeTab, setActiveTab] = useState<MyProfileTab>("피드");
+  const [activeTab, setActiveTab] = useState<UserProfileTab>("피드");
   // 텍스트 확장 상태
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   // 텍스트가 2줄 이상인지 확인하는 상태
   const [isOverflowing, setIsOverflowing] = useState<boolean>(false);
   const textRef = useRef<HTMLParagraphElement>(null);
+  // 팔로우 상태
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
 
   // 텍스트가 2줄 이상인지 확인하는 함수
   useEffect(() => {
@@ -202,12 +198,17 @@ function MyProfile() {
         </div>
 
         {/* Profile Edit Button: 프로필 수정 페이지로 이동 */}
-        <button
-          className="text-md mb-3.5 w-full rounded-lg bg-[var(--gray-60)] py-3 text-white"
-          onClick={() => navigate("/mypage/myprofile/modify")}
-        >
-          프로필 수정
-        </button>
+        <div className="mb-3.5 flex w-full gap-x-2">
+          <button
+            className={`text-md w-full rounded-lg py-3 text-white ${isFollowing ? "bg-[var(--orange-500)]" : "bg-[var(--gray-60)]"}`}
+            onClick={() => setIsFollowing((prev) => !prev)}
+          >
+            {isFollowing ? "팔로잉" : "팔로우"}
+          </button>
+          <button className="text-md w-full rounded-lg border border-[var(--gray-30)] bg-white py-3 text-[var(--gray-50)]">
+            채팅하기
+          </button>
+        </div>
       </div>
 
       {/* 탭 구분선 */}
@@ -251,7 +252,7 @@ function MyProfile() {
           ) : (
             <>
               {myDummyPosts.map((post) => (
-                <FeedItem key={post.id} post={post} showFollowButton={false} />
+                <FeedItem key={post.id} post={post} />
               ))}
             </>
           ))}
@@ -263,4 +264,4 @@ function MyProfile() {
   );
 }
 
-export default MyProfile;
+export default UserProfile;
