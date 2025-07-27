@@ -11,6 +11,8 @@ const myDummyPosts: Post[] = [
     user: {
       profileImage: profileImg,
       nickname: "재하",
+      major: "컴퓨터컴퓨터과학전공",
+      studentId: "19학번",
     },
     image: "https://picsum.photos/400/300?random=1",
     title: "창밖 풍경과 커피 한 잔",
@@ -28,6 +30,8 @@ const myDummyPosts: Post[] = [
     user: {
       profileImage: profileImg,
       nickname: "재하",
+      major: "컴퓨터컴퓨터과학전공",
+      studentId: "19학번",
     },
     image: "https://picsum.photos/400/300?random=2",
     title: "디자인 프로젝트 회의",
@@ -45,6 +49,8 @@ const myDummyPosts: Post[] = [
     user: {
       profileImage: profileImg,
       nickname: "재하",
+      major: "컴퓨터컴퓨터과학전공",
+      studentId: "19학번",
     },
     image: "https://picsum.photos/400/300?random=3",
     title: "새로운 영감",
