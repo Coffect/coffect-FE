@@ -4,7 +4,7 @@ description : 회원가입 완료 안내 화면
 */
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import SignupEndImage from "../../assets/icon/signup/SignupEnd.png";
+import SignupEndImage from "../../assets/icon/Signup/SignupEnd.png";
 
 const Completion = () => {
   const navigate = useNavigate();
