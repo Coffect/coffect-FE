@@ -2,8 +2,8 @@
 /* className="bg-[var(--accent-color)] text-[var(--text-light)]" */
 
 :root {
-
   /* orange */
+  --orange-100: #ffe1ba;
   --orange-500: #ff8126;
 
   /* red */
@@ -61,5 +61,4 @@
   --music-text: #1b7ca4;
   --networking-bg: #f7f7f7;
   --networking-text: #837c7c;
-
 }
