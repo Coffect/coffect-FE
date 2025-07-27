@@ -5,6 +5,8 @@ description : 마이페이지 상세 소개 - 자기소개 질문/답변 및 대
 import { useState } from "react";
 import editIcon from "../../../../assets/icon/mypage/editGray.png";
 import checkIcon from "../../../../assets/icon/mypage/check.png";
+import detailIntroCheckIcon from "../../../../assets/icon/mypage/detailIntroCheck.png";
+import detailIntroCheckedIcon from "../../../../assets/icon/mypage/detailIntroChecked.png";
 import underToggleIcon from "../../../../assets/icon/mypage/underToggle.png";
 
 const QUESTIONS = [
@@ -155,14 +157,26 @@ const DetailIntroProfile = () => {
                     onChange={(e) => handleAnswerChange(q.id, e.target.value)}
                   />
                   <div className="mt-1 flex items-center justify-between pl-1">
-                    <button
-                      type="button"
-                      className={`text-xs ${q.isMain ? "text-[var(--startup-text)]" : "text-[var(--gray-50)]"}`}
-                      onClick={() => handleMainToggle(q.id)}
-                      disabled={!q.isMain && mainCount >= MAX_MAIN}
-                    >
-                      대표 질문으로 설정
-                    </button>
+                    <div className="flex flex-row items-center gap-1">
+                      <button
+                        disabled={!q.isMain && mainCount >= MAX_MAIN}
+                        onClick={() => handleMainToggle(q.id)}
+                      >
+                        {q.isMain ? (
+                          <img
+                            src={detailIntroCheckedIcon}
+                            className="h-4 w-4"
+                          />
+                        ) : (
+                          <img src={detailIntroCheckIcon} className="h-4 w-4" />
+                        )}
+                      </button>
+                      <span
+                        className={`text-xs ${q.isMain ? "text-[var(--startup-text)]" : "text-[var(--gray-50)]"}`}
+                      >
+                        대표 질문으로 설정
+                      </span>
+                    </div>
                     <div className="flex text-xs">
                       <span className="text-[var(--startup-text)]">
                         {q.answer.length}
