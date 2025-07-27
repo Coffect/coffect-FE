@@ -1,79 +1,62 @@
-/*
-author : 강신욱
-description : 댓글 데이터와 관련 로직을 관리하는 커스텀 훅입니다.
-*/
-import { useState } from "react";
-import type { Comment } from "../types/commentTypes";
-
-// 더미 댓글 데이터 생성 함수
-const generateDummyComments = (): Comment[] => {
-  const majors = ["컴퓨터공학과", "영문학과", "정보통신공학과", "전자공학과"];
-  const nicknames = [
-    "김철수",
-    "이영희",
-    "박민수",
-    "최지영",
-    "정대현",
-    "한아름",
-    "신짱구",
-    "봉미선",
-    "맹구",
-  ];
-
-  return Array.from({ length: 10 }, (_, i) => {
-    const randomDaysAgo = Math.floor(Math.random() * 30); // 0일 ~ 29일 전
-    const postedDate = new Date();
-    postedDate.setDate(postedDate.getDate() - randomDaysAgo);
-
-    return {
-      id: i + 1,
-      user: {
-        profileImage: `https://randomuser.me/api/portraits/women/${i}.jpg`,
-        nickname: nicknames[i % nicknames.length],
-        major: majors[i % majors.length],
-        studentId: `20${10 + i}12345`,
-      },
-      content: `이것은 ${i + 1}번째 댓글입니다.`, // 더미 댓글 내용
-      postedDate: postedDate,
-    };
-  });
-};
-
-/*
-comments : 댓글 목록을 관리하는 상태입니다.
-newComment : 새로 작성할 댓글 내용을 관리하는 상태입니다.
+/**
+ * @author: 흥부/강신욱
+ * @description: 댓글 데이터 조회, 추가, 삭제, 수정 등의 비즈니스 로직을 모두 처리하는 커스텀 훅
+ *                추후 API 연동을 위해 더미 데이터 생성 로직을 분리하고, API 호출 함수를 사용하는 구조로 변경
  */
-export const useComments = () => {
-  const [comments, setComments] = useState<Comment[]>(generateDummyComments());
-  const [newComment, setNewComment] = useState("");
+import { useState, useEffect, useCallback } from "react";
+import type { Comment } from "../types/commentTypes";
+import { getComments, addComment } from "../api/commentApi";
 
-  const handlePostComment = () => {
+/**
+ * @description 댓글 관련 비즈니스 로직을 처리하는 커스텀 훅
+ * @param postId - 현재 게시글의 ID
+ */
+export const useComments = (postId: number) => {
+  const [comments, setComments] = useState<Comment[]>([]); // 댓글 목록 상태
+  const [newComment, setNewComment] = useState(""); //  새로운 댓글 입력 상태
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태
+  const [error, setError] = useState<Error | null>(null); // 오류 상태
+
+  // 컴포넌트 마운트 시 댓글 목록을 가져옵니다.
+  useEffect(() => {
+    const fetchComments = async () => {
+      setIsLoading(true);
+      try {
+        const fetchedComments = await getComments(postId);
+        setComments(fetchedComments);
+      } catch (err) {
+        setError(err as Error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchComments();
+  }, [postId]);
+
+  /**
+   * @description 새로운 댓글을 게시하는 함수
+   */
+  const handlePostComment = useCallback(async () => {
     if (newComment.trim() === "") return;
 
-    const newCommentData: Comment = {
-      id: Date.now(),
-      user: {
-        name: "현재 사용자", // 임시 값 추가
-        avatar: "https://via.placeholder.com/40", // 임시 값 추가
-        profileImage: "https://via.placeholder.com/40", // 현재 사용자 프로필 이미지 (임시)
-        nickname: "현재 사용자", // 현재 사용자 닉네임 (임시)
-        major: "컴퓨터공학과", // 현재 사용자 학과 (임시)
-        studentId: "202012345", // 현재 사용자 학번 (임시)
-      },
-      content: newComment,
-      postedDate: new Date(),
-    };
-
-    setComments([newCommentData, ...comments]);
-    setNewComment("");
-  };
+    try {
+      const newCommentData = await addComment(postId, newComment);
+      setComments((prevComments) => [newCommentData, ...prevComments]);
+      setNewComment(""); // 입력 필드 초기화
+    } catch (err) {
+      setError(err as Error);
+      // 댓글 작성 실패 시 사용자에게 알림을 주는 로직 추가 가능
+      console.error("Failed to post comment:", err);
+    }
+  }, [newComment, postId]);
 
   return {
     comments,
     newComment,
     setNewComment,
     handlePostComment,
+    isLoading,
+    error,
   };
 };
-
-export type { Comment };
