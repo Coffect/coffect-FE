@@ -82,16 +82,14 @@ const Signup: React.FC = () => {
         {step === 4 && (
           <SchoolSelection
             onNext={goNext}
-            onChange={(school, major, studentId) =>
-              update({ school, major, studentId })
-            }
+            onUpdate={(fields) => update(fields)}
           />
         )}
         {/* 5. 이메일 인증 화면 */}
         {step === 5 && (
           <EmailVerification
             onNext={goNext}
-            onChange={(email) => update({ email })}
+            onUpdate={(fields) => update(fields)}
           />
         )}
         {/* 6. 이메일 인증 코드 입력 화면 */}
@@ -99,22 +97,22 @@ const Signup: React.FC = () => {
           <CodeInput
             onNext={goNext}
             onBack={goBack}
-            onChange={(code) => update({ authCode: code })}
+            onUpdate={(fields) => update(fields)}
           />
         )}
         {/* 7. 계정 정보 설정 화면 */}
         {step === 7 && (
-          <AccountSetup onNext={goNext} onChange={(fields) => update(fields)} />
+          <AccountSetup onNext={goNext} onUpdate={(fields) => update(fields)} />
         )}
         {/* 8. 프로필 설정 화면 */}
         {step === 8 && (
-          <ProfileSetup onNext={goNext} onChange={(fields) => update(fields)} />
+          <ProfileSetup onNext={goNext} onUpdate={(fields) => update(fields)} />
         )}
         {/* 9. 관심사 선택 화면 */}
         {step === 9 && (
           <InterestsSelection
             onNext={goNext}
-            onChange={(list) => update({ interests: list })}
+            onUpdate={(fields) => update(fields)}
           />
         )}
         {/* 10. 가입 완료 화면 */}

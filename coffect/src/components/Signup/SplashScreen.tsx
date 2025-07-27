@@ -5,10 +5,9 @@
 
 import LogoImage from "../../assets/icon/home/Logo.png";
 import StartImage from "../../assets/icon/Signup/Start.png";
+import type { StepProps } from "../../types/signup";
 
-type Props = { onNext: () => void };
-
-const SplashScreen = ({ onNext }: Props) => {
+const SplashScreen = ({ onNext }: StepProps) => {
   return (
     <div className="relative h-screen w-full overflow-hidden bg-[var(--gray-0)]">
       {/* 배경 일러스트 이미지 */}
