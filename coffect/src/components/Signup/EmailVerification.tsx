@@ -6,13 +6,9 @@ description : 이메일 인증 코드 발송 화면
 import { useState, useEffect } from "react";
 import { isValidEmail } from "../../utils/validation";
 import SignupPageLayout from "./shared/SignupLayout";
+import type { StepProps } from "../../types/signup";
 
-type Props = {
-  onNext: () => void; // 다음 단계로 이동
-  onChange: (email: string) => void; // 입력한 이메일을 부모로 전달
-};
-
-const EmailVerification: React.FC<Props> = ({ onNext, onChange }) => {
+const EmailVerification: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   // 이메일 입력값 상태 관리
   const [email, setEmail] = useState<string>("");
 
@@ -21,7 +17,7 @@ const EmailVerification: React.FC<Props> = ({ onNext, onChange }) => {
 
   // 인증 코드 발송 및 다음 단계로 이동하는 핸들러
   const handleSend = (): void => {
-    onChange(email); // 부모 컴포넌트에 이메일 전달
+    onUpdate?.({ email }); // 부모 컴포넌트에 이메일 전달
     // sendCode(email) // 서버 API 연결 후 사용 예정
     onNext(); // 다음 화면으로 이동
   };

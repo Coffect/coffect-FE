@@ -4,20 +4,17 @@ description : 계정 정보 설정 화면 (아이디, 비밀번호 유효성 검
 */
 
 import React, { useState, useEffect, useRef } from "react";
-import type { SignupData } from "../../types/signup";
 import { isValidUserId, isValidPassword } from "../../utils/validation";
 import { Eye, EyeOff } from "lucide-react";
 import SignupPageLayout from "./shared/SignupLayout";
+import type { StepProps } from "../../types/signup";
+
 /*
   AccountSetup 컴포넌트가 받을 props 타입 정의
   onNext   – 입력 완료 후 다음 단계로 이동
 */
-type Props = {
-  onNext: () => void;
-  onChange: (fields: Partial<SignupData>) => void;
-};
 
-const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
+const AccountSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   /* 입력값 상태 관리 */
   const [userid, setUserid] = useState("");
   const [password, setPassword] = useState("");
@@ -69,7 +66,7 @@ const AccountSetup: React.FC<Props> = ({ onNext, onChange }) => {
     setPasswordError(newPasswordError);
     setConfirmError(newConfirmError);
     if (newUseridError || newPasswordError || newConfirmError) return;
-    onChange({ userid, password });
+    onUpdate?.({ userid, password });
     onNext();
   };
 

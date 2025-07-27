@@ -6,12 +6,7 @@
 import { useState } from "react";
 import { useEffect } from "react";
 import SignupPageLayout from "./shared/SignupLayout";
-
-// 부모로부터 전달받을 Props 정의
-type Props = {
-  onNext: () => void; // 다음 단계 이동 함수
-  onChange: (list: string[]) => void; // 선택된 관심사 목록 전달 함수
-};
+import type { StepProps } from "../../types/signup";
 
 // 선택 가능한 관심사 목록
 const OPTIONS = [
@@ -34,7 +29,7 @@ const OPTIONS = [
 
 const MAX_SELECTION = 4; // 최대 선택 가능 수
 
-const InterestsSelection = ({ onNext, onChange }: Props) => {
+const InterestsSelection = ({ onNext, onUpdate }: StepProps) => {
   // 선택된 관심사 상태
   const [selected, setSelected] = useState<string[]>([]);
   // 에러 메시지 상태
@@ -70,7 +65,7 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
     }
 
     // 선택된 항목 부모로 전달하고 다음 단계로 이동
-    onChange(selected);
+    onUpdate?.({ interests: selected });
     onNext();
   };
 

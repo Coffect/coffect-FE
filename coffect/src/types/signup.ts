@@ -10,3 +10,13 @@ export interface SignupData {
   avatar?: string;
   interests: string[];
 }
+
+export interface StepProps {
+  onNext: () => void;
+  onBack?: () => void;
+  onUpdate?: (data: Partial<SignupData>) => void;
+}
+export interface LoginChoiceProps {
+  onLogin: (email: string, password: string) => void;
+  onSignUp: () => void;
+}

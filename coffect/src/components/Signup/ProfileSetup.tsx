@@ -4,17 +4,12 @@ description : 프로필 설정 화면 (프로필 사진 선택 및 사용자 이
 */
 
 import React, { useEffect, useState, useRef } from "react";
-import type { SignupData } from "../../types/signup";
 import { Pencil } from "lucide-react";
 import defaultAvatar from "../../assets/icon/signup/DefaultAvatar.png";
 import SignupPageLayout from "./shared/SignupLayout";
+import type { StepProps } from "../../types/signup";
 
-type Props = {
-  onNext: () => void; // 다음 단계로 이동
-  onChange: (fields: Partial<SignupData>) => void; // 입력된 프로필 데이터를 부모에게 전달
-};
-
-const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
+const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   // 상태 선언
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [name, setName] = useState<string>("");
@@ -44,7 +39,7 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
       setNameError(true);
       return;
     }
-    onChange({ username: trimmed, avatar: avatarUrl || undefined });
+    onUpdate?.({ username: trimmed, avatar: avatarUrl || undefined });
     onNext();
   };
   // 버튼 비활성화 조건(이름x 또는 프로필사진 x)

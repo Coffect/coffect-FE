@@ -6,14 +6,9 @@ description : 이메일 인증 코드 입력 화면 (5자리)
 import React, { useState, useRef, useEffect } from "react";
 import { isFiveDigitCode } from "../../utils/validation"; // 공통 유틸 함수
 import SignupPageLayout from "./shared/SignupLayout";
+import type { StepProps } from "../../types/signup";
 
-type Props = {
-  onNext: () => void; // 5자리 코드 입력 완료 후 다음 단계로 이동
-  onBack: () => void; // 이전 단계로 이동
-  onChange: (code: string) => void; // 완성된 5자리 코드를 부모에게 전달
-};
-
-const CodeInput: React.FC<Props> = ({ onNext, onBack, onChange }) => {
+const CodeInput: React.FC<StepProps> = ({ onNext, onBack, onUpdate }) => {
   // 입력된 각 자리 숫자를 배열로 관리
   const [code, setCode] = useState<string[]>(["", "", "", "", ""]);
   // 각 input 요소에 포커스 제어를 위한 ref 배열
@@ -50,7 +45,7 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, onChange }) => {
   // 완료 시 부모 콜백 및 다음 단계
   const handleNext = () => {
     const joined = code.join("");
-    onChange(joined);
+    onUpdate?.({ authCode: joined });
     onNext();
   };
 

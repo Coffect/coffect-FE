@@ -8,15 +8,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
 import { isValidStudentId } from "../../utils/validation";
 import SignupPageLayout from "./shared/SignupLayout";
+import type { StepProps } from "../../types/signup";
 
 // 학교 타입 정의: 이름과 주소
 type School = { name: string; address: string };
-
-// 상위 컴포넌트에서 전달받는 props
-type Props = {
-  onNext: () => void; // 다음 단계로 이동하는 콜백
-  onChange: (school: string, major: string, studentId: string) => void; // 선택한 정보 전달 콜백
-};
 
 // 더미 학교 데이터 (자동완성용)
 const schools: School[] = [
@@ -28,7 +23,7 @@ const schools: School[] = [
   { name: "홍익대학교", address: "서울특별시 마포구 와우산로 94" },
 ];
 
-const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
+const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   // 사용자가 입력 중인 학교 검색어
   const [query, setQuery] = useState<string>("");
 
@@ -104,7 +99,11 @@ const SchoolSelection: React.FC<Props> = ({ onNext, onChange }) => {
     setHasTriedSubmit(true);
 
     if (isNextEnabled) {
-      onChange(selected, major, studentId);
+      onUpdate?.({
+        school: selected,
+        major: major,
+        studentId: studentId,
+      });
       onNext();
     }
   };

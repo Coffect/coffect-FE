@@ -10,11 +10,7 @@ description : 회원가입 화면 이동 또는 로그인 수행 선택 컴포�
 */
 import { useState } from "react";
 import LogoImage from "../../assets/icon/home/Logo.png";
-
-interface LoginChoiceProps {
-  onLogin: (email: string, password: string) => void;
-  onSignUp: () => void;
-}
+import type { LoginChoiceProps } from "../../types/signup";
 
 const LoginChoice: React.FC<LoginChoiceProps> = ({ onSignUp, onLogin }) => {
   const [email, setEmail] = useState("");
