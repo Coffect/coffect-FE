@@ -10,8 +10,6 @@ description : 회원가입 화면 이동 또는 로그인 수행 선택 컴포�
 */
 import { useState } from "react";
 import LogoImage from "../../assets/icon/home/Logo.png";
-import { ChevronLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 interface LoginChoiceProps {
   onLogin: (email: string, password: string) => void;
@@ -21,25 +19,12 @@ interface LoginChoiceProps {
 const LoginChoice: React.FC<LoginChoiceProps> = ({ onSignUp, onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
 
   return (
     <div className="relative mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-start overflow-x-hidden bg-white text-center">
-      {/* 상단 네비게이션 바 (고정) */}
-      <div className="fixed top-0 left-1/2 z-50 w-[100vw] max-w-[430px] -translate-x-1/2 bg-[var(--gray-0)]">
-        <div className="relative flex items-center px-4 py-4">
-          <button onClick={() => navigate(-1)}>
-            <ChevronLeft className="h-6 w-6 text-[var(--gray-90)]" />
-          </button>
-          <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-[var(--gray-90)]">
-            로그인
-          </h1>
-        </div>
-      </div>
-
       {/* 실제 콘텐츠 영역 */}
-      <div className="mt-[30%] flex w-full flex-col items-center px-[3%]">
-        <img src={LogoImage} alt="로고" className="mb-[20%] w-[192px]" />
+      <div className="mt-[14%] flex w-full flex-col items-center px-[3%]">
+        <img src={LogoImage} alt="로고" className="mb-[15%] w-[192px]" />
 
         <input
           type="text"

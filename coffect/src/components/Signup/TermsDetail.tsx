@@ -18,8 +18,8 @@ const TermsDetail = () => {
 
       {/* 콘텐츠 */}
       <div
-        className="absolute top-[60px] w-full overflow-y-auto bg-[var(--gray-0)] px-6 py-5"
-        style={{ height: `calc(100vh - 60px)` }}
+        className="absolute top-[56px] w-full overflow-y-auto bg-[var(--gray-0)] px-6 py-5"
+        style={{ height: `calc(100vh - 56px)` }}
       >
         {/* 제목 */}
         <h1 className="text-2xl font-bold text-[var(--gray-90)]">

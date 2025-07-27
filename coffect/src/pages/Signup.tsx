@@ -38,6 +38,7 @@ const Signup: React.FC = () => {
 
   /*TopNavBar에 들어갈 제목 내용*/
   const stepTitles: Record<number, string> = {
+    2: "로그인",
     3: "",
     4: "학교 선택",
     5: "이메일 인증",
@@ -58,8 +59,8 @@ const Signup: React.FC = () => {
 
   return (
     <div className="flex h-full w-full flex-col bg-white">
-      {/* step 4~9에서만 TopNavbar + Progress 표시 */}
-      {step >= 3 && step <= 10 && (
+      {/* step 2~10까지는 이전 버튼표시, 4~9에서는 Progress 바도 같이 표시 */}
+      {step >= 2 && step <= 10 && (
         <TopNavbar
           title={stepTitles[step]}
           onBack={goBack}
