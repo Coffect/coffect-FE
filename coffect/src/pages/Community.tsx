@@ -95,7 +95,7 @@ const Community = () => {
 
   return (
     <div className="relative flex h-full flex-col bg-white">
-      <Header openModal={openModal} />
+      <Header openModal={openModal} activeFilters={activeFilters} />
 
       <main className="flex-1 overflow-y-auto bg-white pb-20">
         {isLoading ? (

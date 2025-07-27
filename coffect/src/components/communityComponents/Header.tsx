@@ -17,9 +17,13 @@ const activeButtonStyle =
 
 interface HeaderProps {
   openModal: () => void;
+  activeFilters: {
+    type: string | null;
+    topic: string | null;
+  };
 }
 
-const Header = ({ openModal }: HeaderProps) => {
+const Header = ({ openModal, activeFilters }: HeaderProps) => {
   // 커스텀 훅에서 상태와 핸들러 함수를 가져옵니다.
   const {
     activeFilter,
@@ -27,6 +31,8 @@ const Header = ({ openModal }: HeaderProps) => {
     handleLatestClick,
     handlePopularClick,
   } = useCommunityHeaderFilters();
+
+  const selectedFilters = Object.values(activeFilters).filter(Boolean);
 
   return (
     <div className="sticky top-0 z-10 flex h-[15%] max-h-[120px] w-full flex-col border-b-[var(--gray-70)] bg-white">
@@ -44,16 +50,24 @@ const Header = ({ openModal }: HeaderProps) => {
               openModal(); // 기존 모달 열기 함수 호출
             }}
             className={`flex h-[65%] w-[12%] items-center justify-center rounded-lg border border-[var(--gray-30)] text-sm ${
-              activeFilter === "filter"
+              activeFilter === "filter" || selectedFilters.length > 0
                 ? activeButtonStyle
                 : "text-[var(--gray-60)]"
             }`}
           >
             <SlidersHorizontal
               size={16}
-              className={`${activeFilter === "filter" ? "text-white" : "text-[var(--gray-60)]"}`}
+              className={`${activeFilter === "filter" || selectedFilters.length > 0 ? "text-white" : "text-[var(--gray-60)]"}`}
             />
           </button>
+          {selectedFilters.map((filter) => (
+            <div
+              key={filter}
+              className="flex h-[65%] items-center justify-center rounded-lg border border-[var(--gray-30)] bg-[var(--gray-10)] px-3 text-sm text-[var(--gray-60)]"
+            >
+              {filter}
+            </div>
+          ))}
           <button
             onClick={handleLatestClick}
             className={`${buttonStyle} ${activeFilter === "latest" ? activeButtonStyle : ""}`}
