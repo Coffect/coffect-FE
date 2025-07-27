@@ -31,7 +31,7 @@ const SplashScreen = ({ onNext }: Props) => {
         {/* 버튼 */}
         <button
           onClick={onNext}
-          className="w-full rounded-xl bg-[var(--gray-90)] py-4 text-center text-[18px] font-semibold text-white"
+          className="w-full rounded-xl bg-[var(--gray-90)] py-[4%] text-center text-lg font-semibold text-[var(--gray-0)]"
         >
           커피챗 시작하기
         </button>
