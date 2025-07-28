@@ -4,7 +4,7 @@ description : 회원가입 플로우 전체를 제어하는 페이지입니다.
 */
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import type { SignupData } from "../types/signup";
 import SplashScreen from "../components/Signup/SplashScreen";
 import LoginChoice from "../components/Signup/LoginChoice";
@@ -20,8 +20,11 @@ import TopNavbar from "../components/Signup/TopNavbar";
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
-  // 현재 단계 페이지 (1~10)
-  const [step, setStep] = useState<number>(1);
+  const location = useLocation();
+  // 타 라우팅에서 이 페이지로 올 때 이전 step 단계로 올 수 있도록 저장
+  const initialStep = location.state?.step ?? 1;
+  // 현재 단계 페이지
+  const [step, setStep] = useState<number>(initialStep);
   // 회원가입 중 입력된 데이터 누적 저장
   const [, setForm] = useState<Partial<SignupData>>({});
 

@@ -15,11 +15,11 @@ const homePageRoutes = [
     element: <Home />,
   },
   {
-    path: "/home/calendar",
+    path: "/calendar",
     element: <CalendarView />,
   },
   {
-    path: "/home/alarm",
+    path: "/alarm",
     element: <AlarmView />,
   },
   {

@@ -5,11 +5,30 @@ description : 회원가입 서비스 약관 동의
 import { useState, useEffect } from "react";
 import { AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import CheckboxImage from "../../assets/icon/Signup/checkbox.png";
+import ClickedCheckboxImage from "../../assets/icon/Signup/clickCheckbox.png";
+import LogoImage from "../../assets/icon/home/Logo.png";
 
 /** 다음 단계로 이동 */
 type Props = {
   onNext: () => void;
 };
+// 체크 박스 커스텀 디자인 컴포넌트
+const ImageCheckbox = ({
+  checked,
+  onClick,
+}: {
+  checked: boolean;
+  onClick: () => void;
+}) => (
+  <button type="button" onClick={onClick} className="mr-[1rem] h-5 w-5">
+    <img
+      src={checked ? ClickedCheckboxImage : CheckboxImage}
+      alt={checked ? "체크됨" : "체크안됨"}
+      className="h-full w-full"
+    />
+  </button>
+);
 
 const TermsAgreement = ({ onNext }: Props) => {
   const navigate = useNavigate();
@@ -60,35 +79,33 @@ const TermsAgreement = ({ onNext }: Props) => {
 
   return (
     <div className="relative flex h-[90vh] w-full flex-col items-center justify-between overflow-auto bg-white text-left">
-      <div className="flex-1 overflow-y-auto px-[6%] pt-[5%] pr-6 pb-6">
-        {/* 추후 로고로 수정 예정 */}
-        <h1 className="mb-[6%] text-2xl font-bold text-black">coffect</h1>
+      <div className="w-full flex-1 overflow-y-auto px-5 pt-[5%] pb-6">
+        {/* 로고*/}
+        <img
+          src={LogoImage}
+          alt="coffect 로고"
+          className="mb-[6%] h-8 object-contain"
+        />
         {/* 타이틀 */}
         <h2 className="mb-[8%] text-2xl leading-tight font-bold text-[var(--gray-90)]">
           서비스 이용을 위해 <br />
           약관에 동의해주세요
         </h2>
         {/* 전체 동의 버튼*/}
-        <label className="mb-[8%] flex w-full items-center">
-          <input
-            type="checkbox"
-            checked={checkedAll}
-            onChange={handleAllChange}
-            className="mr-[1rem] aspect-square w-5 border-[var(--gray-20)] accent-black"
-          />
+        <div className="mb-[8%] flex w-full items-center">
+          <ImageCheckbox checked={checkedAll} onClick={handleAllChange} />
           <span className="text-lg font-bold text-[var(--gray-90)]">
             모두 동의(선택 정보 포함)
           </span>
-        </label>
+        </div>
+
         <div className="mb-[8%] w-full border-t border-[var(--gray-10)]" />
         {/* 필수 약관 목록 */}
-        <label className="mb-[6%] flex w-full items-center justify-between">
+        <div className="mb-[6%] flex w-full items-center justify-between">
           <div className="flex flex-1 items-center">
-            <input
-              type="checkbox"
+            <ImageCheckbox
               checked={checkedService}
-              onChange={() => setCheckedService((prev) => !prev)}
-              className="mr-[1rem] aspect-square w-5 border-[var(--gray-20)] accent-black"
+              onClick={() => setCheckedService((prev) => !prev)}
             />
             <span className="text-base font-medium text-[var(--gray-90)]">
               [필수] 서비스 이용약관 동의
@@ -100,14 +117,12 @@ const TermsAgreement = ({ onNext }: Props) => {
           >
             보기
           </button>
-        </label>
-        <label className="mb-[6%] flex w-full items-center justify-between">
+        </div>
+        <div className="mb-[6%] flex w-full items-center justify-between">
           <div className="flex flex-1 items-center">
-            <input
-              type="checkbox"
+            <ImageCheckbox
               checked={checkedPrivacy}
-              onChange={() => setCheckedPrivacy((prev) => !prev)}
-              className="mr-[1rem] aspect-square w-5 border-[var(--gray-20)] accent-black"
+              onClick={() => setCheckedPrivacy((prev) => !prev)}
             />
             <span className="text-base font-medium text-[var(--gray-90)]">
               [필수] 개인정보 처리방침 동의
@@ -119,49 +134,43 @@ const TermsAgreement = ({ onNext }: Props) => {
           >
             보기
           </button>
-        </label>
-        <label className="mb-[6%] flex w-full items-center">
-          <input
-            type="checkbox"
+        </div>
+        <div className="mb-[6%] flex w-full items-center">
+          <ImageCheckbox
             checked={checkedOver14}
-            onChange={() => setCheckedOver14((prev) => !prev)}
-            className="mr-[1rem] aspect-square w-5 border-[var(--gray-20)] accent-black"
+            onClick={() => setCheckedOver14((prev) => !prev)}
           />
           <span className="text-base font-medium text-[var(--gray-90)]">
             [필수] 만 14세 이상입니다
           </span>
-        </label>
+        </div>
         {/* 선택 약관 목록 */}
-        <label className="mb-[6%] flex w-full items-center justify-between">
+        <div className="mb-[6%] flex w-full items-center justify-between">
           <div className="flex flex-1 items-center">
-            <input
-              type="checkbox"
+            <ImageCheckbox
               checked={checkedMarketing}
-              onChange={() => setCheckedMarketing((prev) => !prev)}
-              className="mr-[1rem] aspect-square w-5 border-[var(--gray-20)] accent-black"
+              onClick={() => setCheckedMarketing((prev) => !prev)}
             />
             <span className="text-base font-medium text-[var(--gray-90)]">
               [선택] 마케팅 정보 수신 동의
             </span>
           </div>
           <button
-            onClick={() => navigate("/signup/terms")}
+            onClick={() => navigate("/signup/terms", { state: { step: 3 } })}
             className="text-base font-medium text-[var(--gray-40)] underline"
           >
             보기
           </button>
-        </label>
-        <label className="flex w-full items-center">
-          <input
-            type="checkbox"
+        </div>
+        <div className="flex w-full items-center">
+          <ImageCheckbox
             checked={checkedPush}
-            onChange={() => setCheckedPush((prev) => !prev)}
-            className="mr-[1rem] aspect-square w-5 border-[var(--gray-20)] accent-black"
+            onClick={() => setCheckedPush((prev) => !prev)}
           />
           <span className="text-base font-medium text-[var(--gray-90)]">
             [선택] 푸시 알림 수신 동의
           </span>
-        </label>
+        </div>
         {/* 안내 문구 */}
         <div className="mt-[10%] w-full rounded bg-[var(--gray-5)] p-[4%]">
           <div className="mb-[2%] flex items-center space-x-1 pl-[2%] text-sm font-semibold text-[var(--gray-50)]">
@@ -176,7 +185,7 @@ const TermsAgreement = ({ onNext }: Props) => {
         </div>
       </div>
       {/* 회원가입 버튼 */}
-      <div className="flex w-full px-7 pb-3">
+      <div className="flex w-full px-7 pb-[5px]">
         <button
           onClick={onNext}
           disabled={!allRequiredChecked}

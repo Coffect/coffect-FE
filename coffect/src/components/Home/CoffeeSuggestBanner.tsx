@@ -12,6 +12,7 @@ import { Swiper as SwiperClass } from "swiper";
 import MessageModal from "./MessageModal";
 import DeleteSuggestModal from "./DeleteSuggestModal";
 import { useNavigate } from "react-router-dom";
+import NoSuggestImage from "../../assets/icon/home/NoSuggest.png";
 
 // 커피챗 제안 베너 데이터 타입 정의
 interface Suggestion {
@@ -84,12 +85,20 @@ const CoffeeSuggestBanner = () => {
       {/* 커피쳇 제안 베너 슬라이드 */}
       <div className="flex h-auto w-full">
         {suggestions.length === 0 ? (
-          <div className="w-full items-center justify-center">
-            <div className="rounded-2xl bg-white px-[6%] py-[6.5%] text-left text-base leading-relaxed font-bold text-[var(--gray-85)] shadow-[0_0_20px_rgba(189,179,170,0.2)]">
-              아직 커피챗 제안이 오지 않았어요!
+          <div className="relative w-full items-center justify-center">
+            <div className="rounded-[20px] bg-white px-[6%] py-[7%] text-left text-base leading-normal font-medium text-[var(--gray-50)] shadow-[0_0_20px_rgba(189,179,170,0.2)]">
+              아직{" "}
+              <span className="text-[var(--gray-90)]">
+                커피챗 제안이 오지 않았어요!
+              </span>
               <br />
-              먼저 제안해보는건 어때요?
+              먼저 제안해보는 건 어때요?
             </div>
+            <img
+              src={NoSuggestImage}
+              alt="제안 없음"
+              className="absolute right-2 bottom-0 w-[98px]"
+            />
           </div>
         ) : (
           <Swiper
@@ -123,7 +132,10 @@ const CoffeeSuggestBanner = () => {
                     </p>
 
                     <div className="flex justify-start">
-                      <button className="rounded-[12px] bg-[var(--gray-80)] px-3 py-1.5 text-base font-medium text-[var(--gray-0)]">
+                      <button
+                        onClick={() => navigate("/userpage/1")}
+                        className="rounded-[12px] bg-[var(--gray-80)] px-3 py-1.5 text-base font-medium text-[var(--gray-0)]"
+                      >
                         프로필 보기
                       </button>
                       <button

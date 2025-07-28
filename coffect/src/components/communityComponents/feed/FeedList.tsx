@@ -4,7 +4,7 @@ description : FeedItem.tsx 로부터 피드를 받아 목록을 출력하는 컴
 */
 
 import FeedItem from "../../shareComponents/FeedItem";
-import type { Post } from "../../../data/communityDummyData";
+import type { Post } from "../../../types/community";
 
 interface FeedListProps {
   posts: Post[];

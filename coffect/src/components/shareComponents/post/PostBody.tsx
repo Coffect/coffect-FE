@@ -57,6 +57,7 @@ const PostBody: React.FC<PostBodyProps> = ({
         postId={post.id}
         likes={post.likes}
         comments={post.comments}
+        isDetailView={isDetailView}
       />
     </div>
   );

@@ -63,12 +63,11 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, onChange }) => {
   }, []);
 
   return (
-    <div className="relative h-screen w-full bg-white">
-      <div className="h-full overflow-y-auto px-[6%]">
-        {" "}
+    <div className="relative flex h-screen w-full flex-col bg-white px-[4%] pt-[2%]">
+      <div className="h-full flex-1 overflow-y-auto">
         <div className="pt-[10%] text-[var(--gray-90)]">
           {/* 안내 문구 */}
-          <h2 className="mb-[3%] self-start text-left text-2xl leading-snug font-bold">
+          <h2 className="mb-[3%] self-start text-left text-[22px] leading-snug font-bold">
             이메일로 받은 인증코드를
             <br /> 입력해주세요!
           </h2>
@@ -100,23 +99,25 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, onChange }) => {
               onClick={onBack}
               className="text-base text-[var(--gray-70)] underline"
             >
-              인증코드 재발송하기
+              이메일 다시 적기
             </button>
           </div>
         </div>
         {/* 인증 완료 버튼 */}
-        <div className="flex w-full pt-92 pb-20">
-          <button
-            onClick={handleNext}
-            disabled={!isComplete}
-            className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
-              isComplete
-                ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
-                : "bg-[var(--gray-10)] text-[var(--gray-50)]"
-            } `}
-          >
-            인증 완료하기
-          </button>
+        <div className="fixed right-0 bottom-0 left-0 z-50 bg-white px-[4%] pt-2 pb-4">
+          <div className="mx-auto w-full max-w-[430px]">
+            <button
+              onClick={handleNext}
+              disabled={!isComplete}
+              className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
+                isComplete
+                  ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
+                  : "bg-[var(--gray-10)] text-[var(--gray-50)]"
+              } `}
+            >
+              인증 완료하기
+            </button>
+          </div>
         </div>
       </div>
     </div>
