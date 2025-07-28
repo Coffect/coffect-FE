@@ -32,14 +32,14 @@ const CommentInput = ({ postId }: CommentInputProps) => {
         <textarea
           ref={textareaRef}
           placeholder="댓글을 남겨보세요."
-          className="scrollbar-hide max-h-24 w-full resize-none rounded-2xl border border-gray-300 bg-[#f5f5f5] py-3 pr-14 pl-5 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className="scrollbar-hide max-h-24 w-full resize-none overflow-hidden rounded-2xl bg-[var(--gray-5)] py-3 pr-17 pl-5 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           rows={1}
         />
         {newComment.trim() && (
           <button
-            className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-[#FF8126] px-4.5 py-1.5 text-white hover:bg-[#e0701f] disabled:bg-gray-300"
+            className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-[var(--design-text)] px-4.5 py-1.5 text-white disabled:bg-gray-300"
             onClick={handlePostComment}
           >
             <Send className="h-5 w-5" />
