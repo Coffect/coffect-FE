@@ -8,6 +8,7 @@ import { isValidUserId, isValidPassword } from "../../utils/validation";
 import { Eye, EyeOff } from "lucide-react";
 import SignupPageLayout from "./shared/SignupLayout";
 import type { StepProps } from "../../types/signup";
+import { checkDuplicateId } from "../../api/auth";
 
 /*
   AccountSetup 컴포넌트가 받을 props 타입 정의
@@ -16,7 +17,7 @@ import type { StepProps } from "../../types/signup";
 
 const AccountSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   /* 입력값 상태 관리 */
-  const [userid, setUserid] = useState("");
+  const [id, setUserid] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
 
@@ -30,27 +31,30 @@ const AccountSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   /* 아이디, 비밀번호, 비밀번호 확인 유효성 검증 */
-  const isUseridValid = isValidUserId(userid);
+  const isUseridValid = isValidUserId(id);
   const isPasswordValid = isValidPassword(password);
   const isConfirmValid = password === confirm;
   /*중복 확인 에러 메시지 띄우기*/
   const [toastMessage, setToastMessage] = useState("");
-  const [toastType, setToastType] = useState<"success" | "error" | "">("");
+  const [toastType, setToastType] = useState<"duplicate" | "available" | "">(
+    "",
+  );
   const [showToast, setShowToast] = useState(false);
   /* 진행 가능 여부 */
-  const canProceed = isUseridValid && isPasswordValid && isConfirmValid;
+  const canProceed =
+    isUseridValid && isDuplicateChecked && isPasswordValid && isConfirmValid;
 
   /* 아이디 중복체크 핸들러(확인, 에러 메시지까지) */
-  const handleCheckDuplicate = () => {
-    // 추후 중복체크 API 구현 예정
-    setIsDuplicateChecked(true);
-    const isDuplicate = userid === "thunder"; // 예시: 중복 아이디
+  const handleCheckDuplicate = async () => {
+    const isDuplicate = await checkDuplicateId(id);
     if (isDuplicate) {
       setToastMessage("이미 존재하는 아이디입니다.");
-      setToastType("error");
+      setToastType("duplicate");
+      setIsDuplicateChecked(false);
     } else {
       setToastMessage("아이디 중복 체크 완료");
-      setToastType("success");
+      setToastType("available");
+      setIsDuplicateChecked(true);
     }
 
     setShowToast(true);
@@ -65,8 +69,14 @@ const AccountSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
     setUseridError(newUseridError);
     setPasswordError(newPasswordError);
     setConfirmError(newConfirmError);
-    if (newUseridError || newPasswordError || newConfirmError) return;
-    onUpdate?.({ userid, password });
+    if (
+      newUseridError ||
+      newPasswordError ||
+      newConfirmError ||
+      !isDuplicateChecked
+    )
+      return;
+    onUpdate?.({ id, password });
     onNext();
   };
 
@@ -103,7 +113,6 @@ const AccountSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
       bottomButton={
         <button
           onClick={handleNext}
-          disabled={!canProceed}
           className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
             canProceed
               ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
@@ -129,7 +138,7 @@ const AccountSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
             ref={useridRef}
             type="text"
             placeholder="5글자 이상"
-            value={userid}
+            value={id}
             onChange={(e) => onUseridChange(e.target.value)}
             onFocus={() =>
               setTimeout(() => {
@@ -143,9 +152,9 @@ const AccountSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
           />
           <button
             onClick={handleCheckDuplicate}
-            disabled={userid.length < 1 || isDuplicateChecked}
+            disabled={id.length < 1 || isDuplicateChecked}
             className={`h-[48px] flex-3 rounded-lg py-2 text-base font-medium ${
-              userid.length >= 1 && !isDuplicateChecked
+              id.length >= 1 && !isDuplicateChecked
                 ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
                 : "bg-[var(--gray-10)] text-[var(--gray-90)]"
             }`}
@@ -238,14 +247,13 @@ const AccountSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
       {showToast && (
         <div
           className={`fixed bottom-[6rem] left-1/2 z-50 flex -translate-x-1/2 transform items-center gap-[4px] rounded-[16px] px-[16px] py-[9px] text-[14px] leading-[150%] font-medium whitespace-nowrap shadow-md ${
-            toastType === "success"
+            toastType === "duplicate"
               ? "bg-[var(--gray-60)] text-white"
               : "bg-[var(--gray-60)] text-white"
           }`}
-          style={{ fontFamily: "Pretendard" }}
         >
           <span className="text-sm font-medium">
-            {toastType === "success" ? "✅" : "⚠️"}
+            {toastType === "available" ? "✅" : "⚠️"}
           </span>
           <span>{toastMessage}</span>
         </div>

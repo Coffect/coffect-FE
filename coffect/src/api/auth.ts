@@ -62,3 +62,24 @@ export const logout = () => {
   // 로그인 페이지로 이동
   window.location.href = "/";
 };
+
+// 아이디 중복 체크 요청 함수
+export const checkDuplicateId = async (id: string): Promise<boolean> => {
+  try {
+    await axiosInstance.post("/user/idcheck", { id });
+    // 200: 중복 아님
+    return false;
+  } catch (err: unknown) {
+    const axiosError = err as AxiosError;
+
+    if (axiosError.response?.status === 409) {
+      // 409: 중복임
+      return true;
+    }
+
+    // 그 외 서버 오류 메시지 확인
+    const reason = "아이디 중복 확인 중 알 수 없는 오류가 발생했습니다.";
+    alert(reason);
+    throw new Error(reason);
+  }
+};
