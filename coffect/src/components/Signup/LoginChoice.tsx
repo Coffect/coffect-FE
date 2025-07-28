@@ -13,7 +13,7 @@ import LogoImage from "../../assets/icon/home/Logo.png";
 import type { LoginChoiceProps } from "../../types/signup";
 
 const LoginChoice: React.FC<LoginChoiceProps> = ({ onSignUp, onLogin }) => {
-  const [email, setEmail] = useState("");
+  const [id, setID] = useState("");
   const [password, setPassword] = useState("");
 
   return (
@@ -25,8 +25,8 @@ const LoginChoice: React.FC<LoginChoiceProps> = ({ onSignUp, onLogin }) => {
         <input
           type="text"
           placeholder="학교 이메일 또는 사용자 아이디"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={id}
+          onChange={(e) => setID(e.target.value)}
           className="mb-3 h-[56px] w-full rounded-[12px] bg-[var(--gray-5)] px-4 py-3 text-base font-medium text-[var(--gray-90)] placeholder:text-[var(--gray-30)]"
         />
         <input
@@ -38,7 +38,7 @@ const LoginChoice: React.FC<LoginChoiceProps> = ({ onSignUp, onLogin }) => {
         />
 
         <button
-          onClick={() => onLogin(email, password)}
+          onClick={() => onLogin(id, password)}
           className="h-[56px] w-full rounded-[12px] bg-[var(--gray-80)] py-3 text-lg font-semibold text-white"
         >
           로그인

@@ -17,6 +17,7 @@ import ProfileSetup from "../components/Signup/ProfileSetup";
 import InterestsSelection from "../components/Signup/InterestsSelection";
 import Completion from "../components/Signup/Completion";
 import TopNavbar from "../components/Signup/TopNavbar";
+import { login } from "../api/auth";
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
@@ -88,7 +89,15 @@ const Signup: React.FC = () => {
         {step === 1 && <SplashScreen onNext={firstgoNext} />}
         {/* 2. 회원가입/로그인 선택 화면 */}
         {step === 2 && (
-          <LoginChoice onSignUp={goNext} onLogin={() => navigate("/home")} />
+          <LoginChoice
+            onSignUp={goNext}
+            onLogin={async (userId, password) => {
+              // login API 호출 → 로그인 성공 여부 반환
+              const success = await login({ userId, userPassword: password });
+              // 로그인 성공 시 홈 화면으로 이동
+              if (success) navigate("/home");
+            }}
+          />
         )}
         {/* 3. 약관 동의 화면 */}
         {step === 3 && <TermsAgreement onNext={goNext} />}
