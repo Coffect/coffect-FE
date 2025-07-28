@@ -100,8 +100,8 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
 
     if (isNextEnabled) {
       onUpdate?.({
-        school: selected,
-        major: major,
+        univId: selected,
+        dept: major,
         studentId: studentId,
       });
       onNext();

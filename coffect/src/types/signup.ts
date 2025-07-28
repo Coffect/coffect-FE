@@ -1,14 +1,14 @@
 export interface SignupData {
   email: string;
   authCode: string;
-  school: string;
-  major: string;
+  univId: string;
+  dept: string;
   studentId: string;
-  userid: string;
+  id: string;
   password: string;
-  username: string;
-  avatar?: string;
-  interests: string[];
+  name: string;
+  img: string;
+  interest?: string[];
 }
 
 export interface StepProps {

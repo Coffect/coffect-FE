@@ -65,7 +65,7 @@ const InterestsSelection = ({ onNext, onUpdate }: StepProps) => {
     }
 
     // 선택된 항목 부모로 전달하고 다음 단계로 이동
-    onUpdate?.({ interests: selected });
+    onUpdate?.({ interest: selected });
     onNext();
   };
 

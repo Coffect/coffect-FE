@@ -39,7 +39,7 @@ const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
       setNameError(true);
       return;
     }
-    onUpdate?.({ username: trimmed, avatar: avatarUrl || undefined });
+    onUpdate?.({ name: trimmed, img: avatarUrl || undefined });
     onNext();
   };
   // 버튼 비활성화 조건(이름x 또는 프로필사진 x)
