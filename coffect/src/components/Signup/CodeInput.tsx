@@ -5,14 +5,10 @@ description : 이메일 인증 코드 입력 화면 (5자리)
 
 import React, { useState, useRef, useEffect } from "react";
 import { isFiveDigitCode } from "../../utils/validation"; // 공통 유틸 함수
+import SignupPageLayout from "./shared/SignupLayout";
+import type { StepProps } from "../../types/signup";
 
-type Props = {
-  onNext: () => void; // 5자리 코드 입력 완료 후 다음 단계로 이동
-  onBack: () => void; // 이전 단계로 이동
-  onChange: (code: string) => void; // 완성된 5자리 코드를 부모에게 전달
-};
-
-const CodeInput: React.FC<Props> = ({ onNext, onBack, onChange }) => {
+const CodeInput: React.FC<StepProps> = ({ onNext, onBack, onUpdate }) => {
   // 입력된 각 자리 숫자를 배열로 관리
   const [code, setCode] = useState<string[]>(["", "", "", "", ""]);
   // 각 input 요소에 포커스 제어를 위한 ref 배열
@@ -49,7 +45,7 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, onChange }) => {
   // 완료 시 부모 콜백 및 다음 단계
   const handleNext = () => {
     const joined = code.join("");
-    onChange(joined);
+    onUpdate?.({ authCode: joined });
     onNext();
   };
 
@@ -63,64 +59,65 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, onChange }) => {
   }, []);
 
   return (
-    <div className="relative flex h-screen w-full flex-col bg-white px-[4%] pt-[2%]">
-      <div className="h-full flex-1 overflow-y-auto">
-        <div className="pt-[10%] text-[var(--gray-90)]">
-          {/* 안내 문구 */}
-          <h2 className="mb-[3%] self-start text-left text-[22px] leading-snug font-bold">
-            이메일로 받은 인증코드를
-            <br /> 입력해주세요!
-          </h2>
-          <p className="mb-16 text-base text-[var(--gray-40)]">
-            받지 못했다면 스팸함을 확인해주세요
-          </p>
-          {/* 5칸 입력 필드 */}
-          <div className="mb-6 flex justify-between gap-3">
-            {code.map((digit, i) => (
-              <input
-                key={i}
-                type="text"
-                inputMode="numeric"
-                maxLength={1}
-                value={digit}
-                placeholder="–"
-                onChange={(e) => handleChange(i, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(i, e)}
-                ref={(el) => {
-                  inputsRef.current[i] = el;
-                }}
-                className="aspect-square w-[18%] rounded border border-[var(--gray-30)] text-center text-xl text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
-              />
-            ))}
-          </div>
-          {/* 인증코드 재발송 버튼 */}
-          <div className="mb-6 w-full text-center">
-            <button
-              onClick={onBack}
-              className="text-base text-[var(--gray-70)] underline"
-            >
-              이메일 다시 적기
-            </button>
-          </div>
+    <SignupPageLayout
+      bottomButton={
+        <button
+          onClick={handleNext}
+          disabled={!isComplete}
+          className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
+            isComplete
+              ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
+              : "bg-[var(--gray-10)] text-[var(--gray-50)]"
+          } `}
+        >
+          인증 완료하기
+        </button>
+      }
+    >
+      <div className="pt-[10%] text-[var(--gray-90)]">
+        {/* 안내 문구 */}
+        <h2 className="mb-[3%] self-start text-left text-[22px] leading-snug font-bold">
+          이메일로 받은 인증코드를
+          <br /> 입력해주세요!
+        </h2>
+        <p className="mb-16 text-base text-[var(--gray-40)]">
+          받지 못했다면 스팸함을 확인해주세요
+        </p>
+
+        {/* 5칸 입력 필드 */}
+        <div className="mb-6 flex justify-between gap-3">
+          {code.map((digit, i) => (
+            <input
+              key={i}
+              type="text"
+              inputMode="numeric"
+              maxLength={1}
+              value={digit}
+              placeholder="–"
+              onChange={(e) => handleChange(i, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(i, e)}
+              ref={(el) => {
+                inputsRef.current[i] = el;
+              }}
+              className="aspect-square w-[18%] rounded border border-[var(--gray-30)] text-center text-xl text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+            />
+          ))}
         </div>
-        {/* 인증 완료 버튼 */}
-        <div className="fixed right-0 bottom-0 left-0 z-50 bg-white px-[4%] pt-2 pb-4">
-          <div className="mx-auto w-full max-w-[430px]">
-            <button
-              onClick={handleNext}
-              disabled={!isComplete}
-              className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
-                isComplete
-                  ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
-                  : "bg-[var(--gray-10)] text-[var(--gray-50)]"
-              } `}
-            >
-              인증 완료하기
-            </button>
-          </div>
+
+        {/* 인증코드 재입력 버튼 */}
+        <div className="mb-6 w-full text-center">
+          <button
+            onClick={onBack}
+            className="text-base text-[var(--gray-70)] underline"
+          >
+            이메일 다시 적기
+          </button>
         </div>
       </div>
-    </div>
+
+      {/* 하단 여백 확보 */}
+      <div className="h-[100px]" />
+    </SignupPageLayout>
   );
 };
 

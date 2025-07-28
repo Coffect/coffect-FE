@@ -9,18 +9,44 @@ import CoffeeBanner from "../components/Home/CoffeeSuggestBanner";
 import CoffeeCategoryGrid from "../components/Home/CoffeeCategoryGrid";
 import ProfileModal from "../components/Home/ProfileModal";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false); // 프로필 작성 유도 모달 여부
 
-  // 최초 접속 시 localStorage 체크 →프로필 작성 유도 모달 한 번만 보여줌
+  //오전 9시 체크 함수
+  const isExpired = (timeStr: string) => {
+    const now = new Date();
+    const saved = new Date(timeStr);
+
+    const resetTime = new Date();
+    resetTime.setHours(9, 0, 0, 0);
+
+    return now > resetTime && saved < resetTime;
+  };
+
   useEffect(() => {
+    // 추천 카테고리 선택 여부 확인
+    const selected = localStorage.getItem("coffeeCategorySelected");
+    const expire = localStorage.getItem("coffeeCategoryExpire");
+
+    if (selected && expire && !isExpired(expire)) {
+      // 선택했고 아직 유효하면 추천 카드로 바로 이동
+      navigate("/home/cards");
+      return;
+    }
+
+    // 만료됐거나 없으면 초기화
+    localStorage.removeItem("coffeeCategorySelected");
+    localStorage.removeItem("coffeeCategoryExpire");
+    // 최초 접속 시 localStorage 체크 →프로필 작성 유도 모달 한 번만 보여줌
     const hasSeen = localStorage.getItem("hasSeenProfileModal");
     if (!hasSeen) {
       setShowModal(true);
       localStorage.setItem("hasSeenProfileModal", "true");
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="relative mx-auto flex h-full w-full flex-col overflow-x-hidden overflow-y-auto bg-[var(--gray-5)]">

@@ -22,9 +22,9 @@ const TopNavbar: React.FC<Props> = ({
   totalSteps = 5,
 }) => {
   return (
-    <div className="flex w-full flex-col bg-[var(--gray-0)]">
+    <div className="flex h-[56px] w-full flex-col bg-[var(--gray-0)]">
       {/* 상단 타이틀 영역 */}
-      <div className="flex items-center px-[5%] py-[5%]">
+      <div className="flex items-center px-[5%] py-[4%]">
         {onBack && (
           <button onClick={onBack}>
             <ChevronLeft className="h-6 w-6 text-[var(--gray-90)]" />

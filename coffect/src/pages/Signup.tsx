@@ -38,6 +38,7 @@ const Signup: React.FC = () => {
 
   /*TopNavBar에 들어갈 제목 내용*/
   const stepTitles: Record<number, string> = {
+    2: "로그인",
     3: "",
     4: "학교 선택",
     5: "이메일 인증",
@@ -58,8 +59,8 @@ const Signup: React.FC = () => {
 
   return (
     <div className="flex h-full w-full flex-col bg-white">
-      {/* step 4~9에서만 TopNavbar + Progress 표시 */}
-      {step >= 3 && step <= 10 && (
+      {/* step 2~10까지는 이전 버튼표시, 4~9에서는 Progress 바도 같이 표시 */}
+      {step >= 2 && step <= 10 && (
         <TopNavbar
           title={stepTitles[step]}
           onBack={goBack}
@@ -81,16 +82,14 @@ const Signup: React.FC = () => {
         {step === 4 && (
           <SchoolSelection
             onNext={goNext}
-            onChange={(school, major, studentId) =>
-              update({ school, major, studentId })
-            }
+            onUpdate={(fields) => update(fields)}
           />
         )}
         {/* 5. 이메일 인증 화면 */}
         {step === 5 && (
           <EmailVerification
             onNext={goNext}
-            onChange={(email) => update({ email })}
+            onUpdate={(fields) => update(fields)}
           />
         )}
         {/* 6. 이메일 인증 코드 입력 화면 */}
@@ -98,22 +97,22 @@ const Signup: React.FC = () => {
           <CodeInput
             onNext={goNext}
             onBack={goBack}
-            onChange={(code) => update({ authCode: code })}
+            onUpdate={(fields) => update(fields)}
           />
         )}
         {/* 7. 계정 정보 설정 화면 */}
         {step === 7 && (
-          <AccountSetup onNext={goNext} onChange={(fields) => update(fields)} />
+          <AccountSetup onNext={goNext} onUpdate={(fields) => update(fields)} />
         )}
         {/* 8. 프로필 설정 화면 */}
         {step === 8 && (
-          <ProfileSetup onNext={goNext} onChange={(fields) => update(fields)} />
+          <ProfileSetup onNext={goNext} onUpdate={(fields) => update(fields)} />
         )}
         {/* 9. 관심사 선택 화면 */}
         {step === 9 && (
           <InterestsSelection
             onNext={goNext}
-            onChange={(list) => update({ interests: list })}
+            onUpdate={(fields) => update(fields)}
           />
         )}
         {/* 10. 가입 완료 화면 */}
