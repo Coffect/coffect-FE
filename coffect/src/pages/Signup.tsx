@@ -48,6 +48,20 @@ const Signup: React.FC = () => {
     9: "관심사 설정",
   };
 
+  // 첫 방문자일 경우 시작페이지 -> 온보딩으로 이동
+  const firstgoNext = () => {
+    const seen = localStorage.getItem("seenOnboarding");
+
+    if (!seen) {
+      // 온보딩을 보지 않은 사용자면 온보딩부터 시작
+      navigate("/onboarding");
+    } else {
+      // 이미 온보딩을 본 사용자면 다음 단계(로그인)로 이동
+      navigate("/signup", { state: { step: 2 } });
+      window.location.reload();
+    }
+  };
+
   // step -> progress 단계 변환 (Top바 아래부분 진행바 표시)
   const getProgressStep = (step: number): number => {
     if (step === 4) return 1;
@@ -71,7 +85,7 @@ const Signup: React.FC = () => {
       )}
       <div className="flex flex-1 flex-col items-center justify-center">
         {/* 1. 시작 화면 */}
-        {step === 1 && <SplashScreen onNext={goNext} />}
+        {step === 1 && <SplashScreen onNext={firstgoNext} />}
         {/* 2. 회원가입/로그인 선택 화면 */}
         {step === 2 && (
           <LoginChoice onSignUp={goNext} onLogin={() => navigate("/home")} />
