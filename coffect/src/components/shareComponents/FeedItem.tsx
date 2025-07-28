@@ -4,7 +4,7 @@
                 공용 컴포넌트인 PostAuthorInfo와 PostBody를 조합하여 UI를 구성합니다.
  */
 import { useNavigate } from "react-router-dom";
-import type { Post } from "../../data/communityDummyData";
+import type { Post } from "../../types/community";
 import PostAuthorInfo from "./post/PostAuthorInfo";
 import PostBody from "./post/PostBody";
 

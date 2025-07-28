@@ -30,7 +30,7 @@ interface UseClampManagerOptions {
  *                                이 함수는 사용자가 버튼을 클릭할 때마다 `isExpanded` 상태를 반전시킵니다.
  */
 interface UseClampManagerReturn {
-  contentRef: React.RefObject<HTMLSpanElement>;
+  contentRef: React.RefObject<HTMLSpanElement | null>;
   isClamped: boolean;
   isExpanded: boolean;
   handleToggle: (e: React.MouseEvent) => void;

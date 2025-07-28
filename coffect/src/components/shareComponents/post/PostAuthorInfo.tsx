@@ -4,7 +4,7 @@
  *              이 컴포넌트는 피드 아이템과 게시글 상세 페이지 양쪽에서 모두 재사용됩니다.
  */
 import React from "react";
-import type { Post } from "../../../data/communityDummyData";
+import type { Post } from "../../../types/community";
 
 /** PostAuthorInfo 컴포넌트가 받을 props 타입을 정의합니다.
  * @interface PostAuthorInfoProps
