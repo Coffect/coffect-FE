@@ -45,7 +45,7 @@ export interface UseWritePostReturn {
   title: string;
   setTitle: (title: string) => void;
   content: string;
-  setContent: (content: (content: string) => string) => void;
+  setContent: React.Dispatch<React.SetStateAction<string>>; // 게시글 내용을 업데이트하는 함수
   isFormValid: boolean;
   handleTopicSelect: (selectedTopic: string) => void;
   handlePostTypeSelect: (selectedPostType: string) => void;
