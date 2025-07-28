@@ -16,7 +16,7 @@ import FeedList from "../components/communityComponents/feed/FeedList";
 import FilterModal from "../components/communityComponents/BottomSeatFilter/FilterModal";
 import BottomNavbar from "../components/shareComponents/BottomNavbar";
 import FloatingWriteButton from "../components/communityComponents/FloatingWriteButton";
-import UploadSuccessModal from "../components/communityComponents/writeComponents/UploadSuccessModal";
+import UploadSuccessModal from "../components/communityComponents/writeComponents/SuccessModal/UploadSuccessModal";
 
 // --- Custom Hooks ---
 import { useCommunityFilter } from "../hooks/community/useCommunityFilter";
