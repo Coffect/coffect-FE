@@ -16,6 +16,7 @@ export interface StepProps {
   onBack?: () => void;
   onUpdate?: (data: Partial<SignupData>) => void;
 }
+
 export interface LoginChoiceProps {
   onLogin: (email: string, password: string) => void;
   onSignUp: () => void;
