@@ -66,7 +66,7 @@ export default function TimeScrollModal({
           ampmRef.current.scrollTop = ampm.indexOf(selectedAMPM) * 48;
       }, 0);
     }
-  }, [open]);
+  }, [open, selectedHour, selectedMinute, selectedAMPM]);
 
   if (!open) return null;
 

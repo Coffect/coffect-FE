@@ -217,14 +217,14 @@ const ChatRoom = () => {
             {!schedule && (
               <div className="flex gap-2">
                 <button
-                  className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--gray-10)] py-2 text-sm font-bold text-[var(--gray-70)]"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--gray-10)] py-2 text-sm font-medium text-[var(--gray-70)]"
                   onClick={() => navigate("/chat/schedule")}
                 >
                   <Calendar size={17} />
                   커피챗 일정 등록
                 </button>
                 <button
-                  className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-sm font-bold text-[var(--gray-70)]"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-sm font-medium text-[var(--gray-70)]"
                   onClick={openModal}
                 >
                   <Mail size={17} />
