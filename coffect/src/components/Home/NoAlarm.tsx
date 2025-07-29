@@ -2,7 +2,7 @@
   author      : 이희선
   description : 알림이 없을 때 보여주는 안내 컴포넌트
 */
-import NoAlarmImage from "../../assets/Home/NoAlarm.png";
+import NoAlarmImage from "../../assets/icon/home/NoAlarm.png";
 
 const NoAlarm = () => {
   return (
