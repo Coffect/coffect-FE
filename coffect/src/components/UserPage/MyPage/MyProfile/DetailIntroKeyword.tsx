@@ -95,7 +95,7 @@ const DetailIntroKeyword = () => {
 
       {/* 키워드 목록: 뷰 모드/수정 모드 분기 */}
       {!editMode ? (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1">
           {/* 선택된 키워드만 노출, 선택 순서대로, 각 키워드별 색상 */}
           {selected.length === 0 ? (
             <span className="text-md text-[var(--gray-40)]">
@@ -113,7 +113,7 @@ const DetailIntroKeyword = () => {
           )}
         </div>
       ) : (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1">
           {/* 전체 키워드 중 선택/비선택/비활성화 분기 */}
           {ALL_KEYWORDS.map((keyword) => {
             const isSelected = selected.includes(keyword);

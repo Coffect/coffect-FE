@@ -52,7 +52,7 @@ const AlarmItemView = ({
   unread,
 }: AlarmItem) => {
   return (
-    <div className="flex items-center gap-[12px] border-b-2 border-[var(--gray-10)] bg-[var(--gray-0)] px-1 py-4">
+    <div className="flex items-center gap-[12px] border-b-2 border-[var(--gray-10)] bg-[var(--gray-0)] py-4 pl-[5%]">
       {/* 프로필 이미지 + 빨간 점 */}
       <div className="relative">
         <img
