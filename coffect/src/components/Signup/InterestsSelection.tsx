@@ -5,12 +5,8 @@
 
 import { useState } from "react";
 import { useEffect } from "react";
-
-// 부모로부터 전달받을 Props 정의
-type Props = {
-  onNext: () => void; // 다음 단계 이동 함수
-  onChange: (list: string[]) => void; // 선택된 관심사 목록 전달 함수
-};
+import SignupPageLayout from "./shared/SignupLayout";
+import type { StepProps } from "../../types/signup";
 
 // 선택 가능한 관심사 목록
 const OPTIONS = [
@@ -33,7 +29,7 @@ const OPTIONS = [
 
 const MAX_SELECTION = 4; // 최대 선택 가능 수
 
-const InterestsSelection = ({ onNext, onChange }: Props) => {
+const InterestsSelection = ({ onNext, onUpdate }: StepProps) => {
   // 선택된 관심사 상태
   const [selected, setSelected] = useState<string[]>([]);
   // 에러 메시지 상태
@@ -69,7 +65,7 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
     }
 
     // 선택된 항목 부모로 전달하고 다음 단계로 이동
-    onChange(selected);
+    onUpdate?.({ interest: selected });
     onNext();
   };
 
@@ -90,51 +86,8 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
   }, [error]);
 
   return (
-    <div className="relative flex h-screen w-full flex-col justify-between bg-white px-[4%] pt-[2%]">
-      <div className="h-full flex-1 overflow-y-auto pt-[10%] pb-[8rem]">
-        <h2 className="mb-[0.5rem] text-[22px] leading-normal font-bold">
-          관심사를 알려주세요
-          <br />
-          비슷한 친구들을 추천해줄게요!
-        </h2>
-        <p className="mb-[4%] text-base font-semibold text-orange-500">
-          처음 키워드는 나의 대표 관심사로 표시돼요
-        </p>
-
-        <button
-          onClick={handleReset}
-          className="mb-3 text-sm font-medium text-[var(--gray-50)]"
-        >
-          초기화 ⟳
-        </button>
-        {/* 관심사 선택 버튼 리스트 */}
-        <div className="mb-4 flex flex-wrap justify-start gap-2 pr-[20%]">
-          {OPTIONS.map((opt) => {
-            const isSelected = selected.includes(opt); // 현재 항목이 선택되었는지 여부
-            const isFirst = selected[0] === opt; // 첫 번째로 선택된 항목인지 여부
-
-            return (
-              <button
-                key={opt}
-                onClick={() => toggle(opt)}
-                className={`inline-block rounded-lg px-[8%] py-[4%] text-lg font-medium transition-all ${
-                  isSelected
-                    ? isFirst
-                      ? "bg-orange-500 text-[var(--gray-0)]" // 첫 선택 항목은 주황색 강조
-                      : "bg-[var(--gray-70)] text-[var(--gray-0)]" // 나머지는 검정
-                    : "bg-[var(--gray-5)] text-[var(--gray-70)]" // 미선택 항목은 회색
-                } `}
-              >
-                {opt}
-              </button>
-            );
-          })}
-        </div>
-        {/* 에러 메시지 표시 */}
-        {error && <p className="mb-4 text-sm text-[var(--noti)]">{error}</p>}
-      </div>
-      {/* 하단 버튼 그룹 */}
-      <div className="fixed bottom-0 left-0 w-full bg-white px-[4%] py-3">
+    <SignupPageLayout
+      bottomButton={
         <div className="mt-auto flex w-full gap-2">
           {/* 건너뛰기 버튼 */}
           <button
@@ -156,8 +109,51 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
             다음
           </button>
         </div>
+      }
+    >
+      <h2 className="mb-[0.5rem] pt-[10%] text-[22px] leading-normal font-bold">
+        관심사를 알려주세요
+        <br />
+        비슷한 친구들을 추천해줄게요!
+      </h2>
+      <p className="mb-[6%] text-base font-semibold text-orange-500">
+        처음 키워드는 나의 대표 관심사로 표시돼요
+      </p>
+
+      <button
+        onClick={handleReset}
+        className="mb-3 text-sm font-medium text-[var(--gray-50)]"
+      >
+        초기화 ⟳
+      </button>
+
+      {/* 관심사 선택 버튼 리스트 */}
+      <div className="mb-4 flex flex-wrap justify-start gap-2 pr-[20%]">
+        {OPTIONS.map((opt) => {
+          const isSelected = selected.includes(opt); // 현재 항목이 선택되었는지 여부
+          const isFirst = selected[0] === opt; // 첫 번째로 선택된 항목인지 여부
+
+          return (
+            <button
+              key={opt}
+              onClick={() => toggle(opt)}
+              className={`inline-block rounded-lg px-[8%] py-[4%] text-lg font-medium transition-all ${
+                isSelected
+                  ? isFirst
+                    ? "bg-orange-500 text-[var(--gray-0)]" // 첫 선택 항목은 주황색 강조
+                    : "bg-[var(--gray-70)] text-[var(--gray-0)]" // 나머지는 검정
+                  : "bg-[var(--gray-5)] text-[var(--gray-70)]" // 미선택 항목은 회색
+              } `}
+            >
+              {opt}
+            </button>
+          );
+        })}
       </div>
-    </div>
+
+      {/* 에러 메시지 표시 */}
+      {error && <p className="mb-4 text-sm text-[var(--noti)]">{error}</p>}
+    </SignupPageLayout>
   );
 };
 

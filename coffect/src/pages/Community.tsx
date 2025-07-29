@@ -9,14 +9,12 @@
 
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-
-// --- UI 컴포넌트 ---
-import Header from "../components/communityComponents/Header";
-import FeedList from "../components/communityComponents/feed/FeedList";
-import FilterModal from "../components/communityComponents/BottomSeatFilter/FilterModal";
-import BottomNavbar from "../components/shareComponents/BottomNavbar";
-import FloatingWriteButton from "../components/communityComponents/FloatingWriteButton";
-import UploadSuccessModal from "../components/communityComponents/writeComponents/SuccessModal/UploadSuccessModal";
+import Header from "@/components/communityComponents/Header";
+import FeedList from "@/components/communityComponents/feed/FeedList";
+import FilterModal from "@/components/communityComponents/BottomSeatFilter/FilterModal";
+import BottomNavbar from "@/components/shareComponents/BottomNavbar";
+import FloatingWriteButton from "@/components/communityComponents/FloatingWriteButton";
+import UploadSuccessModal from "@/components/communityComponents/writeComponents/SuccessModal/UploadSuccessModal";
 
 // --- Custom Hooks ---
 import { useCommunityFilter } from "../hooks/community/useCommunityFilter";

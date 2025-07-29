@@ -4,11 +4,10 @@
 */
 
 import LogoImage from "../../assets/icon/home/Logo.png";
-import StartImage from "../../assets/icon/Signup/Start.png";
+import StartImage from "../../assets/icon/signup/Start.png";
+import type { StepProps } from "../../types/signup";
 
-type Props = { onNext: () => void };
-
-const SplashScreen = ({ onNext }: Props) => {
+const SplashScreen = ({ onNext }: StepProps) => {
   return (
     <div className="relative h-screen w-full overflow-hidden bg-[var(--gray-0)]">
       {/* 배경 일러스트 이미지 */}
@@ -31,7 +30,7 @@ const SplashScreen = ({ onNext }: Props) => {
         {/* 버튼 */}
         <button
           onClick={onNext}
-          className="w-full rounded-xl bg-[var(--gray-90)] py-4 text-center text-[18px] font-semibold text-white"
+          className="w-full rounded-xl bg-[var(--gray-90)] py-[4%] text-center text-lg font-semibold text-[var(--gray-0)]"
         >
           커피챗 시작하기
         </button>
