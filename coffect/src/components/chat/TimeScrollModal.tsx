@@ -1,7 +1,7 @@
 // author : 앨리스/박은지
 // description : 시간 선택 모달 컴포넌트
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useCallback } from "react";
 
 const hours = Array.from({ length: 12 }, (_, i) => i + 1);
 const minutes = Array.from({ length: 60 }, (_, i) =>
@@ -35,24 +35,60 @@ export default function TimeScrollModal({
   const ampmRef = useRef<HTMLUListElement>(null);
 
   // 스크롤 시 중앙값 자동 선택
-  function handleScroll<T>(
-    ref: React.RefObject<HTMLUListElement>,
-    setValue: (v: T) => void,
-    options: T[],
-    isAmpm?: boolean,
-  ) {
-    if (!ref.current) return;
-    const itemHeight = 48;
-    const scrollTop = ref.current.scrollTop;
-    const idx = Math.round(scrollTop / itemHeight) - 2; // 더미 li 2개 보정
-    if (isAmpm) {
-      const safeIdx = Math.max(0, Math.min(1, idx));
-      setValue(options[safeIdx]);
-    } else {
-      if (idx < 0 || idx >= options.length) return;
-      setValue(options[idx]);
-    }
-  }
+  const handleScroll = useCallback(
+    <T,>(
+      ref: React.RefObject<HTMLUListElement | null>,
+      setValue: (v: T) => void,
+      options: T[],
+      isAmpm?: boolean,
+    ) => {
+      if (!ref.current) return;
+      const itemHeight = 48;
+      const scrollTop = ref.current.scrollTop;
+      const idx = Math.round(scrollTop / itemHeight) - 2;
+
+      console.log("Scroll event:", { scrollTop, idx, options: options.length }); // 디버깅용
+
+      if (isAmpm) {
+        const safeIdx = Math.max(0, Math.min(1, idx));
+        setValue(options[safeIdx]);
+      } else {
+        if (idx >= 0 && idx < options.length) {
+          setValue(options[idx]);
+        }
+      }
+    },
+    [],
+  );
+
+  // 스크롤이 멈춘 후 정확한 위치로 스냅하는 함수
+  const handleScrollEnd = useCallback(
+    <T,>(
+      ref: React.RefObject<HTMLUListElement | null>,
+      setValue: (v: T) => void,
+      options: T[],
+      isAmpm?: boolean,
+    ) => {
+      if (!ref.current) return;
+      const itemHeight = 48;
+      const scrollTop = ref.current.scrollTop;
+      const idx = Math.round(scrollTop / itemHeight) - 2;
+
+      if (isAmpm) {
+        const safeIdx = Math.max(0, Math.min(1, idx));
+        const targetScrollTop = (safeIdx + 2) * itemHeight;
+        ref.current.scrollTo({ top: targetScrollTop, behavior: "smooth" });
+        setValue(options[safeIdx]);
+      } else {
+        if (idx >= 0 && idx < options.length) {
+          const targetScrollTop = (idx + 2) * itemHeight;
+          ref.current.scrollTo({ top: targetScrollTop, behavior: "smooth" });
+          setValue(options[idx]);
+        }
+      }
+    },
+    [],
+  );
 
   // 모달이 열릴 때 중앙에 맞춰 스크롤
   React.useEffect(() => {
@@ -78,22 +114,43 @@ export default function TimeScrollModal({
           <div className="flex flex-1 flex-col items-center">
             <ul
               ref={hourRef}
-              className="h-[144px] w-full snap-y snap-mandatory overflow-y-scroll scroll-smooth"
-              style={{ scrollbarWidth: "none" }}
-              onScroll={() =>
-                handleScroll<number>(
-                  hourRef as React.RefObject<HTMLUListElement>,
-                  setSelectedHour,
-                  hours,
-                )
-              }
+              className="h-[144px] w-full snap-y snap-mandatory overflow-y-auto scroll-smooth"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              onScroll={() => {
+                handleScroll(hourRef, setSelectedHour, hours);
+              }}
+              onTouchEnd={() => {
+                setTimeout(() => {
+                  handleScrollEnd(hourRef, setSelectedHour, hours);
+                }, 100);
+              }}
+              onWheel={(e) => {
+                e.preventDefault();
+                setTimeout(
+                  () => handleScrollEnd(hourRef, setSelectedHour, hours),
+                  100,
+                );
+              }}
             >
               <li className="h-12" />
               <li className="h-12" />
               {hours.map((h) => (
                 <li
                   key={h}
-                  className={`flex h-12 w-full snap-center items-center justify-center text-center text-2xl font-bold transition-colors ${selectedHour === h ? "text-[var(--gray-90)]" : "text-[var(--gray-30)]"}`}
+                  className={`flex h-12 w-full cursor-pointer snap-center items-center justify-center text-center font-bold transition-colors ${
+                    selectedHour === h
+                      ? "text-2xl text-[var(--gray-90)]"
+                      : "text-xl text-[var(--gray-30)]"
+                  }`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setSelectedHour(h);
+                  }}
+                  onTouchEnd={(e) => {
+                    e.preventDefault();
+                    setSelectedHour(h);
+                  }}
                 >
                   {h}
                 </li>
@@ -106,22 +163,38 @@ export default function TimeScrollModal({
           <div className="flex flex-1 flex-col items-center">
             <ul
               ref={minuteRef}
-              className="h-[144px] w-full snap-y snap-mandatory overflow-y-scroll scroll-smooth"
-              style={{ scrollbarWidth: "none" }}
+              className="h-[144px] w-full snap-y snap-mandatory overflow-y-auto scroll-smooth"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
               onScroll={() =>
-                handleScroll<string>(
-                  minuteRef as React.RefObject<HTMLUListElement>,
-                  setSelectedMinute,
-                  minutes,
-                )
+                handleScroll(minuteRef, setSelectedMinute, minutes)
               }
+              onTouchEnd={() => {
+                setTimeout(() => {
+                  handleScrollEnd(minuteRef, setSelectedMinute, minutes);
+                }, 100);
+              }}
+              onWheel={(e) => {
+                e.preventDefault();
+                setTimeout(
+                  () => handleScrollEnd(minuteRef, setSelectedMinute, minutes),
+                  100,
+                );
+              }}
             >
               <li className="h-12" />
               <li className="h-12" />
               {minutes.map((m) => (
                 <li
                   key={m}
-                  className={`flex h-12 w-full snap-center items-center justify-center text-center text-2xl font-bold transition-colors ${selectedMinute === m ? "text-[var(--gray-90)]" : "text-[var(--gray-30)]"}`}
+                  className={`flex h-12 w-full cursor-pointer snap-center items-center justify-center text-center font-bold transition-colors ${
+                    selectedMinute === m
+                      ? "text-2xl text-[var(--gray-90)]"
+                      : "text-xl text-[var(--gray-30)]"
+                  }`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setSelectedMinute(m);
+                  }}
                 >
                   {m}
                 </li>
@@ -134,23 +207,38 @@ export default function TimeScrollModal({
           <div className="flex flex-1 flex-col items-center">
             <ul
               ref={ampmRef}
-              className="h-[144px] w-full snap-y snap-mandatory overflow-y-scroll scroll-smooth"
-              style={{ scrollbarWidth: "none" }}
+              className="h-[144px] w-full snap-y snap-mandatory overflow-y-auto scroll-smooth"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
               onScroll={() =>
-                handleScroll<string>(
-                  ampmRef as React.RefObject<HTMLUListElement>,
-                  setSelectedAMPM,
-                  ampm,
-                  true,
-                )
+                handleScroll(ampmRef, setSelectedAMPM, ampm, true)
               }
+              onTouchEnd={() => {
+                setTimeout(() => {
+                  handleScrollEnd(ampmRef, setSelectedAMPM, ampm, true);
+                }, 100);
+              }}
+              onWheel={(e) => {
+                e.preventDefault();
+                setTimeout(
+                  () => handleScrollEnd(ampmRef, setSelectedAMPM, ampm, true),
+                  100,
+                );
+              }}
             >
               <li className="h-12" />
               <li className="h-12" />
               {ampm.map((a) => (
                 <li
                   key={a}
-                  className={`flex h-12 w-full snap-center items-center justify-center text-center text-2xl font-bold transition-colors ${selectedAMPM === a ? "text-[var(--gray-90)]" : "text-[var(--gray-30)]"}`}
+                  className={`flex h-12 w-full cursor-pointer snap-center items-center justify-center text-center font-bold transition-colors ${
+                    selectedAMPM === a
+                      ? "text-2xl text-[var(--gray-90)]"
+                      : "text-xl text-[var(--gray-30)]"
+                  }`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setSelectedAMPM(a);
+                  }}
                 >
                   {a}
                 </li>
@@ -162,7 +250,7 @@ export default function TimeScrollModal({
         </div>
 
         <button
-          className="mt-4 w-full rounded-xl bg-[var(--gray-80)] py-3 text-lg font-semibold text-white"
+          className="mt-8 w-full rounded-xl bg-[var(--gray-80)] py-3 text-lg font-semibold text-white"
           onClick={() => {
             onSelect(`${selectedHour}:${selectedMinute} ${selectedAMPM}`);
             onClose();

@@ -4,9 +4,9 @@
 
 import BottomNavbar from "../components/shareComponents/BottomNavbar";
 import { useNavigate } from "react-router-dom";
-import { Bell } from "lucide-react";
 import EmptyChatList from "../assets/icon/chat/EmptyChatList.png";
 import ExampleProfile from "../assets/icon/chat/ExampleProfile.png";
+import NotificationIcon from "../assets/icon/chat/notificationExist.png";
 
 const chatList = [
   {
@@ -53,8 +53,11 @@ const Chat = () => {
           채팅
         </span>
         <div className="relative">
-          <Bell size={24} className="text-[var(--gray-70)]" />
-          <span className="absolute -top-0.5 -right-0.5 h-1 w-1 rounded-full bg-[var(--noti)]"></span>
+          <img
+            src={NotificationIcon}
+            alt="알림"
+            className="h-6 w-6 text-[var(--gray-70)]"
+          />
         </div>
       </div>
       {/* Chat List */}
