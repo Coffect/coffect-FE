@@ -37,3 +37,46 @@ export const verifyEmailCode = async (email: string, certCode: number) => {
   });
   return res.data;
 };
+// 회원가입
+export const signUpRequest = async ({
+  id,
+  password,
+  name,
+  email,
+  univId,
+  dept,
+  studentId,
+  interest,
+  img,
+}: {
+  id: string;
+  password: string;
+  name: string;
+  email: string;
+  univId: string;
+  dept: string;
+  studentId: string;
+  interest: string;
+  img: File;
+}) => {
+  const formData = new FormData();
+
+  // FormData 구성
+  formData.append("id", id);
+  formData.append("password", password);
+  formData.append("name", name);
+  formData.append("email", email);
+  formData.append("univId", univId);
+  formData.append("dept", dept);
+  formData.append("studentId", studentId);
+  formData.append("interest", interest);
+  formData.append("img", img);
+
+  const response = await axiosInstance.post("/user/signup", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return response.data;
+};

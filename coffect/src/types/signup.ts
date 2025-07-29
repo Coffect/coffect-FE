@@ -6,8 +6,8 @@ export interface SignupData {
   id: string;
   password: string;
   name: string;
-  img: string;
-  interest?: string[];
+  img: File;
+  interest?: string;
   selectedSchoolName: string;
 }
 
