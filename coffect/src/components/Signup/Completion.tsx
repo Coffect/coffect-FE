@@ -4,7 +4,9 @@ description : 회원가입 완료 안내 화면
 */
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import SignupEndImage from "../../assets/icon/Signup/SignupEnd.png";
+import SignupEndImage from "../../assets/icon/signup/SignupEnd.png";
+import SignupPageLayout from "./shared/SignupLayout";
+
 
 const Completion = () => {
   const navigate = useNavigate();
@@ -21,8 +23,18 @@ const Completion = () => {
   }, []);
 
   return (
-    <div className="relative flex h-screen w-full flex-col bg-white px-[4%]">
-      <div className="flex flex-1 flex-col items-center justify-center overflow-y-auto pb-[8rem] text-center">
+    <SignupPageLayout
+      bottomButton={
+        <button
+          onClick={goLogin}
+          className="w-full rounded-xl bg-[var(--gray-90)] py-[4%] text-center text-lg text-[var(--gray-0)]"
+        >
+          로그인 하러가기
+        </button>
+      }
+    >
+      {/* 본문 영역 */}
+      <div className="flex min-h-full flex-col items-center justify-center text-center">
         {/* 아이콘 */}
         <img
           src={SignupEndImage}
@@ -40,17 +52,7 @@ const Completion = () => {
           인사이트 가득한 대화를 나눠보세요!
         </p>
       </div>
-
-      {/* 하단 고정 버튼 */}
-      <div className="fixed bottom-0 left-0 w-full bg-white px-[4%] py-4">
-        <button
-          onClick={goLogin}
-          className="w-full rounded-xl bg-[var(--gray-90)] py-[4%] text-center text-lg text-[var(--gray-0)]"
-        >
-          로그인 하러가기
-        </button>
-      </div>
-    </div>
+    </SignupPageLayout>
   );
 };
 

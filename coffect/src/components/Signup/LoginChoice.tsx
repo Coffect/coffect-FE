@@ -10,42 +10,23 @@ description : 회원가입 화면 이동 또는 로그인 수행 선택 컴포�
 */
 import { useState } from "react";
 import LogoImage from "../../assets/icon/home/Logo.png";
-import { ChevronLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-
-interface LoginChoiceProps {
-  onLogin: (email: string, password: string) => void;
-  onSignUp: () => void;
-}
+import type { LoginChoiceProps } from "../../types/signup";
 
 const LoginChoice: React.FC<LoginChoiceProps> = ({ onSignUp, onLogin }) => {
-  const [email, setEmail] = useState("");
+  const [id, setID] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
 
   return (
     <div className="relative mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-start overflow-x-hidden bg-white text-center">
-      {/* 상단 네비게이션 바 (고정) */}
-      <div className="fixed top-0 left-1/2 z-50 w-[100vw] max-w-[430px] -translate-x-1/2 bg-[var(--gray-0)]">
-        <div className="relative flex items-center px-4 py-4">
-          <button onClick={() => navigate(-1)}>
-            <ChevronLeft className="h-6 w-6 text-[var(--gray-90)]" />
-          </button>
-          <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-[var(--gray-90)]">
-            로그인
-          </h1>
-        </div>
-      </div>
-
       {/* 실제 콘텐츠 영역 */}
-      <div className="mt-[30%] flex w-full flex-col items-center px-[3%]">
-        <img src={LogoImage} alt="로고" className="mb-[20%] w-[192px]" />
+      <div className="mt-[14%] flex w-full flex-col items-center px-[3%]">
+        <img src={LogoImage} alt="로고" className="mb-[15%] w-[192px]" />
 
         <input
           type="text"
           placeholder="학교 이메일 또는 사용자 아이디"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={id}
+          onChange={(e) => setID(e.target.value)}
           className="mb-3 h-[56px] w-full rounded-[12px] bg-[var(--gray-5)] px-4 py-3 text-base font-medium text-[var(--gray-90)] placeholder:text-[var(--gray-30)]"
         />
         <input
@@ -57,7 +38,7 @@ const LoginChoice: React.FC<LoginChoiceProps> = ({ onSignUp, onLogin }) => {
         />
 
         <button
-          onClick={() => onLogin(email, password)}
+          onClick={() => onLogin(id, password)}
           className="h-[56px] w-full rounded-[12px] bg-[var(--gray-80)] py-3 text-lg font-semibold text-white"
         >
           로그인
