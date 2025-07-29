@@ -15,14 +15,14 @@ interface CommentItemProps {
 
 const CommentItem = ({ comment }: CommentItemProps) => {
   return (
-    <div className="flex items-start gap-5 py-2.5">
+    <div className="flex items-start gap-3 py-2.25">
       <img
         src={comment.user.profileImage}
         alt={comment.user.nickname}
         className="h-10 w-10 rounded-full object-cover"
       />
-      <div className="flex flex-grow flex-col justify-center gap-1.5">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-grow flex-col justify-center gap-1">
+        <div className="flex items-center gap-1.5">
           <span className="font-semibold text-[var(--gray-90)]">
             {comment.user.nickname}
           </span>

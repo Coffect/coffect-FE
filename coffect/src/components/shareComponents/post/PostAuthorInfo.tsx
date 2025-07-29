@@ -34,13 +34,13 @@ const PostAuthorInfo: React.FC<PostAuthorInfoProps> = ({
         />
         {/* 작성자의 닉네임, 전공, 학번 및 게시글 작성 시간을 표시합니다. */}
         <div className="flex flex-col">
-          <div className="mb-1.5">
+          <div className="mb-1">
             <h3 className="text-[16px] font-semibold text-black">
               {user.nickname}
             </h3>
           </div>
           <div>
-            <div className="mb-1.5">
+            <div className="mb-1">
               <p className="text-[12px] text-gray-500">
                 {user.major} {user.studentId}
               </p>
