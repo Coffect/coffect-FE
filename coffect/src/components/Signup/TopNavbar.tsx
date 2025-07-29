@@ -30,7 +30,7 @@ const TopNavbar: React.FC<Props> = ({
             <ChevronLeft className="h-6 w-6 text-[var(--gray-90)]" />
           </button>
         )}
-        <h1 className="absolute left-1/2 -translate-x-1/2 text-base font-semibold text-[var(--gray-90)]">
+        <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold text-[var(--gray-90)]">
           {title}
         </h1>
       </div>

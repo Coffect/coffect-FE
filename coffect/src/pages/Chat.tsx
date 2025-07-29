@@ -4,7 +4,8 @@
 
 import BottomNavbar from "../components/shareComponents/BottomNavbar";
 import { useNavigate } from "react-router-dom";
-import { Bell, Mail } from "lucide-react";
+import { Bell } from "lucide-react";
+import EmptyChatList from "../assets/icon/chat/EmptyChatList.png";
 
 const chatList = [
   {
@@ -44,13 +45,15 @@ const chatList = [
 const Chat = () => {
   const navigate = useNavigate();
   return (
-    <div className="flex h-full w-full flex-col bg-white">
+    <div className="flex h-full w-full flex-col bg-[var(--white)]">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-10 pb-2">
-        <span className="text-2xl font-bold">채팅</span>
+      <div className="flex items-center justify-between px-5 pt-8 pb-3">
+        <span className="ml-2 text-2xl font-bold text-[var(--gray-90)]">
+          채팅
+        </span>
         <div className="relative">
-          <Bell size={24} className="text-gray-700" />
-          <span className="absolute -top-0.5 -right-0.5 h-1 w-1 rounded-full bg-[rgba(255,53,53,1)]"></span>
+          <Bell size={24} className="text-[var(--gray-70)]" />
+          <span className="absolute -top-0.5 -right-0.5 h-1 w-1 rounded-full bg-[var(--noti)]"></span>
         </div>
       </div>
       {/* Chat List */}
@@ -58,45 +61,51 @@ const Chat = () => {
         {/* 메시지 없을 때 */}
         {chatList.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center pt-24">
-            <span className="mb-2 text-lg font-bold">
+            <span className="mb-2 text-lg font-bold text-[var(--gray-90)]">
               아직 시작된 대화가 없어요!
             </span>
-            <span className="mb-6 text-sm text-gray-500">
+            <span className="mb-6 text-sm text-[var(--gray-50)]">
               지금 바로 추천 카드를 통해
               <br />
               커피챗을 제안해보세요!
             </span>
 
             <div className="mt-2 flex flex-col items-center">
-              <Mail size={80} />
+              <img
+                src={EmptyChatList}
+                alt="빈 채팅 목록"
+                className="h-[100px] w-[100px]"
+              />
             </div>
           </div>
         ) : (
           chatList.map((chat) => (
             <div
               key={chat.id}
-              className="flex cursor-pointer items-start px-3 py-5 hover:bg-gray-100"
+              className="mb-2 flex cursor-pointer items-start border-b border-[var(--gray-10)] px-3 py-5 hover:bg-[var(--gray-5)]"
               onClick={() => navigate(`/chat/${chat.id}`)}
             >
               {/* 임시 프로필 */}
-              <div className="relative flex h-12 w-12 items-center justify-center rounded-full bg-gray-300">
+              <div className="relative flex h-13 w-13 items-center justify-center rounded-full bg-[var(--gray-20)]">
                 {chat.unread && (
-                  <span className="absolute top-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-[rgba(255,53,53,1)]"></span>
+                  <span className="absolute -top-0 -right-1 h-4 w-4 rounded-full border-2 border-[var(--white)] bg-[var(--noti)]"></span>
                 )}
               </div>
               {/* 채팅 정보 */}
               <div className="ml-3 flex flex-1 flex-col">
-                <div className="flex items-center">
-                  <span className="mr-1 text-base font-bold">{chat.name}</span>
-                  <span className="text-xs font-medium text-gray-400">
+                <div className="flex min-w-0 items-center">
+                  <span className="mr-2 flex-shrink-0 text-lg font-bold whitespace-nowrap text-[var(--gray-90)]">
+                    {chat.name}
+                  </span>
+                  <span className="max-w-[80px] truncate overflow-hidden text-sm font-medium text-ellipsis whitespace-nowrap text-[var(--gray-50)]">
                     {chat.job}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-s py-2 text-gray-500">
+                  <span className="text-s max-w-[160px] min-w-0 flex-1 truncate overflow-hidden py-1 text-ellipsis whitespace-nowrap text-[var(--gray-70)]">
                     {chat.message}
                   </span>
-                  <span className="ml-2 text-xs text-gray-400">
+                  <span className="ml-1 truncate overflow-hidden text-sm text-ellipsis whitespace-nowrap text-[var(--gray-40)]">
                     {chat.time}
                   </span>
                 </div>

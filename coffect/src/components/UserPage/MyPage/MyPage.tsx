@@ -127,7 +127,10 @@ const MyPage = () => {
               </div>
               <img src={nextIcon} className="h-6 w-6" />
             </button>
-            <button className="flex items-center justify-between rounded-2xl bg-white px-4 py-6 text-lg font-medium transition hover:bg-gray-50">
+            <button
+              className="flex items-center justify-between rounded-2xl bg-white px-4 py-6 text-lg font-medium transition hover:bg-gray-50"
+              onClick={() => navigate("/mypage/bookmark")}
+            >
               <div className="flex items-center gap-2">
                 <img
                   src={bookmarkIcon}
