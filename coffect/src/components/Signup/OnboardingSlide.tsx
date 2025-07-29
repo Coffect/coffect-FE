@@ -3,7 +3,7 @@
   description : 온보딩 슬라이드 단일 화면 컴포넌트 (로고 + 타이틀 + 설명 + 이미지 표시)
 */
 
-import OnboardingLogo from "../../assets/icon/Signup/OnboardingLogo.png";
+import OnboardingLogo from "../../assets/icon/signup/OnboardingLogo.png";
 
 // 슬라이드 개별 콘텐츠 props 타입 정의
 interface SlideProps {

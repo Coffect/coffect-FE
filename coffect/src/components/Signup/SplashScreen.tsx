@@ -4,7 +4,7 @@
 */
 
 import LogoImage from "../../assets/icon/home/Logo.png";
-import StartImage from "../../assets/icon/Signup/Start.png";
+import StartImage from "../../assets/icon/signup/Start.png";
 import type { StepProps } from "../../types/signup";
 
 const SplashScreen = ({ onNext }: StepProps) => {
