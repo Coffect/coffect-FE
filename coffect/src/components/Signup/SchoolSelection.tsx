@@ -127,6 +127,7 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
       univId: String(selectedSchool.id),
       dept: majorQuery,
       studentId,
+      selectedSchoolName: selectedSchool.name,
     });
     onNext();
   };

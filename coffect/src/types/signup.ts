@@ -1,6 +1,5 @@
 export interface SignupData {
   email: string;
-  authCode: string;
   univId: string;
   dept: string;
   studentId: string;
@@ -9,6 +8,7 @@ export interface SignupData {
   name: string;
   img: string;
   interest?: string[];
+  selectedSchoolName: string;
 }
 
 export interface StepProps {

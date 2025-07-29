@@ -27,7 +27,7 @@ const Signup: React.FC = () => {
   // 현재 단계 페이지
   const [step, setStep] = useState<number>(initialStep);
   // 회원가입 중 입력된 데이터 누적 저장
-  const [, setForm] = useState<Partial<SignupData>>({});
+  const [form, setForm] = useState<Partial<SignupData>>({});
 
   /* 다음 단계로 이동 */
   const goNext = () => setStep((prev) => prev + 1);
@@ -117,11 +117,7 @@ const Signup: React.FC = () => {
         )}
         {/* 6. 이메일 인증 코드 입력 화면 */}
         {step === 6 && (
-          <CodeInput
-            onNext={goNext}
-            onBack={goBack}
-            onUpdate={(fields) => update(fields)}
-          />
+          <CodeInput onNext={goNext} onBack={goBack} form={form} />
         )}
         {/* 7. 계정 정보 설정 화면 */}
         {step === 7 && (
