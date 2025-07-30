@@ -9,10 +9,10 @@ import OnboardingLayout from "./OnboardingLayout";
 import OnboardingSlide from "./OnboardingSlide";
 
 // 온보딩 슬라이드에 들어갈 이미지 리소스
-import Slide1Image from "../../assets/icon/Signup/slide1.png";
-import Slide2Image from "../../assets/icon/Signup/slide2.png";
-import Slide3Image from "../../assets/icon/Signup/slide3.png";
-import Slide4Image from "../../assets/icon/Signup/slide4.png";
+import Slide1Image from "../../assets/icon/signup/slide1.png";
+import Slide2Image from "../../assets/icon/signup/slide2.png";
+import Slide3Image from "../../assets/icon/signup/slide3.png";
+import Slide4Image from "../../assets/icon/signup/slide4.png";
 
 // 슬라이드 데이터 배열 (타이틀, 설명, 이미지 포함)
 const slides = [

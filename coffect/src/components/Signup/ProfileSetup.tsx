@@ -9,10 +9,10 @@ import defaultAvatar from "../../assets/icon/signup/DefaultAvatar.png";
 import SignupPageLayout from "./shared/SignupLayout";
 import type { StepProps } from "../../types/signup";
 
-
 const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   // 상태 선언
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null); // 미리보기용 DataURL
+  const [avatarFile, setAvatarFile] = useState<File | null>(null); // 최종 전송용 이미지 파일
   const [name, setName] = useState<string>("");
   const [nameError, setNameError] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -22,8 +22,9 @@ const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setAvatarFile(file); // 이미지파일 저장
     const reader = new FileReader();
-    reader.onload = () => setAvatarUrl(reader.result as string);
+    reader.onload = () => setAvatarUrl(reader.result as string); //미리보기 URL
     reader.readAsDataURL(file);
   };
 
@@ -40,11 +41,11 @@ const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
       setNameError(true);
       return;
     }
-    onUpdate?.({ name: trimmed, img: avatarUrl || undefined });
+    onUpdate?.({ name: trimmed, img: avatarFile || undefined }); // 부모에게 전달한 이름, 이미지 파일
     onNext();
   };
   // 버튼 비활성화 조건(이름x 또는 프로필사진 x)
-  const isButtonDisabled = !name.trim() || !avatarUrl;
+  const isButtonDisabled = !name.trim() || !avatarUrl || !avatarFile;
 
   useEffect(() => {
     // 진입 시 스크롤 막기

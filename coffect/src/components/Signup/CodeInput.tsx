@@ -6,15 +6,44 @@ description : 이메일 인증 코드 입력 화면 (5자리)
 import React, { useState, useRef, useEffect } from "react";
 import { isFiveDigitCode } from "../../utils/validation"; // 공통 유틸 함수
 import SignupPageLayout from "./shared/SignupLayout";
-import type { StepProps } from "../../types/signup";
+import type { SignupData, StepProps } from "../../types/signup";
+import { sendMailCode, verifyEmailCode } from "@/api/univ";
 
-const CodeInput: React.FC<StepProps> = ({ onNext, onBack, onUpdate }) => {
+//학교 이름 입력으로 넣어주기 위해 추가
+interface Props extends StepProps {
+  form: Partial<SignupData>;
+}
+
+const CodeInput: React.FC<Props> = ({ onNext, onBack, form }) => {
+  // 입력받은 사용자 이메일
+  const email = form.email ?? "";
+  // 입력받은 사용자 학교 이름
+  const schoolName = form.selectedSchoolName ?? "";
   // 입력된 각 자리 숫자를 배열로 관리
   const [code, setCode] = useState<string[]>(["", "", "", "", ""]);
   // 각 input 요소에 포커스 제어를 위한 ref 배열
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
   // 연결했을 때 문자열이 5자리 숫자인지 확인
   const isComplete = isFiveDigitCode(code.join(""));
+
+  useEffect(() => {
+    //인증 메일이 이미 발송된 경우 중복 전송 방지
+    const hasSent = sessionStorage.getItem("mailSent");
+    if (!hasSent) {
+      //인증 메일 전송
+      const send = async () => {
+        try {
+          sendMailCode(email, schoolName);
+          sessionStorage.setItem("mailSent", "true");
+        } catch {
+          alert(
+            "메일 발송에 실패했습니다. 이메일 주소를 확인하고 다시 시도해주세요.",
+          );
+        }
+      };
+      send();
+    }
+  }, [email, schoolName]);
 
   // 첫 번째 칸 자동 포커스
   useEffect(() => {
@@ -43,10 +72,19 @@ const CodeInput: React.FC<StepProps> = ({ onNext, onBack, onUpdate }) => {
   };
 
   // 완료 시 부모 콜백 및 다음 단계
-  const handleNext = () => {
+  const handleNext = async () => {
     const joined = code.join("");
-    onUpdate?.({ authCode: joined });
-    onNext();
+    try {
+      const res = await verifyEmailCode(email, Number(joined)); // 인증 코드 검증 서버 응답 확인
+      if (res?.resultType === "SUCCESS") {
+        onNext();
+      } else {
+        const errorMsg = res?.error?.reason || "인증에 실패했습니다.";
+        alert(errorMsg);
+      }
+    } catch {
+      alert("인증 요청 중 오류가 발생했습니다. 다시 시도해주세요.");
+    }
   };
 
   useEffect(() => {
