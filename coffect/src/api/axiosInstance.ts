@@ -35,7 +35,7 @@ axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem(LOCAL_STORAGE_KEY.accessToken);
   if (token) {
     config.headers = config.headers || {};
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = `${token}`;
   }
   return config;
 });
@@ -74,7 +74,7 @@ axiosInstance.interceptors.response.use(
         refreshPromise = axiosInstance
           .get("/user/refresh", {
             headers: {
-              Authorization: `Bearer ${refreshToken}`,
+              Authorization: `${refreshToken}`,
             },
           })
           .then((res) => {
@@ -99,7 +99,7 @@ axiosInstance.interceptors.response.use(
       try {
         const newToken = await refreshPromise;
         originalRequest.headers = originalRequest.headers || {};
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        originalRequest.headers.Authorization = `${newToken}`;
         return axiosInstance(originalRequest); // 재요청
       } catch (refreshError) {
         // 토큰 재발급 실패 시 → 로컬스토리지 정리 후 홈으로 이동
