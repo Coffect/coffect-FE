@@ -7,7 +7,7 @@
                 - 오른쪽 버튼: 팔로워 요청(아직 작동x)
 */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CoffeeSuggestModal from "./CoffeeSuggestModal";
 import CoffeeSuggestCompleteModal from "./CoffeeSuggestCompleteModal";
@@ -15,18 +15,8 @@ import CardLeftImage from "../../assets/icon/home/CardLeft.png";
 import CardMidImage from "../../assets/icon/home/CardMid.png";
 import CardRightImage from "../../assets/icon/home/CardRight.png";
 import NoCardImage from "../../assets/icon/home/NoCard.png";
-
-// 유저 프로필 타입 정의
-interface UserProfile {
-  id: number;
-  name: string;
-  major: string;
-  year: string;
-  tags: string[];
-  intro: string;
-  image: string;
-  answers: { question: string; answer: string }[];
-}
+import type { UserProfile } from "@/types/home";
+import { getCardInfo } from "@/api/home";
 
 // 태그별 전역 색상 클래스 반환
 const getTagColor = (tag: string) => {
@@ -66,77 +56,10 @@ const getTagColor = (tag: string) => {
   }
 };
 
-// 임시 사용자 데이터 (더미)
-const dummyData: UserProfile[] = [
-  {
-    id: 1,
-    name: "김라떼",
-    major: "디자인테크놀로지학과",
-    year: "21학번",
-    tags: ["디자인", "개발", "창업", "글쓰기"],
-    intro:
-      "안녕하세요! 사람과 이야기를 나누는 것을\n좋아하고, 새로운 것을 배우는 데 늘 열려 있어요.\n즐겁고 의미있는 경험을 함께 만들고 싶어요!\n특히 디자인, 마케팅에 관심이 많습니다!\n아무나 환영이니 커피쳇 제안주세요!!",
-    image: "https://picsum.photos/200?random=3",
-    answers: [
-      {
-        question: "어떤 분야에서 성장하고 싶나요?",
-        answer:
-          "스타트업 창업과 제품 기획 분야에서 전문성을 쌓고 싶어요.특히 사용자 중심의 서비스를 만드는 PM 역할에 관심이 많습니다.",
-      },
-      {
-        question: "커피챗에서 나누고 싶은 이야기는?",
-        answer:
-          "창업 경험담, 마케팅 전략, 제품 기획 노하우를 공유하고 싶어요. 함께 아이디어를 발전시키는 대화를 나누면 좋겠어요!",
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: "이협업",
-    major: "컴퓨터공학과",
-    year: "22학번",
-    tags: ["개발", "독서", "AI", "여행"],
-    intro: "꾸준함이 제 무기입니다.\n좋은 사람들과 함께 성장하고 싶어요.",
-    image: "https://picsum.photos/200?random=4",
-    answers: [
-      {
-        question: "최근 집중하고 있는 기술은?",
-        answer: "리액트 최적화와 사용자 경험 개선에 관심이 많아요.",
-      },
-      {
-        question: "커피챗에서 얻고 싶은 것은?",
-        answer: "협업 노하우와 새로운 개발 트렌드를 배우고 싶어요.",
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: "박개발",
-    major: "컴퓨터공학과",
-    year: "21학번",
-    tags: ["개발", "데이터 분석", "창업", "외국어"],
-    intro:
-      "안녕하세요! 컴퓨터 분해를 좋아하고,\n새로운 것을 배우는 데 늘 열려 있는 뉴비입니다.\n사람을 행복하게 만들고 싶다는 목표를 함께 이뤄나가고 싶어요!\n특히 프론트 개발에 관심이 많습니다!\n아무나 환영이니 커피쳇 제안주세요!!",
-    image: "https://picsum.photos/200?random=5",
-    answers: [
-      {
-        question: "어떤 분야에서 성장하고 싶나요?",
-        answer:
-          "스타트업 창업과 제품 기획 분야에서 전문성을 쌓고 싶어요.특히 사용자 중심의 서비스를 만드는 PM 역할에 관심이 많습니다.",
-      },
-      {
-        question: "커피챗에서 나누고 싶은 이야기는?",
-        answer:
-          "창업 경험담, 마케팅 전략, 제품 기획 노하우를 공유하고 싶어요. 함께 아이디어를 발전시키는 대화를 나누면 좋겠어요!",
-      },
-    ],
-  },
-];
-
 const ProfileFlip: React.FC = () => {
   const navigate = useNavigate();
   // 현재 남은 프로필 목록
-  const [profiles, setProfiles] = useState<UserProfile[]>(dummyData);
+  const [profiles, setProfiles] = useState<UserProfile[]>([]);
   // 현재 스킵된 카드 수
   const [skipped, setSkipped] = useState(0);
   // 스킵 애니메이션 동작 여부
@@ -149,6 +72,36 @@ const ProfileFlip: React.FC = () => {
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   // 커피챗 제안 완료 모달 열림 여부
   const [showCompleteModal, setShowCompleteModal] = useState(false);
+  // 현재 표시 중인 카드
+  const current = profiles[0] || null;
+  // 서버에서 프로필 카드 목록 불러오기
+  useEffect(() => {
+    (async () => {
+      try {
+        // 3번 API 호출 → 병렬 처리
+        const results = await Promise.all([
+          getCardInfo(),
+          getCardInfo(),
+          getCardInfo(),
+        ]);
+
+        // API 응답들을 UserProfile[] 형태로 매핑
+        const profileList = results.map((res, idx) => ({
+          id: idx + 1,
+          name: res.name,
+          major: "",
+          year: res.grade,
+          tags: res.categoryMatch,
+          intro: res.introduce,
+          image: res.profileImage,
+          answers: [],
+        }));
+        setProfiles(profileList);
+      } catch {
+        alert("카드 3개 불러오기 실패");
+      }
+    })();
+  }, []);
 
   // 카드 제거(왼쪽 버튼)
   const handleSkip = (id: number) => {
@@ -188,8 +141,7 @@ const ProfileFlip: React.FC = () => {
       },
     });
   };
-  // 현재 표시 중인 카드
-  const current = profiles[0] || null;
+
   // 카드가 모두 제거되었을 경우
   if (!current) {
     return (
@@ -241,7 +193,7 @@ const ProfileFlip: React.FC = () => {
             className="absolute inset-0 h-full w-full object-cover"
           />
           <div className="absolute top-3 left-3 rounded-[60px] bg-[#2D2D2D]/90 px-3 py-2 text-[14px] font-semibold text-[var(--gray-10)]">
-            {skipped + 1}/{dummyData.length}
+            {skipped + 1}/{profiles.length}
           </div>
           <div className="absolute bottom-0 left-0 w-full rounded-b-3xl bg-gradient-to-t from-black/70 to-transparent px-[4%] py-[5%]">
             <div className="text-[22px] font-bold text-white">
