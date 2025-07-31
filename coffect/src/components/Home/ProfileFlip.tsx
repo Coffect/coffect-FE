@@ -7,7 +7,7 @@
                 - 오른쪽 버튼: 팔로워 요청(아직 작동x)
 */
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CoffeeSuggestModal from "./CoffeeSuggestModal";
 import CoffeeSuggestCompleteModal from "./CoffeeSuggestCompleteModal";
@@ -21,6 +21,7 @@ import {
   getCurrentRecommendedCard,
   postSuggestCoffeeChat,
 } from "@/api/home";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 // 태그별 전역 색상 클래스 반환
 const getTagColor = (tag: string) => {
@@ -61,6 +62,46 @@ const getTagColor = (tag: string) => {
 };
 
 const ProfileFlip: React.FC = () => {
+  // 커피챗 제안 요청을 처리
+  const { mutate: suggestCoffeeChat } = useMutation({
+    mutationFn: async ({ message, id }: { message: string; id: number }) =>
+      await postSuggestCoffeeChat(message, id),
+    onSuccess: () => {
+      setShowSuggestModal(false);
+      setShowCompleteModal(true);
+    },
+    onError: () => {
+      alert("제안 메시지를 입력해야 전송가능해요.");
+    },
+  });
+
+  // 서버에서 프로필 카드 데이터 불러오기
+  const { data: currentCard, refetch } = useQuery<UserProfile | null>({
+    queryKey: ["recommendedCard"],
+    queryFn: async () => {
+      const hasVisited = localStorage.getItem("cardViewVisited");
+      if (!hasVisited) {
+        await DeleteCard();
+        localStorage.setItem("cardViewVisited", "true");
+      }
+
+      try {
+        const res = await getCurrentRecommendedCard();
+        return {
+          id: res.userId,
+          name: res.name,
+          major: "",
+          year: res.grade,
+          tags: res.categoryMatch,
+          intro: res.introduce,
+          image: res.profileImage,
+          answers: [],
+        };
+      } catch {
+        return null;
+      }
+    },
+  });
   const navigate = useNavigate();
   // 현재 스킵된 카드 수
   const [skipped, setSkipped] = useState(0);
@@ -74,37 +115,6 @@ const ProfileFlip: React.FC = () => {
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   // 커피챗 제안 완료 모달 열림 여부
   const [showCompleteModal, setShowCompleteModal] = useState(false);
-  // 현재 표시 중인 카드
-  const [currentCard, setCurrentCard] = useState<UserProfile | null>(null);
-  // 서버에서 프로필 카드 목록 불러오기
-  useEffect(() => {
-    (async () => {
-      try {
-        const hasVisited = localStorage.getItem("cardViewVisited");
-
-        if (!hasVisited) {
-          await DeleteCard();
-          localStorage.setItem("cardViewVisited", "true");
-        }
-
-        const res = await getCurrentRecommendedCard();
-
-        const initialCard: UserProfile = {
-          id: res.userId,
-          name: res.name,
-          major: "",
-          year: res.grade,
-          tags: res.categoryMatch,
-          intro: res.introduce,
-          image: res.profileImage,
-          answers: [],
-        };
-        setCurrentCard(initialCard);
-      } catch {
-        setCurrentCard(null);
-      }
-    })();
-  }, []);
 
   // 카드 제거(왼쪽 버튼)
   const handleSkip = async () => {
@@ -112,24 +122,9 @@ const ProfileFlip: React.FC = () => {
     setTimeout(async () => {
       try {
         await DeleteCard();
-        const res = await getCurrentRecommendedCard();
-        const nextCard: UserProfile = {
-          id: res.userId,
-          name: res.name,
-          major: "",
-          year: res.grade,
-          tags: res.categoryMatch,
-          intro: res.introduce,
-          image: res.profileImage,
-          answers: [],
-        };
-        setCurrentCard(nextCard);
-        setSkipped((prev) => prev + 1);
-      } catch {
-        // 남은 카드가 없을 때
-        setCurrentCard(null);
-        setSkipped((prev) => prev + 1);
+        await refetch();
       } finally {
+        setSkipped((prev) => prev + 1);
         setSkipAnimation(false);
       }
     }, 300);
@@ -141,15 +136,12 @@ const ProfileFlip: React.FC = () => {
     setShowSuggestModal(true);
   };
   // 제안 메시지 작성 완료
-  const handleSuggestSubmit = async (message: string) => {
+  const handleSuggestSubmit = (message: string) => {
+    // 프로필 ID가 없으면 리턴
     if (selectedProfileId === null) return;
-    try {
-      await postSuggestCoffeeChat(message, selectedProfileId);
-      setShowSuggestModal(false);
-      setShowCompleteModal(true);
-    } catch {
-      alert("커피챗 제안 실패");
-    }
+
+    // useMutation을 통해 요청 실행
+    suggestCoffeeChat({ message, id: selectedProfileId });
   };
 
   // 제안 작성 취소

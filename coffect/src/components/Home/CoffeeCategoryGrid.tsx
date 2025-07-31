@@ -6,9 +6,27 @@
 */
 
 import { postTodayInterest } from "@/api/home";
+import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
 const CoffeeCategoryGrid: React.FC = () => {
+  // 카테고리 클릭 시 다음날 오전 9시까지 수정 못하도록 localStorage에 방문기록 저장+ API 호출
+  const { mutate: selectCategory } = useMutation({
+    mutationFn: async (categoryValue: number) => {
+      if (localStorage.getItem("cardViewVisited")) {
+        localStorage.removeItem("cardViewVisited");
+      }
+      postTodayInterest(categoryValue);
+      localStorage.setItem("coffeeCategorySelected", "true");
+      localStorage.setItem("coffeeCategoryExpire", new Date().toISOString());
+    },
+    onSuccess: () => {
+      navigate("/home/cards");
+    },
+    onError: () => {
+      alert("선택 저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
+    },
+  });
   const navigate = useNavigate();
   // 추천 기준 목록(숫자 매핑 포함)
   const categories = [
@@ -17,19 +35,9 @@ const CoffeeCategoryGrid: React.FC = () => {
     { label: "같은 학번", value: 3 },
     { label: "요즘\n글을 많이 쓴", value: 4 },
   ];
-  // 카테고리 클릭 시 다음날 오전 9시까지 수정 못하도록 localStorage에 방문기록 저장+ API 호출
-  const handleClick = async (categoryValue: number) => {
-    try {
-      if (localStorage.getItem("cardViewVisited")) {
-        localStorage.removeItem("cardViewVisited");
-      }
-      await postTodayInterest(categoryValue);
-      localStorage.setItem("coffeeCategorySelected", "true");
-      localStorage.setItem("coffeeCategoryExpire", new Date().toISOString());
-      navigate("/home/cards");
-    } catch {
-      alert("선택 저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
-    }
+
+  const handleClick = (categoryValue: number) => {
+    selectCategory(categoryValue);
   };
 
   return (

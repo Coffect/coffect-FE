@@ -2,7 +2,6 @@
   author      : 이희선
   description : 전체 일정 목록을 보여주는 화면 컴포넌트
 */
-import React, { useEffect, useState } from "react";
 import TopNavbar from "./TopNavbar";
 import { Clock } from "lucide-react";
 import NoSchedule from "./NoSchedule";
@@ -11,6 +10,7 @@ import {
   getUserNameById,
   getUserStringId,
 } from "@/api/home";
+import { useQuery } from "@tanstack/react-query";
 
 // API 응답 타입 정의
 interface ScheduleItem {
@@ -26,33 +26,26 @@ interface ScheduleItem {
  * 일정 뷰 컴포넌트
  */
 const CalendarView: React.FC = () => {
-  const [schedules, setSchedules] = useState<ScheduleItem[]>([]);
-  const [, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchSchedule = async () => {
-      try {
-        const result = await getCoffeeChatSchedule(); // 커피챗 스케줄 전체 조회
-
-        // userId → 문자열 id → 이름 순으로 변환
-        const completeSchedules = await Promise.all(
-          result.map(async (item: ScheduleItem) => {
-            const stringId = await getUserStringId(Number(item.opponentId)); // 숫자 → 문자열 ID 변환
-            const name = await getUserNameById(stringId); // 문자열 ID로 이름 조회
+  const { data: schedules = [] } = useQuery<ScheduleItem[], Error>({
+    queryKey: ["coffeeChatSchedule"],
+    queryFn: async (): Promise<ScheduleItem[]> => {
+      const raw = await getCoffeeChatSchedule();
+      const completed = await Promise.all(
+        raw.map(async (item: ScheduleItem): Promise<ScheduleItem> => {
+          try {
+            const stringId = await getUserStringId(Number(item.opponentId));
+            const name = await getUserNameById(stringId);
             return { ...item, opponentName: name };
-          }),
-        );
-
-        setSchedules(completeSchedules);
-      } catch (e) {
-        console.error("일정 불러오기 실패", e);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSchedule();
-  }, []);
+          } catch {
+            return { ...item, opponentName: "누구신지..." };
+          }
+        }),
+      );
+      return completed;
+    },
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
 
   //  날짜 포맷 변환 (ISO → YYYY.MM.DD)
   const formatDate = (isoDate: string) => {
