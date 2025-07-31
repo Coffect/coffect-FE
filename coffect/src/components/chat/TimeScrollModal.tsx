@@ -1,6 +1,6 @@
 import React, { useRef, useState, useCallback, useEffect } from "react";
 
-const hours = Array.from({ length: 12 }, (_, i) => i + 1);
+const hours = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 const minutes = Array.from({ length: 60 }, (_, i) =>
   i.toString().padStart(2, "0"),
 );
@@ -30,13 +30,9 @@ export default function TimeScrollModal({
   const hourRef = useRef<HTMLUListElement>(null);
   const minuteRef = useRef<HTMLUListElement>(null);
   const ampmRef = useRef<HTMLUListElement>(null);
-
-  // 스크롤 중인지 추적
-  const isScrollingRef = useRef<boolean>(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const scrollThrottleRef = useRef<NodeJS.Timeout | null>(null);
 
-  // throttled 스크롤 핸들러
+  // 스크롤 핸들러
   const handleScroll = useCallback(
     <T,>(
       ref: React.RefObject<HTMLUListElement | null>,
@@ -45,30 +41,9 @@ export default function TimeScrollModal({
     ) => {
       if (!ref.current) return;
 
-      // 스크롤 중일 때는 throttling 적용
-      if (isScrollingRef.current) {
-        if (scrollThrottleRef.current) {
-          clearTimeout(scrollThrottleRef.current);
-        }
-
-        scrollThrottleRef.current = setTimeout(() => {
-          const itemHeight = 48;
-          const scrollTop = ref.current!.scrollTop;
-          const centerOffset = 60;
-          const adjustedScrollTop = scrollTop + centerOffset;
-          const idx = Math.round(adjustedScrollTop / itemHeight) - 2;
-
-          if (idx >= 0 && idx < options.length) {
-            setValue(options[idx]);
-          }
-        }, 50); // 50ms throttling
-        return;
-      }
-
-      // 스크롤이 끝났을 때는 즉시 업데이트
       const itemHeight = 48;
       const scrollTop = ref.current.scrollTop;
-      const centerOffset = 60;
+      const centerOffset = 48;
       const adjustedScrollTop = scrollTop + centerOffset;
       const idx = Math.round(adjustedScrollTop / itemHeight) - 2;
 
@@ -78,14 +53,6 @@ export default function TimeScrollModal({
     },
     [],
   );
-
-  // 스크롤 시작 핸들러
-  const handleScrollStart = useCallback(() => {
-    isScrollingRef.current = true;
-    if (scrollTimeoutRef.current) {
-      clearTimeout(scrollTimeoutRef.current);
-    }
-  }, []);
 
   // 스크롤 종료 핸들러
   const handleScrollEnd = useCallback(
@@ -98,17 +65,11 @@ export default function TimeScrollModal({
         clearTimeout(scrollTimeoutRef.current);
       }
 
-      if (scrollThrottleRef.current) {
-        clearTimeout(scrollThrottleRef.current);
-      }
-
       scrollTimeoutRef.current = setTimeout(() => {
-        isScrollingRef.current = false;
-        // 스크롤이 끝난 후 현재 위치에서 가장 가까운 값으로 스냅
         if (ref.current) {
           const itemHeight = 48;
           const scrollTop = ref.current.scrollTop;
-          const centerOffset = 60;
+          const centerOffset = 48;
           const adjustedScrollTop = scrollTop + centerOffset;
           const idx = Math.round(adjustedScrollTop / itemHeight) - 2;
 
@@ -118,52 +79,12 @@ export default function TimeScrollModal({
             setValue(options[idx]);
           }
         }
-      }, 100); // 스크롤 종료 감지 시간을 줄임
+      }, 150);
     },
     [],
   );
 
-  // 공통 이동 함수
-  const moveToValue = useCallback(
-    <T,>(
-      ref: React.RefObject<HTMLUListElement | null>,
-      setValue: (v: T) => void,
-      options: T[],
-      targetValue: T,
-    ) => {
-      if (!ref.current) return;
-      const itemHeight = 48;
-      const centerOffset = 60;
-      const targetIndex = options.indexOf(targetValue);
-
-      if (targetIndex !== -1) {
-        const targetScrollTop = (targetIndex + 2) * itemHeight - centerOffset;
-        ref.current.scrollTo({ top: targetScrollTop, behavior: "smooth" });
-        setValue(targetValue);
-      }
-    },
-    [],
-  );
-
-  // 공통 터치 핸들러
-  const handleTouch = useCallback(
-    <T,>(
-      e: React.TouchEvent,
-      ref: React.RefObject<HTMLUListElement | null>,
-      setValue: (v: T) => void,
-      options: T[],
-      targetValue: T,
-    ) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      setValue(targetValue);
-      moveToValue(ref, setValue, options, targetValue);
-    },
-    [moveToValue],
-  );
-
-  // 공통 스크롤 리스트 렌더링 함수
+  // 스크롤 리스트 렌더링
   const renderScrollList = useCallback(
     <T,>(
       ref: React.RefObject<HTMLUListElement | null>,
@@ -179,11 +100,10 @@ export default function TimeScrollModal({
           scrollbarWidth: "none",
           msOverflowStyle: "none",
           touchAction: "pan-y",
+          WebkitOverflowScrolling: "touch",
         }}
         onScroll={() => handleScroll(ref, setValue, options)}
-        onScrollCapture={handleScrollStart}
         onWheel={onWheel}
-        onTouchStart={handleScrollStart}
         onTouchEnd={() => handleScrollEnd(ref, setValue, options)}
       >
         <li className="h-12" />
@@ -191,14 +111,16 @@ export default function TimeScrollModal({
         {options.map((option) => (
           <li
             key={String(option)}
-            className={`flex h-12 w-full cursor-pointer items-center justify-center text-center font-bold transition-colors ${
+            className={`flex h-12 w-full items-center justify-center text-center font-bold transition-colors ${
               selectedValue === option
                 ? "text-2xl text-[var(--gray-90)]"
                 : "text-xl text-[var(--gray-30)]"
             }`}
-            style={{ touchAction: "manipulation" }}
-            onClick={() => moveToValue(ref, setValue, options, option)}
-            onTouchStart={(e) => handleTouch(e, ref, setValue, options, option)}
+            style={{
+              touchAction: "pan-y",
+              userSelect: "none",
+              minHeight: "48px",
+            }}
           >
             {String(option)}
           </li>
@@ -207,16 +129,10 @@ export default function TimeScrollModal({
         <li className="h-12" />
       </ul>
     ),
-    [
-      handleScroll,
-      handleScrollStart,
-      handleScrollEnd,
-      moveToValue,
-      handleTouch,
-    ],
+    [handleScroll, handleScrollEnd],
   );
 
-  // 모달이 열릴 때 초기 위치 설정
+  // 초기 위치 설정
   useEffect(() => {
     if (open) {
       setTimeout(() => {
@@ -227,7 +143,7 @@ export default function TimeScrollModal({
         ) => {
           if (ref.current) {
             const index = options.indexOf(selectedValue);
-            const targetScrollTop = (index + 2) * 48 - 60;
+            const targetScrollTop = (index + 2) * 48 - 48;
             ref.current.scrollTop = targetScrollTop;
           }
         };
@@ -254,10 +170,9 @@ export default function TimeScrollModal({
               setSelectedHour,
               (e) => {
                 e.preventDefault();
-                handleScrollStart();
                 setTimeout(() => {
                   handleScrollEnd(hourRef, setSelectedHour, hours);
-                }, 50);
+                }, 200);
               },
             )}
           </div>
@@ -271,10 +186,9 @@ export default function TimeScrollModal({
               setSelectedMinute,
               (e) => {
                 e.preventDefault();
-                handleScrollStart();
                 setTimeout(() => {
                   handleScrollEnd(minuteRef, setSelectedMinute, minutes);
-                }, 50);
+                }, 100);
               },
             )}
           </div>
@@ -288,17 +202,16 @@ export default function TimeScrollModal({
               setSelectedAMPM,
               (e) => {
                 e.preventDefault();
-                handleScrollStart();
                 setTimeout(() => {
                   handleScrollEnd(ampmRef, setSelectedAMPM, ampm);
-                }, 50);
+                }, 100);
               },
             )}
           </div>
         </div>
 
         <button
-          className="mt-8 w-full rounded-xl bg-[var(--gray-80)] py-3 text-lg font-semibold text-white"
+          className="mt-3 w-full rounded-xl bg-[var(--gray-80)] py-3 text-lg font-semibold text-white"
           onClick={() => {
             onSelect(`${selectedHour}:${selectedMinute} ${selectedAMPM}`);
             onClose();
