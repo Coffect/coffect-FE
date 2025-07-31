@@ -9,7 +9,8 @@
 
 .iphone-calendar {
   border-radius: 20px;
-  padding: 20px;
+  padding: 15px;
+  box-sizing: content-box;
 }
 
 .iphone-calendar .react-datepicker__header {
@@ -20,7 +21,7 @@
 .iphone-calendar .react-datepicker__current-month {
   font-size: 18px;
   font-weight: 600;
-  color: #111111;
+  color: var(--gray-90);
   margin-bottom: 10px;
 }
 
@@ -30,38 +31,38 @@
   margin: 0;
 }
 
-.iphone-calendar .react-datepicker__day-name {
-  color: #8e8e93;
-  font-size: 14px;
-  font-weight: 500;
-  width: 40px;
-  height: 40px;
-  line-height: 40px;
-  margin: 0;
-}
-
+.iphone-calendar .react-datepicker__day-name,
 .iphone-calendar .react-datepicker__day {
-  width: 40px;
-  height: 40px;
-  line-height: 40px;
-  margin: 0;
+  width: 12vw;
+  height: 12vw;
+  line-height: 12vw;
   font-size: 16px;
-  color: #4c4c53;
   border-radius: 50%;
+  margin: 0;
 }
 
 .iphone-calendar .react-datepicker__day--outside-month {
-  color: #c7c7cc;
+  color: var(--gray-20);
+}
+
+.iphone-calendar .react-datepicker__day--outside-month {
+  color: var(--gray-20);
+}
+
+/* hover 시 */
+.iphone-calendar .react-datepicker__day:hover {
+  background-color: var(--gray-10) !important;
+  border-radius: 50% !important;
 }
 
 .iphone-calendar .custom-selected-day {
-  background: rgb(255, 150, 74) !important;
-  color: #ffffff !important;
+  background: var(--design-text) !important;
+  color: var(--white) !important;
   font-weight: 600 !important;
 }
 
 .iphone-calendar .react-datepicker__navigation {
-  top: 20px;
+  top: 17px;
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -73,17 +74,11 @@
   justify-content: center;
 }
 
-@media (max-width: 768px) {
+@media (min-width: 400px) {
+  .iphone-calendar .react-datepicker__day-name,
   .iphone-calendar .react-datepicker__day {
-    width: 44px;
-    height: 44px;
-    line-height: 44px;
-    font-size: 18px;
-  }
-  .iphone-calendar .react-datepicker__day-name {
-    width: 44px;
-    height: 44px;
-    line-height: 44px;
-    font-size: 16px;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
   }
 }

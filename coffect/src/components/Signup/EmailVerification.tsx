@@ -3,15 +3,12 @@ author : 썬더
 description : 이메일 인증 코드 발송 화면
 */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { isValidEmail } from "../../utils/validation";
+import SignupPageLayout from "./shared/SignupLayout";
+import type { StepProps } from "../../types/signup";
 
-type Props = {
-  onNext: () => void; // 다음 단계로 이동
-  onChange: (email: string) => void; // 입력한 이메일을 부모로 전달
-};
-
-const EmailVerification: React.FC<Props> = ({ onNext, onChange }) => {
+const EmailVerification: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   // 이메일 입력값 상태 관리
   const [email, setEmail] = useState<string>("");
 
@@ -20,23 +17,47 @@ const EmailVerification: React.FC<Props> = ({ onNext, onChange }) => {
 
   // 인증 코드 발송 및 다음 단계로 이동하는 핸들러
   const handleSend = (): void => {
-    onChange(email); // 부모 컴포넌트에 이메일 전달
+    onUpdate?.({ email }); // 부모 컴포넌트에 이메일 전달
     // sendCode(email) // 서버 API 연결 후 사용 예정
     onNext(); // 다음 화면으로 이동
   };
 
+  useEffect(() => {
+    // 진입 시 스크롤 막기
+    document.body.style.overflow = "hidden";
+    return () => {
+      // 컴포넌트 종료 시 스크롤 다시 허용
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
   return (
-    <div className="flex h-full w-full flex-col bg-[var(--gray-0)] px-[6%] py-[2%]">
+    <SignupPageLayout
+      bottomButton={
+        <button
+          onClick={handleSend}
+          disabled={!valid}
+          className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
+            valid
+              ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
+              : "bg-[var(--gray-10)] text-[var(--gray-50)]"
+          }`}
+        >
+          인증코드 발송하기
+        </button>
+      }
+    >
       <div className="pt-[10%] text-[var(--gray-90)]">
         {/* 타이틀 */}
-        <h2 className="mb-6 self-start text-left text-lg leading-snug font-bold">
-          <span className="text-xl">📬</span>정확한 확인을 위해
+        <h2 className="mb-6 self-start text-left text-[22px] leading-snug font-bold">
+          📬 정확한 확인을 위해
           <br />
           학교 이메일 인증을 할게요!
         </h2>
+
         {/* 이메일 입력 필드 */}
         <div className="mt-[10%]">
-          <label className="mb-2 block text-[1rem] font-semibold text-[var(--gray-90)]">
+          <label className="mb-2 block text-lg font-semibold text-[var(--gray-90)]">
             학교 이메일
           </label>
           <input
@@ -44,25 +65,11 @@ const EmailVerification: React.FC<Props> = ({ onNext, onChange }) => {
             placeholder="abc1203@sookmyung.ac.kr"
             value={email}
             onChange={(e) => setEmail(e.target.value)} // 이메일 업데이트
-            className="w-full rounded border border-[var(--gray-10)] px-3 py-2 text-sm text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+            className="h-[48px] w-full rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
           />
         </div>
-        {/* 인증코드 발송 버튼 */}
-        <div className="absolute bottom-[4%] left-1/2 w-full max-w-md -translate-x-1/2 transform px-[6%]">
-          <button
-            onClick={handleSend}
-            disabled={!valid}
-            className={`w-full rounded-xl py-[4%] text-center text-sm ${
-              valid
-                ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
-                : "bg-[var(--gray-10)] text-[var(--gray-50)]"
-            }`}
-          >
-            인증코드 발송하기
-          </button>
-        </div>
       </div>
-    </div>
+    </SignupPageLayout>
   );
 };
 

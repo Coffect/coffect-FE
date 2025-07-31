@@ -3,13 +3,14 @@ author : 재하
 description : 마이페이지, 유저페이지 등 사용자 관련 라우트 정의 파일입니다.
 */
 
+import MyPage from "../pages/MyPage";
+import MyProfile from "../components/UserPage/MyPage/MyProfile/MyProfile";
+import TimeTable from "../components/UserPage/MyPage/TimeTable";
 import ChatCard from "../components/UserPage/MyPage/ChatRecord/ChatCard";
 import ChatRecord from "../components/UserPage/MyPage/ChatRecord/ChatRecord";
-import MyPage from "../components/UserPage/MyPage/MyPage";
-import TimeTable from "../components/UserPage/MyPage/TimeTable";
-import UserPage from "../pages/UserPage";
-import MyProfile from "../components/UserPage/MyPage/MyProfile/MyProfile";
 import Modify from "../components/UserPage/MyPage/MyProfile/Modify/Modify";
+import BookMark from "../components/UserPage/MyPage/BookMark";
+import UserProfile from "../components/UserPage/OtherUserPage/UserProfile";
 
 /*
 사용자 관련 페이지 라우트 배열을 반환합니다.
@@ -40,8 +41,13 @@ const userPageRoutes = [
     element: <ChatCard />,
   },
   {
+    path: "/mypage/bookmark",
+    element: <BookMark />,
+  },
+  {
     path: "/userpage/:id",
-    element: <UserPage />,
+    // element: <UserPage />,
+    element: <UserProfile />,
   },
 ];
 

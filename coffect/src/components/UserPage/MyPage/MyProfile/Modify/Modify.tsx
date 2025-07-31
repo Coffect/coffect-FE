@@ -17,17 +17,17 @@ const Modify = () => {
   const [userId, setUserId] = useState<string>("jeha0714");
   // 사용자 이름 상태
   const [userName, setUserName] = useState<string>("재하");
-  // 소개글 상태 (200자 제한)
+  // 소개글 상태 (100자 제한)
   const [bio, setBio] = useState<string>("일찍 일어나는 새는 피곤합니다..");
   // 소개글 글자수 상태
   const [charCount, setCharCount] = useState(bio.length);
   // 모달 상태
-  const [showIdExistsModal, setShowIdExistsModal] = useState(false);
+  const [showIdExistsModal, setShowIdExistsModal] = useState<boolean>(false);
 
-  // 소개글 입력 핸들러 (200자 제한)
+  // 소개글 입력 핸들러 (100자 제한)
   const handleBioChange = (e: { target: { value: string } }) => {
     const text = e.target.value;
-    if (text.length <= 200) {
+    if (text.length <= 100) {
       setBio(text);
       setCharCount(text.length);
     }
@@ -58,13 +58,22 @@ const Modify = () => {
       <div className="flex flex-col items-center justify-center py-3">
         <div className="relative flex items-center justify-center">
           {/* Profile Image: 사용자 프로필 이미지 자리 */}
-          <div className="flex h-30 w-30 overflow-hidden rounded-full border border-black">
+          <div className="flex h-30 w-30 overflow-hidden rounded-full border-[1.5px] border-[var(--gray-10)]">
             <img src={profileImg} />
           </div>
           {/* Edit Button: 이미지 우측 하단에 연필 아이콘 */}
-          <button className="absolute right-0 bottom-0 flex h-9 w-9 items-center justify-center rounded-full border border-gray-300 bg-[var(--gray-70)]">
+          <label
+            htmlFor="profile-upload"
+            className="absolute right-0 bottom-0 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-gray-300 bg-[var(--gray-70)]"
+          >
             <img src={editIcon} className="h-6 w-6" />
-          </button>
+          </label>
+          <input
+            type="file"
+            id="profile-upload"
+            className="hidden"
+            accept="image/*"
+          />
         </div>
       </div>
 
@@ -107,12 +116,12 @@ const Modify = () => {
           onChange={handleBioChange}
           className="text-md h-45 w-full resize-none rounded-lg border border-[var(--gray-10)] p-3 text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:outline-none"
           rows={4}
-          placeholder="나의 경력, 장점 등을 적어보세요.(200자 이내)"
+          placeholder="나의 경력, 장점 등을 적어보세요.(100자 이내)"
         />
         {/* 글자수 카운트: textarea 외부, 오른쪽 정렬 */}
         <div className="my-1 flex justify-end text-xs text-gray-500">
           <span className="text-orange-500">{charCount}</span>
-          <span>/200</span>
+          <span>/100</span>
         </div>
       </div>
 

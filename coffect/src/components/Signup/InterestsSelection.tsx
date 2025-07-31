@@ -4,12 +4,9 @@
 */
 
 import { useState } from "react";
-
-// 부모로부터 전달받을 Props 정의
-type Props = {
-  onNext: () => void; // 다음 단계 이동 함수
-  onChange: (list: string[]) => void; // 선택된 관심사 목록 전달 함수
-};
+import { useEffect } from "react";
+import SignupPageLayout from "./shared/SignupLayout";
+import type { StepProps } from "../../types/signup";
 
 // 선택 가능한 관심사 목록
 const OPTIONS = [
@@ -32,7 +29,7 @@ const OPTIONS = [
 
 const MAX_SELECTION = 4; // 최대 선택 가능 수
 
-const InterestsSelection = ({ onNext, onChange }: Props) => {
+const InterestsSelection = ({ onNext, onUpdate }: StepProps) => {
   // 선택된 관심사 상태
   const [selected, setSelected] = useState<string[]>([]);
   // 에러 메시지 상태
@@ -56,6 +53,8 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
       return [...prev, item];
     });
   };
+  //선택 초기화
+  const handleReset = () => setSelected([]);
 
   // 다음 버튼 클릭 시 실행되는 함수
   const handleSubmit = () => {
@@ -66,22 +65,67 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
     }
 
     // 선택된 항목 부모로 전달하고 다음 단계로 이동
-    onChange(selected);
+    onUpdate?.({ interest: selected });
     onNext();
   };
 
+  useEffect(() => {
+    // 진입 시 스크롤 막기
+    document.body.style.overflow = "hidden";
+    return () => {
+      // 컴포넌트 종료 시 스크롤 다시 허용
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+  // 에러 메시지  2초 후 자동 제거
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(""), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   return (
-    <div className="flex h-full w-full flex-col bg-white px-[6%] py-[12%] text-left text-xs">
-      {/* 상단 안내문 */}
-      <p className="mb-[3%] text-xs font-semibold text-orange-500">최대 4개</p>
-      <h2 className="mb-[0.5rem] text-lg leading-snug font-bold">
+    <SignupPageLayout
+      bottomButton={
+        <div className="mt-auto flex w-full gap-2">
+          {/* 건너뛰기 버튼 */}
+          <button
+            onClick={onNext}
+            className="flex-[1.5] rounded-xl border-[1.5px] border-[var(--gray-20)] py-[4%] text-center text-lg font-semibold text-[var(--gray-50)]"
+          >
+            건너뛰기
+          </button>
+
+          {/* 다음 버튼: 선택된 항목이 없으면 비활성화 색상 */}
+          <button
+            onClick={handleSubmit}
+            className={`flex-3 rounded-xl py-[4%] text-center text-lg font-semibold ${
+              selected.length > 0
+                ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
+                : "bg-[var(--gray-10)] text-[var(--gray-50)]"
+            }`}
+          >
+            다음
+          </button>
+        </div>
+      }
+    >
+      <h2 className="mb-[0.5rem] pt-[10%] text-[22px] leading-normal font-bold">
         관심사를 알려주세요
         <br />
-        <span className="text-lg font-bold">비슷한 친구들을 추천해줄게요!</span>
+        비슷한 친구들을 추천해줄게요!
       </h2>
-      <p className="mb-[2rem] text-sm text-[var(--gray-40)]">
-        나중에 언제든지 변경 가능해요
+      <p className="mb-[6%] text-base font-semibold text-orange-500">
+        처음 키워드는 나의 대표 관심사로 표시돼요
       </p>
+
+      <button
+        onClick={handleReset}
+        className="mb-3 text-sm font-medium text-[var(--gray-50)]"
+      >
+        초기화 ⟳
+      </button>
 
       {/* 관심사 선택 버튼 리스트 */}
       <div className="mb-4 flex flex-wrap justify-start gap-2 pr-[20%]">
@@ -93,13 +137,13 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
             <button
               key={opt}
               onClick={() => toggle(opt)}
-              className={`inline-block rounded-lg px-[9%] py-[4%] text-sm transition-all ${
+              className={`inline-block rounded-lg px-[8%] py-[4%] text-lg font-medium transition-all ${
                 isSelected
                   ? isFirst
                     ? "bg-orange-500 text-[var(--gray-0)]" // 첫 선택 항목은 주황색 강조
                     : "bg-[var(--gray-70)] text-[var(--gray-0)]" // 나머지는 검정
                   : "bg-[var(--gray-5)] text-[var(--gray-70)]" // 미선택 항목은 회색
-              }`}
+              } `}
             >
               {opt}
             </button>
@@ -109,32 +153,7 @@ const InterestsSelection = ({ onNext, onChange }: Props) => {
 
       {/* 에러 메시지 표시 */}
       {error && <p className="mb-4 text-sm text-[var(--noti)]">{error}</p>}
-
-      {/* 하단 버튼 그룹 */}
-      <div className="absolute bottom-[4%] left-1/2 w-full max-w-md -translate-x-1/2 transform px-[6%]">
-        <div className="mt-auto flex w-full gap-2">
-          {/* 건너뛰기 버튼 */}
-          <button
-            onClick={onNext}
-            className="flex-1 rounded-xl border border-[var(--gray-20)] py-[4%] text-center text-sm text-[var(--gray-50)]"
-          >
-            건너뛰기
-          </button>
-
-          {/* 다음 버튼: 선택된 항목이 없으면 비활성화 색상 */}
-          <button
-            onClick={handleSubmit}
-            className={`flex-2 rounded-xl py-[4%] text-center text-sm ${
-              selected.length > 0
-                ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
-                : "bg-[var(--gray-10)] text-[var(--gray-50)]"
-            }`}
-          >
-            다음
-          </button>
-        </div>
-      </div>
-    </div>
+    </SignupPageLayout>
   );
 };
 

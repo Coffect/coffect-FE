@@ -3,17 +3,14 @@ author : 썬더
 description : 프로필 설정 화면 (프로필 사진 선택 및 사용자 이름 입력)
 */
 
-import React, { useState, useRef } from "react";
-import type { SignupData } from "../../types/signup";
+import React, { useEffect, useState, useRef } from "react";
 import { Pencil } from "lucide-react";
-import defaultAvatar from "../../assets/icon/Signup/DefaultAvatar.png";
+import defaultAvatar from "../../assets/icon/signup/DefaultAvatar.png";
+import SignupPageLayout from "./shared/SignupLayout";
+import type { StepProps } from "../../types/signup";
 
-type Props = {
-  onNext: () => void; // 다음 단계로 이동
-  onChange: (fields: Partial<SignupData>) => void; // 입력된 프로필 데이터를 부모에게 전달
-};
 
-const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
+const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   // 상태 선언
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [name, setName] = useState<string>("");
@@ -43,22 +40,51 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
       setNameError(true);
       return;
     }
-    onChange({ username: trimmed, avatar: avatarUrl || undefined });
+    onUpdate?.({ name: trimmed, img: avatarUrl || undefined });
     onNext();
   };
+  // 버튼 비활성화 조건(이름x 또는 프로필사진 x)
+  const isButtonDisabled = !name.trim() || !avatarUrl;
+
+  useEffect(() => {
+    // 진입 시 스크롤 막기
+    document.body.style.overflow = "hidden";
+    return () => {
+      // 컴포넌트 종료 시 스크롤 다시 허용
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
+  //입력창 포커스 시 이동 위치
+  const nameRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="flex h-full w-full flex-col bg-white px-[6%] py-[2%]">
+    <SignupPageLayout
+      bottomButton={
+        <button
+          onClick={handleNext}
+          disabled={isButtonDisabled}
+          className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
+            name.trim() && avatarUrl
+              ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
+              : "bg-[var(--gray-10)] text-[var(--gray-50)]"
+          }`}
+        >
+          다음
+        </button>
+      }
+    >
       <div className="pt-[10%] text-[var(--gray-90)]">
         {/* 제목 */}
-        <h2 className="mb-10 self-start text-left text-lg leading-snug font-bold">
+        <h2 className="mb-10 self-start text-left text-[22px] font-bold">
           나의 프로필을 설정해주세요!
         </h2>
+
         {/* 프로필 이미지 업로드 */}
         <div className="mb-10 flex justify-center">
           <div className="relative">
             <div
-              className="flex h-[7rem] w-[7rem] items-center justify-center overflow-hidden rounded-full bg-[var(--gray-10)]"
+              className="flex h-[7.5rem] w-[7.5rem] items-center justify-center overflow-hidden rounded-full bg-[var(--gray-10)]"
               onClick={handleAvatarClick}
             >
               {avatarUrl ? (
@@ -77,7 +103,7 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
             </div>
             <button
               onClick={handleAvatarClick}
-              className="absolute right-0 bottom-0 mt-2 h-[2rem] w-[2rem] rounded-full bg-[var(--gray-70)] pl-[6px] text-[var(--gray-0)]"
+              className="absolute right-1 bottom-1 mt-2 h-[2rem] w-[2rem] rounded-full bg-[var(--gray-70)] pl-[6px] text-[var(--gray-0)]"
             >
               <Pencil size={20} />
             </button>
@@ -91,17 +117,27 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
             onChange={handleFileChange}
           />
         </div>
+
         {/* 이름 입력 */}
-        <div className="mb-auto">
-          <label className="mb-[3%] block text-[1rem] font-bold text-[var(--gray-90)]">
+        <div>
+          <label className="mb-2 block text-lg font-semibold text-[var(--gray-90)]">
             이름
           </label>
           <input
+            ref={nameRef}
             type="text"
             placeholder="이름을 입력해주세요"
             value={name}
-            onChange={(e) => handleNameChange(e.target.value)} // 이름 업데이트
-            className="w-full flex-7 rounded border border-[var(--gray-10)] px-3 py-2 text-sm text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+            onChange={(e) => handleNameChange(e.target.value)}
+            onFocus={() =>
+              setTimeout(() => {
+                nameRef.current?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }, 5)
+            }
+            className="flex h-[48px] w-full scroll-mb-[100px] items-center rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-normal text-[var(--gray-90)] placeholder-[var(--gray-30)] focus-within:border-[2px] focus-within:border-gray-900 focus:ring-0 focus:outline-none"
           />
           {nameError && (
             <p className="mt-1 text-xs text-[var(--noti)]">
@@ -110,21 +146,7 @@ const ProfileSetup: React.FC<Props> = ({ onNext, onChange }) => {
           )}
         </div>
       </div>
-
-      {/* 다음 버튼 */}
-      <div className="absolute bottom-[4%] left-1/2 w-full max-w-md -translate-x-1/2 transform px-[6%]">
-        <button
-          onClick={handleNext}
-          className={`w-full rounded-xl py-[4%] text-center text-sm ${
-            name.trim()
-              ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
-              : "bg-[var(--gray-10)] text-[var(--gray-50)]"
-          }`}
-        >
-          다음
-        </button>
-      </div>
-    </div>
+    </SignupPageLayout>
   );
 };
 

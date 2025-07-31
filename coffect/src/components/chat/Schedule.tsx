@@ -9,9 +9,11 @@ import type { ScheduleFormValues } from "./ScheduleForm";
 import ScheduleCompleteModal from "./ScheduleCompleteModal";
 import DeleteScheduleModal from "./DeleteScheduleModal";
 import { X } from "lucide-react";
+import ExampleProfile from "../../assets/icon/chat/ExampleProfile.png";
+import ExampleProfile2 from "../../assets/icon/chat/ExampleProfile2.png";
 
-const MY_PROFILE_IMG = "https://i.pravatar.cc/40?u=me";
-const OTHER_PROFILE_IMG = "https://i.pravatar.cc/40?u=other";
+const MY_PROFILE_IMG = ExampleProfile2;
+const OTHER_PROFILE_IMG = ExampleProfile;
 const NICKNAME = "김라떼";
 
 const Schedule: React.FC = () => {
@@ -68,28 +70,28 @@ const Schedule: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-white">
+    <div className="flex h-full w-full flex-col bg-[var(--white)]">
       {/* 상단 헤더 */}
-      <div className="relative flex w-full flex-col items-center justify-center border-b-3 border-[rgba(245,245,245,1)] bg-white px-4 pt-6 pb-4">
+      <div className="relative flex w-full flex-col items-center justify-center bg-[var(--white)] px-4 pt-6 pb-4">
         <button
-          className="absolute top-6 left-4 text-2xl text-gray-700"
+          className="absolute top-6 left-4 text-2xl text-[var(--gray-70)]"
           onClick={() => navigate(-1)}
           aria-label="닫기"
         >
           <X size={28} />
         </button>
-        <div className="mb-8 text-xl font-extrabold text-gray-900">
+        <div className="mb-8 text-xl font-extrabold text-[var(--gray-90)]">
           일정 등록
         </div>
         <div className="flex w-full items-center justify-start">
-          <div className="z-10 -mr-2 h-9 w-9 overflow-hidden rounded-full border-2 border-white">
+          <div className="z-10 -mr-2 h-9 w-9 overflow-hidden rounded-full border-2 border-[var(--white)]">
             <img
               src={OTHER_PROFILE_IMG}
               alt="상대 프로필"
               className="h-full w-full object-cover"
             />
           </div>
-          <div className="z-0 h-9 w-9 overflow-hidden rounded-full border-2 border-white">
+          <div className="z-0 h-9 w-9 overflow-hidden rounded-full border-2 border-[var(--white)]">
             <img
               src={MY_PROFILE_IMG}
               alt="내 프로필"
@@ -99,7 +101,7 @@ const Schedule: React.FC = () => {
           <span className="ml-2 text-lg font-extrabold tracking-tight text-[#FF9100]">
             {NICKNAME}
           </span>
-          <span className="text-lg font-extrabold tracking-tight text-gray-900">
+          <span className="text-lg font-extrabold tracking-tight text-[var(--gray-90)]">
             님과의 커피챗
           </span>
         </div>
@@ -109,7 +111,6 @@ const Schedule: React.FC = () => {
         <ScheduleForm
           values={form}
           onChange={setForm}
-          showTimeDropdown={true}
           onComplete={isEdit ? handleEdit : () => setShowComplete(true)}
           completeLabel={isEdit ? "수정하기" : undefined}
           onCancel={isEdit ? () => setShowDeleteModal(true) : undefined}
@@ -146,19 +147,21 @@ const Schedule: React.FC = () => {
         )}
         {isEdit && showDeleteModal && (
           <DeleteScheduleModal
-            date={
+            scheduleText={
               form.date
-                ? typeof form.date === "string"
-                  ? form.date
-                  : form.date.toLocaleDateString("ko-KR", {
-                      month: "long",
-                      day: "numeric",
-                    })
+                ? `${
+                    typeof form.date === "string"
+                      ? form.date
+                      : form.date.toLocaleDateString("ko-KR", {
+                          month: "long",
+                          day: "numeric",
+                          weekday: "long",
+                        })
+                  } ${form.time}`
                 : ""
             }
-            time={form.time}
             onDelete={handleDelete}
-            onClose={() => setShowDeleteModal(false)}
+            onCancel={() => setShowDeleteModal(false)}
           />
         )}
       </div>

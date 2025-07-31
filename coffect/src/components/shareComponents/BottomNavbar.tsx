@@ -47,7 +47,7 @@ export default function BottomNavbar({ activeLabel }: BottomNavbarProps) {
   ];
 
   return (
-    <div className="fixed bottom-4 left-1/2 z-50 flex h-[64px] w-[276px] -translate-x-1/2 items-center justify-around rounded-full bg-[var(--gray-70)] px-6">
+    <div className="fixed bottom-4 left-1/2 z-49 flex h-[64px] w-[276px] -translate-x-1/2 items-center justify-around rounded-full bg-[var(--gray-70)] px-6">
       {tabs.map((tab) => {
         const isActive = activeLabel === tab.label;
         return (

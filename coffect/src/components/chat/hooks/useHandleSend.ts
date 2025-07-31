@@ -3,13 +3,7 @@
 // 메시지 전송 시 현재 시간 및 메시지 내용 추가
 
 import type { Dispatch, SetStateAction } from "react";
-
-interface Message {
-  id: number;
-  text: string;
-  time: string;
-  mine: boolean;
-}
+import type { Message } from "../../../types/chat";
 
 type UseHandleSend = (
   messages: Message[],
@@ -25,10 +19,11 @@ const useHandleSend: UseHandleSend = (
   getCurrentTime,
 ) => {
   return (msg: string) => {
-    setMessages([
-      ...messages,
+    setMessages((prev) => [
+      ...prev,
       {
         id: messages.length + 1,
+        type: "text",
         text: msg,
         time: getCurrentTime(),
         mine: true,

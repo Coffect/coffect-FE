@@ -7,18 +7,83 @@ import { useNavigate } from "react-router-dom";
 import DetailIntro from "./DetailIntro";
 import backIcon from "../../../../assets/icon/mypage/back.png";
 import profileImg from "../../../../assets/icon/mypage/profile.png";
+import FeedItem from "../../../shareComponents/FeedItem";
+import type { Post } from "../../../../types/community";
+import emptyFeedImg from "../../../../assets/icon/mypage/emptyFeed.png";
 
-export default function MyProfileUI() {
+type MyProfileTab = "피드" | "상세 소개";
+
+const myDummyPosts: Post[] = [
+  {
+    id: 1,
+    user: {
+      profileImage: profileImg,
+      nickname: "재하",
+      major: "컴퓨터컴퓨터과학전공",
+      studentId: "19학번",
+    },
+    image: "https://picsum.photos/400/300?random=1",
+    title: "창밖 풍경과 커피 한 잔",
+    content:
+      "창밖에는 맑은 하늘과 부드러운 바람이 어우러져 평온한 풍경을 만든다. 커피 한 잔을 손에 들고 창가에 앉아 있으면, 시간도 잠시 멈춘 듯 느껴진다. 바쁜 일상...",
+    likes: 2,
+    comments: 2,
+    type: "일상",
+    topic: "일상",
+    postedDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2일 전
+    daysAgo: 2,
+  },
+  {
+    id: 2,
+    user: {
+      profileImage: profileImg,
+      nickname: "재하",
+      major: "컴퓨터컴퓨터과학전공",
+      studentId: "19학번",
+    },
+    image: "https://picsum.photos/400/300?random=2",
+    title: "디자인 프로젝트 회의",
+    content:
+      "오늘은 팀원들과 디자인 프로젝트 회의를 했다. 다양한 아이디어가 오가며 유익한 시간이었고, 앞으로의 방향성에 대해 많은 고민을 하게 되었다.",
+    likes: 5,
+    comments: 1,
+    type: "프로젝트",
+    topic: "디자인",
+    postedDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5일 전
+    daysAgo: 5,
+  },
+  {
+    id: 3,
+    user: {
+      profileImage: profileImg,
+      nickname: "재하",
+      major: "컴퓨터컴퓨터과학전공",
+      studentId: "19학번",
+    },
+    image: "https://picsum.photos/400/300?random=3",
+    title: "새로운 영감",
+    content:
+      "최근에 본 전시회에서 많은 영감을 받았다. 다양한 색감과 형태를 보며 나만의 디자인을 구상해보고 싶어졌다.",
+    likes: 8,
+    comments: 3,
+    type: "영감",
+    topic: "아트",
+    postedDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10일 전
+    daysAgo: 10,
+  },
+];
+
+function MyProfile() {
   /*
   사용자의 마이페이지 프로필 화면을 렌더링하며, 탭에 따라 피드 또는 상세 소개를 보여줍니다.
   */
   const navigate = useNavigate();
-  // 현재 활성화된 탭 상태 ("내 피드" 또는 "상세 소개")
-  const [activeTab, setActiveTab] = useState("내 피드");
+  // 현재 활성화된 탭 상태 ("피드" 또는 "상세 소개")
+  const [activeTab, setActiveTab] = useState<MyProfileTab>("피드");
   // 텍스트 확장 상태
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
   // 텍스트가 2줄 이상인지 확인하는 상태
-  const [isOverflowing, setIsOverflowing] = useState(false);
+  const [isOverflowing, setIsOverflowing] = useState<boolean>(false);
   const textRef = useRef<HTMLParagraphElement>(null);
 
   // 텍스트가 2줄 이상인지 확인하는 함수
@@ -76,7 +141,7 @@ export default function MyProfileUI() {
           {/* Profile Image: 사용자 프로필 이미지 자리 */}
           <img
             src={profileImg}
-            className="flex h-25 w-25 overflow-hidden rounded-full border border-black"
+            className="flex h-25 w-25 overflow-hidden rounded-full border-[1.5px] border-[var(--gray-10)]"
           />
 
           {/* Stats: 포스트/팔로워/팔로잉 수 */}
@@ -145,25 +210,26 @@ export default function MyProfileUI() {
         </button>
       </div>
 
-      <div className="-mx-4 h-2 w-full bg-[var(--gray-5)]"></div>
+      {/* 탭 구분선 */}
+      <div className="min-h-2 w-full bg-[var(--gray-5)]"></div>
 
-      {/* Tab Navigation: 내 피드/상세 소개 탭 전환 */}
-      <div className="flex border-b">
+      {/* Tab Navigation: 피드/상세 소개 탭 전환 */}
+      <div className="mt-3 flex">
         <button
-          className={`flex-1 border-b-2 py-3 text-center font-medium ${
-            activeTab === "내 피드"
-              ? "border-black text-black"
-              : "border-transparent text-gray-500"
+          className={`flex-1 border-b-2 border-[var(--gray-10)] py-3 text-center text-lg font-semibold ${
+            activeTab === "피드"
+              ? "border-b-2 border-[var(--gray-90)] text-black"
+              : "font-medium text-[var(--gray-50)]"
           }`}
-          onClick={() => setActiveTab("내 피드")}
+          onClick={() => setActiveTab("피드")}
         >
-          내 피드
+          피드
         </button>
         <button
-          className={`flex-1 border-b-2 py-3 text-center font-medium ${
+          className={`flex-1 border-b-2 border-[var(--gray-10)] py-3 text-center text-lg font-semibold ${
             activeTab === "상세 소개"
-              ? "border-black text-black"
-              : "border-transparent text-gray-500"
+              ? "border-b-2 border-[var(--gray-90)] text-black"
+              : "font-medium text-[var(--gray-50)]"
           }`}
           onClick={() => setActiveTab("상세 소개")}
         >
@@ -172,19 +238,23 @@ export default function MyProfileUI() {
       </div>
 
       {/* Content Area: 탭에 따라 내용 분기 */}
-      <div className="py-5">
-        {/* 내 피드 탭이 활성화된 경우 피드 내용 출력 */}
-        {activeTab === "내 피드" && (
-          <div className="py-8 text-center">
-            {/* 실제 피드 데이터가 들어갈 자리 (현재는 더미 텍스트) */}
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-            <p className="text-gray-500">내 피드 내용이 여기에 표시됩니다.</p>
-          </div>
-        )}
+      <div className="flex flex-1 flex-col py-5">
+        {/* 피드 탭이 활성화된 경우 피드 내용 출력 */}
+        {activeTab === "피드" &&
+          (myDummyPosts.length === 0 ? (
+            <div className="flex flex-1 flex-col items-center justify-center">
+              <span className="text-md mb-3 text-[var(--gray-50)]">
+                아직 작성한 글이 없어요!
+              </span>
+              <img src={emptyFeedImg} className="h-10 w-10 opacity-40" />
+            </div>
+          ) : (
+            <>
+              {myDummyPosts.map((post) => (
+                <FeedItem key={post.id} post={post} showFollowButton={false} />
+              ))}
+            </>
+          ))}
 
         {/* 상세 소개 탭이 활성화된 경우 상세 소개 컴포넌트 출력 */}
         {activeTab === "상세 소개" && <DetailIntro />}
@@ -192,3 +262,5 @@ export default function MyProfileUI() {
     </div>
   );
 }
+
+export default MyProfile;

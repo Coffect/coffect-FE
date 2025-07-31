@@ -34,12 +34,12 @@ const ChatCard = () => {
           <div className="mb-4 flex items-center justify-center">
             <img
               src={profile1}
-              className="z-11 h-28 w-28 rounded-full border-4 border-white object-cover"
+              className="z-11 h-28 w-28 rounded-full border-[1.5px] border-[var(--gray-10)] object-cover"
               alt="profile1"
             />
             <img
               src={profile2}
-              className="z-10 -ml-6 h-28 w-28 rounded-full border-4 border-white object-cover"
+              className="z-10 -ml-6 h-28 w-28 rounded-full border-[1.5px] border-[var(--gray-10)] object-cover"
               alt="profile2"
             />
           </div>
