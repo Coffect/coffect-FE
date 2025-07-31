@@ -25,9 +25,21 @@ import type {
 } from "axios";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
 
+// 환경에 따른 baseURL 설정
+const getBaseURL = () => {
+  // 개발 환경에서는 직접 API 서버 환경변수로 등록해서 사용
+  if (import.meta.env.VITE_SERVER_API_URL) {
+    return import.meta.env.VITE_SERVER_API_URL;
+  }
+
+  // vercel에서 mixed content 방지를 위해 빈 문자열 반환
+  // vercel.json을 통해 path 설정
+  return "/api";
+};
+
 // Axios 인스턴스 생성
 export const axiosInstance: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_SERVER_API_URL,
+  baseURL: getBaseURL(),
 });
 
 // 요청 시 accessToken이 있다면 Authorization 헤더에 추가
