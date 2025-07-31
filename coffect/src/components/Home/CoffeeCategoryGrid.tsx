@@ -20,6 +20,9 @@ const CoffeeCategoryGrid: React.FC = () => {
   // 카테고리 클릭 시 다음날 오전 9시까지 수정 못하도록 localStorage에 방문기록 저장+ API 호출
   const handleClick = async (categoryValue: number) => {
     try {
+      if (localStorage.getItem("cardViewVisited")) {
+        localStorage.removeItem("cardViewVisited");
+      }
       await postTodayInterest(categoryValue);
       localStorage.setItem("coffeeCategorySelected", "true");
       localStorage.setItem("coffeeCategoryExpire", new Date().toISOString());

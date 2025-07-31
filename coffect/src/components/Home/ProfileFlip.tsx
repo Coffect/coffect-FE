@@ -16,7 +16,11 @@ import CardMidImage from "../../assets/icon/home/CardMid.png";
 import CardRightImage from "../../assets/icon/home/CardRight.png";
 import NoCardImage from "../../assets/icon/home/NoCard.png";
 import type { UserProfile } from "@/types/home";
-import { getCardInfo } from "@/api/home";
+import {
+  DeleteCard,
+  getCurrentRecommendedCard,
+  postSuggestCoffeeChat,
+} from "@/api/home";
 
 // 태그별 전역 색상 클래스 반환
 const getTagColor = (tag: string) => {
@@ -58,8 +62,6 @@ const getTagColor = (tag: string) => {
 
 const ProfileFlip: React.FC = () => {
   const navigate = useNavigate();
-  // 현재 남은 프로필 목록
-  const [profiles, setProfiles] = useState<UserProfile[]>([]);
   // 현재 스킵된 카드 수
   const [skipped, setSkipped] = useState(0);
   // 스킵 애니메이션 동작 여부
@@ -73,21 +75,22 @@ const ProfileFlip: React.FC = () => {
   // 커피챗 제안 완료 모달 열림 여부
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   // 현재 표시 중인 카드
-  const current = profiles[0] || null;
+  const [currentCard, setCurrentCard] = useState<UserProfile | null>(null);
   // 서버에서 프로필 카드 목록 불러오기
   useEffect(() => {
     (async () => {
       try {
-        // 3번 API 호출 → 병렬 처리
-        const results = await Promise.all([
-          getCardInfo(),
-          getCardInfo(),
-          getCardInfo(),
-        ]);
+        const hasVisited = localStorage.getItem("cardViewVisited");
 
-        // API 응답들을 UserProfile[] 형태로 매핑
-        const profileList = results.map((res, idx) => ({
-          id: idx + 1,
+        if (!hasVisited) {
+          await DeleteCard();
+          localStorage.setItem("cardViewVisited", "true");
+        }
+
+        const res = await getCurrentRecommendedCard();
+
+        const initialCard: UserProfile = {
+          id: res.userId,
           name: res.name,
           major: "",
           year: res.grade,
@@ -95,34 +98,60 @@ const ProfileFlip: React.FC = () => {
           intro: res.introduce,
           image: res.profileImage,
           answers: [],
-        }));
-        setProfiles(profileList);
+        };
+        setCurrentCard(initialCard);
       } catch {
-        alert("카드 3개 불러오기 실패");
+        setCurrentCard(null);
       }
     })();
   }, []);
 
   // 카드 제거(왼쪽 버튼)
-  const handleSkip = (id: number) => {
+  const handleSkip = async () => {
     setSkipAnimation(true);
-    //애니메이션 중에 삭제 방지를 위해
-    setTimeout(() => {
-      setProfiles((prev) => prev.filter((p) => p.id !== id));
-      setSkipped((prev) => prev + 1);
-      setSkipAnimation(false); // 다음 카드용 초기화
+    setTimeout(async () => {
+      try {
+        await DeleteCard();
+        const res = await getCurrentRecommendedCard();
+        const nextCard: UserProfile = {
+          id: res.userId,
+          name: res.name,
+          major: "",
+          year: res.grade,
+          tags: res.categoryMatch,
+          intro: res.introduce,
+          image: res.profileImage,
+          answers: [],
+        };
+        setCurrentCard(nextCard);
+        setSkipped((prev) => prev + 1);
+      } catch {
+        // 남은 카드가 없을 때
+        setCurrentCard(null);
+        setSkipped((prev) => prev + 1);
+      } finally {
+        setSkipAnimation(false);
+      }
     }, 300);
   };
+
   // 커피쳇 제안 모달 열기(가운데 버튼)
   const handleSuggestClick = (id: number) => {
     setSelectedProfileId(id);
     setShowSuggestModal(true);
   };
   // 제안 메시지 작성 완료
-  const handleSuggestSubmit = () => {
-    setShowSuggestModal(false);
-    setShowCompleteModal(true);
+  const handleSuggestSubmit = async (message: string) => {
+    if (selectedProfileId === null) return;
+    try {
+      await postSuggestCoffeeChat(message, selectedProfileId);
+      setShowSuggestModal(false);
+      setShowCompleteModal(true);
+    } catch {
+      alert("커피챗 제안 실패");
+    }
   };
+
   // 제안 작성 취소
   const handleSuggestCancel = () => {
     setShowSuggestModal(false);
@@ -143,7 +172,7 @@ const ProfileFlip: React.FC = () => {
   };
 
   // 카드가 모두 제거되었을 경우
-  if (!current) {
+  if (!currentCard) {
     return (
       <div className="mt-[15%] flex flex-col items-center justify-center pt-[5vh] pb-20 text-center">
         <h3 className="mt-[2%] text-xl font-bold text-[var(--gray-90)]">
@@ -183,30 +212,30 @@ const ProfileFlip: React.FC = () => {
             ? "translate-x-full opacity-0"
             : "translate-x-0 opacity-100"
         }`}
-        onClick={() => handleCardClick(current)}
+        onClick={() => handleCardClick(currentCard)}
       >
         {/* 상단 이미지 영역 */}
         <div className="relative aspect-[3/2] w-full overflow-hidden rounded-3xl">
           <img
-            src={current.image}
+            src={currentCard.image}
             alt="프로필 사진"
             className="absolute inset-0 h-full w-full object-cover"
           />
           <div className="absolute top-3 left-3 rounded-[60px] bg-[#2D2D2D]/90 px-3 py-2 text-[14px] font-semibold text-[var(--gray-10)]">
-            {skipped + 1}/{profiles.length}
+            {skipped + 1}/3
           </div>
           <div className="absolute bottom-0 left-0 w-full rounded-b-3xl bg-gradient-to-t from-black/70 to-transparent px-[4%] py-[5%]">
             <div className="text-[22px] font-bold text-white">
-              {current.name}
+              {currentCard.name}
               <span className="ml-[3%] text-sm font-medium text-[var(--gray-10)]">
-                {current.major} {current.year}
+                {currentCard.major} {currentCard.year}
               </span>
             </div>
           </div>
         </div>
         {/* 하단 태그 + 소개 */}
         <div className="flex flex-wrap px-[2%] pt-[3%] pb-[1%]">
-          {current.tags.map((tag, idx) => (
+          {currentCard.tags.map((tag, idx) => (
             <span
               key={idx}
               className={`mr-[2%] mb-[2%] rounded-[7px] px-[3%] py-[1.5%] text-sm font-medium ${getTagColor(
@@ -217,7 +246,7 @@ const ProfileFlip: React.FC = () => {
             </span>
           ))}
           <p className="mt-[0.2rem] line-clamp-3 text-base leading-normal font-medium text-[var(--gray-70)]">
-            {current.intro}
+            {currentCard.intro}
           </p>
           {/* 하단 버튼 3개 (스킵 / 제안 / 팔로우) */}
           <div
@@ -225,7 +254,7 @@ const ProfileFlip: React.FC = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              onClick={() => handleSkip(current.id)}
+              onClick={() => handleSkip()}
               className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-white text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
             >
               <img
@@ -235,7 +264,7 @@ const ProfileFlip: React.FC = () => {
               />
             </button>
             <button
-              onClick={() => handleSuggestClick(current.id)}
+              onClick={() => currentCard && handleSuggestClick(currentCard.id)}
               className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-orange-500 text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
             >
               <img
