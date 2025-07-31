@@ -1,28 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/user/(.*)",
-      "destination": "http://13.124.169.70:3000/user/$1"
-    },
-    {
-      "source": "/univ/(.*)",
-      "destination": "http://13.124.169.70:3000/univ/$1"
-    },
-    {
-      "source": "/thread/(.*)",
-      "destination": "http://13.124.169.70:3000/thread/$1"
-    },
-    {
-      "source": "/profile/(.*)",
-      "destination": "http://13.124.169.70:3000/profile/$1"
-    },
-    {
-      "source": "/follow/(.*)",
-      "destination": "http://13.124.169.70:3000/follow/$1"
-    },
-    {
-      "source": "/home/(.*)",
-      "destination": "http://13.124.169.70:3000/home/$1"
+      "source": "/api/(.*)",
+      "destination": "http://13.124.169.70:3000/$1"
     },
     { "source": "/(.*)", "destination": "/" }
   ]
