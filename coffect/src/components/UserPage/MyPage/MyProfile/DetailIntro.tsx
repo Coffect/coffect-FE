@@ -10,7 +10,7 @@ const DetailIntro = () => {
   관심 키워드와 상세 프로필 컴포넌트를 묶어서 출력합니다.
   */
   return (
-    <div className="flex w-full flex-col justify-center">
+    <div className="flex w-full flex-col justify-center px-4">
       {/* 관심 키워드 컴포넌트 */}
       <DetailIntroKeyword />
       {/* 상세 프로필 컴포넌트 */}
