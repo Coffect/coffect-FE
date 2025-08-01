@@ -5,22 +5,39 @@
                 - 각 버튼 클릭 시 해당 기준에 따라 추천 프로필 카드 보여줄 예정
 */
 
+import { postTodayInterest } from "@/api/home";
+import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
 const CoffeeCategoryGrid: React.FC = () => {
+  // 카테고리 클릭 시 다음날 오전 9시까지 수정 못하도록 localStorage에 방문기록 저장+ API 호출
+  const { mutate: selectCategory } = useMutation({
+    mutationFn: async (categoryValue: number) => {
+      if (localStorage.getItem("cardViewVisited")) {
+        localStorage.removeItem("cardViewVisited");
+      }
+      postTodayInterest(categoryValue);
+      localStorage.setItem("coffeeCategorySelected", "true");
+      localStorage.setItem("coffeeCategoryExpire", new Date().toISOString());
+    },
+    onSuccess: () => {
+      navigate("/home/cards");
+    },
+    onError: () => {
+      alert("선택 저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
+    },
+  });
   const navigate = useNavigate();
-  // 추천 기준 목록
+  // 추천 기준 목록(숫자 매핑 포함)
   const categories = [
-    "가까운\n거리 순",
-    "나와\n관심사가\n비슷한",
-    "같은 학번",
-    "요즘\n 글을 많이 쓴",
+    { label: "가까운\n거리 순", value: 1 },
+    { label: "나와\n관심사가\n비슷한", value: 2 },
+    { label: "같은 학번", value: 3 },
+    { label: "요즘\n글을 많이 쓴", value: 4 },
   ];
-  // 카테고리 클릭 시 다음날 오전 9시까지 수정 못하도록 localStorage에 방문기록 저장
-  const handleClick = () => {
-    localStorage.setItem("coffeeCategorySelected", "true");
-    localStorage.setItem("coffeeCategoryExpire", new Date().toISOString());
-    navigate("/home/cards");
+
+  const handleClick = (categoryValue: number) => {
+    selectCategory(categoryValue);
   };
 
   return (
@@ -37,14 +54,14 @@ const CoffeeCategoryGrid: React.FC = () => {
 
       {/* 2x2 그리드 버튼 */}
       <div className="mt-[4%] grid grid-cols-2 gap-[12px] px-[2%]">
-        {categories.map((label, idx) => (
+        {categories.map((cat) => (
           <button
-            key={idx}
-            onClick={handleClick}
+            key={cat.value}
+            onClick={() => handleClick(cat.value)}
             className="flex aspect-[17/19] w-full items-end justify-start rounded-4xl bg-[var(--gray-0)] p-[8%] text-left text-[22px] leading-tight font-bold whitespace-pre-line text-[var(--gray-90)] transition active:scale-[1.1]"
           >
             {/* 줄바꿈 포함 텍스트 */}
-            {label}
+            {cat.label}
           </button>
         ))}
       </div>
