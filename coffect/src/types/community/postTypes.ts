@@ -61,7 +61,7 @@ export interface PostPostsRequest {
  * @description 게시글 목록에 사용되는 각 게시글의 요약 정보 모델입니다.
  */
 export interface PostSummary {
-  threadId: number;
+  threadId: string;
   userId: number;
   threadTitle: string;
   threadBody: string;

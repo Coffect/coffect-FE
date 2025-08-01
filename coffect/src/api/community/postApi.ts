@@ -9,6 +9,8 @@ import { axiosInstance } from "../axiosInstance";
 import type {
   PostPostsRequest,
   PostPostsResponse,
+  GetThreadLookUpRequest,
+  GetThreadLookUpResponse,
 } from "@/types/community/postTypes";
 
 /**
@@ -20,7 +22,28 @@ import type {
 export const getPosts = async (
   params: PostPostsRequest,
 ): Promise<PostPostsResponse> => {
-  // POST 요청 시에는 두 번째 인자로 데이터를 직접 전달합니다.
-  const response = await axiosInstance.post<PostPostsResponse>("/thread/main", params);
+  const response = await axiosInstance.post<PostPostsResponse>(
+    "/thread/main",
+    params,
+  );
+  return response.data;
+};
+
+/**
+ * @function getPostDetail
+ * @description 특정 게시글의 상세 정보를 요청하는 API 함수입니다.
+ * @param params - 조회할 게시글의 threadId를 포함하는 객체
+ * @returns Promise<GetThreadLookUpResponse> - 게시글 상세 정보를 포함하는 Promise 객체
+ */
+export const getPostDetail = async (
+  params: GetThreadLookUpRequest,
+): Promise<GetThreadLookUpResponse> => {
+  // GET 요청 시에는 params를 URL 쿼리 스트링으로 전달합니다.
+  const response = await axiosInstance.get<GetThreadLookUpResponse>(
+    "/thread/lookUp",
+    {
+      params: { threadId: params.threadId },
+    },
+  );
   return response.data;
 };
