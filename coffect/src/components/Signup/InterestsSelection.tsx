@@ -26,6 +26,25 @@ const OPTIONS = [
   "악기",
   "네트워킹",
 ];
+// 관심사 목록 숫자와 매핑
+const CATEGORY_NAME_TO_ID: Record<string, number> = {
+  창업: 1,
+  개발: 2,
+  디자인: 3,
+  기획: 4,
+  AI: 5,
+  글쓰기: 6,
+  독서: 7,
+  마케팅: 8,
+  여행: 9,
+  데이터: 10,
+  분석: 11,
+  하드웨어: 12,
+  영화: 13,
+  외국어: 14,
+  악기: 15,
+  네트워킹: 16,
+};
 
 const MAX_SELECTION = 4; // 최대 선택 가능 수
 
@@ -65,7 +84,8 @@ const InterestsSelection = ({ onNext, onUpdate }: StepProps) => {
     }
 
     // 선택된 항목 부모로 전달하고 다음 단계로 이동
-    onUpdate?.({ interest: selected });
+    const selectedIds = selected.map((item) => CATEGORY_NAME_TO_ID[item]);
+    onUpdate?.({ interest: selectedIds.join(",") });
     onNext();
   };
 

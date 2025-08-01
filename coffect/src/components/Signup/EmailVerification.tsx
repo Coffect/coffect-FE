@@ -15,10 +15,13 @@ const EmailVerification: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   // 입력된 이메일이 유효한지 여부 판단
   const valid = isValidEmail(email);
 
-  // 인증 코드 발송 및 다음 단계로 이동하는 핸들러
+  // 다음 단계로 이동하는 핸들러
   const handleSend = (): void => {
     onUpdate?.({ email }); // 부모 컴포넌트에 이메일 전달
-    // sendCode(email) // 서버 API 연결 후 사용 예정
+    // 이전에 발송된 인증 메일 기록이 있다면 초기화 (다음 화면 시작 시 다시 전송되도록)
+    if (sessionStorage.getItem("mailSent")) {
+      sessionStorage.removeItem("mailSent");
+    }
     onNext(); // 다음 화면으로 이동
   };
 

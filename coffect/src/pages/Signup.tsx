@@ -18,6 +18,7 @@ import InterestsSelection from "../components/Signup/InterestsSelection";
 import Completion from "../components/Signup/Completion";
 import TopNavbar from "../components/Signup/TopNavbar";
 import { login } from "../api/auth";
+import { signUpRequest } from "@/api/univ";
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const Signup: React.FC = () => {
   // 현재 단계 페이지
   const [step, setStep] = useState<number>(initialStep);
   // 회원가입 중 입력된 데이터 누적 저장
-  const [, setForm] = useState<Partial<SignupData>>({});
+  const [form, setForm] = useState<Partial<SignupData>>({});
 
   /* 다음 단계로 이동 */
   const goNext = () => setStep((prev) => prev + 1);
@@ -60,6 +61,33 @@ const Signup: React.FC = () => {
       // 이미 온보딩을 본 사용자면 다음 단계(로그인)로 이동
       navigate("/signup", { state: { step: 2 } });
       window.location.reload();
+    }
+  };
+
+  // 회원가입 요청 함수
+  const signup = async () => {
+    try {
+      const interestString = form.interest || ""; // form.interest가 undefined면 ""(건너뛰기 시 값x)
+
+      const result = await signUpRequest({
+        id: form.id!,
+        password: form.password!,
+        name: form.name!,
+        email: form.email!,
+        univId: form.univId!,
+        dept: form.dept!,
+        studentId: form.studentId!,
+        interest: interestString,
+        img: form.img!,
+      });
+      //회원 가입 성공 시 회원 가입 완료 페이지 이동
+      if (result.resultType === "SUCCESS") {
+        setStep(10);
+      } else {
+        alert("회원가입 실패: " + (result.error?.reason || "알 수 없는 오류"));
+      }
+    } catch {
+      alert("서버 오류가 발생했어요.");
     }
   };
 
@@ -117,11 +145,7 @@ const Signup: React.FC = () => {
         )}
         {/* 6. 이메일 인증 코드 입력 화면 */}
         {step === 6 && (
-          <CodeInput
-            onNext={goNext}
-            onBack={goBack}
-            onUpdate={(fields) => update(fields)}
-          />
+          <CodeInput onNext={goNext} onBack={goBack} form={form} />
         )}
         {/* 7. 계정 정보 설정 화면 */}
         {step === 7 && (
@@ -134,7 +158,7 @@ const Signup: React.FC = () => {
         {/* 9. 관심사 선택 화면 */}
         {step === 9 && (
           <InterestsSelection
-            onNext={goNext}
+            onNext={signup}
             onUpdate={(fields) => update(fields)}
           />
         )}
