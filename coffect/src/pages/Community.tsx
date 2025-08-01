@@ -18,7 +18,7 @@ import UploadSuccessModal from "@/components/communityComponents/writeComponents
 
 // --- Custom Hooks ---
 import { useCommunityFilter } from "../hooks/community/useCommunityFilter";
-import useCommunityFeed from "../hooks/community/useCommunityFeed";
+import { useGetPosts } from "@/hooks/community/query/useGetPosts";
 
 // --- 상태 관리 ---
 const Community = () => {
@@ -31,8 +31,19 @@ const Community = () => {
     topic: null,
   });
 
-  // activeFilters 상태를 인자로 넘겨주어, 필터가 변경될 때마다 훅이 자동으로 데이터를 다시 가져옵니다.
-  const { posts, isLoading, error } = useCommunityFeed(activeFilters);
+  // activeFilters 상태를 useGetPosts 훅의 파라미터 형식에 맞게 변환합니다.
+  // 우선 기본적인 값으로 초기화하고, 필요에 따라 activeFilters 값을 사용합니다.
+  const { data, isLoading, error } = useGetPosts({
+    cursor: 0, // TODO: 페이지네이션 구현 시 이 값을 관리해야 합니다.
+    ascend: false, // 최신순으로 정렬
+    orderBy: "createdAt",
+    // threadSubject: activeFilters.topic ? [Number(activeFilters.topic)] : [], // topic이 있을 경우 숫자로 변환하여 배열에 담습니다.
+    type: "아티클", // type이 있으면 사용하고, 없으면 빈 문자열을 전달합니다.
+  });
+
+  console.log(activeFilters.type);
+  // 실제 게시글 목록은 data.success.thread에 있습니다.
+  const posts = data?.success?.thread || [];
 
   // 필터 모달 내의 임시 선택 상태를 관리하는 훅입니다.
   const {

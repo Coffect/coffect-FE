@@ -5,7 +5,7 @@
  */
 import { useState, useEffect, useCallback } from "react";
 import type { Comment } from "../types/commentTypes";
-import { getComments, addComment } from "../api/commentApi";
+import { getComments, addComment } from "../api/community/commentApi";
 
 /**
  * @description 댓글 관련 비즈니스 로직을 처리하는 커스텀 훅

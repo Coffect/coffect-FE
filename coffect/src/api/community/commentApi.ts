@@ -1,10 +1,9 @@
-
 /**
  * @author: 강신욱
  * @description: 댓글 관련 API 함수
  * @version: 1.0.0
  */
-import type { Comment } from "../types/commentTypes";
+import type { Comment } from "../../types/commentTypes";
 
 // 더미 댓글 데이터 생성 함수
 const generateDummyComments = (count: number): Comment[] => {
@@ -63,7 +62,7 @@ export const getComments = async (postId: number): Promise<Comment[]> => {
  */
 export const addComment = async (
   postId: number,
-  content: string
+  content: string,
 ): Promise<Comment> => {
   console.log(`Adding comment "${content}" to post ${postId}...`);
   // 실제 API 호출 로직으로 대체될 부분
