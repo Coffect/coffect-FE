@@ -32,7 +32,7 @@ const CommentInput = ({ postId }: CommentInputProps) => {
         <textarea
           ref={textareaRef}
           placeholder="댓글을 남겨보세요."
-          className="scrollbar-hide max-h-24 w-full resize-none overflow-hidden rounded-2xl bg-[var(--gray-5)] py-3 pr-17 pl-5 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className="scrollbar-hide max-h-24 w-full resize-none overflow-hidden rounded-2xl bg-[var(--gray-5)] py-3 pr-17 pl-5 focus:outline-none"
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           rows={1}
