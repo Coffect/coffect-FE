@@ -11,7 +11,7 @@ const buttonStyle =
   "text-sm text-gray-600 hover:text-blue-500 flex items-center gap-1";
 
 interface FeedInteractionProps {
-  postId: number;
+  postId: string;
   likes: number;
   comments: number;
   isDetailView?: boolean;
