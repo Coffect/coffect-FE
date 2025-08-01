@@ -46,7 +46,7 @@ const LeaveModal: React.FC<LeaveModalProps> = ({ open, onClose }) => {
         {/* 탈퇴/취소 버튼 */}
         <div className="flex w-full text-center">
           <button
-            className="flex-1 rounded-bl-2xl bg-white py-4 text-[var(--gray-40)] transition"
+            className="flex-1 rounded-bl-2xl border-t-[1px] border-[var(--gray-5)] bg-white py-4 text-[var(--gray-40)] transition"
             onClick={onClose}
           >
             더 써볼래요
