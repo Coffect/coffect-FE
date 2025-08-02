@@ -22,6 +22,7 @@ import {
   postSuggestCoffeeChat,
 } from "@/api/home";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useToastStore } from "@/hooks/useToastStore";
 
 // 태그별 전역 색상 클래스 반환
 const getTagColor = (tag: string) => {
@@ -62,6 +63,8 @@ const getTagColor = (tag: string) => {
 };
 
 const ProfileFlip: React.FC = () => {
+  const { showToast } = useToastStore();
+
   // 커피챗 제안 요청을 처리
   const { mutate: suggestCoffeeChat } = useMutation({
     mutationFn: async ({ message, id }: { message: string; id: number }) =>
@@ -71,7 +74,7 @@ const ProfileFlip: React.FC = () => {
       setShowCompleteModal(true);
     },
     onError: () => {
-      alert("제안 메시지를 입력해야 전송가능해요.");
+      showToast("한 글자 이상 입력해주세요!", "error");
     },
   });
 
