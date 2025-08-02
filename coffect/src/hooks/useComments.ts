@@ -11,7 +11,7 @@ import { getComments, addComment } from "../api/community/commentApi";
  * @description 댓글 관련 비즈니스 로직을 처리하는 커스텀 훅
  * @param postId - 현재 게시글의 ID
  */
-export const useComments = (postId: number) => {
+export const useComments = (postId: string) => {
   const [comments, setComments] = useState<Comment[]>([]); // 댓글 목록 상태
   const [newComment, setNewComment] = useState(""); //  새로운 댓글 입력 상태
   const [isLoading, setIsLoading] = useState(false); // 로딩 상태

@@ -13,7 +13,7 @@ import useAutoResizeTextarea from "../../../hooks/useAutoResizeTextarea";
  * @property {number} postId - 현재 게시글의 ID
  */
 interface CommentInputProps {
-  postId: number;
+  postId?: string;
 }
 
 const CommentInput = ({ postId }: CommentInputProps) => {

@@ -5,7 +5,7 @@
  *              - 각 함수는 `postTypes.ts`에서 정의한 타입을 파라미터 및 반환 값으로 사용합니다.
  */
 
-import { axiosInstance } from "../axiosInstance";
+import { axiosInstance } from "@/api/axiosInstance";
 import type {
   PostPostsRequest,
   PostPostsResponse,
