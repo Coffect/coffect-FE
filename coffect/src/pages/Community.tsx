@@ -31,14 +31,13 @@ const Community = () => {
     topic: null,
   });
 
-  // activeFilters 상태를 useGetPosts 훅의 파라미터 형식에 맞게 변환합니다.
-  // 우선 기본적인 값으로 초기화하고, 필요에 따라 activeFilters 값을 사용합니다.
+  // useGetPosts 훅에 activeFilters를 직접 전달하여 필터 변경 시 자동으로 쿼리가 재실행되도록 합니다.
   const { data, isLoading, error } = useGetPosts({
     cursor: 0, // TODO: 페이지네이션 구현 시 이 값을 관리해야 합니다.
     ascend: false, // 최신순으로 정렬
     orderBy: "createdAt",
-    // threadSubject: activeFilters.topic ? [Number(activeFilters.topic)] : [], // topic이 있을 경우 숫자로 변환하여 배열에 담습니다.
-    type: "아티클", // type이 있으면 사용하고, 없으면 빈 문자열을 전달합니다.
+    threadSubject: activeFilters.topic ? [Number(activeFilters.topic)] : [], // topic이 있을 경우 숫자로 변환하여 배열에 담습니다. (임시)
+    type: activeFilters.type || "아티클", // activeFilters.type이 있으면 사용하고, 없으면 "아티클"을 기본값으로 전달합니다. (임시)
   });
 
   console.log(activeFilters.type);
