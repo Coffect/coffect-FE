@@ -63,7 +63,7 @@ const PostDetail = () => {
             threadShare: post.threadShare,
             name: post.user.name,
             profileImage: post.user.profileImage,
-            likeCount: post.likes,
+            likeCount: post.like,
             // PostSummary에 없는 필드들은 임시로 기본값 처리
             // topic: "",
             // type: "",

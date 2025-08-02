@@ -15,7 +15,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getPostDetail } from "@/api/community/postApi";
 import { getTimeAgo } from "@/utils/dateUtils";
 import { useComments } from "./useComments";
-import type { Post } from "@/types/community/postTypes";
+import type { GetThreadLookUpResponse } from "@/types/community/postTypes";
 
 export const usePostDetail = () => {
   const { id } = useParams<{ id: string }>(); // URL 파라미터에서 게시글 ID를 가져옵니다.
@@ -25,7 +25,7 @@ export const usePostDetail = () => {
   const isPostIdValid = typeof postId === "string" && postId.length > 0;
 
   // react-query를 사용하여 게시글 상세 정보를 가져옵니다.
-  const { data, isLoading, error } = useQuery<Post, Error>({
+  const { data, isLoading, error } = useQuery<GetThreadLookUpResponse, Error>({
     queryKey: ["postDetail", postId],
     queryFn: () => getPostDetail({ threadId: postId as string }),
     enabled: isPostIdValid,
