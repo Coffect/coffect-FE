@@ -1,3 +1,10 @@
+/*
+  author      : 이희선
+  description : 토스트 메시지 상태를 관리하는 Zustand 훅입니다.
+                - showToast: 메시지 표시 (중복 호출 시 이전 타이머 제거)
+                - hideToast: 즉시 토스트 숨김
+*/
+
 import { create } from "zustand";
 
 // 토스트 메시지 타입 정의

@@ -1,3 +1,9 @@
+/*
+  author      : 썬더/이희선
+  description : 토스트 메시지를 화면에 표시하는 컴포넌트입니다.
+                - zustand 상태에 따라 메시지를 띄움
+                - 타입(success/error)에 따라 아이콘 분기
+*/
 import { useToastStore } from "@/hooks/useToastStore";
 import SuccessToastImage from "@/assets/icon/home/successToast.png";
 import ErrorToastImage from "@/assets/icon/home/errorToast.png";
