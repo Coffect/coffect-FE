@@ -3,15 +3,16 @@
  * @description: 게시글 상세 페이지입니다.
                 데이터 로직은 각 커스텀 훅에 위임하고,
                 UI는 공용 컴포넌트와 상세 페이지 전용 컴포넌트들을 조합하여 구성합니다.
- * @version: 1.1.0
+ * @version: 1.2.0
  * @date: 2025-08-02
  * @remarks
  * - 1.1.0: `usePostDetail` 훅과 `useComments` 훅을 분리하여 각각 호출하도록 수정.
- *          데이터 로딩 및 에러 처리를 각 훅의 상태에 맞게 분리하여 관리.
+ * - 1.2.0: `usePostDetail` 훅에 `select` 옵션이 적용됨에 따라, 
+ *          훅의 반환 값(post, timeAgo)을 사용하는 부분을 최종 확인하고 주석을 보강.
  */
 
 import { usePostDetail } from "@/hooks/community/query/usePostDetail";
-import { useComments } from "@/hooks/useComments"; // 댓글 데이터를 가져오는 훅을 직접 import
+import { useComments } from "@/hooks/useComments";
 import PostAuthorInfo from "@/components/shareComponents/post/PostAuthorInfo";
 import PostBody from "@/components/shareComponents/post/PostBody";
 import PostDetailHeader from "@/components/postDetailComponents/PostDetailHeader";
@@ -20,21 +21,21 @@ import CommentInput from "@/components/communityComponents/comment/CommentInput"
 
 const PostDetail = () => {
   // 1. 게시글 상세 정보 로딩: usePostDetail 훅을 호출합니다.
-  // 이제 이 훅은 댓글 정보를 포함하지 않습니다.
+  // 이 훅은 내부적으로 `select` 옵션을 사용하여 필요한 데이터(post, timeAgo)만 가공하여 반환합니다.
   const {
     post,
     postId,
     timeAgo,
-    isLoading: isPostLoading, // 로딩 상태 변수 이름을 명확하게 변경 (게시글 로딩)
-    error: postError, // 에러 상태 변수 이름을 명확하게 변경 (게시글 에러)
+    isLoading: isPostLoading,
+    error: postError,
   } = usePostDetail();
 
   // 2. 댓글 목록 로딩: useComments 훅을 직접 호출합니다.
-  // postId가 유효할 때만 훅이 동작하도록 postId를 전달합니다.
+  // 게시글 데이터와 댓글 데이터는 독립적으로 로딩 및 에러 처리가 됩니다.
   const {
     comments: commentList,
-    isLoading: areCommentsLoading, // 로딩 상태 변수 이름을 명확하게 변경 (댓글 로딩)
-    error: commentsError, // 에러 상태 변수 이름을 명확하게 변경 (댓글 에러)
+    isLoading: areCommentsLoading,
+    error: commentsError,
   } = useComments(postId);
 
   // 데이터 로딩 중일 때 표시할 UI (게시글 또는 댓글 중 하나라도 로딩 중일 때)
@@ -46,7 +47,7 @@ const PostDetail = () => {
     );
   }
 
-  // 에러 발생 시 표시할 UI (게시글 또는 댓글 에러가 발생했을 때)
+  // 에러 발생 시 표시할 UI (게시글 또는 댓글 에러 중 하나라도 발생했을 때)
   if (postError || commentsError) {
     return (
       <div className="flex h-screen items-center justify-center text-red-500">
@@ -56,7 +57,7 @@ const PostDetail = () => {
     );
   }
 
-  // 게시글 데이터가 없을 경우 (로딩도 아니고 에러도 아닌데 데이터가 없는 경우)
+  // 게시글 데이터가 없을 경우 (로딩과 에러가 모두 끝났는데 데이터가 없는 경우)
   if (!post) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -85,23 +86,14 @@ const PostDetail = () => {
             name: post.user.name,
             profileImage: post.user.profileImage,
             likeCount: post.like,
-            // PostSummary에 없는 필드들은 임시로 기본값 처리
-            // topic: "",
-            // type: "",
-            // commentCount: 0,
-            // threadimage: null,
-            // major: "",
-            // studentId: "",
           }}
           isDetailView={true}
         />
 
-        {/* 댓글 목록 컴포넌트에 commentList를 전달합니다. */}
         <PostDetailComments commentList={commentList} />
       </main>
 
       <div className="fixed bottom-0 left-1/2 w-full max-w-[430px] -translate-x-1/2 border-t border-gray-200 bg-white p-3 pb-4">
-        {/* 댓글 입력 컴포넌트에는 postId만 전달하면 됩니다. */}
         <CommentInput postId={postId} />
       </div>
     </div>
