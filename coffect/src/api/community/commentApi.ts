@@ -44,7 +44,7 @@ const generateDummyComments = (count: number): Comment[] => {
  * @param postId - 댓글을 가져올 게시글의 ID
  * @returns 댓글 목록 Promise
  */
-export const getComments = async (postId: number): Promise<Comment[]> => {
+export const getComments = async (postId: string): Promise<Comment[]> => {
   console.log(`Fetching comments for post ${postId}...`);
   // 실제 API 호출 로직으로 대체될 부분
   return new Promise((resolve) => {
@@ -61,7 +61,7 @@ export const getComments = async (postId: number): Promise<Comment[]> => {
  * @returns 새로 추가된 댓글 Promise
  */
 export const addComment = async (
-  postId: number,
+  postId: string,
   content: string,
 ): Promise<Comment> => {
   console.log(`Adding comment "${content}" to post ${postId}...`);
