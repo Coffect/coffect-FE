@@ -74,6 +74,18 @@ const ProfileFlip: React.FC = () => {
     onSuccess: () => {
       setShowSuggestModal(false);
       setShowCompleteModal(true);
+
+      // 카드 제거 애니메이션 후 삭제 및 다음 카드 불러오기
+      setSkipAnimation(true);
+      setTimeout(async () => {
+        try {
+          await DeleteCard();
+          await refetch();
+        } finally {
+          setSkipped((prev) => prev + 1);
+          setSkipAnimation(false);
+        }
+      }, 300);
     },
     onError: () => {
       showToast("한 글자 이상 입력해주세요!", "error");
