@@ -13,7 +13,8 @@ import CoffeeSuggestModal from "./CoffeeSuggestModal";
 import CoffeeSuggestCompleteModal from "./CoffeeSuggestCompleteModal";
 import CardLeftImage from "../../assets/icon/home/CardLeft.png";
 import CardMidImage from "../../assets/icon/home/CardMid.png";
-import CardRightImage from "../../assets/icon/home/CardRight.png";
+import CardRightUpImage from "@/assets/icon/home/CardRightUp.png";
+import CardRightDownImage from "@/assets/icon/home/CardRightDown.png";
 import NoCardImage from "../../assets/icon/home/NoCard.png";
 import type { UserProfile } from "@/types/home";
 import {
@@ -63,7 +64,8 @@ const getTagColor = (tag: string) => {
 };
 
 const ProfileFlip: React.FC = () => {
-  const { showToast } = useToastStore();
+  // 토스트 표시, 숨김
+  const { showToast, hideToast } = useToastStore();
 
   // 커피챗 제안 요청을 처리
   const { mutate: suggestCoffeeChat } = useMutation({
@@ -118,6 +120,8 @@ const ProfileFlip: React.FC = () => {
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   // 커피챗 제안 완료 모달 열림 여부
   const [showCompleteModal, setShowCompleteModal] = useState(false);
+  // 팔로우 여부
+  const [isFollowing, setIsFollowing] = useState(false);
 
   // 카드 제거(왼쪽 버튼)
   const handleSkip = async () => {
@@ -157,6 +161,23 @@ const ProfileFlip: React.FC = () => {
     setShowCompleteModal(false);
     setSelectedProfileId(null);
   };
+
+  // 오른쪽 버튼(팔로우) 클릭 시 상태 토클 및 토스트 메시지
+  const handleFollowToggle = (e: React.MouseEvent) => {
+    e.stopPropagation(); // 카드 클릭 방지
+    setIsFollowing((prevState) => {
+      const nowState = !prevState; // 팔로우 상태 토글
+      // 팔로우 추가일 때만 토스트 표시
+      if (nowState) {
+        showToast("@님을 팔로우했어요!", "success");
+      } else {
+        // 팔로우 해제 시 즉시 토스트 숨김
+        hideToast();
+      }
+      return nowState;
+    });
+  };
+
   // 카드 클릭 시 상세 페이지 이동
   const handleCardClick = (profile: UserProfile) => {
     navigate(`/home/cards/${profile.id}`, {
@@ -269,11 +290,11 @@ const ProfileFlip: React.FC = () => {
               />
             </button>
             <button
-              onClick={(e) => e.stopPropagation()}
+              onClick={handleFollowToggle}
               className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-white text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
             >
               <img
-                src={CardRightImage}
+                src={isFollowing ? CardRightDownImage : CardRightUpImage}
                 alt="follow"
                 className="h-[40%] w-[40%] object-contain"
               />
