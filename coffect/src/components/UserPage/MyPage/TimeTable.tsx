@@ -101,7 +101,8 @@ const TimeTable = () => {
         <span className="text-xl font-semibold text-[var(--gray-90)]">
           커피챗이 가능한
           <br />
-          공강 시간대를 표시해주세요!
+          <span className="text-[var(--orange-500)]">공강 시간대</span>를
+          표시해주세요!
         </span>
         <span className="text-md my-2 text-[var(--gray-50)]">
           상대방과 겹치는 시간대를 확인할 수 있어요.
