@@ -13,11 +13,19 @@ const CoffeeCategoryGrid: React.FC = () => {
   // 카테고리 클릭 시 다음날 오전 9시까지 수정 못하도록 localStorage에 방문기록 저장+ API 호출
   const { mutate: selectCategory } = useMutation({
     mutationFn: async (categoryValue: number) => {
+      // 이전 카드 추천 뷰 진입 여부 기록 제거 (카드 API 조건 초기화 목적)
       if (localStorage.getItem("cardViewVisited")) {
         localStorage.removeItem("cardViewVisited");
       }
+      // 카드 스킵(페이징) 횟수 초기화 (페이지 진입 시 스킵(페이징) 카운트 리셋 목적)
+      if (localStorage.getItem("skippedCardCount")) {
+        localStorage.removeItem("skippedCardCount");
+      }
+      // 선택한 추천 기준 서버에 전송
       postTodayInterest(categoryValue);
+      // 로컬스토리지에 추천 기준 선택 여부 저장 (당일 재선택 방지 목적)
       localStorage.setItem("coffeeCategorySelected", "true");
+      // 선택 만료 시간 기록 (다음날 오전 9시 재추천 트리거를 위한 기준 시점)
       localStorage.setItem("coffeeCategoryExpire", new Date().toISOString());
     },
     onSuccess: () => {

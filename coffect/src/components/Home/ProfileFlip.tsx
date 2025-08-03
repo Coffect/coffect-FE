@@ -82,7 +82,11 @@ const ProfileFlip: React.FC = () => {
           await DeleteCard();
           await refetch();
         } finally {
-          setSkipped((prev) => prev + 1);
+          setSkipped((prev) => {
+            const next = prev + 1;
+            localStorage.setItem("skippedCardCount", next.toString());
+            return next;
+          });
           setSkipAnimation(false);
         }
       }, 300);
@@ -120,8 +124,11 @@ const ProfileFlip: React.FC = () => {
     },
   });
   const navigate = useNavigate();
-  // 현재 스킵된 카드 수
-  const [skipped, setSkipped] = useState(0);
+  // 현재 스킵된 카드 수 (로컬스토리지에서 불러오기->다른 라우팅 위치 이동 이후에도 같은 페이징 유지를 위해)
+  const [skipped, setSkipped] = useState(() => {
+    const stored = localStorage.getItem("skippedCardCount");
+    return stored ? parseInt(stored) : 0;
+  });
   // 스킵 애니메이션 동작 여부
   const [skipAnimation, setSkipAnimation] = useState(false);
   // 커피챗 제안 대상 프로필 ID
@@ -143,7 +150,11 @@ const ProfileFlip: React.FC = () => {
         await DeleteCard();
         await refetch();
       } finally {
-        setSkipped((prev) => prev + 1);
+        setSkipped((prev) => {
+          const next = prev + 1;
+          localStorage.setItem("skippedCardCount", next.toString());
+          return next;
+        });
         setSkipAnimation(false);
       }
     }, 300);
@@ -235,24 +246,24 @@ const ProfileFlip: React.FC = () => {
     <div className="mt-[3%] px-[6%]">
       {/* 프로필 카드 */}
       <div
-        className={`mx-auto h-full w-full transform overflow-hidden rounded-3xl bg-white p-[3%] transition-all duration-300 ease-in-out ${
+        className={`mx-auto h-full w-full transform overflow-hidden rounded-[20px] bg-white p-[3%] shadow-[0_0_20px_4px_rgba(189,179,170,0.2)] transition-all duration-500 ease-in-out ${
           skipAnimation
-            ? "translate-x-full opacity-0"
-            : "translate-x-0 opacity-100"
+            ? "origin-top-right translate-x-[60%] -translate-y-[60%] -rotate-[75deg] opacity-0"
+            : "origin-center translate-x-0 translate-y-0 rotate-0 opacity-100"
         }`}
         onClick={() => handleCardClick(currentCard)}
       >
         {/* 상단 이미지 영역 */}
-        <div className="relative aspect-[3/2] w-full overflow-hidden rounded-3xl">
+        <div className="relative aspect-[3/2] w-full overflow-hidden rounded-[20px]">
           <img
             src={currentCard.image}
             alt="프로필 사진"
             className="absolute inset-0 h-full w-full object-cover"
           />
-          <div className="absolute top-3 left-3 rounded-[60px] bg-[#2D2D2D]/90 px-3 py-2 text-[14px] font-semibold text-[var(--gray-10)]">
+          <div className="absolute top-1.5 left-3 rounded-[60px] bg-[#2D2D2D]/90 px-3 py-1 text-[14px] font-semibold text-[var(--gray-10)]">
             {skipped + 1}/3
           </div>
-          <div className="absolute bottom-0 left-0 w-full rounded-b-3xl bg-gradient-to-t from-black/70 to-transparent px-[4%] py-[5%]">
+          <div className="absolute bottom-0 left-0 w-full rounded-b-[20px] bg-gradient-to-t from-black/70 to-transparent px-[4%] py-[5%]">
             <div className="text-[22px] font-bold text-white">
               {currentCard.name}
               <span className="ml-[3%] text-sm font-medium text-[var(--gray-10)]">
@@ -266,17 +277,21 @@ const ProfileFlip: React.FC = () => {
           {currentCard.tags.map((tag, idx) => (
             <span
               key={idx}
-              className={`mr-[2%] mb-[2%] rounded-[7px] px-[3%] py-[1.5%] text-sm font-medium ${getTagColor(
+              className={`mr-[2%] mb-[2%] rounded-[7px] px-[3.5%] py-[1.5%] text-sm font-medium ${getTagColor(
                 tag,
               )}`}
             >
               {tag}
             </span>
           ))}
+        </div>
+        <div className="flex flex-wrap px-[2%]">
           <p className="mt-[0.2rem] line-clamp-3 text-base leading-normal font-medium text-[var(--gray-70)]">
             {currentCard.intro}
           </p>
-          {/* 하단 버튼 3개 (스킵 / 제안 / 팔로우) */}
+        </div>
+        {/* 하단 버튼 3개 (스킵 / 제안 / 팔로우) */}
+        <div className="flex flex-wrap">
           <div
             className="mx-auto mt-[1.5rem] mb-[1rem] flex gap-[1rem]"
             onClick={(e) => e.stopPropagation()}
