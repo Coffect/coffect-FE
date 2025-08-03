@@ -3,7 +3,10 @@ author : 재하
 description : 마이페이지 내 프로필 및 피드/상세소개 탭을 출력하는 컴포넌트입니다.
 */
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { getProfileSearch } from "../../../api/profile";
+import type { profileType } from "../../../types/mypage/profile";
 import backIcon from "../../../assets/icon/mypage/back.png";
 import profileImg from "../../../assets/icon/mypage/profile.png";
 import FeedItem from "../../shareComponents/FeedItem";
@@ -78,6 +81,21 @@ function UserProfile() {
   사용자의 마이페이지 프로필 화면을 렌더링하며, 탭에 따라 피드 또는 상세 소개를 보여줍니다.
   */
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const userId: string = id ? id : ""; // 기본값 1
+
+  // getProfileSearch API를 useQuery로 호출
+  const { data: profileData, isLoading } = useQuery<profileType>({
+    queryKey: ["profileSearch", userId],
+    queryFn: () => getProfileSearch(userId),
+    staleTime: 5 * 60 * 1000, // 5분
+    gcTime: 10 * 60 * 1000, // 10분
+  });
+
+  // 프로필 데이터
+  const profile = profileData?.success;
+  const userInfo = profile?.userInfo;
+
   // 현재 활성화된 탭 상태 ("피드" 또는 "상세 소개")
   const [activeTab, setActiveTab] = useState<UserProfileTab>("피드");
   // 텍스트 확장 상태
@@ -122,27 +140,34 @@ function UserProfile() {
     return num.toString();
   }
 
+  // 로딩 중일 때 처리
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <div className="flex h-full w-full flex-col overflow-y-auto bg-white px-4">
+    <div className="flex h-full w-full flex-col overflow-y-auto bg-white">
       {/* 상단 헤더 */}
-      <div className="flex items-center justify-between py-3">
+      <div className="flex items-center justify-between px-4 py-3">
         <button
           className="pr-9 text-left text-3xl"
-          onClick={() => navigate("/mypage")}
+          onClick={() => navigate(-1)}
         >
           <img src={backIcon} className="h-6 w-6" />
         </button>
         <div className="flex-1 items-center justify-center pr-15 text-center">
-          <span className="text-lg font-semibold">jeha0714</span>
+          <span className="text-lg font-semibold">
+            {userInfo?.id || "사용자 아이디"}
+          </span>
         </div>
       </div>
 
       {/* Profile Section: 프로필 이미지와 통계 정보 */}
-      <div className="py-2">
+      <div className="px-4 py-2">
         <div className="mb-4 flex flex-row items-center justify-center">
           {/* Profile Image: 사용자 프로필 이미지 자리 */}
           <img
-            src={profileImg}
+            src={userInfo?.profileImage || profileImg}
             className="flex h-25 w-25 overflow-hidden rounded-full border-[1.5px] border-[var(--gray-10)]"
           />
 
@@ -150,19 +175,19 @@ function UserProfile() {
           <div className="flex flex-1 items-center justify-evenly">
             <div className="text-center">
               <div className="text-lg font-semibold text-[var(--gray-70)]">
-                {formatCount(42)}
+                {formatCount(profile?.threadCount || 0)}
               </div>
               <div className="text-sm text-[var(--gray-50)]">포스트</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-semibold text-[var(--gray-70)]">
-                {formatCount(999456)}
+                {formatCount(profile?.follower || 0)}
               </div>
               <div className="text-sm text-[var(--gray-50)]">팔로워</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-semibold text-[var(--gray-70)]">
-                {formatCount(999456)}
+                {formatCount(profile?.following || 0)}
               </div>
               <div className="text-sm text-[var(--gray-50)]">팔로잉</div>
             </div>
@@ -171,12 +196,16 @@ function UserProfile() {
 
         {/* Profile Info: 사용자 이름, 전공, 학번, 자기소개 */}
         <div className="mb-4 ml-2">
-          <p className="text-xl font-bold text-[var(--gray-90)]">재하</p>
-          <div className="mb-1">
+          <p className="text-xl font-bold text-[var(--gray-90)]">
+            {userInfo?.name || "사용자 이름"}
+          </p>
+          <div className="mb-1 flex flex-wrap gap-1">
             <span className="text-sm text-[var(--gray-40)]">
-              컴퓨터컴퓨터과학전공{" "}
+              {userInfo?.dept || "전공"}
             </span>
-            <span className="text-sm text-[var(--gray-40)]">19학번</span>
+            <span className="text-sm text-[var(--gray-40)]">
+              {userInfo?.studentId || ""}학번
+            </span>
           </div>
           <div className="relative">
             <p
@@ -185,12 +214,7 @@ function UserProfile() {
                 !isExpanded && isOverflowing ? "line-clamp-2" : ""
               }`}
             >
-              계절이 지나가는 하늘에는 가을로 가득 차 있습니다. 나는 아무 걱정도
-              없이 가을 속의 별들을 다 헤일 듯합니다. 가슴속에 하나둘 새겨지는
-              별을 이제 다 못 헤는 것은 쉬이 아침이 오는 까닭이요, 내일 밤이
-              남은 까닭이요, 아직 나의 청춘이 다하지 않은 까닭입니다. 별 하나에
-              추억과 별 하나에 사랑과 별 하나에 쓸쓸함과 별 하나에 동경과 별
-              하나에 시와 별 하나에 어머니, 어머니,
+              {userInfo?.introduce || "자기소개가 없습니다."}
             </p>
             {isOverflowing && (
               <button
