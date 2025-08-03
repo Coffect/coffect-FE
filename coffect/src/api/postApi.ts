@@ -5,7 +5,7 @@
  *              백엔드 API 엔드포인트가 변경되거나, 요청/응답 데이터 형식이 변경될 때 이 파일을 수정합니다.
  */
 
-import type { PostData } from "../types/writePostTypes";
+import type { PostData } from "../types/community/writePostTypes";
 
 /**
  * @function createPost

@@ -7,7 +7,10 @@
  */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import type { UseWritePostReturn, PostData } from "../types/writePostTypes";
+import type {
+  UseWritePostReturn,
+  PostData,
+} from "../types/community/writePostTypes";
 import { createPost } from "../api/postApi";
 
 /**

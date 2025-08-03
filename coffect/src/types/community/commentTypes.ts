@@ -39,6 +39,11 @@ export interface Comment {
   };
 }
 
+/**
+ * @interface getCommentRequest
+ * @description: 댓글 조회 API 요청 타입
+ * @property {string} threadId - 게시글 ID (댓글을 조회할 게시글의 ID)
+ */
 export interface getCommentRequest {
   threadId: string; // 게시글 ID
 }
