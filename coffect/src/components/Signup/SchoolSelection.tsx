@@ -1,7 +1,9 @@
 /*
 author : 썬더
-description : 학교 선택 화면 (타이핑으로 입력 및 검색 + 자동완성 + 드롭다운 키보드 하이라이팅 +학과, 학번 입력 후 다음 활성화)
-              - 학교, 전공, 학번 입력 받음
+description : 학교, 학과, 전공 선택 화면 
+              학교, 학과 : 타이핑으로 입력 및 검색 + 자동완성 + 드롭다운 키보드 하이라이팅 
+              학번 입력 
+              학교, 학과, 학번 모두 입력 시 다음 버튼 활성화
 */
 
 import React, { useState, useEffect, useRef } from "react";
@@ -10,6 +12,7 @@ import { isValidStudentId } from "../../utils/validation";
 import SignupPageLayout from "./shared/SignupLayout";
 import type { StepProps } from "../../types/signup";
 import { searchDept, searchUniv } from "../../api/univ";
+import { useQuery } from "@tanstack/react-query";
 
 //학교 정보 타입
 interface Univ {
@@ -27,53 +30,40 @@ interface Major {
 
 const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   const [schoolQuery, setSchoolQuery] = useState("");
-  const [schoolList, setSchoolList] = useState<Univ[]>([]);
   const [selectedSchool, setSelectedSchool] = useState<Univ | null>(null);
   const [highlightedSchoolIndex, setHighlightedSchoolIndex] = useState(-1);
   const [showSchoolDropdown, setShowSchoolDropdown] = useState(false);
 
   const [majorQuery, setMajorQuery] = useState("");
-  const [majorList, setMajorList] = useState<Major[]>([]);
   const [highlightedMajorIndex, setHighlightedMajorIndex] = useState(-1);
   const [showMajorDropdown, setShowMajorDropdown] = useState(false);
   // 입력한 학번
   const [studentId, setStudentId] = useState<string>("");
+
   //학번 유효성 검사
   const isStudentIdValid = isValidStudentId(studentId);
 
-  // query나 dropdown 상태가 변경되면 학교 자동완성 필터링 실행
-  useEffect(() => {
-    const fetchSchools = async () => {
-      if (!schoolQuery || !showSchoolDropdown) return setSchoolList([]);
-      try {
-        const res = await searchUniv(schoolQuery);
-        setSchoolList(res?.univList ?? []);
-      } catch {
-        setSchoolList([]);
-      }
-      setHighlightedSchoolIndex(-1);
-    };
-    fetchSchools();
-  }, [schoolQuery, showSchoolDropdown]);
+  // query나 dropdown 상태가 변경되면 학교 자동완성 쿼리
+  const { data: schoolList } = useQuery<{ univList: Univ[] }>({
+    queryKey: ["searchUniv", schoolQuery],
+    queryFn: () => searchUniv(schoolQuery),
+    enabled: !!schoolQuery && showSchoolDropdown,
+    staleTime: 30000, //30초간 동일 쿼리 재요청시 캐시된 응답 제공
+    retry: false,
+  });
 
-  // 전공 자동완성 fetch
-  useEffect(() => {
-    const fetchMajors = async () => {
-      if (!majorQuery || !showMajorDropdown || !selectedSchool)
-        return setMajorList([]);
-      try {
-        const res = await searchDept({
-          deptSearch: majorQuery,
-          univName: selectedSchool.name,
-        });
-        setMajorList(res?.deptList ?? []);
-      } catch {
-        setMajorList([]);
-      }
-      setHighlightedMajorIndex(-1);
-    };
-    fetchMajors();
-  }, [majorQuery, showMajorDropdown, selectedSchool]);
+  // 전공 자동완성 쿼리
+  const { data: majorList } = useQuery<{ deptList: Major[] }>({
+    queryKey: ["searchDept", majorQuery, selectedSchool?.name],
+    queryFn: () =>
+      searchDept({
+        deptSearch: majorQuery,
+        univName: selectedSchool!.name,
+      }),
+    enabled: !!majorQuery && !!selectedSchool && showMajorDropdown,
+    staleTime: 30000,
+    retry: false,
+  });
 
   // 학교를 선택했을 때 실행되는 핸들러
   const selectSchool = (school: Univ) => {
@@ -81,7 +71,6 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
     setSchoolQuery(school.name);
     setShowSchoolDropdown(false);
     setMajorQuery(""); // 학교 바뀌면 전공 초기화
-    setMajorList([]);
   };
   // 전공 선택했을 때 실행되는 핸들러
   const selectMajor = (major: string) => {
@@ -92,28 +81,37 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   // 키보드 네비게이션 (학교)
   const handleSchoolKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!showSchoolDropdown) return;
+    //화살표 내리기
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setHighlightedSchoolIndex((i) => Math.min(i + 1, schoolList.length - 1));
+      setHighlightedSchoolIndex((i) =>
+        Math.min(i + 1, (schoolList?.univList.length ?? 0) - 1),
+      );
+      //화살표 올리기
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setHighlightedSchoolIndex((i) => Math.max(i - 1, 0));
+      // 엔터 시 선택
     } else if (e.key === "Enter" && highlightedSchoolIndex >= 0) {
-      selectSchool(schoolList[highlightedSchoolIndex]);
+      const selected = schoolList?.univList?.[highlightedSchoolIndex];
+      if (selected) selectSchool(selected);
     }
   };
 
   // 키보드 네비게이션 (전공)
   const handleMajorKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!showMajorDropdown) return;
+    if (!showMajorDropdown || !majorList) return;
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setHighlightedMajorIndex((i) => Math.min(i + 1, majorList.length - 1));
+      setHighlightedMajorIndex((i) =>
+        Math.min(i + 1, majorList.deptList?.length - 1),
+      );
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setHighlightedMajorIndex((i) => Math.max(i - 1, 0));
     } else if (e.key === "Enter" && highlightedMajorIndex >= 0) {
-      selectMajor(majorList[highlightedMajorIndex].dept);
+      const selected = majorList?.deptList?.[highlightedMajorIndex].dept;
+      if (selected) selectMajor(selected);
     }
   };
 
@@ -189,10 +187,10 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
         {/* 자동완성 드롭다운 */}
         <div className="relative">
           {showSchoolDropdown &&
-            Array.isArray(schoolList) &&
-            schoolList.length > 0 && (
+            Array.isArray(schoolList?.univList) &&
+            schoolList.univList.length > 0 && (
               <ul className="absolute z-10 mt-2 w-full bg-white">
-                {schoolList.map((s, i) => (
+                {schoolList.univList.map((s, i) => (
                   <li
                     key={s.id}
                     onClick={() => selectSchool(s)}
@@ -235,10 +233,10 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
                 className="h-[48px] w-full scroll-mb-[100px] rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
               />
               {showMajorDropdown &&
-                Array.isArray(majorList) &&
-                majorList.length > 0 && (
+                Array.isArray(majorList?.deptList) &&
+                majorList.deptList.length > 0 && (
                   <ul className="absolute z-10 mt-2 w-full bg-white">
-                    {majorList.map((m, i) => (
+                    {majorList.deptList.map((m, i) => (
                       <li
                         key={m.dept}
                         onClick={() => selectMajor(m.dept)}
