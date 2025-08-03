@@ -119,22 +119,22 @@ const CoffeeSuggestBanner = () => {
                   <img
                     src={user.image}
                     alt="프로필 사진"
-                    className="aspect-[1/1] w-[15%] rounded-full object-cover"
+                    className="aspect-[1/1] w-[18%] rounded-full object-cover"
                   />
 
                   {/* 메시지 내용 + 버튼 */}
                   <div className="flex w-0 flex-1 flex-col justify-center">
-                    <p className="mb-[3%] overflow-hidden text-base font-medium text-[var(--gray-70)]">
+                    <p className="mb-[3%] ml-[3%] overflow-hidden text-base font-medium text-[var(--gray-70)]">
                       <span className="text-base font-bold text-[var(--gray-85)]">
                         {user.name}
                       </span>
                       님의 {user.message}
                     </p>
 
-                    <div className="flex justify-start">
+                    <div className="ml-[3%] flex justify-start">
                       <button
                         onClick={() => navigate(`/userpage/${user.id}`)}
-                        className="rounded-[12px] bg-[var(--gray-80)] px-3 py-1.5 text-base font-medium text-[var(--gray-0)]"
+                        className="rounded-[12px] bg-[var(--gray-80)] px-4 py-1.5 text-base font-medium text-[var(--gray-0)]"
                       >
                         프로필 보기
                       </button>
