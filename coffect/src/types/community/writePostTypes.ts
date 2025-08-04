@@ -57,3 +57,46 @@ export interface UseWritePostReturn {
   error: string | null; // API 호출 에러 메시지
   isSuccess: boolean; // API 호출 성공 상태
 }
+
+/**
+ * @interface PostUploadRequest
+ * @description 게시글 업로드 요청 시 필요한 데이터 구조를 정의합니다.
+ * @params {number[]} threadSubject - 주제 ID 배열
+ * - 1 : "프로덕트" / 2 : "개발" / 3 : "디자인" / 4 : "기획" / 5 : "인사이트" / 6 : "취업" / 7 : "창업" / 8 : "학교" / 9 : "기타"
+ * @params {string} threadBody - 게시글 내용
+ * @params {string} threadTitle - 게시글 제목
+ * @params {string} type - 게시글 종류 (예: 아티클, 팀원 모집 등)
+ * @description API 수정 예정: threadId, images 필드 추가 예정
+ */
+export interface PostUploadRequest {
+  threadSubject: number[]; // 주제 ID 배열
+  threadBody: string; // 게시글 내용
+  threadTitle: string; // 게시글 제목
+  type: string; // 게시글 종류 (예: 아티클, 팀원 모집 등)
+  // API 수정
+  // threadId: string;
+  // images?: string[]; // 이미지 URL 배열 (선택 사항)
+}
+
+/**
+ * @interface PostUploadResponse
+ * @description 게시글 업로드 API의 응답 구조를 정의합니다.
+ * @property resultType - 결과 타입 (예: "SUCCESS", "FAIL")
+ * @property error - 에러 정보 (실패 시)
+ * @property {string} error.errorCode - 에러 코드
+ * @property {string} error.reason - 에러 메시지
+ * @property {null | {}} error.data - 추가 데이터 (선택 사항)
+ * @property success - 성공 정보 (성공 시)
+ * @property {string} success.threadId - 게시글 ID (성공 시)
+ */
+export interface PostUploadResponse {
+  resultType: string; // 결과 타입 (예: "SUCCESS", "FAIL")
+  error: null | {
+    errorCode: string; // 에러 코드
+    reason: string; // 에러 메시지
+    data?: null; // 추가 데이터 (선택 사항)
+  };
+  success: null | {
+    threadId: string; // 게시글 ID (성공 시) 수정 예정
+  }; // 성공 정보 (실패 시 null)
+}

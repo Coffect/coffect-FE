@@ -38,7 +38,12 @@ const FeedItem = ({ post, showFollowButton = true }: FeedItemProps) => {
     // UI 하단에 회색 줄을 추가하여 각 피드 아이템을 구분합니다.
     <div className="border-b border-gray-200 pb-2">
       <PostAuthorInfo
-        user={{ name: post.name, profileImage: post.profileImage }}
+        user={{
+          name: post.user.name,
+          profileImage: post.user.profileImage,
+          studentId: post.user.studentId,
+          dept: post.user.dept,
+        }}
         timeAgo={timeAgo}
       >
         {showFollowButton && (

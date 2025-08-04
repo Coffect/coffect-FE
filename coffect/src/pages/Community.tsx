@@ -33,7 +33,7 @@ const Community = () => {
 
   // useGetPosts 훅에 activeFilters를 직접 전달하여 필터 변경 시 자동으로 쿼리가 재실행되도록 합니다.
   const { data, isLoading, error } = useGetPosts({
-    cursor: 0, // TODO: 페이지네이션 구현 시 이 값을 관리해야 합니다.
+    dateCursor: 0, // TODO: 페이지네이션 구현 시 이 값을 관리해야 합니다.
     ascend: false, // 최신순으로 정렬
     orderBy: "createdAt",
     threadSubject: activeFilters.topic ? [Number(activeFilters.topic)] : [], // topic이 있을 경우 숫자로 변환하여 배열에 담습니다. (임시)

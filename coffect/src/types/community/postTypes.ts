@@ -47,50 +47,63 @@ export interface Post {
  * @interface GetPostsRequest
  * @description 게시글 목록을 조회하는 API (GET /posts)의 요청 파라미터 타입을 정의합니다.
  *              주로 URL 쿼리 스트링으로 전달됩니다.
- * @param {number} cursor - 페이지네이션을 위한 커서 (0부터 시작)
+ * @param {string} [dateCursor] - ISO 8601 형식의 날짜 문자열 (예: "2025-08-04T10:11:11.248Z")
+ * @param {number} [likeCursor] - 좋아요 수를 기준으로 페이지네이션 (0부터 시작)
  * @param {boolean} ascend - 정렬 순서 (오름차순 또는 내림차순)
  * @param {string} orderBy - 정렬 기준 (예: "createdAt")
  * @param {number[]} [threadSubject] - 필터링할 게시글 주제 ID 배열 (선택적)
+ * - 1 : "프로덕트" / 2 : "개발" / 3 : "디자인" / 4 : "기획" / 5 : "인사이트" / 6 : "취업" / 7 : "창업" / 8 : "학교" / 9 : "기타"
  * @param {string} type - 필터링할 게시글 종류 (예: "아티클", "질문")
  */
 export interface PostPostsRequest {
-  cursor: number;
+  dateCursor?: string;
+  likeCursor?: number;
   ascend: boolean;
   orderBy: string;
   threadSubject?: number[];
-  type: string;
+  type?: string;
 }
 
 /**
  * @interface PostSummary
  * @description 게시글 목록에 사용되는 각 게시글의 요약 정보 모델입니다.
- * @param {string} threadId - 게시글 고유 ID
- * @param {number} userId - 작성자 고유 ID
- * @param {string} threadTitle - 게시글 제목
- * @param {string} threadBody - 게시글 본문 내용
- * @param {string} createdAt - 게시글 작성일 (ISO 8601 형식)
- * @param {number} threadShare - 게시글 공유 수 (예: 0 - 삭제될 것 같음)
- * @param {string} name - 작성자 이름
- * @param {string} profileImage - 작성자 프로필 이미지 URL
- * @param {number} likeCount - 게시글 좋아요 수
+ * @param {string} threadId - 게시글 고유 ID (예: "thread-12345")
+ * @param {number} userId - 작성자 고유 ID (예: 20230001)
+ * @param {string} type - 게시글 종류 (예: "아티클", "질문")
+ * @param {string} threadTitle - 게시글 제목 (예: "새로운 프로덕트 아이디어")
+ * @param {string} threadBody - 게시글 본문 내용 (예: "이 아이디어에 대해 어떻게 생각하시나요?")
+ * @param {string} createdAt - 게시글 작성일 (ISO 8601 형식, 예: "2023-10-01T12:00:00Z")
+ * @param {number} threadShare - 게시글 공유 수 (예: 0)
+ * @param {Object} user - 작성자 정보 객체
+ * @param {string} user.dept - 작성자 학과 (예: "컴퓨터공학과")
+ * @param {number} user.studentId - 작성자 학번 (예: 20230001)
+ * @param {string} user.profileImage - 작성자 프로필 이미지 URL
+ * @param {string} user.name - 작성자 이름 (예: "홍길동")
+ * @param {string[]} [subjects] - 게시글 주제 배열 (선택적, 예: ["프로덕트 개발", "디자인"])
+ * @param {string[]} [images] - 게시글 이미지 URL 배열 (선택적, 예: ["image1.jpg", "image2.jpg"])
+ * @param {number} likeCount - 게시글 좋아요 수 (예: 10)
+ * @param {number} commentCount - 게시글 댓글 수 (예: 5)
+ *
  */
+
 export interface PostSummary {
   threadId: string;
   userId: number;
+  type?: string;
   threadTitle: string;
   threadBody: string;
   createdAt: string;
   threadShare: number;
-  name: string;
-  profileImage: string;
+  user: {
+    dept: string;
+    studentId: number;
+    profileImage: string;
+    name: string;
+  };
+  subjects?: string[];
+  images?: string[];
   likeCount: number;
-  // 추가 예정
-  // topic: string; // 게시글 주제 (예: "프로덕트 개발 디자인")
-  // type: string; // 게시글 종류 (예: "아티클", "질문")
-  // commentCount: number; // 댓글 수
-  // threadimage: string | null; // 게시글 이미지 URL (없을 경우 null)
-  // major: string; // 작성자 전공 (예: "컴퓨터공학")
-  // studentId: string; // 작성자 학번 (예: "20230001")
+  commentCount: number;
 }
 
 /**
