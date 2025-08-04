@@ -121,9 +121,9 @@ function MyProfile() {
   }
 
   return (
-    <div className="flex h-full w-full flex-col overflow-y-auto bg-white px-4">
+    <div className="flex h-full w-full flex-col overflow-y-auto bg-white">
       {/* 상단 헤더 */}
-      <div className="flex items-center justify-between py-3">
+      <div className="flex items-center justify-between px-4 py-3">
         <button
           className="pr-9 text-left text-3xl"
           onClick={() => navigate("/mypage")}
@@ -136,7 +136,7 @@ function MyProfile() {
       </div>
 
       {/* Profile Section: 프로필 이미지와 통계 정보 */}
-      <div className="py-2">
+      <div className="px-4 py-2">
         <div className="mb-4 flex flex-row items-center justify-center">
           {/* Profile Image: 사용자 프로필 이미지 자리 */}
           <img
@@ -216,9 +216,9 @@ function MyProfile() {
       {/* Tab Navigation: 피드/상세 소개 탭 전환 */}
       <div className="mt-3 flex">
         <button
-          className={`flex-1 border-b-2 border-[var(--gray-10)] py-3 text-center text-lg font-semibold ${
+          className={`flex-1 border-b-2 border-[var(--gray-10)] py-3 text-center text-lg ${
             activeTab === "피드"
-              ? "border-b-2 border-[var(--gray-90)] text-black"
+              ? "border-b-2 border-[var(--gray-90)] font-semibold text-black"
               : "font-medium text-[var(--gray-50)]"
           }`}
           onClick={() => setActiveTab("피드")}
@@ -226,9 +226,9 @@ function MyProfile() {
           피드
         </button>
         <button
-          className={`flex-1 border-b-2 border-[var(--gray-10)] py-3 text-center text-lg font-semibold ${
+          className={`flex-1 border-b-2 border-[var(--gray-10)] py-3 text-center text-lg ${
             activeTab === "상세 소개"
-              ? "border-b-2 border-[var(--gray-90)] text-black"
+              ? "border-b-2 border-[var(--gray-90)] font-semibold text-black"
               : "font-medium text-[var(--gray-50)]"
           }`}
           onClick={() => setActiveTab("상세 소개")}
