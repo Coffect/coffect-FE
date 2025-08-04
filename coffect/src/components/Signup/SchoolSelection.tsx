@@ -233,7 +233,7 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
       }
     >
       <div className="pt-[10%] text-[var(--gray-90)]">
-        <h2 className="leading text-[22px] font-bold">👋 반가워요!</h2>
+        <h2 className="leading text-[22px] font-bold">👋🏻 반가워요!</h2>
         <p className="text-[22px] font-bold">
           {selectedSchool
             ? "전공과 학번을 알려주세요!"

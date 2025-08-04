@@ -4,8 +4,8 @@ description : 프로필 설정 화면 (프로필 사진 선택 및 사용자 이
 */
 
 import React, { useEffect, useState, useRef } from "react";
-import { Pencil } from "lucide-react";
-import defaultAvatar from "../../assets/icon/signup/DefaultAvatar.png";
+import profilePencilImage from "../../assets/icon/signup/profilePencil.png";
+import defaultAvatarImage from "../../assets/icon/signup/defaultAvatar.png";
 import SignupPageLayout from "./shared/SignupLayout";
 import type { StepProps } from "../../types/signup";
 
@@ -107,7 +107,7 @@ const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
                 />
               ) : (
                 <img
-                  src={defaultAvatar}
+                  src={defaultAvatarImage}
                   alt="기본 프로필"
                   className="h-full w-full object-cover"
                 />
@@ -115,9 +115,13 @@ const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
             </div>
             <button
               onClick={handleAvatarClick}
-              className="absolute right-1 bottom-1 mt-2 h-[2rem] w-[2rem] rounded-full bg-[var(--gray-70)] pl-[6px] text-[var(--gray-0)]"
+              className="absolute right-1 bottom-1 mt-2 h-[2.3rem] w-[2.3rem] rounded-full bg-[var(--gray-70)] pl-[10px] text-[var(--gray-0)]"
             >
-              <Pencil size={20} />
+              <img
+                src={profilePencilImage}
+                alt="avatar"
+                className="h-[65%] w-[65%] object-cover"
+              />
             </button>
           </div>
           <input

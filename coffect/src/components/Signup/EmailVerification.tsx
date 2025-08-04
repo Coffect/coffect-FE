@@ -57,7 +57,7 @@ const EmailVerification: React.FC<StepProps> = ({ onNext, onUpdate }) => {
       <div className="pt-[10%] text-[var(--gray-90)]">
         {/* 타이틀 */}
         <h2 className="mb-6 self-start text-left text-[22px] leading-snug font-bold">
-          📬 정확한 확인을 위해
+          📨 정확한 확인을 위해
           <br />
           학교 이메일 인증을 할게요!
         </h2>

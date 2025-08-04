@@ -23,7 +23,7 @@ const SplashScreen = ({ onNext }: StepProps) => {
         <div className="flex flex-col items-center">
           <img src={LogoImage} alt="로고" className="mb-4 w-[257px]" />
           <p className="text-[20px] font-medium text-[var(--gray-60)]">
-            커피챗 슬로건 문구
+            우리의 만남은 큰 영향력이 될테니까
           </p>
         </div>
 
