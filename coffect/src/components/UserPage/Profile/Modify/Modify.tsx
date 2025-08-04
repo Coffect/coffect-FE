@@ -8,9 +8,9 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getProfile, patchProfile } from "@/api/profile";
 import type { profileType } from "@/types/mypage/profile";
-import backIcon from "../../../../../assets/icon/mypage/back.png";
-import defaultImg from "../../../../../assets/icon/mypage/profile.png";
-import editIcon from "../../../../../assets/icon/mypage/edit.png";
+import backIcon from "@/assets/icon/mypage/back.png";
+import defaultImg from "@/assets/icon/mypage/profile.png";
+import editIcon from "@/assets/icon/mypage/edit.png";
 import ModifyModal from "./ModifyModal";
 
 const Modify = () => {

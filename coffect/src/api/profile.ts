@@ -3,7 +3,6 @@ import type {
   profileType,
   patchProfileType,
   patchProfileInterestType,
-  profileDetailType,
   patchProfileDetailType,
   profileDetailItemType,
 } from "@/types/mypage/profile";
@@ -72,17 +71,6 @@ export const patchProfileInterest = async (
   }
 };
 
-// 상세 프로필 정보 가져오기
-export const getProfileDetail = async (): Promise<profileDetailType> => {
-  try {
-    const res = await axiosInstance.get<profileDetailType>("/profile/detail");
-    return res.data;
-  } catch (error) {
-    console.error("API 호출 중 에러 발생:", error);
-    throw new Error("상세 프로필을 불러올 수 없습니다. 다시 시도해주세요.");
-  }
-};
-
 // 상세 프로필 수정
 export const patchProfileDetail = async (
   detailItems: profileDetailItemType[],
@@ -108,19 +96,5 @@ export const getProfileSearch = async (id: string): Promise<profileType> => {
   } catch (error) {
     console.error("API 호출 중 에러 발생:", error);
     throw new Error("프로필을 불러올 수 없습니다. 다시 시도해주세요.");
-  }
-};
-
-export const getProfileDetailSearch = async (
-  id: string,
-): Promise<profileDetailType> => {
-  try {
-    const res = await axiosInstance.get<profileDetailType>(
-      `/profile/detail/search?id=${id}`,
-    );
-    return res.data;
-  } catch (error) {
-    console.error("API 호출 중 에러 발생:", error);
-    throw new Error("상세 프로필을 불러올 수 없습니다. 다시 시도해주세요.");
   }
 };

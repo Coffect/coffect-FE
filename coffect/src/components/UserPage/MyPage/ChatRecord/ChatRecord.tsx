@@ -5,11 +5,11 @@ description : 마이페이지에서 나의 커피챗 기록 카드 목록을 출
 
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getPastCoffeeChat } from "../../../../api/home";
-import { type getPastCoffeeChatType } from "../../../../types/mypage/ChatRecord";
-import backIcon from "../../../../assets/icon/mypage/back.png";
-import coffeeIcon from "../../../../assets/icon/mypage/inCoffeeChatRecord.png";
-import emptyChatRecordImg from "../../../../assets/icon/mypage/emptyChatRecord.png";
+import { getPastCoffeeChat } from "@/api/home";
+import { type getPastCoffeeChatType } from "@/types/mypage/ChatRecord";
+import backIcon from "@/assets/icon/mypage/back.png";
+import coffeeIcon from "@/assets/icon/mypage/inCoffeeChatRecord.png";
+import emptyChatRecordImg from "@/assets/icon/mypage/emptyChatRecord.png";
 
 /*
 커피챗 기록 카드 목록을 렌더링하는 함수형 컴포넌트입니다.

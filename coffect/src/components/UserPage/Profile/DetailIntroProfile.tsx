@@ -1,19 +1,16 @@
 /*
 author : 재하
-description : 마이페이지 상세 소개 - 자기소개 질문/답변 및 대표질문 선택 컴포넌트입니다.
+description : 상세 소개 - 자기소개 질문/답변 및 대표질문 선택 컴포넌트입니다.
 */
 import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getProfileDetail, patchProfileDetail } from "../../../../api/profile";
-import type {
-  profileDetailType,
-  profileDetailItemType,
-} from "../../../../types/mypage/profile";
-import editIcon from "../../../../assets/icon/mypage/editGray.png";
-import checkIcon from "../../../../assets/icon/mypage/check.png";
-import detailIntroCheckIcon from "../../../../assets/icon/mypage/detailIntroCheck.png";
-import detailIntroCheckedIcon from "../../../../assets/icon/mypage/detailIntroChecked.png";
-import underToggleIcon from "../../../../assets/icon/mypage/underToggle.png";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { patchProfileDetail } from "@/api/profile";
+import type { profileDetailItemType } from "@/types/mypage/profile";
+import editIcon from "@/assets/icon/mypage/editGray.png";
+import checkIcon from "@/assets/icon/mypage/check.png";
+import detailIntroCheckIcon from "@/assets/icon/mypage/detailIntroCheck.png";
+import detailIntroCheckedIcon from "@/assets/icon/mypage/detailIntroChecked.png";
+import underToggleIcon from "@/assets/icon/mypage/underToggle.png";
 
 const QUESTIONS = [
   { id: 1, question: "Q. 어떤 분야에서 성장하고 싶나요?" },
@@ -25,7 +22,15 @@ const QUESTIONS = [
 const MAX_MAIN = 2;
 const MAX_ANSWER = 200;
 
-const DetailIntroProfile = () => {
+interface DetailIntroProfileProps {
+  profileDetailData: profileDetailItemType[];
+  isReadOnly: boolean;
+}
+
+const DetailIntroProfile = ({
+  profileDetailData,
+  isReadOnly = false,
+}: DetailIntroProfileProps) => {
   // 질문/답변/대표질문 상태 관리
   const [items, setItems] = useState(
     QUESTIONS.map((q) => ({
@@ -40,30 +45,22 @@ const DetailIntroProfile = () => {
 
   const queryClient = useQueryClient();
 
-  // 상세 프로필 API 호출
-  const { data: profileDetailData, isLoading } = useQuery<profileDetailType>({
-    queryKey: ["profileDetail"],
-    queryFn: getProfileDetail,
-    staleTime: 5 * 60 * 1000, // 5분
-    gcTime: 10 * 60 * 1000, // 10분
-  });
-
   // 상세 프로필 수정 mutation
   const updateProfileDetailMutation = useMutation({
     mutationFn: patchProfileDetail,
     onSuccess: () => {
       // 성공 시 상세 프로필 데이터를 다시 불러옴
-      queryClient.invalidateQueries({ queryKey: ["profileDetail"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
     onError: (error) => {
       console.error("상세 프로필 수정 실패:", error);
     },
   });
 
-  // API 응답 데이터를 상태에 매핑
+  // props로 전달된 데이터를 상태에 매핑
   useEffect(() => {
-    if (profileDetailData?.success) {
-      const detailItems = profileDetailData.success.map((item, index) => ({
+    if (profileDetailData) {
+      const detailItems = profileDetailData.map((item, index) => ({
         id: index + 1,
         question: item.question,
         answer: item.answer,
@@ -122,11 +119,6 @@ const DetailIntroProfile = () => {
     setItems((prev) => prev.map((q) => ({ ...q, isOpen: false })));
   };
 
-  // 로딩 중일 때 처리
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <div className="mx-auto w-full max-w-xl">
       {/* 헤더: 상세 프로필 + 수정/완료 버튼 */}
@@ -135,19 +127,21 @@ const DetailIntroProfile = () => {
           <span className="text-lg font-semibold text-[var(--gray-90)]">
             ✍🏻 상세 프로필
           </span>
-          {editMode && (
+          {editMode && !isReadOnly && (
             <span className="ml-3 text-sm text-[var(--gray-40)]">
               최대 2개 선택
             </span>
           )}
         </div>
-        <button onClick={() => (editMode ? handleSave() : setEditMode(true))}>
-          {editMode ? (
-            <img src={checkIcon} className="mx-1.5 h-6 w-6" />
-          ) : (
-            <img src={editIcon} className="mx-1.5 h-6 w-6" />
-          )}
-        </button>
+        {!isReadOnly && (
+          <button onClick={() => (editMode ? handleSave() : setEditMode(true))}>
+            {editMode ? (
+              <img src={checkIcon} className="mx-1.5 h-6 w-6" />
+            ) : (
+              <img src={editIcon} className="mx-1.5 h-6 w-6" />
+            )}
+          </button>
+        )}
       </div>
 
       {/* 뷰 모드: 대표질문 2개만 노출 */}
@@ -179,7 +173,7 @@ const DetailIntroProfile = () => {
       )}
 
       {/* 수정 모드: 전체 질문 토글 */}
-      {editMode && (
+      {editMode && !isReadOnly && (
         <div className="mt-2 flex flex-col gap-2">
           {/* 전체 질문 반복 */}
           {items.map((q) => (

@@ -10,25 +10,35 @@ export type profileType = {
     following: 0;
     follower: 0;
     userInfo: {
+      userId: number;
+      id: string;
+      name: string;
+      introduce: string;
+      profileImage: string;
+      dept: string;
+      studentId: number;
       UnivList: {
         name: string;
       };
-      studentId: 0;
-      dept: string;
-      profileImage: string;
-      introduce: string;
-      id: string;
-      name: string;
     };
     interest: [
       {
         category: {
-          categoryColor: string;
-          categoryName: string;
           categoryId: 0;
+          categoryName: string;
+          categoryColor: string;
         };
       },
     ];
+    specifyProfile: {
+      info: [
+        {
+          answer: string;
+          isMain: boolean;
+          question: string;
+        },
+      ];
+    };
   };
 };
 
@@ -50,24 +60,6 @@ export type patchProfileInterestType = {
     data: null;
   };
   success: null | string;
-};
-
-export type profileDetailType = {
-  resultType: string;
-  error: null | {
-    errorCode: string;
-    reason: string;
-    data: null;
-  };
-  success:
-    | null
-    | [
-        {
-          question: string;
-          answer: string;
-          isMain: boolean;
-        },
-      ];
 };
 
 export type patchProfileDetailType = {

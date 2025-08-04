@@ -5,9 +5,9 @@ description : 커피챗 기록 상세 카드를 출력하는 컴포넌트입니�
 
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getSpecifyCoffeeChat } from "../../../../api/home";
-import { type getSpecifyCoffeeChatType } from "../../../../types/mypage/ChatRecord";
-import backIcon from "../../../../assets/icon/mypage/back.png";
+import { getSpecifyCoffeeChat } from "@/api/home";
+import { type getSpecifyCoffeeChatType } from "@/types/mypage/ChatRecord";
+import backIcon from "@/assets/icon/mypage/back.png";
 
 const ChatCard = () => {
   const navigate = useNavigate();

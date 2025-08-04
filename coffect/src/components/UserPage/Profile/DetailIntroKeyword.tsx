@@ -1,13 +1,12 @@
 /*
 author : 재하
-description : 마이페이지 상세 소개 - 관심 키워드 선택/수정 컴포넌트입니다.
+description : 상세 소개 - 관심 키워드 선택/수정 컴포넌트입니다.
 */
 import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getProfile, patchProfileInterest } from "../../../../api/profile";
-import type { profileType } from "../../../../types/mypage/profile";
-import editIcon from "../../../../assets/icon/mypage/editGray.png";
-import checkIcon from "../../../../assets/icon/mypage/check.png";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { patchProfileInterest } from "@/api/profile";
+import editIcon from "@/assets/icon/mypage/editGray.png";
+import checkIcon from "@/assets/icon/mypage/check.png";
 
 // 키워드와 ID 매핑
 const KEYWORD_TO_ID: Record<string, number> = {
@@ -65,20 +64,26 @@ const KEYWORD_COLORS: Record<string, string> = {
   네트워킹: "bg-[var(--networking-bg)] text-[var(--networking-text)]",
 };
 
-const DetailIntroKeyword = () => {
+interface DetailIntroKeywordProps {
+  interest?: Array<{
+    category: {
+      categoryId: number;
+      categoryName: string;
+      categoryColor: string;
+    };
+  }>;
+  isReadOnly: boolean;
+}
+
+const DetailIntroKeyword = ({
+  interest,
+  isReadOnly = false,
+}: DetailIntroKeywordProps) => {
   // 선택된 키워드 상태 (최대 4개)
   const [selected, setSelected] = useState<string[]>([]);
   // 수정 모드 상태
   const [editMode, setEditMode] = useState(false);
   const queryClient = useQueryClient();
-
-  // getProfile API를 useQuery로 호출
-  const { data: profileData, isLoading } = useQuery<profileType>({
-    queryKey: ["profile"],
-    queryFn: getProfile,
-    staleTime: 5 * 60 * 1000, // 5분
-    gcTime: 10 * 60 * 1000, // 10분
-  });
 
   // 관심사 업데이트 mutation
   const updateInterestMutation = useMutation({
@@ -86,25 +91,25 @@ const DetailIntroKeyword = () => {
     onSuccess: () => {
       // 성공 시 프로필 데이터를 다시 불러옴
       queryClient.invalidateQueries({ queryKey: ["profile"] });
+
+      // 관심사 변경으로 인해 관련 쿼리들을 무효화
+      queryClient.invalidateQueries({ queryKey: ["pastCoffeeChat"] });
+      queryClient.invalidateQueries({ queryKey: ["specifyCoffeeChat"] });
     },
     onError: (error) => {
       console.error("관심사 업데이트 실패:", error);
     },
   });
 
-  // 프로필 데이터에서 interest 정보 추출
-  const profile = profileData?.success;
-  const interestData = profile?.interest;
-
-  // interest 데이터가 있을 때 selected 상태 업데이트
+  // props로 전달된 interest를 selected 상태에 설정
   useEffect(() => {
-    if (interestData && interestData.length > 0) {
-      const interestKeywords = interestData.map(
+    if (interest && interest.length > 0) {
+      const interestKeywords = interest.map(
         (item) => item.category.categoryName,
       );
       setSelected(interestKeywords);
     }
-  }, [interestData]);
+  }, [interest]);
 
   // 키워드 선택/해제 핸들러
   // 이미 선택된 키워드는 해제, 4개 미만일 때만 추가 선택 가능
@@ -126,16 +131,8 @@ const DetailIntroKeyword = () => {
     // 관심사 업데이트 API 호출
     updateInterestMutation.mutate(interestIds);
 
-    // 관심사 변경으로 인해 관련 쿼리들을 무효화
-    queryClient.invalidateQueries({ queryKey: ["pastCoffeeChat"] });
-    queryClient.invalidateQueries({ queryKey: ["specifyCoffeeChat"] });
-
     setEditMode(false);
   };
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div className="mb-8">
@@ -145,21 +142,23 @@ const DetailIntroKeyword = () => {
           <span className="text-lg font-semibold text-[var(--gray-90)]">
             💡 관심 키워드
           </span>
-          {editMode && (
+          {editMode && !isReadOnly && (
             <span className="ml-3 text-sm text-[var(--gray-40)]">
               최대 4개 선택
             </span>
           )}
         </div>
-        <button
-          onClick={() => (editMode ? handleEditDone() : setEditMode(true))}
-        >
-          {editMode ? (
-            <img src={checkIcon} className="mx-1.5 h-6 w-6" />
-          ) : (
-            <img src={editIcon} className="mx-1.5 h-6 w-6" />
-          )}
-        </button>
+        {!isReadOnly && (
+          <button
+            onClick={() => (editMode ? handleEditDone() : setEditMode(true))}
+          >
+            {editMode ? (
+              <img src={checkIcon} className="mx-1.5 h-6 w-6" />
+            ) : (
+              <img src={editIcon} className="mx-1.5 h-6 w-6" />
+            )}
+          </button>
+        )}
       </div>
 
       {/* 키워드 목록: 뷰 모드/수정 모드 분기 */}

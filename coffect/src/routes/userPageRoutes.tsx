@@ -3,14 +3,13 @@ author : 재하
 description : 마이페이지, 유저페이지 등 사용자 관련 라우트 정의 파일입니다.
 */
 
-import MyPage from "../pages/MyPage";
-import MyProfile from "../components/UserPage/MyPage/MyProfile/MyProfile";
-import TimeTable from "../components/UserPage/MyPage/TimeTable";
-import ChatCard from "../components/UserPage/MyPage/ChatRecord/ChatCard";
-import ChatRecord from "../components/UserPage/MyPage/ChatRecord/ChatRecord";
-import Modify from "../components/UserPage/MyPage/MyProfile/Modify/Modify";
-import BookMark from "../components/UserPage/MyPage/BookMark";
-import UserProfile from "../components/UserPage/OtherUserPage/UserProfile";
+import MyPage from "@/pages/MyPage";
+import TimeTable from "@/components/UserPage/MyPage/TimeTable";
+import ChatCard from "@/components/UserPage/MyPage/ChatRecord/ChatCard";
+import ChatRecord from "@/components/UserPage/MyPage/ChatRecord/ChatRecord";
+import Modify from "@/components/UserPage/Profile/Modify/Modify";
+import BookMark from "@/components/UserPage/MyPage/BookMark";
+import UserProfile from "@/components/UserPage/Profile/UserProfile";
 
 /*
 사용자 관련 페이지 라우트 배열을 반환합니다.
@@ -22,7 +21,7 @@ const userPageRoutes = [
   },
   {
     path: "/mypage/myprofile",
-    element: <MyProfile />,
+    element: <UserProfile />,
   },
   {
     path: "/mypage/myprofile/modify",
@@ -46,7 +45,6 @@ const userPageRoutes = [
   },
   {
     path: "/userpage/:id",
-    // element: <UserPage />,
     element: <UserProfile />,
   },
 ];
