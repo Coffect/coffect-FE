@@ -8,6 +8,10 @@
 import { postTodayInterest } from "@/api/home";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import choose1Image from "@/assets/icon/home/choose1.png";
+import choose2Image from "@/assets/icon/home/choose2.png";
+import choose3Image from "@/assets/icon/home/choose3.png";
+import choose4Image from "@/assets/icon/home/choose4.png";
 
 const CoffeeCategoryGrid: React.FC = () => {
   // 카테고리 클릭 시 다음날 오전 9시까지 수정 못하도록 localStorage에 방문기록 저장+ API 호출
@@ -36,12 +40,12 @@ const CoffeeCategoryGrid: React.FC = () => {
     },
   });
   const navigate = useNavigate();
-  // 추천 기준 목록(숫자 매핑 포함)
+  // 카테고리 label + image + value 세트
   const categories = [
-    { label: "가까운\n거리 순", value: 1 },
-    { label: "나와\n관심사가\n비슷한", value: 2 },
-    { label: "같은 학번", value: 3 },
-    { label: "요즘\n글을 많이 쓴", value: 4 },
+    { label: "가까운\n거리 순", value: 1, image: choose1Image },
+    { label: "나와\n관심사가\n비슷한", value: 2, image: choose2Image },
+    { label: "나와\n 같은 학번", value: 3, image: choose3Image },
+    { label: "요즘\n글을 많이 쓴", value: 4, image: choose4Image },
   ];
 
   const handleClick = (categoryValue: number) => {
@@ -53,25 +57,35 @@ const CoffeeCategoryGrid: React.FC = () => {
       {/* 상단 타이틀 */}
       <div className="flex flex-col items-start px-[2%]">
         {/* 인사 텍스트 */}
-        <p className="text-xl leading-snug font-bold text-[var(--gray-90)]">
-          안녕하세요 <span className="text-orange-500">인하</span>님
+        <p className="text-[22px] leading-snug font-bold text-[var(--gray-50)]">
+          안녕하세요 인하님
           <br />
-          오늘은 어떤 커피챗을 해볼까요?
+          <span className="text-[var(--gray-90)]">
+            오늘은 어떤 커피챗을 해볼까요?
+          </span>
         </p>
       </div>
 
       {/* 2x2 그리드 버튼 */}
       <div className="mt-[4%] grid grid-cols-2 gap-[12px] px-[2%]">
-        {categories.map((cat) => (
-          <button
-            key={cat.value}
-            onClick={() => handleClick(cat.value)}
-            className="flex aspect-[17/19] w-full items-end justify-start rounded-4xl bg-[var(--gray-0)] p-[8%] text-left text-[22px] leading-tight font-bold whitespace-pre-line text-[var(--gray-90)] transition active:scale-[1.1]"
-          >
-            {/* 줄바꿈 포함 텍스트 */}
-            {cat.label}
-          </button>
-        ))}
+        {categories.map(({ label, value, image }, idx) => {
+          const imageWidth = ["w-[32%]", "w-[36%]", "w-[50%]", "w-[45%]"][idx];
+
+          return (
+            <button
+              key={value}
+              onClick={() => handleClick(value)}
+              className="flex aspect-[17/19] h-full w-full flex-col items-start justify-between rounded-4xl bg-white p-[10%] text-left text-[22px] leading-snug font-bold text-[var(--gray-70)] transition active:scale-[1.1]"
+            >
+              <img
+                src={image}
+                alt="카테고리 이미지"
+                className={`mx-auto mt-[5%] mb-[10%] h-auto ${imageWidth}`}
+              />
+              <span className="text-left whitespace-pre-line">{label}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

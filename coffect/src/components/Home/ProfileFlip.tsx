@@ -267,7 +267,7 @@ const ProfileFlip: React.FC = () => {
             <div className="text-[22px] font-bold text-white">
               {currentCard.name}
               <span className="ml-[3%] text-sm font-medium text-[var(--gray-10)]">
-                {currentCard.major} {currentCard.year}
+                {currentCard.major} {String(currentCard.year).slice(2)}학번
               </span>
             </div>
           </div>
