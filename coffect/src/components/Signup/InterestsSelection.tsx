@@ -64,7 +64,7 @@ const InterestsSelection = ({ onNext, onUpdate }: StepProps) => {
 
       // 선택 수가 최대치에 도달했으면 에러 처리
       if (prev.length >= MAX_SELECTION) {
-        setError("관심사는 최대 4개까지 선택할 수 있어요.");
+        setError("최대 4개까지 선택");
         return prev;
       }
 
@@ -79,7 +79,7 @@ const InterestsSelection = ({ onNext, onUpdate }: StepProps) => {
   const handleSubmit = () => {
     // 선택이 1개도 없으면 에러
     if (selected.length === 0) {
-      setError("최소 1개의 관심사를 선택해주세요.");
+      setError("최소 1개이상 선택");
       return;
     }
 
@@ -131,27 +131,26 @@ const InterestsSelection = ({ onNext, onUpdate }: StepProps) => {
         </div>
       }
     >
-      <h2 className="mb-[0.5rem] pt-[10%] text-[22px] leading-normal font-bold">
+      <p className="mb-[2%] pt-[10%] text-base font-semibold text-orange-500">
+        최대 4개
+      </p>
+      <h2 className="mb-[10%] text-[22px] leading-normal font-bold">
         관심사를 알려주세요
         <br />
         비슷한 친구들을 추천해줄게요!
       </h2>
-      <p className="mb-[6%] text-base font-semibold text-orange-500">
-        처음 키워드는 나의 대표 관심사로 표시돼요
-      </p>
 
       <button
         onClick={handleReset}
-        className="mb-3 text-sm font-medium text-[var(--gray-50)]"
+        className="mb-3 text-sm font-medium text-[var(--gray-30)]"
       >
-        초기화 ⟳
+        초기화 <span className="text-[18px]">⟳</span>
       </button>
 
       {/* 관심사 선택 버튼 리스트 */}
       <div className="mb-4 flex flex-wrap justify-start gap-2 pr-[20%]">
         {OPTIONS.map((opt) => {
           const isSelected = selected.includes(opt); // 현재 항목이 선택되었는지 여부
-          const isFirst = selected[0] === opt; // 첫 번째로 선택된 항목인지 여부
 
           return (
             <button
@@ -159,11 +158,9 @@ const InterestsSelection = ({ onNext, onUpdate }: StepProps) => {
               onClick={() => toggle(opt)}
               className={`inline-block rounded-lg px-[8%] py-[4%] text-lg font-medium transition-all ${
                 isSelected
-                  ? isFirst
-                    ? "bg-orange-500 text-[var(--gray-0)]" // 첫 선택 항목은 주황색 강조
-                    : "bg-[var(--gray-70)] text-[var(--gray-0)]" // 나머지는 검정
-                  : "bg-[var(--gray-5)] text-[var(--gray-70)]" // 미선택 항목은 회색
-              } `}
+                  ? "bg-[var(--gray-70)] text-[var(--gray-0)]" // 선택된 항목은 검정 배경
+                  : "bg-[var(--gray-5)] text-[var(--gray-70)]" // 미선택 항목은 회색 배경
+              }`}
             >
               {opt}
             </button>
@@ -172,7 +169,11 @@ const InterestsSelection = ({ onNext, onUpdate }: StepProps) => {
       </div>
 
       {/* 에러 메시지 표시 */}
-      {error && <p className="mb-4 text-sm text-[var(--noti)]">{error}</p>}
+      {error && (
+        <p className="absolute bottom-[80px] left-1/2 -translate-x-1/2 text-base font-medium text-[var(--noti)]">
+          {error}
+        </p>
+      )}
     </SignupPageLayout>
   );
 };
