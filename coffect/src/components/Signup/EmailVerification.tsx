@@ -4,16 +4,19 @@ description : 이메일 인증 코드 발송 화면
 */
 
 import { useState, useEffect } from "react";
-import { isValidEmail } from "../../utils/validation";
 import SignupPageLayout from "./shared/SignupLayout";
 import type { StepProps } from "../../types/signup";
+import { isValidSchoolEmail } from "@/utils/validation";
+import { useToastStore } from "@/hooks/useToastStore";
 
 const EmailVerification: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   // 이메일 입력값 상태 관리
   const [email, setEmail] = useState<string>("");
 
   // 입력된 이메일이 유효한지 여부 판단
-  const valid = isValidEmail(email);
+  const valid = isValidSchoolEmail(email);
+  //이메일 오류 메시지 토스트 표시
+  const { showToast } = useToastStore();
 
   // 다음 단계로 이동하는 핸들러
   const handleSend = (): void => {
@@ -38,13 +41,14 @@ const EmailVerification: React.FC<StepProps> = ({ onNext, onUpdate }) => {
     <SignupPageLayout
       bottomButton={
         <button
-          onClick={handleSend}
-          disabled={!valid}
-          className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
-            valid
-              ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
-              : "bg-[var(--gray-10)] text-[var(--gray-50)]"
-          }`}
+          onClick={() => {
+            if (!valid) {
+              showToast("올바른 학교 이메일이 아니에요!", "error");
+              return;
+            }
+            handleSend();
+          }}
+          className="w-full rounded-xl bg-[var(--gray-80)] py-[4%] text-center text-lg font-semibold text-[var(--gray-0)]"
         >
           인증코드 발송하기
         </button>
