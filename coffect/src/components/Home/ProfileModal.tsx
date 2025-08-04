@@ -6,7 +6,7 @@
 */
 
 import { useNavigate } from "react-router-dom";
-import ProfileImage from "../../assets/Home/Profile.png";
+import ProfileImage from "../../assets/icon/home/Profile.png";
 // props 타입 정의
 interface ProfileModalProps {
   isOpen: boolean; // 모달 열림 여부

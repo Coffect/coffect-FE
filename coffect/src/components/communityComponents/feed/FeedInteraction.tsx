@@ -38,7 +38,7 @@ const FeedInteraction = ({ postId, likes, comments }: FeedInteractionProps) => {
 
   return (
     <>
-      <div className="mt-2 flex h-8 items-center justify-between">
+      <div className="mt-2.5 flex h-8 items-center justify-between">
         <div className="flex items-center gap-4">
           <button className={buttonStyle} onClick={handleLikeClick}>
             <Heart

@@ -8,8 +8,10 @@ import DetailIntro from "./DetailIntro";
 import backIcon from "../../../../assets/icon/mypage/back.png";
 import profileImg from "../../../../assets/icon/mypage/profile.png";
 import FeedItem from "../../../shareComponents/FeedItem";
-import type { Post } from "../../../../data/communityDummyData";
+import type { Post } from "../../../../types/community";
 import emptyFeedImg from "../../../../assets/icon/mypage/emptyFeed.png";
+
+type MyProfileTab = "피드" | "상세 소개";
 
 const myDummyPosts: Post[] = [
   {
@@ -76,8 +78,8 @@ function MyProfile() {
   사용자의 마이페이지 프로필 화면을 렌더링하며, 탭에 따라 피드 또는 상세 소개를 보여줍니다.
   */
   const navigate = useNavigate();
-  // 현재 활성화된 탭 상태 ("내 피드" 또는 "상세 소개")
-  const [activeTab, setActiveTab] = useState<string>("피드");
+  // 현재 활성화된 탭 상태 ("피드" 또는 "상세 소개")
+  const [activeTab, setActiveTab] = useState<MyProfileTab>("피드");
   // 텍스트 확장 상태
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   // 텍스트가 2줄 이상인지 확인하는 상태
@@ -139,7 +141,7 @@ function MyProfile() {
           {/* Profile Image: 사용자 프로필 이미지 자리 */}
           <img
             src={profileImg}
-            className="flex h-25 w-25 overflow-hidden rounded-full border border-black"
+            className="flex h-25 w-25 overflow-hidden rounded-full border-[1.5px] border-[var(--gray-10)]"
           />
 
           {/* Stats: 포스트/팔로워/팔로잉 수 */}
@@ -208,25 +210,26 @@ function MyProfile() {
         </button>
       </div>
 
-      <div className="-mx-4 h-2 w-full bg-[var(--gray-5)]"></div>
+      {/* 탭 구분선 */}
+      <div className="min-h-2 w-full bg-[var(--gray-5)]"></div>
 
-      {/* Tab Navigation: 내 피드/상세 소개 탭 전환 */}
-      <div className="flex border-b">
+      {/* Tab Navigation: 피드/상세 소개 탭 전환 */}
+      <div className="mt-3 flex">
         <button
-          className={`flex-1 border-b-2 py-3 text-center font-medium ${
-            activeTab === "내 피드"
-              ? "border-black text-black"
-              : "border-transparent text-gray-500"
+          className={`flex-1 border-b-2 border-[var(--gray-10)] py-3 text-center text-lg font-semibold ${
+            activeTab === "피드"
+              ? "border-b-2 border-[var(--gray-90)] text-black"
+              : "font-medium text-[var(--gray-50)]"
           }`}
-          onClick={() => setActiveTab("내 피드")}
+          onClick={() => setActiveTab("피드")}
         >
-          내 피드
+          피드
         </button>
         <button
-          className={`flex-1 border-b-2 py-3 text-center font-medium ${
+          className={`flex-1 border-b-2 border-[var(--gray-10)] py-3 text-center text-lg font-semibold ${
             activeTab === "상세 소개"
-              ? "border-black text-black"
-              : "border-transparent text-gray-500"
+              ? "border-b-2 border-[var(--gray-90)] text-black"
+              : "font-medium text-[var(--gray-50)]"
           }`}
           onClick={() => setActiveTab("상세 소개")}
         >
@@ -236,7 +239,7 @@ function MyProfile() {
 
       {/* Content Area: 탭에 따라 내용 분기 */}
       <div className="flex flex-1 flex-col py-5">
-        {/* 내 피드 탭이 활성화된 경우 피드 내용 출력 */}
+        {/* 피드 탭이 활성화된 경우 피드 내용 출력 */}
         {activeTab === "피드" &&
           (myDummyPosts.length === 0 ? (
             <div className="flex flex-1 flex-col items-center justify-center">
@@ -248,7 +251,7 @@ function MyProfile() {
           ) : (
             <>
               {myDummyPosts.map((post) => (
-                <FeedItem key={post.id} post={post} />
+                <FeedItem key={post.id} post={post} showFollowButton={false} />
               ))}
             </>
           ))}
