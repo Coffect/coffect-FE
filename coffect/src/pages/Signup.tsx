@@ -123,7 +123,11 @@ const Signup: React.FC = () => {
               // login API 호출 → 로그인 성공 여부 반환
               const success = await login({ userId, userPassword: password });
               // 로그인 성공 시 홈 화면으로 이동
-              if (success) navigate("/home");
+              if (success === true) {
+                navigate("/home");
+              }
+              //실패 시 에러 메시지 리턴
+              else return success;
             }}
           />
         )}

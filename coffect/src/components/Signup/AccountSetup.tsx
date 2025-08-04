@@ -9,6 +9,7 @@ import { Eye, EyeOff } from "lucide-react";
 import SignupPageLayout from "./shared/SignupLayout";
 import type { StepProps } from "../../types/signup";
 import { checkDuplicateId } from "../../api/auth";
+import { useToastStore } from "@/hooks/useToastStore";
 
 /*
   AccountSetup 컴포넌트가 받을 props 타입 정의
@@ -35,30 +36,26 @@ const AccountSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   const isPasswordValid = isValidPassword(password);
   const isConfirmValid = password === confirm;
   /*중복 확인 에러 메시지 띄우기*/
-  const [toastMessage, setToastMessage] = useState("");
-  const [toastType, setToastType] = useState<"duplicate" | "available" | "">(
-    "",
-  );
-  const [showToast, setShowToast] = useState(false);
+  const { showToast } = useToastStore();
   /* 진행 가능 여부 */
   const canProceed =
     isUseridValid && isDuplicateChecked && isPasswordValid && isConfirmValid;
 
-  /* 아이디 중복체크 핸들러(확인, 에러 메시지까지) */
+  /* 아이디 중복체크 핸들러(확인, 에러 메시지까지) + 유효성 검사 알림 포함  */
   const handleCheckDuplicate = async () => {
+    if (!isUseridValid) {
+      showToast("아이디 형식이 올바르지 않습니다.", "error");
+      setUseridError(true);
+      return;
+    }
     const isDuplicate = await checkDuplicateId(id);
     if (isDuplicate) {
-      setToastMessage("이미 존재하는 아이디입니다.");
-      setToastType("duplicate");
+      showToast("이미 존재하는 아이디입니다.", "error");
       setIsDuplicateChecked(false);
     } else {
-      setToastMessage("아이디 중복 체크 완료");
-      setToastType("available");
+      showToast("사용 가능한 아이디 입니다!", "success");
       setIsDuplicateChecked(true);
     }
-
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
   };
 
   /* 다음 단계 이동 핸들러 */
@@ -98,6 +95,39 @@ const AccountSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   const useridRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmRef = useRef<HTMLInputElement>(null);
+  /* 아이디, 비밀번호, 비밀번호 중복 입력 후 500ms후 검사 */
+  useEffect(() => {
+    if (id === "") return;
+
+    const timer = setTimeout(() => {
+      const isValid = isValidUserId(id);
+      setUseridError(!isValid);
+    }, 500); // 500ms 입력 멈추면 아이디 유효성 검사 실행
+
+    return () => clearTimeout(timer); // 새 입력 시 타이머 초기화
+  }, [id]);
+
+  useEffect(() => {
+    if (password === "") return;
+
+    const timer = setTimeout(() => {
+      const isValid = isValidPassword(password);
+      setPasswordError(!isValid);
+    }, 500); // 500ms 입력 멈추면 비밀번호 유효성 검사 실행
+
+    return () => clearTimeout(timer); // 새 입력 시 타이머 초기화
+  }, [password]);
+
+  useEffect(() => {
+    if (confirm === "") return;
+
+    const timer = setTimeout(() => {
+      const isValid = confirm === password;
+      setConfirmError(!isValid);
+    }, 500); // 500ms 입력 멈추면 비밀번호 일치 검사
+
+    return () => clearTimeout(timer); // 새 입력 시 타이머 초기화
+  }, [confirm, password]);
 
   useEffect(() => {
     // 진입 시 스크롤 막기
@@ -242,22 +272,6 @@ const AccountSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
           </p>
         )}
       </div>
-
-      {/* 중복확인 토스트 메시지 */}
-      {showToast && (
-        <div
-          className={`fixed bottom-[6rem] left-1/2 z-50 flex -translate-x-1/2 transform items-center gap-[4px] rounded-[16px] px-[16px] py-[9px] text-[14px] leading-[150%] font-medium whitespace-nowrap shadow-md ${
-            toastType === "duplicate"
-              ? "bg-[var(--gray-60)] text-white"
-              : "bg-[var(--gray-60)] text-white"
-          }`}
-        >
-          <span className="text-sm font-medium">
-            {toastType === "available" ? "✅" : "⚠️"}
-          </span>
-          <span>{toastMessage}</span>
-        </div>
-      )}
     </SignupPageLayout>
   );
 };
