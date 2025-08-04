@@ -1,5 +1,7 @@
-// author : 앨리스/박은지
-// description : 이미지 메시지 버블
+/*
+ * author : 앨리스/박은지
+ * description : 이미지 메시지 버블
+ */
 
 import React from "react";
 

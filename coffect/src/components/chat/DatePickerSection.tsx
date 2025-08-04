@@ -1,6 +1,8 @@
-// author : 앨리스/박은지
-// description : [커피챗 일정 등록] 날짜 선택 섹션
-// 날짜 선택 버튼, 날짜 선택 모달 열기/닫기
+/*
+ * author : 앨리스/박은지
+ * description : [커피챗 일정 등록] 날짜 선택 섹션
+ * 날짜 선택 버튼, 날짜 선택 모달 열기/닫기
+ */
 
 import React from "react";
 import DatePicker from "react-datepicker";

@@ -1,6 +1,8 @@
 // author : 앨리스/박은지
-// description : [커피챗 일정 등록] 시간 선택 훅
-// 초기값 설정
+/*
+ * description : [커피챗 일정 등록] 시간 선택 훅
+ * 초기값 설정
+ */
 
 import { useState } from "react";
 

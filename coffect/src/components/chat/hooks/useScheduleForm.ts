@@ -1,5 +1,7 @@
 // author : 앨리스/박은지
-// description : [커피챗 일정 등록] 일정 등록 폼 훅
+/*
+ * description : [커피챗 일정 등록] 일정 등록 폼 훅
+ */
 
 import { useState } from "react";
 import type { ScheduleFormValues } from "../ScheduleForm";

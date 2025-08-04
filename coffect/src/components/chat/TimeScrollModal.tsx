@@ -1,5 +1,7 @@
-// author : 앨리스/박은지
-// description : 시간 선택 모달 컴포넌트
+/*
+ * author : 앨리스/박은지
+ * description : 시간 선택 모달 컴포넌트
+ */
 
 import React, { useRef, useState } from "react";
 

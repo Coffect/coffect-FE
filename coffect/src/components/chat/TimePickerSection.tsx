@@ -1,6 +1,8 @@
-// author : 앨리스/박은지
-// description : [커피챗 일정 등록] 시간 선택 섹션
-// 시간 선택 버튼, 시간 선택 모달 열기/닫기
+/*
+ * author : 앨리스/박은지
+ * description : [커피챗 일정 등록] 시간 선택 섹션
+ * 시간 선택 버튼, 시간 선택 모달 열기/닫기
+ */
 
 import React from "react";
 import { Clock } from "lucide-react";
