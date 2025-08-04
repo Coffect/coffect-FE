@@ -13,6 +13,7 @@ import type { StepProps } from "../../types/signup";
 import { searchDept, searchUniv } from "../../api/univ";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { useDebounce } from "@/hooks/useDebounce";
 
 //학교 정보 타입
 interface Univ {
@@ -29,19 +30,35 @@ interface Major {
 }
 
 const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
+  // 학교 검색어 입력값 (사용자 타이핑 상태)
   const [schoolQuery, setSchoolQuery] = useState("");
+  // schoolQuery에 디바운싱 적용 (입력 후 500ms 동안 변경 없을 시 반영)
+  const debouncedschoolQuery = useDebounce(schoolQuery, 500);
+  // 선택된 학교 객체 (선택 후 schoolQuery와 별도로 유지됨)
   const [selectedSchool, setSelectedSchool] = useState<Univ | null>(null);
+  // 학교 드롭다운 내 키보드 하이라이팅 인덱스
   const [highlightedSchoolIndex, setHighlightedSchoolIndex] = useState(-1);
+  // 학교 드롭다운 표시 여부
   const [showSchoolDropdown, setShowSchoolDropdown] = useState(false);
 
+  // 전공 검색어 입력값
   const [majorQuery, setMajorQuery] = useState("");
+  // majorQuery에 디바운싱 적용 (입력 후 500ms 동안 변경 없을 시 반영)
+  const debouncedMajorQuery = useDebounce(majorQuery, 500);
+  // 선택된 전공 문자열
   const [selectedMajor, setSelectedMajor] = useState<string | null>(null);
+  // 전공 드롭다운 내 키보드 하이라이팅 인덱스
   const [highlightedMajorIndex, setHighlightedMajorIndex] = useState(-1);
+  // 전공 드롭다운 표시 여부
   const [showMajorDropdown, setShowMajorDropdown] = useState(false);
-  // 입력한 입학년도
+
+  // 입력한 입학년도 (숫자 문자열 형태)
   const [studentId, setStudentId] = useState<string>("");
+  // 입학년도 드롭다운 내 키보드 하이라이팅 인덱스
   const [highlightedYearIndex, setHighlightedYearIndex] = useState(-1);
+  // 입학년도 드롭다운 표시 여부
   const [showYearDropdown, setShowYearDropdown] = useState(false);
+
   //올해
   const currentYear = new Date().getFullYear();
   // 입학년도 리스트 데이터(올해 포함 16년)
@@ -49,22 +66,22 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
 
   // query나 dropdown 상태가 변경되면 학교 자동완성 쿼리
   const { data: schoolList } = useQuery<{ univList: Univ[] }>({
-    queryKey: ["searchUniv", schoolQuery],
-    queryFn: () => searchUniv(schoolQuery),
-    enabled: !!schoolQuery && showSchoolDropdown,
+    queryKey: ["searchUniv", debouncedschoolQuery],
+    queryFn: () => searchUniv(debouncedschoolQuery),
+    enabled: !!debouncedschoolQuery && showSchoolDropdown,
     staleTime: 30000, //30초간 동일 쿼리 재요청시 캐시된 응답 제공
     retry: false,
   });
 
   // 전공 자동완성 쿼리
   const { data: majorList } = useQuery<{ deptList: Major[] }>({
-    queryKey: ["searchDept", majorQuery, selectedSchool?.name],
+    queryKey: ["searchDept", debouncedMajorQuery, selectedSchool?.name],
     queryFn: () =>
       searchDept({
-        deptSearch: majorQuery,
+        deptSearch: debouncedMajorQuery,
         univName: selectedSchool!.name,
       }),
-    enabled: !!majorQuery && !!selectedSchool && showMajorDropdown,
+    enabled: !!debouncedMajorQuery && !!selectedSchool && showMajorDropdown,
     staleTime: 30000,
     retry: false,
   });
