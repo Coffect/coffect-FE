@@ -233,7 +233,7 @@ const ProfileFlip: React.FC = () => {
           커뮤니티 둘러보기
         </button>
         <button
-          onClick={() => navigate("/userpage")}
+          onClick={() => navigate("/mypage/myprofile")}
           className="mt-[3%] rounded-lg border-[1.5px] border-[var(--gray-30)] px-[4%] py-[3%] text-base text-[var(--gray-60)]"
         >
           내 프로필 더 꾸미기
