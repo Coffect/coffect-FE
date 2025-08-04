@@ -152,7 +152,7 @@ const ChatRoom = () => {
         </div>
         <div
           className="ml-2 h-8 w-8 cursor-pointer overflow-hidden rounded-full border-1 border-[var(--gray-80)] p-[1px]"
-          onClick={() => navigate(`/userpage/${user.id}`)}
+          onClick={() => navigate(`/userpage/${id}`)}
         >
           <img
             src={ExampleProfile}
