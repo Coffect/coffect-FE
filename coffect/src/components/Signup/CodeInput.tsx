@@ -142,13 +142,13 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, form }) => {
           ))}
         </div>
 
-        {/* 인증코드 재입력 버튼 */}
+        {/* 이메일 재입력으로 이동 버튼 */}
         <div className="mb-6 w-full text-center">
           <button
             onClick={onBack}
             className="text-base text-[var(--gray-70)] underline"
           >
-            이메일 다시 적기
+            이메일 다시 입력하기
           </button>
         </div>
       </div>
