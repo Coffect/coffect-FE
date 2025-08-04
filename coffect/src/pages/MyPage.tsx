@@ -100,13 +100,13 @@ const MyPage = () => {
             {/* 프로필/시간표 버튼 */}
             <div className="mt-2 flex w-full gap-2">
               <button
-                className="text-md flex-1 rounded-xl bg-[var(--gray-80)] py-3 text-white transition hover:bg-gray-800"
+                className="text-md flex-1 rounded-xl bg-[var(--gray-80)] py-2 text-white transition hover:bg-gray-800"
                 onClick={() => navigate(`/mypage/myprofile`)}
               >
                 내 프로필
               </button>
               <button
-                className="text-md flex-1 rounded-xl border border-[var(--gray-30)] bg-white py-3 text-[var(--gray-50)] transition hover:bg-gray-100"
+                className="text-md flex-1 rounded-xl border border-[var(--gray-30)] bg-white py-2 text-[var(--gray-50)] transition hover:bg-gray-100"
                 onClick={() => navigate(`/mypage/timetable`)}
               >
                 내 시간표
