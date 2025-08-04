@@ -8,11 +8,11 @@ description : 학교, 학과, 전공 선택 화면
 
 import React, { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
-import { isValidStudentId } from "../../utils/validation";
 import SignupPageLayout from "./shared/SignupLayout";
 import type { StepProps } from "../../types/signup";
 import { searchDept, searchUniv } from "../../api/univ";
 import { useQuery } from "@tanstack/react-query";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 //학교 정보 타입
 interface Univ {
@@ -35,13 +35,17 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   const [showSchoolDropdown, setShowSchoolDropdown] = useState(false);
 
   const [majorQuery, setMajorQuery] = useState("");
+  const [selectedMajor, setSelectedMajor] = useState<string | null>(null);
   const [highlightedMajorIndex, setHighlightedMajorIndex] = useState(-1);
   const [showMajorDropdown, setShowMajorDropdown] = useState(false);
-  // 입력한 학번
+  // 입력한 입학년도
   const [studentId, setStudentId] = useState<string>("");
-
-  //학번 유효성 검사
-  const isStudentIdValid = isValidStudentId(studentId);
+  const [highlightedYearIndex, setHighlightedYearIndex] = useState(-1);
+  const [showYearDropdown, setShowYearDropdown] = useState(false);
+  //올해
+  const currentYear = new Date().getFullYear();
+  // 입학년도 리스트 데이터(올해 포함 16년)
+  const yearOptions = Array.from({ length: 16 }, (_, i) => currentYear - i);
 
   // query나 dropdown 상태가 변경되면 학교 자동완성 쿼리
   const { data: schoolList } = useQuery<{ univList: Univ[] }>({
@@ -74,8 +78,15 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   };
   // 전공 선택했을 때 실행되는 핸들러
   const selectMajor = (major: string) => {
+    setSelectedMajor(major);
     setMajorQuery(major);
     setShowMajorDropdown(false);
+  };
+  // 선택된 연도 클릭 핸들러
+  const selectYear = (year: number) => {
+    setStudentId(String(year));
+    setShowYearDropdown(false);
+    setHighlightedYearIndex(-1);
   };
 
   // 키보드 네비게이션 (학교)
@@ -114,16 +125,31 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
       if (selected) selectMajor(selected);
     }
   };
+  // 입학년도 키보드 네비게이션
+  const handleYearKey = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (!showYearDropdown) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlightedYearIndex((i) => Math.min(i + 1, yearOptions.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlightedYearIndex((i) => Math.max(i - 1, 0));
+    } else if (e.key === "Enter" && highlightedYearIndex >= 0) {
+      const year = yearOptions[highlightedYearIndex];
+      setStudentId(String(year));
+      setShowYearDropdown(false);
+    }
+  };
 
-  // 다음 버튼 활성화 조건: 모든 필수 입력값이 채워져 있고 학번 유효성 검사를 만족할 때
-  const isNextEnabled = selectedSchool && majorQuery.trim() && isStudentIdValid;
+  // 모든 입력의 값이 존재할 때
+  const isNextEnabled = selectedSchool && selectedMajor && studentId;
 
   // 다음 버튼 클릭 핸들러
   const handleNext = () => {
     if (!selectedSchool) return;
     onUpdate?.({
       univId: String(selectedSchool.id),
-      dept: majorQuery,
+      dept: selectedMajor!,
       studentId,
       selectedSchoolName: selectedSchool.name,
     });
@@ -137,9 +163,41 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
       document.body.style.overflow = "auto";
     };
   }, []);
-  //입력창 클릭 시 해당 위치로 이동
-  const majorRef = useRef<HTMLInputElement>(null);
-  const studentIdRef = useRef<HTMLInputElement>(null);
+  // 각 입력창 위치로 이동(자동스크롤)
+  const schoolInputRef = useRef<HTMLInputElement | null>(null);
+  const majorInputRef = useRef<HTMLInputElement | null>(null);
+  const studentIdInputRefs = useRef<HTMLButtonElement | null>(null);
+  //아래 항목 키보드 하이라이팅 이동시 해당 위치로 이동(자동스크롤)
+  const schoolRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const majorRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const studentIdRefs = useRef<(HTMLLIElement | null)[]>([]);
+
+  useEffect(() => {
+    if (highlightedSchoolIndex >= 0 && showSchoolDropdown) {
+      schoolRefs.current[highlightedSchoolIndex]?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [highlightedSchoolIndex, showSchoolDropdown]);
+
+  useEffect(() => {
+    if (highlightedMajorIndex >= 0 && showMajorDropdown) {
+      majorRefs.current[highlightedMajorIndex]?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [highlightedMajorIndex, showMajorDropdown]);
+
+  useEffect(() => {
+    if (highlightedYearIndex >= 0 && showYearDropdown) {
+      studentIdRefs.current[highlightedYearIndex]?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [highlightedYearIndex, showYearDropdown]);
 
   return (
     <SignupPageLayout
@@ -170,8 +228,19 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
           <input
             type="text"
             value={schoolQuery}
+            ref={schoolInputRef}
+            onFocus={() =>
+              setTimeout(() => {
+                schoolInputRef.current?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
+              }, 10)
+            }
             onChange={(e) => {
               setSchoolQuery(e.target.value);
+              setSelectedSchool(null);
+              setSelectedMajor(null);
               setShowSchoolDropdown(true);
             }}
             onBlur={() => {
@@ -179,7 +248,7 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
             }}
             onKeyDown={handleSchoolKey}
             placeholder="재학 중인 학교를 입력해주세요"
-            className="h-[48px] w-full rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
+            className="h-[48px] w-full scroll-mb-[100px] rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
           />
           <Search className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-[var(--gray-50)]" />
         </div>
@@ -193,6 +262,9 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
                 {schoolList.univList.map((s, i) => (
                   <li
                     key={s.id}
+                    ref={(el: HTMLLIElement | null) => {
+                      schoolRefs.current[i] = el;
+                    }}
                     onClick={() => selectSchool(s)}
                     onMouseEnter={() => setHighlightedSchoolIndex(i)}
                     className={`rounded-[14px] px-4 py-3 text-base font-medium text-[var(--gray-90)] ${
@@ -218,11 +290,20 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
             </h3>
             <div className="relative">
               <input
-                ref={majorRef}
                 type="text"
+                ref={majorInputRef}
+                onFocus={() =>
+                  setTimeout(() => {
+                    majorInputRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }, 10)
+                }
                 value={majorQuery}
                 onChange={(e) => {
                   setMajorQuery(e.target.value);
+                  setSelectedMajor(null);
                   setShowMajorDropdown(true);
                 }}
                 onKeyDown={handleMajorKey}
@@ -238,6 +319,9 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
                   <ul className="absolute z-10 mt-2 w-full bg-white">
                     {majorList.deptList.map((m, i) => (
                       <li
+                        ref={(el: HTMLLIElement | null) => {
+                          majorRefs.current[i] = el;
+                        }}
                         key={m.dept}
                         onClick={() => selectMajor(m.dept)}
                         onMouseEnter={() => setHighlightedMajorIndex(i)}
@@ -253,33 +337,63 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
                   </ul>
                 )}
             </div>
-            <div className="mt-10">
+            {/* 입학년도 */}
+            <div className="relative mt-10 w-full">
               <h3 className="mb-[0.5rem] text-lg leading-snug font-semibold text-[var(--gray-90)]">
                 입학년도
               </h3>
-              <input
-                ref={studentIdRef}
-                type="text"
-                value={studentId}
-                onChange={(e) => setStudentId(e.target.value)}
+
+              {/* 버튼: 드롭다운 토글 */}
+              <button
+                type="button"
+                ref={studentIdInputRefs}
                 onFocus={() =>
                   setTimeout(() => {
-                    studentIdRef.current?.scrollIntoView({
+                    studentIdInputRefs.current?.scrollIntoView({
                       behavior: "smooth",
                       block: "center",
                     });
-                  }, 5)
+                  }, 10)
                 }
-                placeholder="2025"
-                className="h-[48px] w-1/3 scroll-mb-[100px] rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 py-2 text-base font-medium text-[var(--gray-90)] placeholder-[var(--gray-30)] focus:border-[2px] focus:border-gray-900 focus:ring-0 focus:outline-none"
-              />
+                onClick={() => setShowYearDropdown((prev) => !prev)}
+                onKeyDown={handleYearKey}
+                className="flex h-[48px] w-full items-center justify-between rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 text-base font-medium text-[var(--gray-90)] focus:border-2 focus:border-gray-900 focus:ring-0"
+              >
+                {studentId ? `${studentId}년` : "입학년도"}
+                {showYearDropdown ? (
+                  <ChevronUp className="h-5 w-5 text-[var(--gray-50)]" />
+                ) : (
+                  <ChevronDown className="h-5 w-5 text-[var(--gray-50)]" />
+                )}{" "}
+              </button>
+
+              {/* 드롭다운  */}
+              {showYearDropdown && (
+                <ul className="absolute z-10 mt-2 w-full">
+                  {yearOptions.map((year, i) => (
+                    <li
+                      key={year}
+                      ref={(el: HTMLLIElement | null) => {
+                        studentIdRefs.current[i] = el;
+                      }}
+                      onClick={() => selectYear(year)}
+                      onMouseEnter={() => setHighlightedYearIndex(i)}
+                      className={`cursor-pointer rounded-[14px] px-4 py-3 text-base font-medium text-[var(--gray-90)] ${
+                        i === highlightedYearIndex ? "bg-[var(--gray-5)]" : ""
+                      }`}
+                    >
+                      {year}년
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
         )}
       </div>
 
       {/* 스크롤 하단 여백 확보 */}
-      <div className="h-[100px]" />
+      <div className="h-[200px]" />
     </SignupPageLayout>
   );
 };
