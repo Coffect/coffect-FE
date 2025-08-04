@@ -6,7 +6,6 @@ import BottomNavbar from "../components/shareComponents/BottomNavbar";
 import { useNavigate } from "react-router-dom";
 import EmptyChatList from "../assets/icon/chat/EmptyChatList.png";
 import ExampleProfile from "../assets/icon/chat/ExampleProfile.png";
-import NotificationIcon from "../assets/icon/chat/notificationExist.png";
 
 const chatList = [
   {
@@ -52,13 +51,6 @@ const Chat = () => {
         <span className="ml-2 text-2xl font-bold text-[var(--gray-90)]">
           채팅
         </span>
-        <div className="relative">
-          <img
-            src={NotificationIcon}
-            alt="알림"
-            className="h-6 w-6 text-[var(--gray-70)]"
-          />
-        </div>
       </div>
       {/* Chat List */}
       <div className="flex-1 overflow-y-auto px-2 pb-20">

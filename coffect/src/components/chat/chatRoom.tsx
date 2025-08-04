@@ -3,7 +3,7 @@
 // 채팅방 내부 메시지 영역, 팝업 모달 연결, 일정 정보 표시
 
 import { useState, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import {
   ChevronLeft,
   Calendar,
@@ -33,6 +33,7 @@ function getMessageMargin(idx: number, messages: Array<{ mine: boolean }>) {
 const ChatRoom = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams<{ id: string }>();
   usePreventZoom();
   const {
     isOpen: isModalOpen,
@@ -132,6 +133,7 @@ const ChatRoom = () => {
   useAutoScroll(messagesEndRef, [messages.length], true);
 
   const user = {
+    id: id,
     username: "김라떼",
     info: "이런 주제에 관심 있어요!",
     interests: ["디자인", "개발", "경영", "글쓰기"],
@@ -150,7 +152,7 @@ const ChatRoom = () => {
         </div>
         <div
           className="ml-2 h-8 w-8 cursor-pointer overflow-hidden rounded-full border-1 border-[var(--gray-80)] p-[1px]"
-          onClick={() => navigate("/userpage/1")}
+          onClick={() => navigate(`/userpage/${user.id}`)}
         >
           <img
             src={ExampleProfile}
