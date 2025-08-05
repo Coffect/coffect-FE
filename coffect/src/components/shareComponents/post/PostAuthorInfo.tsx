@@ -10,8 +10,8 @@ import React from "react";
 interface UserInfo {
   name: string;
   profileImage: string;
-  major?: string;
-  studentId?: string;
+  dept: string;
+  studentId: number;
 }
 
 interface PostAuthorInfoProps {
@@ -42,12 +42,9 @@ const PostAuthorInfo: React.FC<PostAuthorInfoProps> = ({
           </div>
           <div>
             <div className="mb-1">
-              {/* major와 studentId가 있을 경우에만 표시합니다. */}
-              {user.major && user.studentId && (
-                <p className="text-[12px] text-gray-500">
-                  {user.major} {user.studentId}
-                </p>
-              )}
+              <p className="text-[12px] text-gray-500">
+                {user.dept} {user.studentId}
+              </p>
             </div>
             <div>
               <p className="text-[12px] text-gray-500">{timeAgo}</p>
