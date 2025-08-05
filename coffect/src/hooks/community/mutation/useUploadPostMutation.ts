@@ -1,5 +1,15 @@
+/**
+ * @file useUploadPostMutation.ts
+ * @author 흥부/강신욱
+ * @description
+ * 게시글 업로드를 위한 React Query Mutation 훅입니다.
+ * @version 1.0.0
+ * - 1.0.0 : 초기 작성 ( 게시글 업로드 Mutation 훅 정의 )
+ * @date 2023-08-05
+ */
+
 import { useMutation } from "@tanstack/react-query";
-import { uploadPost } from "../../../api/community/writeApi";
+import { uploadPost } from "@/api/community/writeApi";
 import type {
   PostUploadRequest,
   PostUploadResponse,
