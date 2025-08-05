@@ -24,9 +24,7 @@ const WritePostPage: React.FC = () => {
     setTitle,
     content,
     setContent,
-    images, // 이미지 파일 목록
-    handleImageChange, // 이미지 변경 핸들러
-    handleImageRemove, // 이미지 삭제 핸들러
+
     isFormValid,
     handleBackClick,
     handleUpload,
@@ -44,13 +42,7 @@ const WritePostPage: React.FC = () => {
         <div className="h-[0.8px] w-full bg-[var(--gray-5)]"></div>
 
         {/* WritePostContentInput에 이미지 관련 상태와 핸들러를 props로 전달합니다. */}
-        <WritePostContentInput
-          content={content}
-          setContent={setContent}
-          images={images}
-          onImageChange={handleImageChange}
-          onImageRemove={handleImageRemove}
-        />
+        <WritePostContentInput content={content} setContent={setContent} />
 
         <div className="mb-4 h-[0.8px] w-full bg-[var(--gray-5)]"></div>
         <WritePostTopicSelector
