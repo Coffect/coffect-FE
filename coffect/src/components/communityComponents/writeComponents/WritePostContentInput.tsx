@@ -5,7 +5,7 @@
  *              이 컴포넌트는 글 작성 페이지의 UI를 구성하며, 상태와 로직은 useWritePost 훅에서 관리합니다.
  */
 
-import React, { useState, useRef } from "react";
+import React, { useRef } from "react";
 import { Image, Link, X } from "lucide-react";
 import ImageAttachmentModal from "../../shareComponents/ImageAttachmentModal";
 
@@ -15,18 +15,26 @@ import ImageAttachmentModal from "../../shareComponents/ImageAttachmentModal";
  * 이 인터페이스는 WritePostContentInput 컴포넌트의 props 타입을 정의합니다.
  * @property content - 게시글 내용
  * @property setContent - 게시글 내용을 업데이트하는 함수
+ * @property selectedImageFiles - 사용자가 선택한 이미지 파일 배열 (추가됨)
+ * @property handleImageChange - 이미지 파일 선택 시 호출되는 핸들러 (추가됨)
+ * @property handleImageRemove - 이미지 파일 삭제 시 호출되는 핸들러 (추가됨)
  */
 interface WritePostContentInputProps {
   content: string;
   setContent: React.Dispatch<React.SetStateAction<string>>;
+  selectedImageFiles: File[];
+  handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleImageRemove: (indexToRemove: number) => void;
 }
 
 const WritePostContentInput: React.FC<WritePostContentInputProps> = ({
   content,
   setContent,
+  selectedImageFiles,
+  handleImageChange,
+  handleImageRemove,
 }) => {
-  const [showModal, setShowModal] = useState(false);
-  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [showModal, setShowModal] = React.useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleCameraClick = () => {
@@ -43,27 +51,11 @@ const WritePostContentInput: React.FC<WritePostContentInputProps> = ({
     }
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      const newImages = Array.from(files);
-      setSelectedImages((prevImages) => [...prevImages, ...newImages]);
-      setShowModal(false);
-    }
-    if (event.target) {
-      event.target.value = "";
-    }
-  };
-
-  const handleRemoveImage = (index: number) => {
-    setSelectedImages((prevImages) => prevImages.filter((_, i) => i !== index));
-  };
-
   return (
     <div className="p-4">
-      {selectedImages.length > 0 && (
+      {selectedImageFiles.length > 0 && (
         <div className="mb-2 grid grid-cols-3 gap-2">
-          {selectedImages.map((image, index) => (
+          {selectedImageFiles.map((image, index) => (
             <div key={index} className="relative">
               <img
                 src={URL.createObjectURL(image)}
@@ -71,7 +63,7 @@ const WritePostContentInput: React.FC<WritePostContentInputProps> = ({
                 className="h-24 w-full rounded-md object-cover"
               />
               <button
-                onClick={() => handleRemoveImage(index)}
+                onClick={() => handleImageRemove(index)}
                 className="absolute right-1 top-1 rounded-full bg-black bg-opacity-50 p-0.5 text-white"
               >
                 <X size={16} />
@@ -108,7 +100,7 @@ const WritePostContentInput: React.FC<WritePostContentInputProps> = ({
           style={{ display: "none" }}
           accept="image/*"
           multiple
-          onChange={handleFileChange}
+          onChange={handleImageChange}
         />
       </div>
     </div>
