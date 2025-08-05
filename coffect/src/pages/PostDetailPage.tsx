@@ -3,16 +3,17 @@
  * @description: 게시글 상세 페이지입니다.
                 데이터 로직은 각 커스텀 훅에 위임하고,
                 UI는 공용 컴포넌트와 상세 페이지 전용 컴포넌트들을 조합하여 구성합니다.
- * @version: 1.2.0
- * @date: 2025-08-02
+ * @version: 1.3.0
+ * @date: 2025-08-03
  * @remarks
  * - 1.1.0: `usePostDetail` 훅과 `useComments` 훅을 분리하여 각각 호출하도록 수정.
  * - 1.2.0: `usePostDetail` 훅에 `select` 옵션이 적용됨에 따라, 
  *          훅의 반환 값(post, timeAgo)을 사용하는 부분을 최종 확인하고 주석을 보강.
+ * - 1.3.0: 댓글 조회를 위해 기존 `useComments` 훅을 `useGetComments` react-query 훅으로 교체.
  */
 
 import { usePostDetail } from "@/hooks/community/query/usePostDetail";
-import { useComments } from "@/hooks/useComments";
+import { useGetComments } from "@/hooks/community/query/useGetComments"; // 경로 수정
 import PostAuthorInfo from "@/components/shareComponents/post/PostAuthorInfo";
 import PostBody from "@/components/shareComponents/post/PostBody";
 import PostDetailHeader from "@/components/postDetailComponents/PostDetailHeader";
@@ -21,7 +22,6 @@ import CommentInput from "@/components/communityComponents/comment/CommentInput"
 
 const PostDetail = () => {
   // 1. 게시글 상세 정보 로딩: usePostDetail 훅을 호출합니다.
-  // 이 훅은 내부적으로 `select` 옵션을 사용하여 필요한 데이터(post, timeAgo)만 가공하여 반환합니다.
   const {
     post,
     postId,
@@ -30,13 +30,13 @@ const PostDetail = () => {
     error: postError,
   } = usePostDetail();
 
-  // 2. 댓글 목록 로딩: useComments 훅을 직접 호출합니다.
-  // 게시글 데이터와 댓글 데이터는 독립적으로 로딩 및 에러 처리가 됩니다.
+  // 2. 댓글 목록 로딩: useGetComments 훅을 호출합니다.
+  //    게시글 데이터와 댓글 데이터는 독립적으로 로딩 및 에러 처리가 됩니다.
   const {
-    comments: commentList,
+    data: commentList = [], // 데이터가 없을 경우 기본값으로 빈 배열 사용
     isLoading: areCommentsLoading,
     error: commentsError,
-  } = useComments(postId);
+  } = useGetComments(postId || ""); // postId가 없을 경우 빈 문자열을 전달하여 쿼리가 실행되지 않도록 함
 
   // 데이터 로딩 중일 때 표시할 UI (게시글 또는 댓글 중 하나라도 로딩 중일 때)
   if (isPostLoading || areCommentsLoading) {

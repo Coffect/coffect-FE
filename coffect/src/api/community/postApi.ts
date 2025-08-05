@@ -3,6 +3,10 @@
  * @description 커뮤니티 게시글과 관련된 API 함수들을 정의합니다.
  *              - 모든 함수는 axiosInstance를 사용하여 API 요청을 보냅니다.
  *              - 각 함수는 `postTypes.ts`에서 정의한 타입을 파라미터 및 반환 값으로 사용합니다.
+ * @version 1.0.0
+ * @date 2025-08-01
+ * @remarks
+ * - 1.0.0: 게시글 목록 조회(getPosts) 및 게시글 상세 조회(getPostDetail) API 함수 구현
  */
 
 import { axiosInstance } from "@/api/axiosInstance";
