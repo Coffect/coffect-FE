@@ -1,4 +1,15 @@
-import { axiosInstance } from "../axiosInstance";
+/**
+ * @file writeApi.ts
+ * @author 흥부/강신욱
+ * @description
+ * 게시글 작성 관련 API 함수들을 정의합니다.
+ * 이 파일은 게시글 본문과 이미지를 서버에 업로드하는 기능을 포함합니다.
+ * @version 1.0.0
+ * - 1.0.0 : 초기 작성 ( 게시글 본문 업로드 API 정의 )
+ * @date 2023-08-05
+ */
+
+import { axiosInstance } from "@/api/axiosInstance"; // axios 인스턴스를 가져옵니다.
 import type {
   PostUploadRequest,
   PostUploadResponse,
