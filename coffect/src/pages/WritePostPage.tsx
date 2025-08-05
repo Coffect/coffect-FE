@@ -1,20 +1,26 @@
 /**
  * @author 흥부/강신욱
  * @description
- * WritePostPage는 글 작성 페이지의 전체 UI를 구성합니다.
- * 상태와 로직 관리는 useWritePost 훅을 통해 처리되며,
- * UI는 하위 컴포넌트를 통해 렌더링됩니다.
+ * 1. src/types/community/writePostType에 타입을 정의함.
+ * 2. src/api/community/writeApi.ts에 API 함수를 정의함.
+ * 3. src/hooks/community/mutation/useUploadPostMutation.ts와
+ *    src/hooks/community/mutation/useUploadPostImageMutation.ts에 React Query ( museMutation )를 사용한 API 호출 로직을 정의함.
+ * 4. src/hooks/community/writePost/useWritePost.ts에 글 작성 페이지의 상태와 로직을 관리하는 커스텀 훅을 정의함.
+ * 5. src/pages/WritePostPage.tsx에 글 작성 페이지 컴포넌트를 정의함.
+ * @version 1.0.0
+ * - 1.0.0 : 초기 작성 ( 글 작성 페이지 컴포넌트 정의 )
+ * @date 2023-08-05
  */
 
 import React from "react";
-import { useWritePost } from "@/hooks/useWritePost";
+import { useWritePost } from "@/hooks/community/writePost/useWritePost";
 import WritePostHeader from "@/components/communityComponents/writeComponents/WritePostHeader";
 import WritePostTitleInput from "@/components/communityComponents/writeComponents/WritePostTitleInput";
 import WritePostContentInput from "@/components/communityComponents/writeComponents/WritePostContentInput";
 import WritePostTopicSelector from "@/components/communityComponents/writeComponents/WritePostTopicSelector";
 
 const WritePostPage: React.FC = () => {
-  // useWritePost 훅에서 글 작성에 필요한 모든 상태와 함수들을 가져옵니다.
+  // `src/hooks/community/writePost/useWritePost` 에서 관련 훅들을 가져옴.
   const {
     postType,
     handlePostTypeSelect,
@@ -24,11 +30,23 @@ const WritePostPage: React.FC = () => {
     setTitle,
     content,
     setContent,
-
+    selectedImageFiles,
+    handleImageChange,
+    handleImageRemove,
     isFormValid,
     handleBackClick,
     handleUpload,
   } = useWritePost();
+
+  // TODO: error, isSuccess 상태를 활용하여 사용자에게 피드백 (예: 토스트 메시지, 모달) 제공 로직 추가
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     // 성공 메시지 표시
+  //   }
+  //   if (error) {
+  //     // 에러 메시지 표시
+  //   }
+  // }, [isSuccess, error]);
 
   return (
     <div className="flex h-screen flex-col bg-white">
@@ -42,7 +60,13 @@ const WritePostPage: React.FC = () => {
         <div className="h-[0.8px] w-full bg-[var(--gray-5)]"></div>
 
         {/* WritePostContentInput에 이미지 관련 상태와 핸들러를 props로 전달합니다. */}
-        <WritePostContentInput content={content} setContent={setContent} />
+        <WritePostContentInput
+          content={content}
+          setContent={setContent}
+          selectedImageFiles={selectedImageFiles}
+          handleImageChange={handleImageChange}
+          handleImageRemove={handleImageRemove}
+        />
 
         <div className="mb-4 h-[0.8px] w-full bg-[var(--gray-5)]"></div>
         <WritePostTopicSelector
