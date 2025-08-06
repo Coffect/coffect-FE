@@ -29,7 +29,7 @@ const SplashScreen = ({ onNext }: StepProps) => {
 
         {/* 버튼 */}
         <button
-          onClick={onNext}
+          onClick={() => onNext?.()}
           className="w-full rounded-xl bg-[var(--gray-90)] py-[4%] text-center text-lg font-semibold text-[var(--gray-0)]"
         >
           커피챗 시작하기

@@ -77,7 +77,7 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, form }) => {
     try {
       const res = await verifyEmailCode(email, Number(joined)); // 인증 코드 검증 서버 응답 확인
       if (res?.resultType === "SUCCESS") {
-        onNext();
+        onNext?.();
       } else {
         const errorMsg = res?.error?.reason || "인증에 실패했습니다.";
         alert(errorMsg);

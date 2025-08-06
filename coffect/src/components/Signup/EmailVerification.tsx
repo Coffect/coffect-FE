@@ -25,7 +25,7 @@ const EmailVerification: React.FC<StepProps> = ({ onNext, onUpdate }) => {
     if (sessionStorage.getItem("mailSent")) {
       sessionStorage.removeItem("mailSent");
     }
-    onNext(); // 다음 화면으로 이동
+    onNext?.(); // 다음 화면으로 이동
   };
 
   useEffect(() => {

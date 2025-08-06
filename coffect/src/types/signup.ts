@@ -12,7 +12,7 @@ export interface SignupData {
 }
 
 export interface StepProps {
-  onNext: () => void;
+  onNext: (fields?: Partial<SignupData>)  => void;
   onBack?: () => void;
   onUpdate?: (data: Partial<SignupData>) => void;
 }

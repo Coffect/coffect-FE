@@ -34,9 +34,10 @@ const Signup: React.FC = () => {
   const goNext = () => setStep((prev) => prev + 1);
   /* 이전 단계로 이동 */
   const goBack = () => setStep((prev) => prev - 1);
-  /* form 상태 업데이트 (부분 필드 병합) */
-  const update = (fields: Partial<SignupData>) =>
+  /* 동기화 이후 동작하도록 update 수정 */
+  const update = (fields: Partial<SignupData>) => {
     setForm((prev) => ({ ...prev, ...fields }));
+  };
 
   /*TopNavBar에 들어갈 제목 내용*/
   const stepTitles: Record<number, string> = {
@@ -65,20 +66,18 @@ const Signup: React.FC = () => {
   };
 
   // 회원가입 요청 함수
-  const signup = async () => {
+  const signup = async (data: SignupData) => {
     try {
-      const interestString = form.interest || ""; // form.interest가 undefined면 ""(건너뛰기 시 값x)
-
       const result = await signUpRequest({
-        id: form.id!,
-        password: form.password!,
-        name: form.name!,
-        email: form.email!,
-        univId: form.univId!,
-        dept: form.dept!,
-        studentId: form.studentId!,
-        interest: interestString,
-        img: form.img!,
+        id: data.id!,
+        password: data.password!,
+        name: data.name!,
+        email: data.email!,
+        univId: data.univId!,
+        dept: data.dept!,
+        studentId: data.studentId!,
+        interest: data.interest!,
+        img: data.img!,
       });
       //회원 가입 성공 시 회원 가입 완료 페이지 이동
       if (result.resultType === "SUCCESS") {
@@ -162,8 +161,13 @@ const Signup: React.FC = () => {
         {/* 9. 관심사 선택 화면 */}
         {step === 9 && (
           <InterestsSelection
-            onNext={signup}
-            onUpdate={(fields) => update(fields)}
+            onNext={(fields) => {
+              // form 상태에 interest를 병합 후 회원가입
+              const updated = { ...form, ...fields } as SignupData;
+              setForm(updated);
+
+              signup(updated);
+            }}
           />
         )}
         {/* 10. 가입 완료 화면 */}

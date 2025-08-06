@@ -37,18 +37,17 @@ const CATEGORY_NAME_TO_ID: Record<string, number> = {
   독서: 7,
   마케팅: 8,
   여행: 9,
-  데이터: 10,
-  분석: 11,
-  하드웨어: 12,
-  영화: 13,
-  외국어: 14,
-  악기: 15,
-  네트워킹: 16,
+  "데이터 분석": 10,
+  하드웨어: 11,
+  영화: 12,
+  외국어: 13,
+  악기: 14,
+  네트워킹: 15,
 };
 
 const MAX_SELECTION = 4; // 최대 선택 가능 수
 
-const InterestsSelection = ({ onNext, onUpdate }: StepProps) => {
+const InterestsSelection = ({ onNext }: StepProps) => {
   // 선택된 관심사 상태
   const [selected, setSelected] = useState<string[]>([]);
   // 에러 메시지 상태
@@ -85,8 +84,8 @@ const InterestsSelection = ({ onNext, onUpdate }: StepProps) => {
 
     // 선택된 항목 부모로 전달하고 다음 단계로 이동
     const selectedIds = selected.map((item) => CATEGORY_NAME_TO_ID[item]);
-    onUpdate?.({ interest: selectedIds.join(",") });
-    onNext();
+    //interest 상태 업데이트
+    onNext({ interest: selectedIds.join(",") });
   };
 
   useEffect(() => {
@@ -111,7 +110,7 @@ const InterestsSelection = ({ onNext, onUpdate }: StepProps) => {
         <div className="mt-auto flex w-full gap-2">
           {/* 건너뛰기 버튼 */}
           <button
-            onClick={onNext}
+            onClick={() => onNext?.({ interest: "" })}
             className="flex-[1.5] rounded-xl border-[1.5px] border-[var(--gray-20)] py-[4%] text-center text-lg font-semibold text-[var(--gray-50)]"
           >
             건너뛰기

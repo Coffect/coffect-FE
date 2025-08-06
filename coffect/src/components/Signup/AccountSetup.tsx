@@ -74,7 +74,7 @@ const AccountSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
     )
       return;
     onUpdate?.({ id, password });
-    onNext();
+    onNext?.();
   };
 
   /* 입력 변경 시 에러 및 중복체크 해제 */

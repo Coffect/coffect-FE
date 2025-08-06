@@ -43,7 +43,7 @@ const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
       return;
     }
     onUpdate?.({ name: trimmed, img: avatarFile || undefined }); // 부모에게 전달한 이름, 이미지 파일
-    onNext();
+    onNext?.();
   };
   // 버튼 비활성화 조건(이름x 또는 프로필사진 x)
   const isButtonDisabled = name.trim().length < 2 || !avatarUrl || !avatarFile;

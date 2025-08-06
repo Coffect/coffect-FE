@@ -170,7 +170,7 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
       studentId,
       selectedSchoolName: selectedSchool.name,
     });
-    onNext();
+    onNext?.();
   };
   useEffect(() => {
     // 진입 시 스크롤 막기
