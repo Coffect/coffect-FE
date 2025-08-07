@@ -9,7 +9,7 @@ import { Trash2 } from "lucide-react";
 
 // 메시지 객체 타입 정의
 interface Message {
-  id: number; // 메시지 고유 ID
+  id: string; // 보낸 사람 id
   name: string; // 보낸 사람 이름
   time: string; // 수신 시간
   intro: string; // 메시지 본문 (제안 내용)
@@ -19,7 +19,7 @@ interface Message {
 interface MessageModalProps {
   message: Message; // 메시지 데이터
   onClose: () => void; // 모달 닫기 핸들러
-  onDelete: (id: number) => void; // 메시지 삭제 핸들러
+  onDelete: (id: string) => void; // 메시지 삭제 핸들러
   onChat: () => void; // 채팅 시작 핸들러
 }
 

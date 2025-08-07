@@ -2,65 +2,82 @@
   author      : 이희선
   description : 전체 일정 목록을 보여주는 화면 컴포넌트
 */
-import React from "react";
 import TopNavbar from "./TopNavbar";
 import { Clock } from "lucide-react";
 import NoSchedule from "./NoSchedule";
+import {
+  getCoffeeChatSchedule,
+  getUserNameById,
+  getUserStringId,
+} from "@/api/home";
+import { useQuery } from "@tanstack/react-query";
 
+// API 응답 타입 정의
 interface ScheduleItem {
-  id: number;
-  date: string; // YYYY.MM.DD
-  daysAway: number; // 몇 일 뒤
-  time: string; // HH:mm
-  participants: string[]; // 프로필 URL
-  title: string;
+  opponentId: string;
+  coffeeDate: string; // ISO 형식
   location: string;
+  firstUserImage: string;
+  secondUserImage: string;
+  opponentName?: string;
 }
-
-// 더미 일정 데이터
-const dummySchedules: ScheduleItem[] = [
-  {
-    id: 1,
-    date: "2025.07.03",
-    daysAway: 1,
-    time: "14:00",
-    participants: [
-      "https://picsum.photos/seed/user1/40",
-      "https://picsum.photos/seed/user2/40",
-    ],
-    title: "라떼님과의 커피챗",
-    location: "@스타벅스 인하대사거리점",
-  },
-  {
-    id: 2,
-    date: "2025.07.04",
-    daysAway: 2,
-    time: "16:30",
-    participants: [
-      "https://picsum.photos/seed/user1/40",
-      "https://picsum.photos/seed/user2/40",
-    ],
-    title: "라떼님과의 커피챗",
-    location: "@커피빈 인하대사거리점",
-  },
-  {
-    id: 3,
-    date: "2025.07.05",
-    daysAway: 3,
-    time: "10:15",
-    participants: [
-      "https://picsum.photos/seed/user1/40",
-      "https://picsum.photos/seed/user2/40",
-    ],
-    title: "라떼님과의 커피챗",
-    location: "@이디야 인하대사거리점",
-  },
-];
 
 /**
  * 일정 뷰 컴포넌트
  */
 const CalendarView: React.FC = () => {
+  const { data: schedules = [] } = useQuery<ScheduleItem[], Error>({
+    queryKey: ["coffeeChatSchedule"],
+    queryFn: async (): Promise<ScheduleItem[]> => {
+      const raw = await getCoffeeChatSchedule();
+      const completed = await Promise.all(
+        raw.map(async (item: ScheduleItem): Promise<ScheduleItem> => {
+          try {
+            const stringId = await getUserStringId(Number(item.opponentId));
+            const name = await getUserNameById(stringId);
+            return { ...item, opponentName: name };
+          } catch {
+            return { ...item, opponentName: "누구신지..." };
+          }
+        }),
+      );
+      return completed;
+    },
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+
+  //  날짜 포맷 변환 (ISO → YYYY.MM.DD)
+  const formatDate = (isoDate: string) => {
+    const dateObj = new Date(isoDate);
+    return dateObj
+      .toLocaleDateString("ko-KR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      })
+      .replace(/\./g, "")
+      .replace(/ /g, ".");
+  };
+  // 약속 시간 HH:MM
+  const formatTime = (isoDate: string) => {
+    const dateObj = new Date(isoDate);
+    return dateObj.toLocaleTimeString("ko-KR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  };
+  //약속 일자까지 남은 일 수 계산
+  const calculateDaysAway = (isoDate: string) => {
+    const today = new Date();
+    const target = new Date(isoDate);
+    const diff = Math.ceil(
+      (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+    );
+    return diff;
+  };
+
   return (
     <div className="relative flex h-screen w-full flex-col overflow-hidden bg-[var(--gray-0)]">
       {/* 상단 네비바 */}
@@ -70,7 +87,7 @@ const CalendarView: React.FC = () => {
 
       {/* 메인: 일정 리스트 */}
       <main className="flex-1 overflow-y-auto bg-[var(--gray-5)]">
-        {dummySchedules.length === 0 ? (
+        {schedules.length === 0 ? (
           // 일정이 없을 경우: NoSchedule 컴포넌트 렌더링
           <NoSchedule />
         ) : (
@@ -83,47 +100,44 @@ const CalendarView: React.FC = () => {
             </div>
             <div className="flex flex-col items-center py-4">
               <div className="w-[90%] max-w-md space-y-4">
-                {dummySchedules.map((item) => (
+                {schedules.map((item, idx) => (
                   <div
-                    key={item.id}
+                    key={idx}
                     className="rounded-xl bg-[var(--gray-0)] p-4 shadow"
                   >
                     <div className="mb-3 flex items-center justify-between">
                       <div>
                         <span className="rounded-[14px] bg-[var(--gray-60)] px-2 py-1 text-sm font-medium text-[var(--gray-0)]">
-                          {item.date}
+                          {formatDate(item.coffeeDate)}
                         </span>
                         <span className="ml-1 rounded-[14px] bg-orange-500 px-2 py-1 text-sm font-semibold text-[var(--gray-0)]">
-                          {item.daysAway}일 뒤
+                          {calculateDaysAway(item.coffeeDate)}일 뒤
                         </span>
                       </div>
                       <div className="flex items-center text-sm font-medium text-[var(--gray-50)]">
                         <Clock className="mt-0.5 mr-1 h-3 w-3 text-[var(--gray-50)]" />
-                        {item.time}
+                        {formatTime(item.coffeeDate)}
                       </div>
                     </div>
                     <div className="flex items-center">
                       <div className="mr-2 flex -space-x-2">
-                        {item.participants.map((src, idx) => (
-                          <img
-                            key={idx}
-                            src={src}
-                            alt="avatar"
-                            className="h-8 w-8 rounded-full border-2 border-white"
-                            style={{
-                              zIndex: item.participants.length - idx,
-                            }}
-                          />
-                        ))}
+                        <img
+                          src={item.firstUserImage}
+                          className="h-8 w-8 rounded-full border-2 border-white"
+                        />
+                        <img
+                          src={item.secondUserImage}
+                          className="h-8 w-8 rounded-full border-2 border-white"
+                        />
                       </div>
                       <div>
                         <div className="text-base font-semibold text-[var(--gray-90)]">
-                          {item.title}
+                          {item.opponentName}님과의 커피챗
                         </div>
                       </div>
                     </div>
                     <div className="my-1 text-sm font-medium text-[var(--gray-60)]">
-                      {item.location}
+                      @{item.location}
                     </div>
                   </div>
                 ))}
