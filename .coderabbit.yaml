@@ -12,6 +12,7 @@ reviews:
   auto_review:
     enabled: true
     drafts: false
+    base_branches: true # 기본 브랜치가 아닌 브랜치를 대상으로 하는 PR도 리뷰
 
   # 모든 브랜치에 대해 검사
   branch_filters:
@@ -20,6 +21,13 @@ reviews:
     # - "main"
     # - "develop"
     # - "feature/*"
+
+  # 대상 브랜치 설정 (PR의 타겟 브랜치)
+  base_branch_filters:
+    - "main"
+    - "develop"
+    - "feature/*"
+    - "*" # 모든 브랜치를 대상으로 허용
 
   # GitHub 이벤트 설정
   triggers:
