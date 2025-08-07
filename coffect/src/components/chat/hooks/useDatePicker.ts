@@ -1,5 +1,7 @@
 // author : 앨리스/박은지
-// description : [커피챗 일정 등록] 날짜 선택 훅
+/*
+ * description : [커피챗 일정 등록] 날짜 선택 훅
+ */
 
 import { useState } from "react";
 

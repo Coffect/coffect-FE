@@ -1,5 +1,7 @@
-// author : 앨리스/박은지
-// description : [커피챗 일정 등록] 장소 입력 섹션
+/*
+ * author : 앨리스/박은지
+ * description : [커피챗 일정 등록] 장소 입력 섹션
+ */
 
 import React from "react";
 import type { ScheduleFormValues } from "./ScheduleForm";

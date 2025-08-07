@@ -1,6 +1,8 @@
-// author : 앨리스/박은지
-// description : [커피챗 일정 등록] 폼 컴포넌트
-// 날짜, 시간, 장소, 약속 전 알림 설정 입력 필드 및 완료/취소 버튼
+/*
+ * author : 앨리스/박은지
+ * description : [커피챗 일정 등록] 폼 컴포넌트
+ * 날짜, 시간, 장소, 약속 전 알림 설정 입력 필드 및 완료/취소 버튼
+ */
 
 import React from "react";
 import "../../assets/styles/chat-calendar.css";

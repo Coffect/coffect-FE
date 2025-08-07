@@ -1,6 +1,8 @@
-// author : 앨리스/박은지
-// description : [상대 요청 보기] 모달 컴포넌트
-// 요청시간은 커피챗 제안 플로우에서 연결 필요, 시간표-임시 텍스트
+/*
+ * author : 앨리스/박은지
+ * description : [상대 요청 보기] 모달 컴포넌트
+ * 요청시간은 커피챗 제안 플로우에서 연결 필요, 시간표-임시 텍스트
+ */
 
 import { X } from "lucide-react";
 interface RequestModalProps {
