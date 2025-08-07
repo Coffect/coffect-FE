@@ -12,28 +12,8 @@ reviews:
   auto_review:
     enabled: true
     drafts: false
-    base_branches: true # 기본 브랜치가 아닌 브랜치를 대상으로 하는 PR도 리뷰
-
-  # 모든 브랜치에 대해 검사
-  branch_filters:
-    - "*" # 모든 브랜치
-    # 또는 특정 패턴 사용:
-    # - "main"
-    # - "develop"
-    # - "feature/*"
-
-  # 대상 브랜치 설정 (PR의 타겟 브랜치)
-  base_branch_filters:
-    - "main"
-    - "develop"
-    - "feature/*"
-    - "*" # 모든 브랜치를 대상으로 허용
-
-  # GitHub 이벤트 설정
-  triggers:
-    - pull_request # PR 생성/업데이트 시
-    - push # 푸시 시
-    - pull_request_review # PR 리뷰 시
+    base_branches:
+      - "*"
 
   # 리뷰할 파일 패턴
   path_filters:
@@ -42,20 +22,6 @@ reviews:
     - "**/*.js"
     - "**/*.jsx"
     - "**/*.vue"
-
-  # 제외할 파일 패턴
-  ignore_patterns:
-    - "node_modules/**"
-    - "dist/**"
-    - "build/**"
-    - "*.min.js"
-
-  # 리뷰 규칙
-  rules:
-    - check_typescript_types
-    - check_code_style
-    - check_security_issues
-    - check_performance
 
 # 언어별 설정
 language_settings:
