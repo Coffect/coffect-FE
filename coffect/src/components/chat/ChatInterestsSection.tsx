@@ -9,7 +9,7 @@ import { Calendar, Mail, ChevronUp, ChevronDown } from "lucide-react";
 import ChatInterestTags from "./ChatInterestTags";
 
 interface Schedule {
-  date: string | Date;
+  date: Date;
   time: string;
   place?: string;
   alert?: string | null;
@@ -19,6 +19,10 @@ interface ChatInterestsSectionProps {
   interests: string[];
   schedule: Schedule | null;
   onOpenModal: () => void;
+}
+
+interface ChatScheduleState {
+  schedule: Schedule;
 }
 
 const ChatInterestsSection = ({
@@ -45,7 +49,7 @@ const ChatInterestsSection = ({
         })
         .replace(/ /g, "\u00A0");
     }
-    return "";
+    throw new Error("Invalid date format provided");
   };
 
   return (
@@ -73,9 +77,12 @@ const ChatInterestsSection = ({
           <div className="flex w-full items-center gap-2">
             {schedule && (
               <button
+                aria-label={`일정 상세보기: ${formatScheduleDate(schedule.date)} ${schedule.time}`}
                 className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-xs font-bold text-ellipsis whitespace-nowrap text-[var(--gray-90)] sm:text-sm"
                 onClick={() =>
-                  navigate("/chat/schedule", { state: { schedule } })
+                  navigate("/chat/schedule", {
+                    state: { schedule } as ChatScheduleState,
+                  })
                 }
               >
                 <Calendar size={18} className="mr-1 text-[var(--gray-40)]" />

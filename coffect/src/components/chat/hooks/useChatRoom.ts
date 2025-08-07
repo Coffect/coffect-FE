@@ -3,7 +3,7 @@
  */
 
 import { useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import useCurrentTime from "./useCurrentTime";
 import useHandleSend from "./useHandleSend";
 import type { Message } from "../../../types/chat";
@@ -15,16 +15,8 @@ interface Schedule {
   alert?: string | null;
 }
 
-interface User {
-  id: string;
-  username: string;
-  info: string;
-  interests: string[];
-}
-
 export const useChatRoom = () => {
   const location = useLocation();
-  const { id } = useParams<{ id: string }>();
   const getCurrentTime = useCurrentTime();
 
   // 일정 정보 (전달받은 일정이 있으면 표시)
@@ -116,19 +108,11 @@ export const useChatRoom = () => {
     ]);
   };
 
-  const user: User = {
-    id: id || "coffect",
-    username: "김라떼",
-    info: "이런 주제에 관심 있어요!",
-    interests: ["디자인", "개발", "경영", "글쓰기"],
-  };
-
   return {
     messages,
     inputValue,
     setInputValue,
     schedule,
-    user,
     handleSend,
     handleImageSend,
   };
