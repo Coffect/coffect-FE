@@ -16,7 +16,10 @@ const CoffeeCategoryGrid: React.FC = () => {
     "같은 학번",
     "요즘\n 글을 많이 쓴",
   ];
+  // 카테고리 클릭 시 다음날 오전 9시까지 수정 못하도록 localStorage에 방문기록 저장
   const handleClick = () => {
+    localStorage.setItem("coffeeCategorySelected", "true");
+    localStorage.setItem("coffeeCategoryExpire", new Date().toISOString());
     navigate("/home/cards");
   };
 

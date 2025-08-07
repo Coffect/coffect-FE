@@ -12,7 +12,7 @@ const TimeTable = () => {
   const days = ["월", "화", "수", "목", "금", "토", "일"];
   // 9:00 ~ 24:00 (30분 단위)
   const timeSlots = [];
-  for (let hour = 9; hour < 24; hour++) {
+  for (let hour = 9; hour < 20; hour++) {
     timeSlots.push(`${hour}:00`);
     timeSlots.push(`${hour}:30`);
   }
@@ -101,7 +101,8 @@ const TimeTable = () => {
         <span className="text-xl font-semibold text-[var(--gray-90)]">
           커피챗이 가능한
           <br />
-          공강 시간대를 표시해주세요!
+          <span className="text-[var(--orange-500)]">공강 시간대</span>를
+          표시해주세요!
         </span>
         <span className="text-md my-2 text-[var(--gray-50)]">
           상대방과 겹치는 시간대를 확인할 수 있어요.
@@ -112,13 +113,13 @@ const TimeTable = () => {
       <div ref={scrollRef} className="relative w-full flex-1 overflow-auto">
         <div className="min-w-fit">
           {/* 요일 헤더 */}
-          <div className="sticky top-0 z-10 flex gap-x-4">
+          <div className="sticky top-0 z-10 flex gap-x-3">
             {/* 첫 div는 행과 열 사이 중첩되는 칸 */}
             <div className="sticky left-0 z-20 h-5 w-10" />
             {days.map((day, dayIndex) => (
               <div
                 key={dayIndex}
-                className="mb-3 flex h-7 w-20 items-center justify-center text-lg font-semibold text-[var(--gray-50)]"
+                className="mb-3 flex h-7 w-17.5 items-center justify-center text-lg font-semibold text-[var(--gray-50)]"
                 // gap, margin, padding 등 없음!
               >
                 {day}
@@ -128,7 +129,7 @@ const TimeTable = () => {
 
           {/* 시간대 라벨 + 셀 */}
           {timeSlots.map((_, timeIndex) => (
-            <div key={timeIndex} className="flex gap-x-4">
+            <div key={timeIndex} className="flex gap-x-3">
               {/* 시간 라벨 */}
               <div
                 className={`sticky left-0 z-10 flex h-5 w-10 items-center justify-start text-sm text-[var(--gray-40)] ${timeIndex % 2 === 0 ? "" : "opacity-0"}`}
@@ -139,14 +140,13 @@ const TimeTable = () => {
               {days.map((_, dayIndex) => {
                 const slotId = getSlotId(dayIndex, timeIndex);
                 const isSelected = selectedSlots.has(slotId);
-                const isFirst =
+                // firstSelected 셀을 임시로 강조
+                const isFirstSelected =
+                  isEditing &&
                   firstSelected &&
                   firstSelected.dayIndex === dayIndex &&
-                  firstSelected.timeIndex === timeIndex;
-                const isSecond =
-                  secondSelected &&
-                  secondSelected.dayIndex === dayIndex &&
-                  secondSelected.timeIndex === timeIndex;
+                  firstSelected.timeIndex === timeIndex &&
+                  secondSelected === null;
                 // 9시(첫 row)와 24시(마지막 row) 체크
                 const isFirstRow = timeIndex === 0;
                 const isLastRow = timeIndex === timeSlots.length - 1;
@@ -155,7 +155,11 @@ const TimeTable = () => {
                 return (
                   <div
                     key={dayIndex}
-                    className={`relative m-0 h-9 w-20 p-0 ${isSelected ? "bg-[var(--timetable-cell)]" : "bg-[var(--gray-5)]"} ${isEditing ? "cursor-pointer" : "cursor-default"} ${
+                    className={`relative m-0 h-9 w-17.5 p-0 ${
+                      isSelected || isFirstSelected
+                        ? "bg-[var(--orange-100)]"
+                        : "bg-[var(--gray-5)]"
+                    } ${isEditing ? "cursor-pointer" : "cursor-default"} ${
                       isLastRow
                         ? "" // 마지막 row는 border-b 없음
                         : isHalfHour
@@ -164,16 +168,7 @@ const TimeTable = () => {
                     } ${isFirstRow ? "rounded-t-xl" : ""} ${isLastRow ? "rounded-b-xl" : ""} `}
                     onClick={() => handleCellClick(dayIndex, timeIndex)}
                   >
-                    {isFirst && (
-                      <div className="absolute top-1 left-1 text-xs text-green-600">
-                        시작
-                      </div>
-                    )}
-                    {isSecond && (
-                      <div className="absolute right-1 bottom-1 text-xs text-blue-600">
-                        끝
-                      </div>
-                    )}
+                    {/* "시작"·"끝" 텍스트 제거 */}
                   </div>
                 );
               })}
