@@ -1,7 +1,5 @@
 // author : 앨리스/박은지
-/*
- * description : 현재 시간을 오전/오후 시:분 형태로 반환
- */
+// description : 현재 시간을 오전/오후 시:분 형태로 반환
 // 채팅방 내에서 활용
 
 const useCurrentTime = () => {

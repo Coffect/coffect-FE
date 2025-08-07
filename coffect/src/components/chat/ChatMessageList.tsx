@@ -1,7 +1,6 @@
-/*
- * author : 앨리스/박은지
- * description : 메시지 리스트
- */
+// author : 앨리스/박은지
+// description : 메시지 리스트
+// 시간 표시 조건부 추가
 
 import React from "react";
 import MessageBubble from "./MessageBubble";
