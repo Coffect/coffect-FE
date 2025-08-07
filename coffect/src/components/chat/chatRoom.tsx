@@ -1,9 +1,11 @@
-// author : 앨리스/박은지
-// description : 채팅방 페이지
-// 채팅방 내부 메시지 영역, 팝업 모달 연결, 일정 정보 표시
+/*
+ * author : 앨리스/박은지
+ * description : 채팅방 페이지
+ * 채팅방 내부 메시지 영역, 팝업 모달 연결, 일정 정보 표시
+ */
 
 import { useState, useRef } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   ChevronLeft,
   Calendar,
@@ -11,17 +13,15 @@ import {
   ChevronUp,
   ChevronDown,
 } from "lucide-react";
-import useCurrentTime from "./hooks/useCurrentTime";
 import useModal from "./hooks/useModal";
 import RequestModal from "./RequestModal";
-import useHandleSend from "./hooks/useHandleSend";
 import ChatInterestTags from "./ChatInterestTags";
 import ChatInputBox from "./ChatInputBox";
 import ChatMessageList from "./ChatMessageList";
 import usePreventZoom from "./hooks/usePreventZoom";
 import useAutoScroll from "./hooks/useAutoScroll";
+import { useChatRoom } from "./hooks/useChatRoom";
 
-import type { Message } from "../../types/chat";
 import ExampleProfile from "../../assets/icon/chat/ExampleProfile.png";
 
 function getMessageMargin(idx: number, messages: Array<{ mine: boolean }>) {
@@ -32,7 +32,6 @@ function getMessageMargin(idx: number, messages: Array<{ mine: boolean }>) {
 
 const ChatRoom = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { id } = useParams<{ id: string }>();
   usePreventZoom();
   const {
@@ -41,96 +40,26 @@ const ChatRoom = () => {
     close: closeModal,
   } = useModal();
 
-  // 일정 정보 (전달받은 일정이 있으면 표시)
-  const [schedule] = useState<{
-    date: string | Date;
-    time: string;
-    place?: string;
-    alert?: string | null;
-  } | null>(() => {
-    if (location.state?.schedule) {
-      return {
-        date: location.state.schedule.date,
-        time: location.state.schedule.time,
-        place: location.state.schedule.place || "",
-        alert: location.state.schedule.alert || null,
-      };
-    }
-    return null;
-  });
-
-  // 메시지 배열
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      type: "text",
-      text: "안녕하세요!",
-      time: "오전 11:47",
-      mine: false,
-    },
-    {
-      id: 2,
-      type: "text",
-      text: "꼭 한번 커피챗 해보고 싶어서 제안\n드렸습니다 :)",
-      time: "오전 11:47",
-      mine: false,
-    },
-    {
-      id: 3,
-      type: "text",
-      text: "안녕하세요!",
-      time: "오전 11:47",
-      mine: true,
-    },
-    {
-      id: 4,
-      type: "text",
-      text: "네 좋아요!\n이번주에 시간 언제 가능하세요?",
-      time: "오전 11:47",
-      mine: true,
-    },
-    {
-      id: 5,
-      type: "text",
-      text: "목요일 두시 공강이신걸로 아는데\n그때 어떠세요??",
-      time: "오전 11:48",
-      mine: false,
-    },
-    {
-      id: 6,
-      type: "text",
-      text: "좋습니다!\n정문 앞 스벅에서 만나요!!",
-      time: "오전 11:49",
-      mine: true,
-    },
-    {
-      id: 7,
-      type: "text",
-      text: "네 그럼 거기서 2시에 봅시다!",
-      time: "오전 11:49",
-      mine: false,
-    },
-  ]);
-
-  const [inputValue, setInputValue] = useState("");
-  const getCurrentTime = useCurrentTime();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showInterests, setShowInterests] = useState(true);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // useChatRoom 훅 사용
+  const {
+    messages,
+    inputValue,
+    setInputValue,
+    schedule,
+    handleSend,
+    handleImageSend,
+  } = useChatRoom();
+
+  // 메시지 영역에만 스크롤 적용
+  useAutoScroll(messagesEndRef, [messages.length], true);
 
   // 아코디언 상태 변경
   const handleToggleInterests = () => {
     setShowInterests((prev) => !prev);
   };
-
-  const handleSend = useHandleSend(
-    messages,
-    setMessages,
-    setInputValue,
-    getCurrentTime,
-  );
-
-  // 메시지 영역에만 스크롤 적용
-  useAutoScroll(messagesEndRef, [messages.length], true);
 
   const user = {
     id: id,
@@ -278,20 +207,7 @@ const ChatRoom = () => {
         inputValue={inputValue}
         setInputValue={setInputValue}
         handleSend={handleSend}
-        onImageSend={(file) => {
-          // 이미지 메시지 전송
-          const url = URL.createObjectURL(file);
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: prev.length + 1,
-              type: "image",
-              imageUrl: url,
-              mine: true,
-              time: getCurrentTime(),
-            },
-          ]);
-        }}
+        onImageSend={handleImageSend}
       />
     </div>
   );
