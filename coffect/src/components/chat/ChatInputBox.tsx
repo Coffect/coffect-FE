@@ -1,5 +1,7 @@
-// author : 앨리스/박은지
-// description : 채팅방 내부 입력창
+/*
+ * author : 앨리스/박은지
+ * description : 채팅방 내부 입력창
+ */
 
 import React, { useRef, useState } from "react";
 import { Plus, Send, X as XIcon } from "lucide-react";
@@ -84,7 +86,7 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
             </button>
           </div>
         )}
-        <div className="flex w-full items-center rounded-full bg-[rgba(245,245,245,1)] px-2 py-2">
+        <div className="flex w-full items-center rounded-full bg-[rgba(245,245,245,1)] px-3.5 py-2.25">
           <div className="relative">
             <button
               className="mr-2 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-[rgba(74,74,74,1)] text-white"
