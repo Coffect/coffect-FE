@@ -8,12 +8,11 @@ reviews:
   poem: false
   review_status: true
   collapse_walkthrough: false
-  # 리뷰 요청 시 자동으로 실행
   auto_review:
     enabled: true
     drafts: false
     base_branches:
-      - "*"
+      - ".*" # 모든 브랜치를 매치하는 정규식
 
   # 리뷰할 파일 패턴
   path_filters:
