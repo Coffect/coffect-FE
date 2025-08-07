@@ -82,7 +82,7 @@ const Schedule: React.FC = () => {
         >
           <X size={28} />
         </button>
-        <div className="mb-8 text-xl font-extrabold text-[var(--gray-90)]">
+        <div className="mb-8 text-xl font-semibold text-[var(--gray-90)]">
           일정 등록
         </div>
         <div className="flex w-full items-center justify-start">

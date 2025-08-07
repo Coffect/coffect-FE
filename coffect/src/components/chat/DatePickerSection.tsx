@@ -25,18 +25,18 @@ const DatePickerSection: React.FC<DatePickerSectionProps> = ({
 
   return (
     <div className="mb-8">
-      <div className="mt-5 mb-2 text-base font-extrabold text-[var(--gray-80)]">
+      <div className="mt-5 mb-2 text-base font-semibold text-[var(--gray-80)]">
         언제 만날까요?
       </div>
       <button
-        className="flex w-full items-center justify-between rounded-lg border-2 border-[var(--gray-10)] bg-[var(--white)] px-4 py-3 text-left text-[15px] text-[var(--gray-90)]"
+        className="flex w-full items-center justify-between rounded-lg border-[1.5px] border-[var(--gray-10)] bg-[var(--white)] px-4 py-3 text-left text-[15px] text-[var(--gray-90)]"
         type="button"
         onClick={() => setShowCalendarPicker(true)}
       >
         <span
           className={
             values.date
-              ? "font-extrabold text-[var(--gray-80)]"
+              ? "font-semibold text-[var(--gray-80)]"
               : "text-[var(--gray-40)]"
           }
         >

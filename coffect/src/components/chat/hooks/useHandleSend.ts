@@ -12,6 +12,7 @@ type UseHandleSend = (
   setMessages: Dispatch<SetStateAction<Message[]>>,
   setInputValue: Dispatch<SetStateAction<string>>,
   getCurrentTime: () => string,
+  onMessageSent?: () => void,
 ) => (msg: string) => void;
 
 const useHandleSend: UseHandleSend = (
@@ -19,6 +20,7 @@ const useHandleSend: UseHandleSend = (
   setMessages,
   setInputValue,
   getCurrentTime,
+  onMessageSent,
 ) => {
   return (msg: string) => {
     setMessages((prev) => [
@@ -32,6 +34,7 @@ const useHandleSend: UseHandleSend = (
       },
     ]);
     setInputValue("");
+    onMessageSent?.();
   };
 };
 
