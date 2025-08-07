@@ -1,7 +1,5 @@
 // author : 앨리스/박은지
-/*
- * description : 메시지 전송 핸들러
- */
+// description : 메시지 전송 핸들러
 // 메시지 전송 시 현재 시간 및 메시지 내용 추가
 
 import type { Dispatch, SetStateAction } from "react";
@@ -12,7 +10,6 @@ type UseHandleSend = (
   setMessages: Dispatch<SetStateAction<Message[]>>,
   setInputValue: Dispatch<SetStateAction<string>>,
   getCurrentTime: () => string,
-  onMessageSent?: () => void,
 ) => (msg: string) => void;
 
 const useHandleSend: UseHandleSend = (
@@ -20,7 +17,6 @@ const useHandleSend: UseHandleSend = (
   setMessages,
   setInputValue,
   getCurrentTime,
-  onMessageSent,
 ) => {
   return (msg: string) => {
     setMessages((prev) => [
@@ -34,7 +30,6 @@ const useHandleSend: UseHandleSend = (
       },
     ]);
     setInputValue("");
-    onMessageSent?.();
   };
 };
 
