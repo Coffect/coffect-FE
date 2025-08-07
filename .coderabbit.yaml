@@ -1,0 +1,58 @@
+language: "ko-KR"
+
+# CodeRabbit 설정
+reviews:
+  profile: "chill"
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  # 리뷰 요청 시 자동으로 실행
+  auto_review:
+    enabled: true
+    drafts: false
+
+  # 모든 브랜치에 대해 검사
+  branch_filters:
+    - "*" # 모든 브랜치
+    # 또는 특정 패턴 사용:
+    # - "main"
+    # - "develop"
+    # - "feature/*"
+
+  # GitHub 이벤트 설정
+  triggers:
+    - pull_request # PR 생성/업데이트 시
+    - push # 푸시 시
+    - pull_request_review # PR 리뷰 시
+
+  # 리뷰할 파일 패턴
+  path_filters:
+    - "**/*.ts"
+    - "**/*.tsx"
+    - "**/*.js"
+    - "**/*.jsx"
+    - "**/*.vue"
+
+  # 제외할 파일 패턴
+  ignore_patterns:
+    - "node_modules/**"
+    - "dist/**"
+    - "build/**"
+    - "*.min.js"
+
+  # 리뷰 규칙
+  rules:
+    - check_typescript_types
+    - check_code_style
+    - check_security_issues
+    - check_performance
+
+# 언어별 설정
+language_settings:
+  typescript:
+    enabled: true
+    strict_mode: true
+  javascript:
+    enabled: true
