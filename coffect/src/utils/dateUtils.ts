@@ -35,6 +35,10 @@ export function formatKoreanDateShort(dateStr: string) {
  * @example "2023-10-01T12:00:00Z" 형식의 날짜 문자열을 입력으로 받습니다.
  * "2023-10-01T12:00:00Z" -> "2시간 전" (현재 시간이 2023-10-01T14:00:00Z인 경우)
  * "2023-10-01T12:00:00Z" -> "어제" (현재 시간이 2023-10-02T12:00:00Z인 경우)
+<<<<<<< HEAD
+=======
+ * @사용법 getTimeAgo("2023-10-01T12:00:00Z")
+>>>>>>> 81a73b558b3a72d439f46d588fb0c6810f62975e
  * @returns
  */
 export function getTimeAgo(dateString: string): string {
@@ -58,3 +62,38 @@ export function getTimeAgo(dateString: string): string {
     return `${diffDays}일 전`;
   }
 }
+<<<<<<< HEAD
+=======
+
+/**
+ * @author 흥부/강신욱
+ * @description 주어진 날짜 문자열을 현재 시간과 비교하여 "N분 후", "N시간 후", "내일", "N일 후" 등의 형식으로 변환합니다.
+ * @param dateString
+ * @example "2023-10-01T14:00:00Z" 형식의 날짜 문자열을 입력으로 받습니다.
+ * "2023-10-01T14:00:00Z" -> "2시간 후" (현재 시간이 2023-10-01T12:00:00Z인 경우)
+ * "2023-10-02T12:00:00Z" -> "내일" (현재 시간이 2023-10-01T12:00:00Z인 경우)
+ * @사용법 getTimeUntil("2023-10-01T14:00:00Z")
+ * @returns
+ */
+export function getTimeUntil(dateString: string): string {
+  const now = new Date();
+  const date = new Date(dateString);
+  const diffMilliseconds = date.getTime() - now.getTime();
+  const diffSeconds = Math.floor(diffMilliseconds / 1000);
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffMinutes < 1) {
+    return "잠시 후";
+  } else if (diffMinutes < 60) {
+    return `${diffMinutes}분 후`;
+  } else if (diffHours < 24) {
+    return `${diffHours}시간 후`;
+  } else if (diffDays === 1) {
+    return "내일";
+  } else {
+    return `${diffDays}일 후`;
+  }
+}
+>>>>>>> 81a73b558b3a72d439f46d588fb0c6810f62975e
