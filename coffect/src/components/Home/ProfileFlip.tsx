@@ -21,6 +21,9 @@ import {
   DeleteCard,
   getCurrentRecommendedCard,
   getIsFollow,
+  getUserDeptById,
+  getUserQnAById,
+  getUserStringId,
   postFollowRequest,
   postSuggestCoffeeChat,
 } from "@/api/home";
@@ -111,15 +114,21 @@ const ProfileFlip: React.FC = () => {
       try {
         const card = await getCurrentRecommendedCard();
         const isFollow = await getIsFollow(card.userId);
+        const stringId = await getUserStringId(card.userId);
+
+        const [major, answers] = await Promise.all([
+          getUserDeptById(stringId),
+          getUserQnAById(stringId),
+        ]);
         return {
           id: card.userId,
           name: card.name,
-          major: "",
+          major: major,
           year: card.grade,
           tags: card.categoryMatch,
           intro: card.introduce,
           image: card.profileImage,
-          answers: [],
+          answers: answers,
           isFollow: isFollow,
         };
       } catch {

@@ -9,7 +9,6 @@ import defaultAvatar from "../../assets/icon/signup/DefaultAvatar.png";
 import SignupPageLayout from "./shared/SignupLayout";
 import type { StepProps } from "../../types/signup";
 
-
 const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   // 상태 선언
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);

@@ -76,3 +76,22 @@ export const getIsFollow = async (oppentUserId: number): Promise<boolean> => {
   });
   return data.success;
 };
+
+// id로 전공(dept)만 가져오기
+export const getUserDeptById = async (id: string): Promise<string> => {
+  const { data } = await axiosInstance.get("/profile/search", {
+    params: { id },
+  });
+  return data.success.userInfo.dept;
+};
+
+// 'id' (string 아이디)로 Q&A 정보(specifyProfile.info)만 가져오기
+export const getUserQnAById = async (
+  id: string,
+): Promise<{ question: string; answer: string }[]> => {
+  const { data } = await axiosInstance.get("/profile/search", {
+    params: { id },
+  });
+
+  return data.success.specifyProfile.info;
+};
