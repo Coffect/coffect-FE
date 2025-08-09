@@ -68,19 +68,19 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
     <div className="flex h-full flex-col pb-2">
       {/* 날짜 선택 */}
       <div className="mb-8">
-        <div className="mt-5 mb-2 text-base font-extrabold text-[var(--gray-80)]">
+        <div className="mt-5 mb-2 text-[18px] font-semibold text-[var(--gray-80)]">
           언제 만날까요?
         </div>
         <button
-          className="flex w-full items-center justify-between rounded-lg border-2 border-[var(--gray-10)] bg-[var(--white)] px-4 py-3 text-left text-[15px] text-[var(--gray-90)]"
+          className="flex w-full items-center justify-between rounded-[10px] border-[1.5px] border-[var(--gray-10)] bg-[var(--white)] px-4 py-3 text-left text-[18px] font-medium text-[var(--gray-80)]"
           type="button"
           onClick={() => setShowCalendarPicker(true)}
         >
           <span
             className={
               values.date
-                ? "font-extrabold text-[var(--gray-80)]"
-                : "text-[var(--gray-40)]"
+                ? "font-medium text-[var(--gray-80)]"
+                : "font-medium text-[var(--gray-40)]"
             }
           >
             {values.date ? formatDateToKorean(values.date) : ""}
@@ -132,16 +132,18 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
       </div>
       {/* 시간 선택 */}
       <div className="mb-2 flex items-center justify-between">
-        <div className="text-base font-extrabold text-[var(--gray-80)]">
+        <div className="text-[18px] font-semibold text-[var(--gray-80)]">
           몇 시에 만날까요?
         </div>
       </div>
       <button
-        className="mb-8 flex w-full items-center justify-between rounded-lg border-2 border-[var(--gray-10)] bg-[var(--white)] px-4 py-3 text-left text-[16px] font-extrabold text-[var(--gray-80)]"
+        className="mb-8 flex w-full items-center justify-between rounded-[10px] border-[1.5px] border-[var(--gray-10)] bg-[var(--white)] px-4 py-3 text-left text-[18px] font-medium text-[var(--gray-80)]"
         type="button"
         onClick={() => setShowTimeModal(true)}
       >
-        <span className="text-left">{values.time ? values.time : ""}</span>
+        <span className="text-left font-medium">
+          {values.time ? values.time : ""}
+        </span>
         <Clock size={20} className="ml-2 text-[var(--gray-40)]" />
       </button>
       <TimeScrollModal
@@ -154,29 +156,29 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
       />
       {/* 장소 입력 */}
       <div className="mb-10">
-        <div className="mb-2 text-base font-extrabold text-[var(--gray-80)]">
+        <div className="mb-2 text-[18px] font-semibold text-[var(--gray-80)]">
           어디에서 만날까요?
         </div>
         <input
           type="text"
-          className="w-full rounded-lg border-2 border-[var(--gray-10)] bg-[var(--white)] px-4 py-3 text-[16px] font-medium text-[var(--gray-80)] placeholder:text-[var(--gray-30)]"
+          className="w-full rounded-[10px] border-[1.5px] border-[var(--gray-10)] bg-[var(--white)] px-4 py-3 text-[18px] font-medium text-[var(--gray-80)] placeholder:text-[var(--gray-30)]"
           value={values.place}
           onChange={(e) => onChange({ ...values, place: e.target.value })}
           placeholder="장소를 입력해주세요"
         />
       </div>
       {/* 약속 전 알림 */}
-      <div className="text-lg font-extrabold text-[var(--gray-90)]">
+      <div className="text-[20px] font-semibold text-[var(--gray-90)]">
         약속 전 알림 설정
       </div>
-      <div className="mb-2 text-xs font-semibold text-[var(--gray-50)]">
+      <div className="mb-4 text-[16px] font-medium text-[var(--gray-50)]">
         까먹지 않게 알림을 보내드려요!
       </div>
       <div className="mb-6 flex flex-wrap justify-start gap-x-1 gap-y-2">
         {["5분 전", "15분 전", "30분 전", "1시간 전"].map((option) => (
           <button
             key={option}
-            className={`min-w-[80px] rounded-3xl border px-4 py-3 text-[15px] font-medium transition-all duration-100 ${values.alert === option ? "bg-[var(--gray-70)] text-[var(--white)]" : "border-[var(--gray-30)] bg-[var(--white)] text-[var(--gray-70)]"}`}
+            className={`min-w-[80px] rounded-3xl border px-4 py-2 text-[16px] font-medium transition-all duration-100 ${values.alert === option ? "bg-[var(--gray-70)] text-[var(--white)]" : "border-[var(--gray-30)] bg-[var(--white)] text-[var(--gray-70)]"}`}
             onClick={() =>
               onChange({
                 ...values,
@@ -189,7 +191,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
           </button>
         ))}
         <button
-          className={`min-w-[90px] rounded-3xl border border-[var(--gray-30)] px-4 py-3 text-[15px] font-medium transition-all duration-100 ${!values.alert ? "bg-[var(--gray-70)] text-[var(--white)]" : "bg-[var(--white)] text-[var(--gray-70)]"}`}
+          className={`min-w-[90px] rounded-3xl border border-[var(--gray-30)] px-4 py-2 text-[16px] font-medium transition-all duration-100 ${!values.alert ? "bg-[var(--gray-70)] text-[var(--white)]" : "bg-[var(--white)] text-[var(--gray-70)]"}`}
           onClick={() => onChange({ ...values, alert: null })}
           type="button"
         >
@@ -216,8 +218,8 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
           <button
             className={
               completeLabel === "수정하기"
-                ? `basis-3/5 rounded-xl bg-[var(--gray-80)] py-3 text-sm font-bold text-[var(--white)]`
-                : `flex-1 rounded-lg py-3 text-base font-bold transition-colors duration-100 ${isCompleteEnabled ? "bg-[var(--gray-70)] text-[var(--white)]" : "bg-[var(--gray-10)] text-[var(--gray-50)]"}`
+                ? `basis-3/5 rounded-[12px] bg-[var(--gray-80)] py-3 text-sm font-bold text-[var(--white)]`
+                : `flex-1 rounded-[12px] py-3 text-[18px] font-semibold transition-colors duration-100 ${isCompleteEnabled ? "bg-[var(--gray-70)] text-[var(--white)]" : "bg-[var(--gray-10)] text-[var(--gray-50)]"}`
             }
             style={completeLabel === "수정하기" ? { minWidth: 0 } : {}}
             onClick={isCompleteEnabled ? onComplete : undefined}

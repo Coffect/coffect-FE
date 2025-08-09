@@ -21,6 +21,7 @@ import ChatMessageList from "./ChatMessageList";
 import usePreventZoom from "./hooks/usePreventZoom";
 import useAutoScroll from "./hooks/useAutoScroll";
 import type { Message } from "../../types/chat";
+import { formatAmPmTo24Hour } from "../../utils/dateUtils";
 import ExampleProfile from "../../assets/icon/chat/ExampleProfile.png";
 
 function getMessageMargin(idx: number, messages: Array<{ mine: boolean }>) {
@@ -139,10 +140,10 @@ const ChatRoom = () => {
           <ChevronLeft />{" "}
         </button>
         <div className="flex flex-1 flex-col items-center">
-          <span className="text-base font-extrabold">{user.username}</span>
+          <span className="text-[18px] font-semibold">{user.username}</span>
         </div>
         <div
-          className="ml-2 h-8 w-8 cursor-pointer overflow-hidden rounded-full border-1 border-[var(--gray-80)] p-[1px]"
+          className="ml-2 h-8 w-8 cursor-pointer overflow-hidden rounded-full bg-transparent"
           onClick={() => navigate("/userpage/1")}
         >
           <img
@@ -156,9 +157,11 @@ const ChatRoom = () => {
       <div className="border-b border-[var(--gray-5)] bg-[var(--white)] px-4 py-3">
         {/* 텍스트 + 토글 아이콘 */}
         <div className="mb-1 flex items-center justify-between">
-          <span className="text-sm font-bold text-[var(--gray-70)]">
-            이런 주제에 관심 있어요!
-          </span>
+          {showInterests && (
+            <span className="text-[16px] font-semibold text-[var(--gray-70)]">
+              이런 주제에 관심 있어요!
+            </span>
+          )}
           <button
             onClick={() => setShowInterests((prev) => !prev)}
             className="cursor-pointer rounded-full bg-[var(--gray-5)] p-1 text-[var(--gray-50)]"
@@ -175,16 +178,16 @@ const ChatRoom = () => {
             <div className="mb-3 flex flex-wrap gap-2">
               <ChatInterestTags interests={user.interests} />
             </div>
-            {/* 일정 정보 표시 및 버튼 영역 기존 코드 그대로 */}
+            {/* 일정 정보 표시 및 버튼 영역 */}
             <div className="flex w-full items-center gap-2">
               {schedule && (
                 <button
-                  className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-xs font-bold text-ellipsis whitespace-nowrap text-[var(--gray-90)] sm:text-sm"
+                  className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-[16px] font-medium whitespace-nowrap text-[var(--gray-90)] sm:text-sm"
                   onClick={() =>
                     navigate("/chat/schedule", { state: { schedule } })
                   }
                 >
-                  <Calendar size={18} className="mr-1 text-[var(--gray-40)]" />
+                  <Calendar size={18} className="text-[var(--gray-40)]" />
                   <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
                     {schedule.date
                       ? typeof schedule.date === "string"
@@ -198,17 +201,17 @@ const ChatRoom = () => {
                               .replace(/ /g, "\u00A0")
                           : ""
                       : ""}{" "}
-                    {schedule.time}
+                    {formatAmPmTo24Hour(schedule.time)}
                   </span>
                 </button>
               )}
               {schedule && (
                 <button
-                  className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-xs font-bold text-ellipsis whitespace-nowrap text-[var(--gray-70)] sm:text-sm"
+                  className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-xs font-medium text-ellipsis whitespace-nowrap text-[var(--gray-70)] sm:text-sm"
                   onClick={openModal}
                 >
-                  <Mail size={16} className="mr-1 text-[var(--gray-40)]" />
-                  <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
+                  <Mail size={16} className="text-[var(--gray-40)]" />
+                  <span className="block overflow-hidden text-[16px] font-medium whitespace-nowrap">
                     상대 요청 보기
                   </span>
                 </button>
@@ -217,14 +220,14 @@ const ChatRoom = () => {
             {!schedule && (
               <div className="flex gap-2">
                 <button
-                  className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--gray-10)] py-2 text-sm font-bold text-[var(--gray-70)]"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--gray-10)] py-2 text-sm font-medium text-[var(--gray-70)]"
                   onClick={() => navigate("/chat/schedule")}
                 >
                   <Calendar size={17} />
                   커피챗 일정 등록
                 </button>
                 <button
-                  className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-sm font-bold text-[var(--gray-70)]"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-sm font-medium text-[var(--gray-70)]"
                   onClick={openModal}
                 >
                   <Mail size={17} />

@@ -98,10 +98,10 @@ const Schedule: React.FC = () => {
               className="h-full w-full object-cover"
             />
           </div>
-          <span className="ml-2 text-lg font-extrabold tracking-tight text-[#FF9100]">
+          <span className="ml-2 text-[20px] font-bold tracking-tight text-[#FF8126]">
             {NICKNAME}
           </span>
-          <span className="text-lg font-extrabold tracking-tight text-[var(--gray-90)]">
+          <span className="text-[20px] font-bold tracking-tight text-[var(--gray-90)]">
             님과의 커피챗
           </span>
         </div>
