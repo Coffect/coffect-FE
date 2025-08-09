@@ -84,7 +84,7 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
             </button>
           </div>
         )}
-        <div className="flex w-full items-center rounded-full bg-[rgba(245,245,245,1)] px-3.5 py-2.25">
+        <div className="flex w-full items-center rounded-full bg-[rgba(245,245,245,1)] px-2 py-2">
           <div className="relative">
             <button
               className="mr-2 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-[rgba(74,74,74,1)] text-white"
