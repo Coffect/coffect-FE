@@ -1,3 +1,8 @@
+/*
+ * author : 앨리스/박은지
+ * description : [커피챗 일정 삭제] 모달 컴포넌트
+ */
+
 import React from "react";
 
 interface DeleteScheduleModalProps {

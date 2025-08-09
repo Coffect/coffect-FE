@@ -1,5 +1,7 @@
-// author : 앨리스/박은지
-// description : 채팅방 내부 입력창
+/*
+ * author : 앨리스/박은지
+ * description : 채팅방 내부 입력창
+ */
 
 import React, { useRef, useState } from "react";
 import { Plus, Send, X as XIcon } from "lucide-react";

@@ -1,5 +1,7 @@
-// author : 앨리스/박은지
-// description : 채팅방 내부 관심 주제 태그
+/*
+ * author : 앨리스/박은지
+ * description : 채팅방 내부 관심 주제 태그
+ */
 
 import React from "react";
 

@@ -1,36 +1,75 @@
 /*
 author : 재하
-description : 마이페이지 상세 소개 - 자기소개 질문/답변 및 대표질문 선택 컴포넌트입니다.
+description : 상세 소개 - 자기소개 질문/답변 및 대표질문 선택 컴포넌트입니다.
 */
-import { useState } from "react";
-import editIcon from "../../../../assets/icon/mypage/editGray.png";
-import checkIcon from "../../../../assets/icon/mypage/check.png";
-import detailIntroCheckIcon from "../../../../assets/icon/mypage/detailIntroCheck.png";
-import detailIntroCheckedIcon from "../../../../assets/icon/mypage/detailIntroChecked.png";
-import underToggleIcon from "../../../../assets/icon/mypage/underToggle.png";
+import { useState, useEffect } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { patchProfileDetail } from "@/api/profile";
+import type { profileDetailItemType } from "@/types/mypage/profile";
+import editIcon from "@/assets/icon/mypage/editGray.png";
+import checkIcon from "@/assets/icon/mypage/check.png";
+import detailIntroCheckIcon from "@/assets/icon/mypage/detailIntroCheck.png";
+import detailIntroCheckedIcon from "@/assets/icon/mypage/detailIntroChecked.png";
+import underToggleIcon from "@/assets/icon/mypage/underToggle.png";
 
 const QUESTIONS = [
-  { id: 1, question: "어떤 분야에서 성장하고 싶나요?" },
-  { id: 2, question: "커피챗에서 나누고 싶은 이야기는?" },
-  { id: 3, question: "새롭게 배워보고 싶은 분야는?" },
-  { id: 4, question: "요즘 내가 가장 열중하고 있는 것은?" },
+  { id: 1, question: "Q. 어떤 분야에서 성장하고 싶나요?" },
+  { id: 2, question: "Q. 커피챗에서 나누고 싶은 이야기는?" },
+  { id: 3, question: "Q. 새롭게 배워보고 싶은 분야는?" },
+  { id: 4, question: "Q. 요즘 내가 가장 열중하고 있는 것은?" },
 ];
 
 const MAX_MAIN = 2;
 const MAX_ANSWER = 200;
 
-const DetailIntroProfile = () => {
+interface DetailIntroProfileProps {
+  profileDetailData: profileDetailItemType[];
+  isReadOnly: boolean;
+}
+
+const DetailIntroProfile = ({
+  profileDetailData,
+  isReadOnly = false,
+}: DetailIntroProfileProps) => {
   // 질문/답변/대표질문 상태 관리
   const [items, setItems] = useState(
-    QUESTIONS.map((q, i) => ({
+    QUESTIONS.map((q) => ({
       ...q,
-      answer: i < 2 ? "" : "", // 초기 답변(예시)
+      answer: "",
       isOpen: false,
-      isMain: false, // 초기에는 대표질문 없음
+      isMain: false,
     })),
   );
   // 수정 모드 상태
   const [editMode, setEditMode] = useState(false);
+
+  const queryClient = useQueryClient();
+
+  // 상세 프로필 수정 mutation
+  const updateProfileDetailMutation = useMutation({
+    mutationFn: patchProfileDetail,
+    onSuccess: () => {
+      // 성공 시 상세 프로필 데이터를 다시 불러옴
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    },
+    onError: (error) => {
+      console.error("상세 프로필 수정 실패:", error);
+    },
+  });
+
+  // props로 전달된 데이터를 상태에 매핑
+  useEffect(() => {
+    if (profileDetailData) {
+      const detailItems = profileDetailData.map((item, index) => ({
+        id: index + 1,
+        question: item.question,
+        answer: item.answer,
+        isOpen: false,
+        isMain: item.isMain,
+      }));
+      setItems(detailItems);
+    }
+  }, [profileDetailData]);
 
   // 대표질문 개수
   const mainCount = items.filter((q) => q.isMain).length;
@@ -66,6 +105,16 @@ const DetailIntroProfile = () => {
 
   // 저장(수정완료) 핸들러
   const handleSave = () => {
+    // 모든 질문의 답변을 API 형식으로 변환
+    const detailItems: profileDetailItemType[] = items.map((item) => ({
+      question: item.question,
+      answer: item.answer,
+      isMain: item.isMain,
+    }));
+
+    // 상세 프로필 수정 API 호출
+    updateProfileDetailMutation.mutate(detailItems);
+
     setEditMode(false);
     setItems((prev) => prev.map((q) => ({ ...q, isOpen: false })));
   };
@@ -78,19 +127,21 @@ const DetailIntroProfile = () => {
           <span className="text-lg font-semibold text-[var(--gray-90)]">
             ✍🏻 상세 프로필
           </span>
-          {editMode && (
+          {editMode && !isReadOnly && (
             <span className="ml-3 text-sm text-[var(--gray-40)]">
               최대 2개 선택
             </span>
           )}
         </div>
-        <button onClick={() => (editMode ? handleSave() : setEditMode(true))}>
-          {editMode ? (
-            <img src={checkIcon} className="mx-1.5 h-6 w-6" />
-          ) : (
-            <img src={editIcon} className="mx-1.5 h-6 w-6" />
-          )}
-        </button>
+        {!isReadOnly && (
+          <button onClick={() => (editMode ? handleSave() : setEditMode(true))}>
+            {editMode ? (
+              <img src={checkIcon} className="mx-1.5 h-6 w-6" />
+            ) : (
+              <img src={editIcon} className="mx-1.5 h-6 w-6" />
+            )}
+          </button>
+        )}
       </div>
 
       {/* 뷰 모드: 대표질문 2개만 노출 */}
@@ -108,7 +159,7 @@ const DetailIntroProfile = () => {
               .map((q) => (
                 <div key={q.id}>
                   <div className="text-md mb-2 text-[var(--gray-40)]">
-                    Q. {q.question}
+                    {q.question}
                   </div>
                   <div className="text-sm text-gray-800">
                     <div className="text-md mb-2 text-[var(--gray-70)]">
@@ -122,7 +173,7 @@ const DetailIntroProfile = () => {
       )}
 
       {/* 수정 모드: 전체 질문 토글 */}
-      {editMode && (
+      {editMode && !isReadOnly && (
         <div className="mt-2 flex flex-col gap-2">
           {/* 전체 질문 반복 */}
           {items.map((q) => (
@@ -138,7 +189,7 @@ const DetailIntroProfile = () => {
                       </span>
                     )}
                     <span className={`text-md text-[var(--gray-90)]`}>
-                      Q. {q.question}
+                      {q.question}
                     </span>
                   </span>
                 </div>

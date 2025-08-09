@@ -1,6 +1,8 @@
-// author : 앨리스/박은지
-// description : 채팅방 메세지 버블
-// 메세지 버블 형태 및 시간 표시 컴포넌트
+/*
+ * author : 앨리스/박은지
+ * description : 채팅방 메세지 버블
+ * 메세지 버블 형태 및 시간 표시 컴포넌트
+ */
 
 import React from "react";
 import ExampleProfile from "../../assets/icon/chat/ExampleProfile.png";
