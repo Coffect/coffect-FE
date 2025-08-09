@@ -17,12 +17,14 @@ interface ChipGroupProps {
   options: ChipOption[];
   selectedOption: string | null;
   onSelect: (option: string) => void;
+  disabled?: boolean; // 새로 추가된 disabled prop
 }
 
 const ChipGroup: React.FC<ChipGroupProps> = ({
   options,
   selectedOption,
   onSelect,
+  disabled = false, // disabled prop 추가 및 기본값 설정
 }) => {
   const baseStyle =
     "text-md rounded-md border border-[var(--gray-10)] px-3 py-2 text-[var(--gray-70)]";
@@ -39,6 +41,7 @@ const ChipGroup: React.FC<ChipGroupProps> = ({
                 selectedOption === option.value ? selectedStyle : ""
               }`}
               onClick={() => onSelect(option.value)}
+              disabled={disabled} // disabled prop 적용
             >
               {option.label}
             </button>

@@ -11,12 +11,18 @@ const buttonStyle =
   "text-sm text-gray-600 hover:text-blue-500 flex items-center gap-1";
 
 interface FeedInteractionProps {
-  postId: number;
+  postId: string;
   likes: number;
   comments: number;
+  isDetailView?: boolean;
 }
 
-const FeedInteraction = ({ postId, likes, comments }: FeedInteractionProps) => {
+const FeedInteraction = ({
+  postId,
+  likes,
+  comments,
+  isDetailView = false,
+}: FeedInteractionProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const navigate = useNavigate();
@@ -33,7 +39,9 @@ const FeedInteraction = ({ postId, likes, comments }: FeedInteractionProps) => {
 
   const handleCommentClick = (event: React.MouseEvent) => {
     event.stopPropagation();
-    navigate(`/community/post/${postId}`);
+    if (!isDetailView) {
+      navigate(`/community/post/${postId}`);
+    }
   };
 
   return (

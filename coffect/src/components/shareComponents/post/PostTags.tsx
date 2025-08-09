@@ -11,8 +11,8 @@ import React from "react";
  * @property {string} topic - 게시글의 주제 태그 (예: 프론트엔드, 백엔드 등)
  */
 interface PostTagsProps {
-  type: string;
-  topic: string;
+  type: string | null;
+  topic: string | null;
 }
 
 const PostTags: React.FC<PostTagsProps> = ({ type, topic }) => {

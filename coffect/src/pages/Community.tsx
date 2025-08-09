@@ -1,10 +1,8 @@
 /**
  * @author 강신욱
  * @description 커뮤니티 메인 페이지 컴포넌트입니다.
- * @role : 컨트롤러 및 UI 조립.
- *         `useCommunityFeed` 훅을 사용하여 데이터 로직을 위임하고,
- *         `useCommunityFilter` 훅으로 필터 모달의 UI 상태를 관리합니다.
- *         이 컴포넌트는 페이지의 전체적인 레이아웃과 데이터-UI 연결에만 집중합니다.
+ * @version 1.0.0
+ * @date 2025-08-03
  */
 
 import { useEffect, useState } from "react";
@@ -14,11 +12,11 @@ import FeedList from "@/components/communityComponents/feed/FeedList";
 import FilterModal from "@/components/communityComponents/BottomSeatFilter/FilterModal";
 import BottomNavbar from "@/components/shareComponents/BottomNavbar";
 import FloatingWriteButton from "@/components/communityComponents/FloatingWriteButton";
-import UploadSuccessModal from "@/components/communityComponents/writeComponents/UploadSuccessModal";
+import UploadSuccessModal from "@/components/communityComponents/writeComponents/SuccessModal/UploadSuccessModal";
 
 // --- Custom Hooks ---
 import { useCommunityFilter } from "../hooks/community/useCommunityFilter";
-import useCommunityFeed from "../hooks/community/useCommunityFeed";
+import { useGetPosts } from "@/hooks/community/query/useGetPosts";
 
 // --- 상태 관리 ---
 const Community = () => {
@@ -31,8 +29,18 @@ const Community = () => {
     topic: null,
   });
 
-  // activeFilters 상태를 인자로 넘겨주어, 필터가 변경될 때마다 훅이 자동으로 데이터를 다시 가져옵니다.
-  const { posts, isLoading, error } = useCommunityFeed(activeFilters);
+  // useGetPosts 훅에 activeFilters를 직접 전달하여 필터 변경 시 자동으로 쿼리가 재실행되도록 합니다.
+  const { data, isLoading, error } = useGetPosts({
+    dateCursor: 0, // TODO: 페이지네이션 구현 시 이 값을 관리해야 합니다. ( 수정해야함 : 2025-08-03 )
+    ascend: false, // 최신순으로 정렬
+    orderBy: "createdAt",
+    threadSubject: activeFilters.topic ? [Number(activeFilters.topic)] : [], // topic이 있을 경우 숫자로 변환하여 배열에 담습니다. (임시)
+    type: activeFilters.type || "아티클", // activeFilters.type이 있으면 사용하고, 없으면 "아티클"을 기본값으로 전달합니다. (임시)
+  });
+
+  console.log(activeFilters.type);
+  // 실제 게시글 목록은 data.success.thread에 있습니다.
+  const posts = data?.success?.thread || [];
 
   // 필터 모달 내의 임시 선택 상태를 관리하는 훅입니다.
   const {
