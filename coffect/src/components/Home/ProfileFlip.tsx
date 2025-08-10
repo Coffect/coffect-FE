@@ -85,7 +85,6 @@ const ProfileFlip: React.FC = () => {
       setTimeout(async () => {
         try {
           await initOrSkipCard();
-          await refetch();
         } finally {
           setSkipped((prev) => {
             const next = prev + 1;
@@ -102,7 +101,7 @@ const ProfileFlip: React.FC = () => {
   });
 
   // 서버에서 프로필 카드 데이터 불러오기
-  const { data: currentCard, refetch } = useQuery<UserProfile | null>({
+  const { data: currentCard } = useQuery<UserProfile | null>({
     queryKey: ["recommendedCard"],
     queryFn: async () => {
       const hasVisited = localStorage.getItem("cardViewVisited");
@@ -116,10 +115,15 @@ const ProfileFlip: React.FC = () => {
         const isFollow = await getIsFollow(card.userId);
         const stringId = await getUserStringId(card.userId);
 
-        const [major, answers] = await Promise.all([
+        //각 서브요청이 실패하더라도 전체를 null로 만들지 않기
+        const [deptRes, qnaRes] = await Promise.allSettled([
           getUserDeptById(stringId),
           getUserQnAById(stringId),
         ]);
+
+        const major = deptRes.status === "fulfilled" ? deptRes.value : "";
+        const answers = qnaRes.status === "fulfilled" ? qnaRes.value : [];
+
         return {
           id: card.userId,
           name: card.name,
@@ -159,7 +163,6 @@ const ProfileFlip: React.FC = () => {
     setTimeout(async () => {
       try {
         await initOrSkipCard();
-        await refetch();
       } finally {
         setSkipped((prev) => {
           const next = prev + 1;
