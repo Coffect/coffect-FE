@@ -18,7 +18,7 @@ import CardRightDownImage from "@/assets/icon/home/CardRightDown.png";
 import NoCardImage from "../../assets/icon/home/NoCard.png";
 import type { UserProfile } from "@/types/home";
 import {
-  DeleteCard,
+  initOrSkipCard,
   getCurrentRecommendedCard,
   getIsFollow,
   getUserDeptById,
@@ -84,7 +84,7 @@ const ProfileFlip: React.FC = () => {
       setSkipAnimation(true);
       setTimeout(async () => {
         try {
-          await DeleteCard();
+          await initOrSkipCard();
           await refetch();
         } finally {
           setSkipped((prev) => {
@@ -107,7 +107,7 @@ const ProfileFlip: React.FC = () => {
     queryFn: async () => {
       const hasVisited = localStorage.getItem("cardViewVisited");
       if (!hasVisited) {
-        await DeleteCard();
+        await initOrSkipCard();
         localStorage.setItem("cardViewVisited", "true");
       }
 
@@ -158,7 +158,7 @@ const ProfileFlip: React.FC = () => {
     setSkipAnimation(true);
     setTimeout(async () => {
       try {
-        await DeleteCard();
+        await initOrSkipCard();
         await refetch();
       } finally {
         setSkipped((prev) => {

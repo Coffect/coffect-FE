@@ -2,7 +2,7 @@
   author      : 썬더
   description : 커피챗 홈 관련 API 모듈입니다.
   - postTodayInterest(todayInterest)         : 오늘의 추천 카테고리 선택 (1: 거리, 2: 관심사, 3: 학번, 4: 글)
-  - DeleteCard()                             : 추천 카드 첫 생성 및 삭제 (스킵 처리)
+  - initOrSkipCard ()                        : 추천 카드 첫 생성 및 삭제 (스킵 처리)
   - getCurrentRecommendedCard()              : 현재 추천 카테고리에 해당하는 카드 정보 가져오기
   - postSuggestCoffeeChat(suggestion, id)    : 커피챗 제안 메시지 전송
   - getCoffeeChatSchedule()                  : 사용자의 커피챗 일정 전체 조회
@@ -22,7 +22,7 @@ export const postTodayInterest = async (todayInterest: number) => {
 };
 
 /*커피챗 추천 카드 생성 & 삭제*/
-export const DeleteCard = async () => {
+export const initOrSkipCard = async () => {
   const { data } = await axiosInstance.get("/home/getCardClose");
   return data.success;
 };
