@@ -14,7 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 
 // API 응답 타입 정의
 interface ScheduleItem {
-  opponentId: string;
+  opponentId: number;
   coffeeDate: string; // ISO 형식
   location: string;
   firstUserImage: string;
@@ -33,7 +33,7 @@ const CalendarView: React.FC = () => {
       const completed = await Promise.all(
         raw.map(async (item: ScheduleItem): Promise<ScheduleItem> => {
           try {
-            const stringId = await getUserStringId(Number(item.opponentId));
+            const stringId = await getUserStringId(item.opponentId);
             const name = await getUserNameById(stringId);
             return { ...item, opponentName: name };
           } catch {
