@@ -7,6 +7,7 @@ export interface UserProfile {
   image: string;
   id: number;
   answers: { question: string; answer: string }[];
+  isFollow: boolean;
 }
 
 export interface RecommendedCardResponse {

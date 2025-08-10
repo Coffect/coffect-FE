@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import SignupEndImage from "../../assets/icon/signup/SignupEnd.png";
 import SignupPageLayout from "./shared/SignupLayout";
 
-
 const Completion = () => {
   const navigate = useNavigate();
 

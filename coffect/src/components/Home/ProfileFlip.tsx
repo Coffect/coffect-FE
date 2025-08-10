@@ -20,6 +20,11 @@ import type { UserProfile } from "@/types/home";
 import {
   DeleteCard,
   getCurrentRecommendedCard,
+  getIsFollow,
+  getUserDeptById,
+  getUserQnAById,
+  getUserStringId,
+  postFollowRequest,
   postSuggestCoffeeChat,
 } from "@/api/home";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -107,16 +112,24 @@ const ProfileFlip: React.FC = () => {
       }
 
       try {
-        const res = await getCurrentRecommendedCard();
+        const card = await getCurrentRecommendedCard();
+        const isFollow = await getIsFollow(card.userId);
+        const stringId = await getUserStringId(card.userId);
+
+        const [major, answers] = await Promise.all([
+          getUserDeptById(stringId),
+          getUserQnAById(stringId),
+        ]);
         return {
-          id: res.userId,
-          name: res.name,
-          major: "",
-          year: res.grade,
-          tags: res.categoryMatch,
-          intro: res.introduce,
-          image: res.profileImage,
-          answers: [],
+          id: card.userId,
+          name: card.name,
+          major: major,
+          year: card.grade,
+          tags: card.categoryMatch,
+          intro: card.introduce,
+          image: card.profileImage,
+          answers: answers,
+          isFollow: isFollow,
         };
       } catch {
         return null;
@@ -139,8 +152,6 @@ const ProfileFlip: React.FC = () => {
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   // 커피챗 제안 완료 모달 열림 여부
   const [showCompleteModal, setShowCompleteModal] = useState(false);
-  // 팔로우 여부
-  const [isFollowing, setIsFollowing] = useState(false);
 
   // 카드 제거(왼쪽 버튼)
   const handleSkip = async () => {
@@ -186,19 +197,26 @@ const ProfileFlip: React.FC = () => {
   };
 
   // 오른쪽 버튼(팔로우) 클릭 시 상태 토클 및 토스트 메시지
-  const handleFollowToggle = (e: React.MouseEvent) => {
+  const handleFollowToggle = async (e: React.MouseEvent) => {
     e.stopPropagation(); // 카드 클릭 방지
-    setIsFollowing((prevState) => {
-      const nowState = !prevState; // 팔로우 상태 토글
+    if (!currentCard) return;
+
+    try {
+      // 서버에 팔로우 요청(이미 팔로우면 취소요청)
+      await postFollowRequest(currentCard.id);
+      // 요청 성공 시 상태 토글(서버 API 요청 자주 안하려고 FOLLOW GET 요청은 초기 화면 불러올 때만 사용됨)
+      currentCard.isFollow = !currentCard.isFollow;
       // 팔로우 추가일 때만 토스트 표시
-      if (nowState) {
-        showToast("@님을 팔로우했어요!", "success");
+      if (currentCard.isFollow) {
+        showToast(`${currentCard.name}님을 팔로우했어요!`, "success");
       } else {
         // 팔로우 해제 시 즉시 토스트 숨김
         hideToast();
       }
-      return nowState;
-    });
+      return currentCard.isFollow;
+    } catch {
+      showToast("팔로우에 실패했습니다.", "error");
+    }
   };
 
   // 카드 클릭 시 상세 페이지 이동
@@ -321,7 +339,9 @@ const ProfileFlip: React.FC = () => {
               className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-white text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
             >
               <img
-                src={isFollowing ? CardRightDownImage : CardRightUpImage}
+                src={
+                  currentCard.isFollow ? CardRightDownImage : CardRightUpImage
+                }
                 alt="follow"
                 className="h-[40%] w-[40%] object-contain"
               />
