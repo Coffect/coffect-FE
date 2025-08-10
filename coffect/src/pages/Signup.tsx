@@ -124,9 +124,10 @@ const Signup: React.FC = () => {
               // 로그인 성공 시 홈 화면으로 이동
               if (success === true) {
                 navigate("/home");
+                return;
               }
               //실패 시 에러 메시지 리턴
-              else return success;
+              return "로그인에 실패했습니다";
             }}
           />
         )}
