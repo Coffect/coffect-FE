@@ -126,8 +126,10 @@ const Signup: React.FC = () => {
                 navigate("/home");
                 return;
               }
-              //실패 시 에러 메시지 리턴
-              return "로그인에 실패했습니다";
+              // 실패 시 서버/도메인 에러 메시지 전달
+              return typeof success === "string"
+                ? success
+                : "로그인에 실패했습니다";
             }}
           />
         )}
