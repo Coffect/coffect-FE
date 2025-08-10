@@ -23,11 +23,16 @@ export const searchDept = async ({
 };
 //이메일, 학교 이름 입력 시 메일로 인증번호 5자리 전송
 export const sendMailCode = async (email: string, univName: string) => {
-  const response = await axiosMail.post("/univ/mail", {
-    userEmail: email,
-    univName,
-  });
-  return response.data;
+  try {
+    const response = await axiosMail.post("/univ/mail", {
+      userEmail: email,
+      univName,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to send mail code:', error);
+    throw error;
+  }
 };
 // 사용자 입력 인증번호 5자리와 실제 메일로 보내진 인증번호 5자리 일치 여부 검증
 export const verifyEmailCode = async (email: string, certCode: number) => {
