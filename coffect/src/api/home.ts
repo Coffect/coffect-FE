@@ -50,7 +50,7 @@ export const getCoffeeChatSchedule = async () => {
   return data.success;
 };
 // userid로 id 찾기
-export const getUserStringId = async (userId: number) => {
+export const getUserStringId = async (userId: number): Promise<string> => {
   const res = await axiosInstance.post("/profile/id", { userId });
   return res.data.success.id;
 };
