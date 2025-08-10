@@ -37,7 +37,7 @@ const CalendarView: React.FC = () => {
             const name = await getUserNameById(stringId);
             return { ...item, opponentName: name };
           } catch {
-            return { ...item, opponentName: "누구신지..." };
+            return { ...item, opponentName: "알 수 없는 사용자" };
           }
         }),
       );
