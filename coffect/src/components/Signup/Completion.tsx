@@ -10,7 +10,10 @@ import SignupPageLayout from "./shared/SignupLayout";
 const Completion = () => {
   const navigate = useNavigate();
 
-  const goLogin = () => navigate("/signup", { state: { step: 2 } });
+  const goLogin = () => {
+    navigate("/signup", { state: { step: 2 } });
+    window.location.reload();
+  };
 
   useEffect(() => {
     // 진입 시 스크롤 막기

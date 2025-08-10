@@ -18,6 +18,7 @@ import InterestsSelection from "../components/Signup/InterestsSelection";
 import Completion from "../components/Signup/Completion";
 import TopNavbar from "../components/Signup/TopNavbar";
 import { login } from "../api/auth";
+import { signUpRequest } from "@/api/univ";
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
@@ -27,15 +28,16 @@ const Signup: React.FC = () => {
   // 현재 단계 페이지
   const [step, setStep] = useState<number>(initialStep);
   // 회원가입 중 입력된 데이터 누적 저장
-  const [, setForm] = useState<Partial<SignupData>>({});
+  const [form, setForm] = useState<Partial<SignupData>>({});
 
   /* 다음 단계로 이동 */
   const goNext = () => setStep((prev) => prev + 1);
   /* 이전 단계로 이동 */
   const goBack = () => setStep((prev) => prev - 1);
-  /* form 상태 업데이트 (부분 필드 병합) */
-  const update = (fields: Partial<SignupData>) =>
+  /* 동기화 이후 동작하도록 update 수정 */
+  const update = (fields: Partial<SignupData>) => {
     setForm((prev) => ({ ...prev, ...fields }));
+  };
 
   /*TopNavBar에 들어갈 제목 내용*/
   const stepTitles: Record<number, string> = {
@@ -60,6 +62,31 @@ const Signup: React.FC = () => {
       // 이미 온보딩을 본 사용자면 다음 단계(로그인)로 이동
       navigate("/signup", { state: { step: 2 } });
       window.location.reload();
+    }
+  };
+
+  // 회원가입 요청 함수
+  const signup = async (data: SignupData) => {
+    try {
+      const result = await signUpRequest({
+        id: data.id!,
+        password: data.password!,
+        name: data.name!,
+        email: data.email!,
+        univId: data.univId!,
+        dept: data.dept!,
+        studentId: data.studentId!,
+        interest: data.interest!,
+        img: data.img!,
+      });
+      //회원 가입 성공 시 회원 가입 완료 페이지 이동
+      if (result.resultType === "SUCCESS") {
+        setStep(10);
+      } else {
+        alert("회원가입 실패: " + (result.error?.reason || "알 수 없는 오류"));
+      }
+    } catch {
+      alert("서버 오류가 발생했어요.");
     }
   };
 
@@ -95,7 +122,14 @@ const Signup: React.FC = () => {
               // login API 호출 → 로그인 성공 여부 반환
               const success = await login({ userId, userPassword: password });
               // 로그인 성공 시 홈 화면으로 이동
-              if (success) navigate("/home");
+              if (success === true) {
+                navigate("/home");
+                return;
+              }
+              // 실패 시 서버/도메인 에러 메시지 전달
+              return typeof success === "string"
+                ? success
+                : "로그인에 실패했습니다";
             }}
           />
         )}
@@ -117,11 +151,7 @@ const Signup: React.FC = () => {
         )}
         {/* 6. 이메일 인증 코드 입력 화면 */}
         {step === 6 && (
-          <CodeInput
-            onNext={goNext}
-            onBack={goBack}
-            onUpdate={(fields) => update(fields)}
-          />
+          <CodeInput onNext={goNext} onBack={goBack} form={form} />
         )}
         {/* 7. 계정 정보 설정 화면 */}
         {step === 7 && (
@@ -134,8 +164,13 @@ const Signup: React.FC = () => {
         {/* 9. 관심사 선택 화면 */}
         {step === 9 && (
           <InterestsSelection
-            onNext={goNext}
-            onUpdate={(fields) => update(fields)}
+            onNext={(fields) => {
+              // form 상태에 interest를 병합 후 회원가입
+              const updated = { ...form, ...fields } as SignupData;
+              setForm(updated);
+
+              signup(updated);
+            }}
           />
         )}
         {/* 10. 가입 완료 화면 */}
