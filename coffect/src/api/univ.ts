@@ -36,11 +36,16 @@ export const sendMailCode = async (email: string, univName: string) => {
 };
 // 사용자 입력 인증번호 5자리와 실제 메일로 보내진 인증번호 5자리 일치 여부 검증
 export const verifyEmailCode = async (email: string, certCode: number) => {
-  const res = await axiosInstance.post("/univ/cert", {
-    email,
-    certCode,
-  });
-  return res.data;
+  try {
+    const res = await axiosInstance.post("/univ/cert", {
+      email,
+      certCode,
+    });
+    return res.data;
+  } catch (error) {
+    console.error('Failed to verify email code:', error);
+    throw error;
+  }
 };
 // 회원가입
 export const signUpRequest = async ({
