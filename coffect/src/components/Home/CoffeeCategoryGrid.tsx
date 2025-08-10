@@ -26,7 +26,7 @@ const CoffeeCategoryGrid: React.FC = () => {
         localStorage.removeItem("skippedCardCount");
       }
       // 선택한 추천 기준 서버에 전송
-      postTodayInterest(categoryValue);
+      await postTodayInterest(categoryValue);
       // 로컬스토리지에 추천 기준 선택 여부 저장 (당일 재선택 방지 목적)
       localStorage.setItem("coffeeCategorySelected", "true");
       // 선택 만료 시간 기록 (다음날 오전 9시 재추천 트리거를 위한 기준 시점)
