@@ -41,16 +41,10 @@ export const login = async (payload: LoginRequest) => {
 
     // 에러 메시지 결정 (우선순위 순)
     const reason =
-      errorData?.error?.reason ?? // 서버에서 내려준 에러 사유
-      axiosError.response?.statusText ?? // HTTP 상태 메시지
-      axiosError.message ?? // 기본 Axios 에러 메시지
-      "로그인 중 알 수 없는 오류가 발생했습니다."; // fallback 기본 메시지
+      errorData?.error?.reason ?? "로그인 중 알 수 없는 오류가 발생했습니다."; // 서버에서 내려준 에러 사유 // fallback 기본 메시지
 
-    // 사용자에게 에러 메시지 알림
-    alert(reason);
-
-    // 로그인 실패를 의미하는 false 반환
-    return false;
+    // 에러 메시지 리턴
+    return reason;
   }
 };
 // 로그아웃 함수: 토큰 삭제 후 로그인 페이지로 이동
