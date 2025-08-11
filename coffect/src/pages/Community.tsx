@@ -38,6 +38,17 @@ const Community = () => {
     setFilters,
   } = useCommunityStore();
 
+  // --- 디버깅을 위한 useEffect 추가 ---
+  useEffect(() => {
+    console.log("--- API Request Parameters ---", {
+      type: filters.type,
+      subject: filters.subject,
+      orderBy: sortOrder,
+      // 참고: cursor는 useInfiniteQuery 내부에서 pageParam으로 관리되며,
+      // 첫 페이지 요청 시에는 보통 null 또는 undefined입니다.
+    });
+  }, [filters, sortOrder]); // filters나 sortOrder가 변경될 때마다 실행
+
   // --- 데이터 페칭 ---
   const {
     data,
@@ -76,6 +87,15 @@ const Community = () => {
     }
   }, [location, navigate]);
 
+  // 1. onApply 핸들러 구현
+  const handleApplyFilters = (newFilters: {
+    type: string | null;
+    subject: number[] | null;
+  }) => {
+    setFilters(newFilters);
+    closeFilterModal();
+  };
+
   // --- 렌더링 데이터 준비 ---
   const posts = data?.pages.flatMap((page) => page.success?.thread || []) || [];
 
@@ -113,15 +133,14 @@ const Community = () => {
         )}
       </main>
 
+      {/* 2. FilterModal에 새로운 props 전달 */}
       <FilterModal
         isVisible={isFilterModalOpen}
         onClose={closeFilterModal}
-        onApply={closeFilterModal} // 필터는 즉시 적용되므로, 적용 버튼은 모달을 닫기만 함
+        onApply={handleApplyFilters} // 새로 만든 핸들러 연결
         onReset={resetFilters}
-        selectedType={filters.type}
-        selectedSubject={filters.subject}
-        onTypeSelect={(option) => setFilters({ type: option.value })}
-        onSubjectSelect={(option) => setFilters({ subject: [option.id] })}
+        selectedType={filters.type} // 초기값 전달용
+        selectedSubject={filters.subject} // 초기값 전달용
       />
 
       <BottomNavbar activeLabel="커뮤니티" />
