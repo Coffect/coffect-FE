@@ -2,7 +2,7 @@
 // description : 채팅방 페이지
 // 채팅방 내부 메시지 영역, 팝업 모달 연결, 일정 정보 표시
 
-import { useState, useRef, type MouseEvent } from "react";
+import { useState, useRef, type MouseEvent, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   ChevronLeft,
@@ -41,22 +41,16 @@ const ChatRoom = () => {
   } = useModal();
 
   // 일정 정보 (전달받은 일정이 있으면 표시)
-  const [schedule] = useState<{
-    date: string | Date;
-    time: string;
-    place?: string;
-    alert?: string | null;
-  } | null>(() => {
-    if (location.state?.schedule) {
-      return {
-        date: location.state.schedule.date,
-        time: location.state.schedule.time,
-        place: location.state.schedule.place || "",
-        alert: location.state.schedule.alert || null,
-      };
-    }
-    return null;
-  });
+  const schedule = useMemo(() => {
+    const s = location.state?.schedule;
+    if (!s) return null;
+    return {
+      date: s.date,
+      time: s.time,
+      place: s.place ?? "",
+      alert: s.alert ?? null,
+    };
+  }, [location.state?.schedule]);
 
   // 메시지 배열
   const [messages, setMessages] = useState<Message[]>([
