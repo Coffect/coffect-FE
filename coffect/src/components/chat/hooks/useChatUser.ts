@@ -16,5 +16,5 @@ export const useChatUser = () => {
     interests: ["디자인", "개발", "창업", "글쓰기"],
   };
 
-  return { user };
+  return user;
 };
