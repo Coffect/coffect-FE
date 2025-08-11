@@ -35,7 +35,15 @@ export default function TimeScrollModal({
   const hourRef = useRef<HTMLUListElement>(null);
   const minuteRef = useRef<HTMLUListElement>(null);
   const ampmRef = useRef<HTMLUListElement>(null);
-  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hourScrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const minuteScrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const ampmScrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   // 스크롤 핸들러
   const handleScroll = useCallback(
@@ -65,12 +73,13 @@ export default function TimeScrollModal({
       ref: React.RefObject<HTMLUListElement | null>,
       setValue: (v: T) => void,
       options: T[],
+      timeoutRef: React.RefObject<ReturnType<typeof setTimeout> | null>,
     ) => {
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
 
-      scrollTimeoutRef.current = setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         if (ref.current) {
           const itemHeight = 48;
           const scrollTop = ref.current.scrollTop;
@@ -97,6 +106,7 @@ export default function TimeScrollModal({
       selectedValue: T,
       setValue: (v: T) => void,
       onWheel: (e: React.WheelEvent) => void,
+      timeoutRef: React.RefObject<ReturnType<typeof setTimeout> | null>,
     ) => (
       <ul
         ref={ref}
@@ -109,7 +119,7 @@ export default function TimeScrollModal({
         }}
         onScroll={() => handleScroll(ref, setValue, options)}
         onWheel={onWheel}
-        onTouchEnd={() => handleScrollEnd(ref, setValue, options)}
+        onTouchEnd={() => handleScrollEnd(ref, setValue, options, timeoutRef)}
       >
         <li className="h-12" />
         <li className="h-12" />
@@ -162,9 +172,19 @@ export default function TimeScrollModal({
 
   // 컴포넌트 언마운트 시 타이머 정리
   useEffect(() => {
+    const hourTimeout = hourScrollTimeoutRef.current;
+    const minuteTimeout = minuteScrollTimeoutRef.current;
+    const ampmTimeout = ampmScrollTimeoutRef.current;
+
     return () => {
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
+      if (hourTimeout) {
+        clearTimeout(hourTimeout);
+      }
+      if (minuteTimeout) {
+        clearTimeout(minuteTimeout);
+      }
+      if (ampmTimeout) {
+        clearTimeout(ampmTimeout);
       }
     };
   }, []);
@@ -182,12 +202,17 @@ export default function TimeScrollModal({
               hours,
               selectedHour,
               setSelectedHour,
-              (e) => {
-                e.preventDefault();
+              () => {
                 setTimeout(() => {
-                  handleScrollEnd(hourRef, setSelectedHour, hours);
-                }, 200);
+                  handleScrollEnd(
+                    hourRef,
+                    setSelectedHour,
+                    hours,
+                    hourScrollTimeoutRef,
+                  );
+                }, 150);
               },
+              hourScrollTimeoutRef,
             )}
           </div>
 
@@ -198,12 +223,17 @@ export default function TimeScrollModal({
               minutes,
               selectedMinute,
               setSelectedMinute,
-              (e) => {
-                e.preventDefault();
+              () => {
                 setTimeout(() => {
-                  handleScrollEnd(minuteRef, setSelectedMinute, minutes);
-                }, 100);
+                  handleScrollEnd(
+                    minuteRef,
+                    setSelectedMinute,
+                    minutes,
+                    minuteScrollTimeoutRef,
+                  );
+                }, 150);
               },
+              minuteScrollTimeoutRef,
             )}
           </div>
 
@@ -214,12 +244,17 @@ export default function TimeScrollModal({
               ampm,
               selectedAMPM,
               setSelectedAMPM,
-              (e) => {
-                e.preventDefault();
+              () => {
                 setTimeout(() => {
-                  handleScrollEnd(ampmRef, setSelectedAMPM, ampm);
-                }, 100);
+                  handleScrollEnd(
+                    ampmRef,
+                    setSelectedAMPM,
+                    ampm,
+                    ampmScrollTimeoutRef,
+                  );
+                }, 150);
               },
+              ampmScrollTimeoutRef,
             )}
           </div>
         </div>
