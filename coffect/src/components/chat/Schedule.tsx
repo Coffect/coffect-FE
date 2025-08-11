@@ -72,15 +72,15 @@ const Schedule: React.FC = () => {
   return (
     <div className="flex h-full w-full flex-col bg-[var(--white)]">
       {/* 상단 헤더 */}
-      <div className="relative flex w-full flex-col items-center justify-center bg-[var(--white)] px-4 pt-6 pb-4">
+      <div className="relative flex w-full flex-col items-center justify-center bg-[var(--white)] px-4 pt-7 pb-3">
         <button
-          className="absolute top-6 left-4 text-2xl text-[var(--gray-70)]"
+          className="absolute top-7 left-4 text-2xl text-[var(--gray-70)]"
           onClick={() => navigate(-1)}
           aria-label="닫기"
         >
-          <X size={28} />
+          <X size={24} />
         </button>
-        <div className="mb-8 text-xl font-extrabold text-[var(--gray-90)]">
+        <div className="mb-7 text-[18px] font-semibold text-[var(--gray-90)]">
           일정 등록
         </div>
         <div className="flex w-full items-center justify-start">

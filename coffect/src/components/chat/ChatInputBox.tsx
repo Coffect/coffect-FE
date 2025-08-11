@@ -137,7 +137,7 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
           />
           <textarea
             ref={inputRef}
-            className="flex-1 resize-none rounded-full px-3 py-2 text-base outline-none placeholder:text-[var(--gray-40)]"
+            className="flex-1 resize-none rounded-full px-3 py-2 text-[16px] outline-none placeholder:text-[var(--gray-30)]"
             placeholder="메시지를 입력해주세요"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
