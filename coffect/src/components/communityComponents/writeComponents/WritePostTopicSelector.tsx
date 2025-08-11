@@ -8,7 +8,7 @@ import React from "react";
 import ChipGroup from "../ChipFilterComponent/ChipGroup";
 import {
   postTypeOptions,
-  postTopicOptions,
+  postSubjectOptions,
 } from "../ChipFilterComponent/filterData";
 
 /**
@@ -47,7 +47,7 @@ const WritePostTopicSelector: React.FC<WritePostTopicSelectorProps> = ({
         <div className="pt-4">
           <h3 className="mb-5 text-base font-semibold">글 주제</h3>
           <ChipGroup
-            options={postTopicOptions}
+            options={postSubjectOptions}
             selectedOption={topic}
             onSelect={handleTopicSelect}
           />
