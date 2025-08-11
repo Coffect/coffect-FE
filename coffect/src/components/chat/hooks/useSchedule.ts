@@ -13,11 +13,12 @@ export interface Schedule {
   alert?: string | null;
 }
 
-export const useSchedule = () => {
+export const useSchedule = (): { schedule: Schedule | null } => {
   const location = useLocation();
 
   const schedule = useMemo(() => {
-    const s = location.state?.schedule;
+    const state = location.state as { schedule?: Schedule } | null;
+    const s = state?.schedule;
     if (!s) return null;
     return {
       date: s.date,
@@ -25,7 +26,7 @@ export const useSchedule = () => {
       place: s.place ?? "",
       alert: s.alert ?? null,
     };
-  }, [location.state?.schedule]);
+  }, [location.state]);
 
   return { schedule };
 };

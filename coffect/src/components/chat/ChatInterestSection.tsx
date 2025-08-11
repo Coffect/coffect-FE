@@ -37,8 +37,10 @@ export const ChatInterestSection = ({
             이런 주제에 관심 있대요!
           </span>
           <button
+            type="button"
+            aria-label="관심사 접기"
             onClick={handleToggleInterests}
-            className="cursor-pointer rounded-full bg-[var(--gray-5)] p-1 text-[var(--gray-50)]"
+            className="rounded-full bg-[var(--gray-5)] p-1 text-[var(--gray-50)]"
           >
             <ChevronUp size={24} />
           </button>

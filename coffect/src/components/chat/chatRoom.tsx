@@ -4,7 +4,7 @@
  * 채팅방 내부 메시지 영역, 팝업 모달 연결, 일정 정보 표시
  */
 
-import { useState, useRef, type MouseEvent, useMemo } from "react";
+import { useState, useRef, type MouseEvent, useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import useCurrentTime from "./hooks/useCurrentTime";
@@ -16,6 +16,7 @@ import ChatMessageList from "./ChatMessageList";
 import usePreventZoom from "./hooks/usePreventZoom";
 import useAutoScroll from "./hooks/useAutoScroll";
 import type { Message } from "../../types/chat";
+import type { Schedule } from "./hooks/useSchedule";
 import { getMessageMargin } from "./utils/chatUtils";
 import ExampleProfile from "../../assets/icon/chat/ExampleProfile.png";
 import { ChatInterestSection } from "./ChatInterestSection";
@@ -33,7 +34,7 @@ const ChatRoom = () => {
   } = useModal();
 
   // 일정 정보 (전달받은 일정이 있으면 표시)
-  const schedule = useMemo(() => {
+  const schedule = useMemo<Schedule | null>(() => {
     const s = location.state?.schedule;
     if (!s) return null;
     return {
@@ -100,7 +101,21 @@ const ChatRoom = () => {
   const [inputValue, setInputValue] = useState("");
   const getCurrentTime = useCurrentTime();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const createdObjectUrlsRef = useRef<string[]>([]);
   useAutoScroll(messagesEndRef, [messages]);
+
+  useEffect(() => {
+    const urls = createdObjectUrlsRef.current;
+    return () => {
+      urls.forEach((url) => {
+        try {
+          URL.revokeObjectURL(url);
+        } catch {
+          // URL이 이미 해제되었거나 유효하지 않은 경우 무시
+        }
+      });
+    };
+  }, []);
 
   const handleSend = useHandleSend(
     messages,
@@ -110,11 +125,15 @@ const ChatRoom = () => {
   );
 
   const handleImageSend = (file: File) => {
+    if (!file || !file.type.startsWith("image/")) return;
+
     const url = URL.createObjectURL(file);
+    createdObjectUrlsRef.current.push(url);
+
     setMessages((prev) => [
       ...prev,
       {
-        id: prev.length + 1,
+        id: Date.now(),
         type: "image",
         imageUrl: url,
         mine: true,
@@ -137,23 +156,32 @@ const ChatRoom = () => {
     <div className="flex h-full w-full flex-col bg-[var(--white)]">
       {/* Header */}
       <div className="flex items-center border-b border-[var(--gray-10)] bg-[var(--white)] px-4 pt-6 pb-3">
-        <button className="mr-2 text-2xl" onClick={() => navigate("/chat")}>
-          {" "}
-          <ChevronLeft />{" "}
+        <button
+          type="button"
+          aria-label="채팅 목록으로 돌아가기"
+          className="mr-2 text-2xl"
+          onClick={() => navigate("/chat")}
+        >
+          <ChevronLeft />
         </button>
         <div className="flex flex-1 flex-col items-center">
-          <span className="text-[18px] font-semibold">{user.username}</span>
+          <span className="truncate text-[18px] font-semibold">
+            {user.username}
+          </span>
         </div>
-        <div
-          className="ml-2 h-8 w-8 cursor-pointer overflow-hidden rounded-full bg-transparent"
-          onClick={() => navigate("/userpage/1")}
+        <button
+          type="button"
+          aria-label="프로필 페이지로 이동"
+          className="ml-2 h-8 w-8 overflow-hidden rounded-full bg-transparent"
+          onClick={() => navigate(`/userpage/${user.id}`)}
         >
           <img
             src={ExampleProfile}
             alt="프로필"
             className="h-full w-full rounded-full object-cover"
+            loading="lazy"
           />
-        </div>
+        </button>
       </div>
       {/* 관심 주제 & 버튼 */}
       <ChatInterestSection
