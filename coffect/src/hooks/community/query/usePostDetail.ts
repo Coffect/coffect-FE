@@ -1,7 +1,7 @@
 /**
  * @author 흥부/강신욱
  * @description 게시글 상세 페이지 데이터 로직을 관리하는 커스텀 훅
- *               react-query를 사용하여 게시글 상세 정보를 비동기적으로 가져옵니다.
+ *               react-query를 사용하여 게시글 상세 정보를 비동기적으로 가져옵니다.ddddd
  * @version 1.2.0
  * @date 2025-08-02
  * @remarks
