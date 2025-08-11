@@ -1,3 +1,8 @@
+/*
+ * author : 앨리스/박은지
+ * description : 시간 선택 모달
+ */
+
 import React, { useRef, useState, useCallback, useEffect } from "react";
 
 const hours = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];

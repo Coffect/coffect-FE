@@ -1,6 +1,8 @@
-// author : 앨리스/박은지
-// description : [커피챗 일정 등록] 컴포넌트
-// 일정 등록 폼, 완료 모달 연결
+/*
+ * author : 앨리스/박은지
+ * description : [커피챗 일정 등록] 컴포넌트
+ * 일정 등록 폼, 완료 모달 연결
+ */
 
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";

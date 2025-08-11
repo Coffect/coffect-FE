@@ -1,5 +1,7 @@
-// author : 앨리스/박은지
-// description : 터치 줌 방지
+/*
+ * author : 앨리스/박은지
+ * description : 터치 줌 방지
+ */
 
 import { useEffect } from "react";
 

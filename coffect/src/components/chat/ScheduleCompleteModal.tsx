@@ -1,6 +1,8 @@
-// author : 앨리스/박은지
-// description : [커피챗 일정 등록 완료] 모달 컴포넌트
-// 날짜를 한글로 표시
+/*
+ * author : 앨리스/박은지
+ * description : [커피챗 일정 등록 완료] 모달 컴포넌트
+ * 날짜를 한글로 표시
+ */
 
 import React from "react";
 import ScheduleCompleteImg from "../../assets/icon/chat/ScheduleComplete.png";
