@@ -11,22 +11,38 @@
 
 import { axiosInstance } from "@/api/axiosInstance";
 import type {
-  PostPostsRequest,
-  PostPostsResponse,
+  PostThreadsFilterRequest,
+  PostThreadsFilterResponse,
   GetThreadLookUpRequest,
   GetThreadLookUpResponse,
+  GetThreadLatestRequest,
+  GetThreadLatestResponse,
 } from "@/types/community/postTypes";
 
 /**
- * @function getPosts
- * @description 서버에 게시글 목록을 요청하는 API 함수입니다.
- * @param params - 페이지 번호, 사이즈, 정렬 기준 등 요청 파라미터 객체
- * @returns Promise<GetPostsResponse> - 게시글 목록과 페이징 정보를 포함하는 Promise 객체
+ * @function getThreadLatest
+ * @description 최신순으로 게시글을 요청하는 API 함수입니다.
  */
-export const getPosts = async (
-  params: PostPostsRequest,
-): Promise<PostPostsResponse> => {
-  const response = await axiosInstance.post<PostPostsResponse>(
+export const getThreadLatest = async (
+  params: GetThreadLatestRequest,
+): Promise<GetThreadLatestResponse> => {
+  const response = await axiosInstance.get<GetThreadLatestResponse>(
+    "/thread/latest",
+    {
+      params,
+    },
+  );
+  return response.data;
+};
+
+/**
+ * @function getPostsFilter
+ * @description 서버에 필터 처리된 게시글을 요청하는 API 함수입니다.
+ */
+export const getPostsFilter = async (
+  params: PostThreadsFilterRequest,
+): Promise<PostThreadsFilterResponse> => {
+  const response = await axiosInstance.post<PostThreadsFilterResponse>(
     "/thread/main",
     params,
   );
@@ -36,13 +52,10 @@ export const getPosts = async (
 /**
  * @function getPostDetail
  * @description 특정 게시글의 상세 정보를 요청하는 API 함수입니다.
- * @param params - 조회할 게시글의 threadId를 포함하는 객체
- * @returns Promise<GetThreadLookUpResponse> - 게시글 상세 정보를 포함하는 Promise 객체
  */
 export const getPostDetail = async (
   params: GetThreadLookUpRequest,
 ): Promise<GetThreadLookUpResponse> => {
-  // GET 요청 시에는 params를 URL 쿼리 스트링으로 전달합니다.
   const response = await axiosInstance.get<GetThreadLookUpResponse>(
     "/thread/lookUp",
     {

@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import type { PostSummary } from "@/types/community/postTypes";
+import type { ThreadSummary } from "@/types/community/postTypes";
 import PostAuthorInfo from "./post/PostAuthorInfo";
 import PostBody from "./post/PostBody";
 
 // FeedItem이 받을 props 타입을 정의합니다.
 interface FeedItemProps {
-  post: PostSummary;
+  post: ThreadSummary;
   showFollowButton?: boolean; // 팔로우 버튼 표시 여부를 결정하는 prop
 }
 

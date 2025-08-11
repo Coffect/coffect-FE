@@ -8,7 +8,7 @@
  */
 
 import React from "react";
-import type { PostSummary } from "@/types/community/postTypes"; // PostSummary 타입 임포트
+import type { ThreadSummary } from "@/types/community/postTypes"; // PostSummary 타입 임포트
 // PostSummary 타입 임포트
 
 // 원자(Atom) 컴포넌트들을 가져옵니다.
@@ -25,7 +25,7 @@ import FeedInteraction from "../../communityComponents/feed/FeedInteraction";
  * @property {() => void} [onContentClick] -  컨텐츠 영역 클릭 시 호출될 함수입니다. (피드에서 상세 페이지 이동 등)
  */
 interface PostBodyProps {
-  post: PostSummary;
+  post: ThreadSummary;
   isDetailView?: boolean;
   onContentClick?: () => void;
 }

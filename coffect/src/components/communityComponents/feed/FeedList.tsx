@@ -4,10 +4,10 @@ description : FeedItem.tsx 로부터 피드를 받아 목록을 출력하는 컴
 */
 
 import FeedItem from "../../shareComponents/FeedItem";
-import type { PostSummary } from "@/types/community/postTypes"; // PostSummary 타입 임포트
+import type { ThreadSummary } from "@/types/community/postTypes"; // PostSummary 타입 임포트
 
 interface FeedListProps {
-  posts: PostSummary[]; // Post[] 대신 PostSummary[] 사용
+  posts: ThreadSummary[]; // Post[] 대신 PostSummary[] 사용
 }
 
 const FeedList = ({ posts }: FeedListProps) => {
