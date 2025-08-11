@@ -2,7 +2,7 @@
 // description : 채팅방 페이지
 // 채팅방 내부 메시지 영역, 팝업 모달 연결, 일정 정보 표시
 
-import { useState, useRef } from "react";
+import { useState, useRef, type MouseEvent } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   ChevronLeft,
@@ -131,7 +131,7 @@ const ChatRoom = () => {
 
   const [showInterests, setShowInterests] = useState(true);
 
-  const handleToggleInterests = (e: React.MouseEvent) => {
+  const handleToggleInterests = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setShowInterests((prev) => !prev);
@@ -245,16 +245,16 @@ const ChatRoom = () => {
         username={user.username}
       />
       {/* 메시지 영역 */}
-      <div className="flex-1 overflow-y-auto bg-[var(--gray-5)] px-4 pb-1">
+      <div className="flex-1 overflow-y-auto bg-[var(--gray-5)] px-4 py-2">
         {/* 시스템 메시지 */}
-        <div className="flex justify-center">
-          <span className="mt-2 cursor-default rounded-full px-3 py-3 text-[14px] font-medium text-[var(--gray-40)] select-none">
-            인하님이 제안을 수락했어요!
+        <div className="flex justify-center" role="status" aria-live="polite">
+          <span className="cursor-default rounded-full px-3 py-3 pb-6 text-[14px] font-medium text-[var(--gray-40)] select-none">
+            {`${user.username}님이 제안을 수락했어요!`}
           </span>
         </div>
         {/* 고정 토글 버튼 */}
         {!showInterests && (
-          <div className="sticky top-0 z-10 -mt-11 flex justify-end">
+          <div className="sticky top-0 z-10 -mt-13 flex justify-end">
             <button
               onClick={handleToggleInterests}
               className="cursor-pointer rounded-full bg-[var(--white)] p-1 text-[var(--gray-50)] shadow-[0_0_12px_0_rgba(0,0,0,0.15)]"
