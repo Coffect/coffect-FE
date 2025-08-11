@@ -1,6 +1,8 @@
-// author : 앨리스/박은지
-// description : 채팅방 페이지
-// 채팅방 내부 메시지 영역, 팝업 모달 연결, 일정 정보 표시
+/*
+ * author : 앨리스/박은지
+ * description : 채팅방 페이지
+ * 채팅방 내부 메시지 영역, 팝업 모달 연결, 일정 정보 표시
+ */
 
 import { useState, useRef, type MouseEvent, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";

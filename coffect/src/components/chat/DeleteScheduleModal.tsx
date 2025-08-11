@@ -1,3 +1,8 @@
+/*
+ * author : 앨리스/박은지
+ * description : 채팅방 내부 일정 삭제 모달
+ */
+
 import React from "react";
 import { formatAmPmTo24Hour } from "../../utils/dateUtils";
 
