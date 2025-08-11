@@ -11,8 +11,9 @@ import ChipGroup from "../ChipFilterComponent/ChipGroup";
 import { X } from "lucide-react";
 import {
   postTypeOptions,
-  postTopicOptions,
+  postSubjectOptions,
 } from "../ChipFilterComponent/filterData";
+import type { ChipOption } from "../ChipFilterComponent/filterData";
 
 interface FilterModalProps {
   isVisible: boolean;
@@ -20,9 +21,9 @@ interface FilterModalProps {
   onApply: () => void;
   onReset: () => void;
   selectedType: string | null;
-  selectedTopic: string | null;
-  onTypeSelect: (option: string) => void;
-  onTopicSelect: (option: string) => void;
+  selectedSubject: number[] | null; // selectedTopic -> selectedSubject로 변경
+  onTypeSelect: (option: ChipOption) => void;
+  onSubjectSelect: (option: ChipOption) => void; // onTopicSelect -> onSubjectSelect로 변경
 }
 
 const FilterModal = ({
@@ -31,9 +32,9 @@ const FilterModal = ({
   onApply,
   onReset,
   selectedType,
-  selectedTopic,
+  selectedSubject,
   onTypeSelect,
-  onTopicSelect,
+  onSubjectSelect,
 }: FilterModalProps) => {
   if (!isVisible) return null;
 
@@ -86,9 +87,9 @@ const FilterModal = ({
                 </h3>
               </div>
               <ChipGroup
-                options={postTopicOptions}
-                selectedOption={selectedTopic}
-                onSelect={onTopicSelect}
+                options={postSubjectOptions}
+                selectedOption={selectedSubject}
+                onSelect={onSubjectSelect}
               />
             </div>
           </div>
@@ -98,8 +99,8 @@ const FilterModal = ({
         <div className="w-full flex-shrink-0 p-4">
           <div className="flex justify-center gap-2">
             <button
-              className={`flex-1 rounded-md px-12 py-4 ${selectedType || selectedTopic ? "bg-[#3a3a3a] text-white" : "cursor-not-allowed bg-gray-200"}`}
-              disabled={!selectedType && !selectedTopic}
+              className={`flex-1 rounded-md px-12 py-4 ${selectedType || selectedSubject ? "bg-[#3a3a3a] text-white" : "cursor-not-allowed bg-gray-200"}`}
+              disabled={!selectedType && !selectedSubject}
               onClick={onApply}
             >
               필터 적용하기

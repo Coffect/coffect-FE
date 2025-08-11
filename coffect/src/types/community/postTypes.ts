@@ -42,7 +42,7 @@
 // }
 
 /**
- * @interface PostSummary
+ * @interface ThreadSummary
  * @description 게시글 목록에 사용되는 각 게시글의 요약 정보 모델입니다.
  * @param {string} threadId - 게시글 고유 ID (예: "thread-12345")
  * @param {number} userId - 작성자 고유 ID (예: 20230001)
@@ -107,10 +107,10 @@ export interface GetThreadLatestResponse {
 /**************************** 게시글 페이지 필터링 조회 ************************/
 
 export interface PostThreadsFilterRequest {
-  dateCursor?: string;
+  cursor?: number;
   orderBy: string;
-  threadSubject?: number[];
-  type?: string;
+  threadSubject?: number[] | null;
+  type?: string | null;
 }
 
 export interface PostThreadsFilterResponse {

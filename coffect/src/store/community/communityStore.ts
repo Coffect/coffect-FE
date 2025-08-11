@@ -5,7 +5,7 @@ interface CommunityState {
   sortOrder: "createdAt" | "likeCount";
   filters: {
     type: string | null;
-    topic: string | null;
+    subject: number[] | null;
   };
   isFilterModalOpen: boolean;
 }
@@ -26,7 +26,7 @@ export const useCommunityStore = create<CommunityState & CommunityActions>(
     sortOrder: "createdAt",
     filters: {
       type: null,
-      topic: null,
+      subject: null,
     },
     isFilterModalOpen: false,
 
@@ -36,7 +36,7 @@ export const useCommunityStore = create<CommunityState & CommunityActions>(
       set((state) => ({
         filters: { ...state.filters, ...newFilters },
       })),
-    resetFilters: () => set({ filters: { type: null, topic: null } }),
+    resetFilters: () => set({ filters: { type: null, subject: null } }),
     openFilterModal: () => set({ isFilterModalOpen: true }),
     closeFilterModal: () => set({ isFilterModalOpen: false }),
   }),
