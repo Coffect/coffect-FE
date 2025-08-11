@@ -1,68 +1,68 @@
 /**
  * @author 강신욱
  * @description 커뮤니티 메인 페이지 컴포넌트입니다.
- * @version 1.0.0
- * @date 2025-08-03
+ * @version 1.3.0
+ * @date 2025-08-11
+ * @remarks
+ * - 1.1.0: 최신순 게시글을 무한 스크롤로 불러오도록 수정
+ * - 1.2.0: 초기 로딩 시 스켈레톤 UI 적용
+ * - 1.3.0: useState를 Zustand 스토어로 리팩터링
  */
 
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useInView } from "react-intersection-observer";
+
+// --- 컴포넌트 ---
 import Header from "@/components/communityComponents/Header";
 import FeedList from "@/components/communityComponents/feed/FeedList";
+import FeedListSkeleton from "@/components/communityComponents/feed/FeedListSkeleton";
 import FilterModal from "@/components/communityComponents/BottomSeatFilter/FilterModal";
 import BottomNavbar from "@/components/shareComponents/BottomNavbar";
 import FloatingWriteButton from "@/components/communityComponents/FloatingWriteButton";
 import UploadSuccessModal from "@/components/communityComponents/writeComponents/SuccessModal/UploadSuccessModal";
 
-// --- Custom Hooks ---
-import { useCommunityFilter } from "../hooks/community/useCommunityFilter";
-import { useGetPosts } from "@/hooks/community/query/useGetPosts";
+// --- 훅 & 스토어 ---
+import { useGetThreadLatestQuery } from "@/hooks/community/query/useGetThreadLatestQuery";
+import { useCommunityStore } from "@/store/community/communityStore";
 
-// --- 상태 관리 ---
 const Community = () => {
-  // 실제 적용된 필터 상태를 Community 페이지에서 직접 관리합니다.
-  const [activeFilters, setActiveFilters] = useState<{
-    type: string | null;
-    topic: string | null;
-  }>({
-    type: null,
-    topic: null,
-  });
-
-  // useGetPosts 훅에 activeFilters를 직접 전달하여 필터 변경 시 자동으로 쿼리가 재실행되도록 합니다.
-  const { data, isLoading, error } = useGetPosts({
-    dateCursor: 0, // TODO: 페이지네이션 구현 시 이 값을 관리해야 합니다. ( 수정해야함 : 2025-08-03 )
-    ascend: false, // 최신순으로 정렬
-    orderBy: "createdAt",
-    threadSubject: activeFilters.topic ? [Number(activeFilters.topic)] : [], // topic이 있을 경우 숫자로 변환하여 배열에 담습니다. (임시)
-    type: activeFilters.type || "아티클", // activeFilters.type이 있으면 사용하고, 없으면 "아티클"을 기본값으로 전달합니다. (임시)
-  });
-
-  console.log(activeFilters.type);
-  // 실제 게시글 목록은 data.success.thread에 있습니다.
-  const posts = data?.success?.thread || [];
-
-  // 필터 모달 내의 임시 선택 상태를 관리하는 훅입니다.
+  // --- Zustand 스토어에서 상태 및 액션 가져오기 ---
   const {
-    selectedType,
-    selectedTopic,
-    handleTypeSelect,
-    handleTopicSelect,
-    handleReset,
-    filters: modalFilters, // 모달에서 "적용하기"를 누르기 전까지의 임시 필터 값
-  } = useCommunityFilter({ initialFilters: activeFilters });
+    sortOrder,
+    filters,
+    isFilterModalOpen,
+    setFilters,
+    resetFilters,
+    openFilterModal,
+    closeFilterModal,
+  } = useCommunityStore();
 
-  // 모달의 표시 여부를 관리하는 상태입니다.
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  // --- 데이터 페칭 ---
+  // TODO: 향후 sortOrder에 따라 다른 쿼리를 실행하도록 확장 가능
+  const {
+    data,
+    isLoading,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useGetThreadLatestQuery({ enabled: sortOrder === "createdAt" });
 
-  // 글 작성 완료 후 보여지는 성공 모달의 상태입니다.
+  // --- 무한 스크롤 로직 ---
+  const { ref, inView } = useInView({ threshold: 0 });
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, fetchNextPage]);
+
+  // --- 글 작성 완료 모달 관련 로직 ---
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-
   const location = useLocation();
   const navigate = useNavigate();
 
-  // --- 로직 ---
-  // 글 작성 페이지에서 돌아왔을 때 성공 모달을 표시하기 위한 로직입니다.
   useEffect(() => {
     if (location.state?.showSuccessModal) {
       setIsSuccessModalOpen(true);
@@ -70,65 +70,58 @@ const Community = () => {
     }
   }, [location, navigate]);
 
-  // 모달을 열고 닫는 함수
-  const openModal = () => setIsModalVisible(true);
-  const closeModal = () => setIsModalVisible(false);
-
-  /**
-   * "필터 적용하기" 버튼 클릭 시 실행되는 핸들러입니다.
-   * 모달의 임시 필터 값(modalFilters)으로 실제 필터 상태(activeFilters)를 업데이트합니다.
-   * activeFilters가 변경되면, useCommunityFeed 훅이 이를 감지하고 데이터를 자동으로 새로고침합니다.
-   */
-  const handleApplyFilters = () => {
-    setActiveFilters(modalFilters);
-    closeModal();
-  };
-
-  // 성공 모달의 "게시글 보기" 버튼 클릭 핸들러
-  const handleViewPost = () => {
-    setIsSuccessModalOpen(false);
-    // TODO: 작성된 게시글 상세 페이지로 이동하는 로직 추가
-  };
+  // --- 렌더링 데이터 준비 ---
+  const posts = data?.pages.flatMap((page) => page.success?.thread || []) || [];
 
   // --- 렌더링 ---
   if (error) {
     return (
-      <div className="flex h-full items-center justify-center">
-        게시글을 불러오는 중 오류가 발생했습니다: {error.message}
+      <div className="relative flex h-full flex-col bg-white">
+        <Header openModal={openFilterModal} />
+        <div className="flex flex-1 items-center justify-center">
+          게시글을 불러오는 중 오류가 발생했습니다: {error.message}
+        </div>
+        <BottomNavbar activeLabel="커뮤니티" />
       </div>
     );
   }
 
   return (
     <div className="relative flex h-full flex-col bg-white">
-      <Header openModal={openModal} />
+      <Header openModal={openFilterModal} />
 
       <main className="flex-1 overflow-y-auto bg-white pb-20">
         {isLoading ? (
-          <div className="flex h-full items-center justify-center">
-            로딩 중...
-          </div>
+          <FeedListSkeleton />
         ) : (
-          <FeedList posts={posts} />
+          <>
+            <FeedList posts={posts} />
+            <div ref={ref} style={{ height: "1px" }} />
+            {isFetchingNextPage && (
+              <div className="flex justify-center py-4">
+                <FeedListSkeleton count={1} />
+              </div>
+            )}
+          </>
         )}
       </main>
 
       <FilterModal
-        isVisible={isModalVisible}
-        onClose={closeModal}
-        onApply={handleApplyFilters}
-        onReset={handleReset}
-        selectedType={selectedType}
-        selectedTopic={selectedTopic}
-        onTypeSelect={handleTypeSelect}
-        onTopicSelect={handleTopicSelect}
+        isVisible={isFilterModalOpen}
+        onClose={closeFilterModal}
+        onApply={closeFilterModal} // 필터는 즉시 적용되므로, 적용 버튼은 모달을 닫기만 함
+        onReset={resetFilters}
+        selectedType={filters.type}
+        selectedTopic={filters.topic}
+        onTypeSelect={(type) => setFilters({ type })}
+        onTopicSelect={(topic) => setFilters({ topic })}
       />
 
       <BottomNavbar activeLabel="커뮤니티" />
       <FloatingWriteButton />
       <UploadSuccessModal
         isOpen={isSuccessModalOpen}
-        onViewPost={handleViewPost}
+        onViewPost={() => setIsSuccessModalOpen(false)}
       />
     </div>
   );
