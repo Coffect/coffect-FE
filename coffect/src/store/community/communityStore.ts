@@ -25,8 +25,8 @@ export const useCommunityStore = create<CommunityState & CommunityActions>(
     // 초기 상태 값
     sortOrder: "createdAt",
     filters: {
-      type: null,
-      subject: null,
+      type: "아티클",
+      subject: [1],
     },
     isFilterModalOpen: false,
 

@@ -36,8 +36,6 @@ export interface Comment {
     studentId: number; // 학생 ID
     profileImage: string; // 프로필 이미지 URL
     name: string; // 사용자 이름
-    // 추가 예정
-    // major: string; // 전공
   };
 }
 
@@ -61,6 +59,7 @@ export interface getCommentResponse {
     comments: Comment[]; // 댓글 목록
   };
 }
+
 /**
  * @interface postCommentRequest
  * @description: 댓글 작성 API 요청 타입

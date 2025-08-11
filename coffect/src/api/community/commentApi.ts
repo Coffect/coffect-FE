@@ -31,7 +31,7 @@ export const getComments = async (
     // axiosInstance를 사용해 서버에 GET 요청을 보냅니다.
     // 제네릭으로 getCommentResponse 타입을 지정하여 응답 데이터의 타입을 강제합니다.
     const response = await axiosInstance.get<getCommentResponse>(
-      "/thread/getComment", // 요청할 엔드포인트
+      "/thread/getcomment", // 요청할 엔드포인트
       {
         // 전달받은 params 객체를 그대로 요청 파라미터로 사용합니다.
         // 이렇게 하면 향후 파라미터가 추가되어도 이 함수를 수정할 필요가 없습니다.
@@ -40,7 +40,7 @@ export const getComments = async (
     );
 
     // 서버 응답의 resultType이 'success'이고, success 객체가 존재하는지 확인합니다. 이 과정을 통해 데이터가 정상적으로 왔는지 보장할 수 있습니다.
-    if (response.data.resultType === "success" && response.data.success) {
+    if (response.data.success) {
       return response.data.success.comments; // 성공 시, success 객체 안의 comments 배열을 반환합니다.
     } else {
       // 서버가 에러 응답을 보냈을 경우 (resultType이 'FAIL')
