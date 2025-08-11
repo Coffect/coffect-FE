@@ -27,6 +27,11 @@ export default function TimeScrollModal({
     initial?.ampm || "AM",
   );
 
+  // 초기값을 별도로 저장하여 useEffect에서 사용
+  const initialHour = initial?.hour || 8;
+  const initialMinute = initial?.minute || "00";
+  const initialAMPM = initial?.ampm || "AM";
+
   const hourRef = useRef<HTMLUListElement>(null);
   const minuteRef = useRef<HTMLUListElement>(null);
   const ampmRef = useRef<HTMLUListElement>(null);
@@ -148,12 +153,21 @@ export default function TimeScrollModal({
           }
         };
 
-        setInitialPosition(hourRef, selectedHour, hours);
-        setInitialPosition(minuteRef, selectedMinute, minutes);
-        setInitialPosition(ampmRef, selectedAMPM, ampm);
+        setInitialPosition(hourRef, initialHour, hours);
+        setInitialPosition(minuteRef, initialMinute, minutes);
+        setInitialPosition(ampmRef, initialAMPM, ampm);
       }, 100);
     }
-  }, [open, selectedHour, selectedMinute, selectedAMPM]);
+  }, [open, initialHour, initialMinute, initialAMPM]);
+
+  // 컴포넌트 언마운트 시 타이머 정리
+  useEffect(() => {
+    return () => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
 
   if (!open) return null;
 
