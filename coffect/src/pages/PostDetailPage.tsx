@@ -84,16 +84,7 @@ const PostDetail = () => {
           timeAgo={timeAgo}
         />
         <PostBody
-          post={{
-            threadId: post.threadId,
-            threadTitle: post.threadTitle,
-            threadBody: post.threadBody,
-            images: post.images.map((img) => img.imageId),
-            type: post.type,
-            subjects: post.subjects,
-            likeCount: post.likeCount,
-            commentCount: post.commentCount,
-          }}
+          post={post}
           isDetailView={true}
           showBookmarkButton={true}
         />

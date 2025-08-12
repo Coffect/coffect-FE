@@ -8,17 +8,7 @@
  */
 
 import React from "react";
-
-interface BodySummary {
-  threadId: string; // 게시글 고유 ID
-  threadTitle: string; // 게시글 제목
-  threadBody: string; // 게시글 본문 내용
-  images?: string[]; // 게시글 이미지 URL 배열 (선택적)
-  likeCount: number; // 좋아요 수
-  commentCount: number; // 댓글 수
-  type?: string; // 게시글 종류 (예: "아티클", "질문")
-  subjects?: string[]; // 게시글 주제 배열 (선택적, 예: ["프론트엔드", "백엔드"])
-}
+import type { ThreadSummary } from "@/types/community/postTypes";
 
 // 원자(Atom) 컴포넌트들을 가져옵니다.
 import PostTitle from "./PostTitle";
@@ -34,7 +24,7 @@ import FeedInteraction from "../../communityComponents/feed/FeedInteraction";
  * @property {() => void} [onContentClick] -  컨텐츠 영역 클릭 시 호출될 함수입니다. (피드에서 상세 페이지 이동 등)
  */
 interface PostBodyProps {
-  post: BodySummary;
+  post: ThreadSummary;
   isDetailView?: boolean;
   onContentClick?: () => void;
   showBookmarkButton?: boolean; // 북마크 버튼 표시 여부를 결정하는 prop

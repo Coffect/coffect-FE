@@ -66,9 +66,9 @@
 export interface ThreadSummary {
   threadId: string;
   userId: number;
-  type?: string;
   threadTitle: string;
   threadBody: string;
+  type?: string;
   createdAt: string;
   threadShare: number;
   user: {
@@ -154,9 +154,7 @@ export interface GetThreadLookUpResponse {
       name: string; // 작성자 이름 (예: "홍길동")
     };
     subjects: string[];
-    images: Array<{
-      imageId: string; // 게시글 이미지 ID (예: "image-12345")
-    }>;
+    images: string[];
     commentCount: number; // 게시글 댓글 수 (예: 5)
     likeCount: number; // 게시글 좋아요 수 (예: 10)
   };
