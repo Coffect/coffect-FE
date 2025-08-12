@@ -5,9 +5,10 @@
                 - 왼쪽 버튼: 현재 카드 제거
                 - 가운데 버튼: 커피챗 제안 모달 열기
                 - 오른쪽 버튼: 팔로워 요청(아직 작동x)
+                - 제안 플로우는 useCoffeeSuggest 훅 사용
 */
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react"; // 제안 완료 후 스킵 처리를 위해 useEffect, useRef 추가
 import { useNavigate } from "react-router-dom";
 import CoffeeSuggestModal from "./CoffeeSuggestModal";
 import CoffeeSuggestCompleteModal from "./CoffeeSuggestCompleteModal";
@@ -25,10 +26,12 @@ import {
   getUserQnAById,
   getUserStringId,
   postFollowRequest,
-  postSuggestCoffeeChat,
 } from "@/api/home";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useToastStore } from "@/hooks/useToastStore";
+
+// 제안 플로우 전역 훅
+import { useCoffeeSuggest } from "@/hooks/useCoffeeSuggest";
 
 // 태그별 전역 색상 클래스 반환
 const getTagColor = (tag: string) => {
@@ -72,33 +75,16 @@ const ProfileFlip: React.FC = () => {
   // 토스트 표시, 숨김
   const { showToast, hideToast } = useToastStore();
 
-  // 커피챗 제안 요청을 처리
-  const { mutate: suggestCoffeeChat } = useMutation({
-    mutationFn: async ({ message, id }: { message: string; id: number }) =>
-      await postSuggestCoffeeChat(message, id),
-    onSuccess: () => {
-      setShowSuggestModal(false);
-      setShowCompleteModal(true);
-
-      // 카드 제거 애니메이션 후 삭제 및 다음 카드 불러오기
-      setSkipAnimation(true);
-      setTimeout(async () => {
-        try {
-          await initOrSkipCard();
-        } finally {
-          setSkipped((prev) => {
-            const next = prev + 1;
-            localStorage.setItem("skippedCardCount", next.toString());
-            return next;
-          });
-          setSkipAnimation(false);
-        }
-      }, 300);
-    },
-    onError: () => {
-      showToast("한 글자 이상 입력해주세요!", "error");
-    },
-  });
+  // 제안 플로우 훅 사용
+  const {
+    isSuggestOpen,
+    isCompleteOpen,
+    selectedProfileId,
+    openSuggest,
+    closeSuggest,
+    submitSuggest,
+    closeComplete,
+  } = useCoffeeSuggest();
 
   // 서버에서 프로필 카드 데이터 불러오기
   const { data: currentCard } = useQuery<UserProfile | null>({
@@ -115,7 +101,7 @@ const ProfileFlip: React.FC = () => {
         const isFollow = await getIsFollow(card.userId);
         const stringId = await getUserStringId(card.userId);
 
-        //각 서브요청이 실패하더라도 전체를 null로 만들지 않기
+        // 각 서브요청이 실패하더라도 전체를 null로 만들지 않기
         const [deptRes, qnaRes] = await Promise.allSettled([
           getUserDeptById(stringId),
           getUserQnAById(stringId),
@@ -140,22 +126,42 @@ const ProfileFlip: React.FC = () => {
       }
     },
   });
+
   const navigate = useNavigate();
+
   // 현재 스킵된 카드 수 (로컬스토리지에서 불러오기->다른 라우팅 위치 이동 이후에도 같은 페이징 유지를 위해)
   const [skipped, setSkipped] = useState(() => {
     const stored = localStorage.getItem("skippedCardCount");
     return stored ? parseInt(stored) : 0;
   });
+
   // 스킵 애니메이션 동작 여부
   const [skipAnimation, setSkipAnimation] = useState(false);
-  // 커피챗 제안 대상 프로필 ID
-  const [selectedProfileId, setSelectedProfileId] = useState<number | null>(
-    null,
-  );
-  // 커피챗 제안 모달 열림 여부
-  const [showSuggestModal, setShowSuggestModal] = useState(false);
-  // 커피챗 제안 완료 모달 열림 여부
-  const [showCompleteModal, setShowCompleteModal] = useState(false);
+
+  // 제안 완료 모달이 열렸을 때 카드 스킵(기존 onSuccess 동작을 훅 사용 구조로 유지)
+  const didSkipAfterSuggestRef = useRef(false);
+  useEffect(() => {
+    if (isCompleteOpen && !didSkipAfterSuggestRef.current) {
+      didSkipAfterSuggestRef.current = true;
+
+      setSkipAnimation(true);
+      setTimeout(async () => {
+        try {
+          await initOrSkipCard();
+        } finally {
+          setSkipped((prev) => {
+            const next = prev + 1;
+            localStorage.setItem("skippedCardCount", next.toString());
+            return next;
+          });
+          setSkipAnimation(false);
+        }
+      }, 300);
+    }
+    if (!isCompleteOpen) {
+      didSkipAfterSuggestRef.current = false;
+    }
+  }, [isCompleteOpen]);
 
   // 카드 제거(왼쪽 버튼)
   const handleSkip = async () => {
@@ -174,32 +180,27 @@ const ProfileFlip: React.FC = () => {
     }, 300);
   };
 
-  // 커피쳇 제안 모달 열기(가운데 버튼)
+  // 커피쳇 제안 모달 열기(가운데 버튼) - 훅 사용
   const handleSuggestClick = (id: number) => {
-    setSelectedProfileId(id);
-    setShowSuggestModal(true);
+    openSuggest(id);
   };
-  // 제안 메시지 작성 완료
+
+  // 제안 메시지 작성 완료 - 훅 사용
   const handleSuggestSubmit = (message: string) => {
-    // 프로필 ID가 없으면 리턴
-    if (selectedProfileId === null) return;
-
-    // useMutation을 통해 요청 실행
-    suggestCoffeeChat({ message, id: selectedProfileId });
+    submitSuggest(message);
   };
 
-  // 제안 작성 취소
+  // 제안 작성 취소 - 훅 사용
   const handleSuggestCancel = () => {
-    setShowSuggestModal(false);
-    setSelectedProfileId(null);
-  };
-  // 제안 완료 모달 닫기
-  const handleCompleteClose = () => {
-    setShowCompleteModal(false);
-    setSelectedProfileId(null);
+    closeSuggest();
   };
 
-  // 오른쪽 버튼(팔로우) 클릭 시 상태 토클 및 토스트 메시지
+  // 제안 완료 모달 닫기 - 훅 사용
+  const handleCompleteClose = () => {
+    closeComplete();
+  };
+
+  // 오른쪽 버튼(팔로우) 클릭 시 상태 토글 및 토스트 메시지
   const handleFollowToggle = async (e: React.MouseEvent) => {
     e.stopPropagation(); // 카드 클릭 방지
     if (!currentCard) return;
@@ -354,14 +355,14 @@ const ProfileFlip: React.FC = () => {
       </div>
 
       {/* 제안 작성 모달 */}
-      {showSuggestModal && selectedProfileId !== null && (
+      {isSuggestOpen && selectedProfileId !== null && (
         <CoffeeSuggestModal
           onSubmit={handleSuggestSubmit}
           onCancel={handleSuggestCancel}
         />
       )}
       {/* 제안 완료 모달 */}
-      {showCompleteModal && (
+      {isCompleteOpen && (
         <CoffeeSuggestCompleteModal onClose={handleCompleteClose} />
       )}
     </div>
