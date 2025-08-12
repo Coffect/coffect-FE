@@ -20,13 +20,6 @@ import type {
 /**
  * @description 새로운 댓글을 서버에 추가하는 useMutation 커스텀 훅입니다.
  *              댓글 추가 성공 시, 관련 댓글 목록 캐시를 무효화하여 데이터를 자동으로 새로고침합니다.
- *
- * @returns {object} useMutation이 반환하는 객체. 주요 속성은 다음과 같습니다:
- * - mutate (function): 댓글 추가를 실행하는 함수. postCommentRequest 타입의 객체를 인자로 받습니다.
- * - isPending (boolean): 댓글 추가 요청이 진행 중인지 여부.
- * - isError (boolean): 요청 중 에러 발생 여부.
- * - error (Error | null): 발생한 에러 객체.
- * - isSuccess (boolean): 댓글 추가 요청이 성공적으로 완료되었는지 여부.
  */
 
 export const useAddComment = () => {

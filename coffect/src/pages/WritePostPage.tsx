@@ -12,30 +12,91 @@
  * @date 2023-08-05
  */
 
-import React from "react";
-import { useWritePost } from "@/hooks/community/writePost/useWritePost";
+import React, { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAddPostMutation } from "@/hooks/community/mutation/useAddPostMutation";
+import type { postUploadRequest } from "@/types/community/writePostTypes";
 import WritePostHeader from "@/components/communityComponents/writeComponents/WritePostHeader";
 import WritePostTitleInput from "@/components/communityComponents/writeComponents/WritePostTitleInput";
 import WritePostContentInput from "@/components/communityComponents/writeComponents/WritePostContentInput";
 import WritePostTopicSelector from "@/components/communityComponents/writeComponents/WritePostTopicSelector";
+import type { ChipOption } from "@/components/communityComponents/ChipFilterComponent/filterData";
 
 const WritePostPage: React.FC = () => {
-  const {
-    postType,
-    handlePostTypeSelect,
-    topic,
-    handleTopicSelect,
-    title,
-    setTitle,
-    content,
-    setContent,
-    selectedImageFiles,
-    handleImageChange,
-    handleImageRemove,
-    isFormValid,
-    handleBackClick,
-    handleUpload,
-  } = useWritePost();
+  const navigate = useNavigate();
+
+  const [threadTitle, setThreadTitle] = useState<string>("");
+  const [threadBody, setThreadBody] = useState<string>("");
+  const [images, setImages] = useState<File[]>([]);
+  const [type, setType] = useState<string>("");
+  const [threadSubject, setThreadSubject] = useState<string>("");
+
+  const { mutate: addPost } = useAddPostMutation();
+
+  const handleImageChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files.length > 0) {
+        setImages([e.target.files[0]]);
+      } else {
+        setImages([]);
+      }
+    },
+    [],
+  );
+
+  const handleImageRemove = useCallback((indexToRemove: number) => {
+    setImages((prevFiles) =>
+      prevFiles.filter((_, index) => index !== indexToRemove),
+    );
+  }, []);
+
+  const handleTypeSelect = useCallback((option: ChipOption) => {
+    setType(option.value as string);
+  }, []);
+
+  const handleThreadSubjectSelect = useCallback((option: ChipOption) => {
+    setThreadSubject(option.value as string);
+  }, []);
+
+  const isFormValid =
+    threadTitle.trim().length > 0 &&
+    threadBody.trim().length > 0 &&
+    type.length > 0 &&
+    threadSubject.length > 0;
+
+  const handleBackClick = useCallback(() => {
+    navigate("/community"); // Assuming '/community' is the path to the community page
+  }, [navigate]);
+
+  const handleUpload = useCallback(() => {
+    if (!isFormValid) {
+      alert("모든 필수 필드를 채워주세요.");
+      return;
+    }
+    const postData: postUploadRequest = {
+      threadTitle: threadTitle,
+      threadBody: threadBody,
+      type: type,
+      threadSubject: threadSubject,
+      images: images as unknown as string[],
+    };
+
+    addPost(postData, {
+      onSuccess: (response) => {
+        if (response.resultType === "SUCCESS") {
+          alert("게시글이 성공적으로 작성되었습니다!");
+          navigate("/community"); // 게시글 작성 후 커뮤니티 페이지로 이동
+        } else {
+          alert(
+            `게시글 작성 실패: ${response.error?.reason || "알 수 없는 오류"}`,
+          );
+        }
+      },
+      onError: (err) => {
+        alert(`게시글 작성 중 오류 발생: ${err.message}`);
+      },
+    });
+  }, [threadTitle, threadBody, type, threadSubject, images]);
 
   return (
     <div className="flex h-screen flex-col bg-white">
@@ -45,24 +106,23 @@ const WritePostPage: React.FC = () => {
         handleUpload={handleUpload}
       />
       <main className="flex-grow overflow-y-auto">
-        <WritePostTitleInput title={title} setTitle={setTitle} />
+        <WritePostTitleInput title={threadTitle} setTitle={setThreadTitle} />
         <div className="h-[0.8px] w-full bg-[var(--gray-5)]"></div>
 
-        {/* WritePostContentInput에 이미지 관련 상태와 핸들러를 props로 전달합니다. */}
         <WritePostContentInput
-          content={content}
-          setContent={setContent}
-          selectedImageFiles={selectedImageFiles}
+          content={threadBody}
+          setContent={setThreadBody}
+          images={images}
           handleImageChange={handleImageChange}
           handleImageRemove={handleImageRemove}
         />
 
         <div className="mb-4 h-[0.8px] w-full bg-[var(--gray-5)]"></div>
         <WritePostTopicSelector
-          postType={postType}
-          handlePostTypeSelect={handlePostTypeSelect}
-          topic={topic}
-          handleTopicSelect={handleTopicSelect}
+          type={type}
+          handleTypeSelect={handleTypeSelect}
+          topic={threadSubject}
+          handleThreadSubjectSelect={handleThreadSubjectSelect}
         />
       </main>
     </div>

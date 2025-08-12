@@ -16,12 +16,12 @@
  * @params {string} threadTitle - 게시글 제목
  * @description API 수정 예정: images 필드 추가 예정
  */
-export interface PostUploadRequest {
-  imageUrls?: string[]; // 이미지 URL 배열 (선택 사항, multipart/form-data로 전송됨)
-  threadSubject: number[]; // 주제 ID 배열
-  threadBody: string; // 게시글 내용
-  threadTitle: string; // 게시글 제목
+export interface postUploadRequest {
+  images?: string[]; // 이미지 URL 배열 (선택 사항, multipart/form-data로 전송됨)
   type: string; // 게시글 종류 (예: 아티클, 팀원 모집 등)
+  threadSubject: string; // 주제 ID 배열
+  threadTitle: string; // 게시글 제목
+  threadBody: string; // 게시글 내용
 }
 
 /**
@@ -35,14 +35,12 @@ export interface PostUploadRequest {
  * @property success - 성공 정보 (성공 시)
  * @property {string} success.threadId - 게시글 ID (성공 시)
  */
-export interface PostUploadResponse {
+export interface postUploadResponse {
   resultType: string; // 결과 타입 (예: "SUCCESS", "FAIL")
   error: null | {
     errorCode: string; // 에러 코드
     reason: string; // 에러 메시지
     data?: null; // 추가 데이터 (선택 사항)
   };
-  success: null | {
-    threadId: string; // 게시글 ID (성공 시) 수정 예정
-  }; // 성공 정보 (실패 시 null)
+  success: null | string;
 }
