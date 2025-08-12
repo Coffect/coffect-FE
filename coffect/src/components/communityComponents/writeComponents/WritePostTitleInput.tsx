@@ -21,7 +21,7 @@ interface WritePostTitleInputProps {
 const WritePostTitleInput: React.FC<WritePostTitleInputProps> = ({
   title,
   setTitle,
-}) => {
+}: WritePostTitleInputProps) => {
   return (
     <div className="flex items-center justify-center px-4 py-4 text-center">
       <input

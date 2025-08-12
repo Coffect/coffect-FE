@@ -1,12 +1,13 @@
 /**
  * @author 강신욱
  * @description 커뮤니티 메인 페이지 컴포넌트입니다.
- * @version 1.3.0
+ * @version 1.4.0
  * @date 2025-08-11
  * @remarks
  * - 1.1.0: 최신순 게시글을 무한 스크롤로 불러오도록 수정
  * - 1.2.0: 초기 로딩 시 스켈레톤 UI 적용
  * - 1.3.0: useState를 Zustand 스토어로 리팩터링
+ * - 1.4.0: 통합 쿼리 훅(useGetCommunityPostsQuery) 적용 및 정렬 기능 추가
  */
 
 import { useEffect, useState } from "react";
@@ -23,7 +24,7 @@ import FloatingWriteButton from "@/components/communityComponents/FloatingWriteB
 import UploadSuccessModal from "@/components/communityComponents/writeComponents/SuccessModal/UploadSuccessModal";
 
 // --- 훅 & 스토어 ---
-import { useGetThreadLatestQuery } from "@/hooks/community/query/useGetThreadLatestQuery";
+import { useGetCommunityPostsQuery } from "@/hooks/community/query/useGetCommunityPostsQuery"; // 통합 쿼리 훅 임포트
 import { useCommunityStore } from "@/store/community/communityStore";
 
 const Community = () => {
@@ -32,14 +33,23 @@ const Community = () => {
     sortOrder,
     filters,
     isFilterModalOpen,
-    setFilters,
     resetFilters,
-    openFilterModal,
     closeFilterModal,
+    setFilters,
   } = useCommunityStore();
 
+  // --- 디버깅을 위한 useEffect 추가 ---
+  useEffect(() => {
+    console.log("--- API Request Parameters ---", {
+      type: filters.type,
+      subject: filters.subject,
+      orderBy: sortOrder,
+      // 참고: cursor는 useInfiniteQuery 내부에서 pageParam으로 관리되며,
+      // 첫 페이지 요청 시에는 보통 null 또는 undefined입니다.
+    });
+  }, [filters, sortOrder]); // filters나 sortOrder가 변경될 때마다 실행
+
   // --- 데이터 페칭 ---
-  // TODO: 향후 sortOrder에 따라 다른 쿼리를 실행하도록 확장 가능
   const {
     data,
     isLoading,
@@ -47,7 +57,14 @@ const Community = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useGetThreadLatestQuery({ enabled: sortOrder === "createdAt" });
+  } = useGetCommunityPostsQuery(
+    {
+      orderBy: sortOrder, // 스토어의 sortOrder 사용
+      type: filters.type || undefined, // 필터 타입
+      threadSubject: filters.subject,
+    },
+    { enabled: true }, // 항상 활성화 (queryKey 변경 시 재실행)
+  );
 
   // --- 무한 스크롤 로직 ---
   const { ref, inView } = useInView({ threshold: 0 });
@@ -70,6 +87,15 @@ const Community = () => {
     }
   }, [location, navigate]);
 
+  // 1. onApply 핸들러 구현
+  const handleApplyFilters = (newFilters: {
+    type: string | null;
+    subject: number[] | null;
+  }) => {
+    setFilters(newFilters);
+    closeFilterModal();
+  };
+
   // --- 렌더링 데이터 준비 ---
   const posts = data?.pages.flatMap((page) => page.success?.thread || []) || [];
 
@@ -77,7 +103,8 @@ const Community = () => {
   if (error) {
     return (
       <div className="relative flex h-full flex-col bg-white">
-        <Header openModal={openFilterModal} />
+        <Header openModal={useCommunityStore.getState().openFilterModal} />{" "}
+        {/* 스토어 액션 직접 연결 */}
         <div className="flex flex-1 items-center justify-center">
           게시글을 불러오는 중 오류가 발생했습니다: {error.message}
         </div>
@@ -88,7 +115,7 @@ const Community = () => {
 
   return (
     <div className="relative flex h-full flex-col bg-white">
-      <Header openModal={openFilterModal} />
+      <Header openModal={useCommunityStore.getState().openFilterModal} />
 
       <main className="flex-1 overflow-y-auto bg-white pb-20">
         {isLoading ? (
@@ -106,15 +133,14 @@ const Community = () => {
         )}
       </main>
 
+      {/* 2. FilterModal에 새로운 props 전달 */}
       <FilterModal
         isVisible={isFilterModalOpen}
         onClose={closeFilterModal}
-        onApply={closeFilterModal} // 필터는 즉시 적용되므로, 적용 버튼은 모달을 닫기만 함
+        onApply={handleApplyFilters} // 새로 만든 핸들러 연결
         onReset={resetFilters}
-        selectedType={filters.type}
-        selectedTopic={filters.topic}
-        onTypeSelect={(type) => setFilters({ type })}
-        onTopicSelect={(topic) => setFilters({ topic })}
+        selectedType={filters.type} // 초기값 전달용
+        selectedSubject={filters.subject} // 초기값 전달용
       />
 
       <BottomNavbar activeLabel="커뮤니티" />

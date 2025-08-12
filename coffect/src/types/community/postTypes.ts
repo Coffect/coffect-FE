@@ -42,7 +42,7 @@
 // }
 
 /**
- * @interface PostSummary
+ * @interface ThreadSummary
  * @description 게시글 목록에 사용되는 각 게시글의 요약 정보 모델입니다.
  * @param {string} threadId - 게시글 고유 ID (예: "thread-12345")
  * @param {number} userId - 작성자 고유 ID (예: 20230001)
@@ -107,10 +107,10 @@ export interface GetThreadLatestResponse {
 /**************************** 게시글 페이지 필터링 조회 ************************/
 
 export interface PostThreadsFilterRequest {
-  dateCursor?: string;
+  cursor?: number;
   orderBy: string;
-  threadSubject?: number[];
-  type?: string;
+  threadSubject?: number[] | null;
+  type?: string | null;
 }
 
 export interface PostThreadsFilterResponse {
@@ -135,31 +135,29 @@ export interface GetThreadLookUpRequest {
 export interface GetThreadLookUpResponse {
   resultType: string;
   error: null | {
-    errorCode: string; // 에러 코드 (예: "THR-04")
-    reason: string; // 에러 사유 (예: "게시글 ID가 없습니다.")
-    data: null; // 추가 데이터 (없을 경우 null)
+    errorCode: string;
+    reason: string;
+    data: null;
   };
   success: null | {
-    result: {
-      threadId: string; // 게시글 고유 ID
-      threadTitle: string; // 게시글 제목
-      threadBody: string; // 게시글 본문 내용
-      threadShare: number; // 공유 수 (예: 0)
-      createdAt: string; // 게시글 작성일 (ISO 8601 형식)
-      type: string; // 게시글 종류 (예: "아티클", "질문")
-
-      user: {
-        profileImage: string; // 작성자 프로필 이미지 URL
-        name: string; // 작성자 이름
-        userId: number; // 작성자 고유 ID
-      };
-      subjectMatch: Array<{
-        threadSubject: {
-          subjectName: string; // 게시글 주제 이름
-          subjectId: number; // 게시글 주제 고유 ID
-        };
-      }>;
+    threadId: string; // 게시글 고유 ID
+    userId: number; // 작성자 고유 ID
+    type: string; // 게시글 종류 (예: "아티클", "질문")
+    threadTitle: string; // 게시글 제목
+    threadBody: string; // 게시글 본문 내용
+    createdAt: string; // 게시글 작성일 (ISO 8601 형식)
+    threadShare: number; // 게시글 공유 수 (예: 0)
+    user: {
+      dept: string; // 작성자 학과 (예: "컴퓨터공학과")
+      studentId: number; // 작성자 학번 (예: 20230001)
+      profileImage: string; // 작성자 프로필 이미지 URL
+      name: string; // 작성자 이름 (예: "홍길동")
     };
-    likes: number; // 좋아요 수
+    subjects: string[];
+    images: Array<{
+      imageId: string; // 게시글 이미지 ID (예: "image-12345")
+    }>;
+    commentCount: number; // 게시글 댓글 수 (예: 5)
+    likeCount: number; // 게시글 좋아요 수 (예: 10)
   };
 }

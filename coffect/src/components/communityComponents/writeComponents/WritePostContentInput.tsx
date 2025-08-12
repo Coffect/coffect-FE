@@ -22,7 +22,7 @@ import ImageAttachmentModal from "../../shareComponents/ImageAttachmentModal";
 interface WritePostContentInputProps {
   content: string;
   setContent: React.Dispatch<React.SetStateAction<string>>;
-  selectedImageFiles: File[];
+  images: File[];
   handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleImageRemove: (indexToRemove: number) => void;
 }
@@ -30,7 +30,7 @@ interface WritePostContentInputProps {
 const WritePostContentInput: React.FC<WritePostContentInputProps> = ({
   content,
   setContent,
-  selectedImageFiles,
+  images: selectedImageFiles,
   handleImageChange,
   handleImageRemove,
 }) => {
@@ -64,7 +64,7 @@ const WritePostContentInput: React.FC<WritePostContentInputProps> = ({
               />
               <button
                 onClick={() => handleImageRemove(index)}
-                className="absolute right-1 top-1 rounded-full bg-black bg-opacity-50 p-0.5 text-white"
+                className="bg-opacity-50 absolute top-1 right-1 rounded-full bg-black p-0.5 text-white"
               >
                 <X size={16} />
               </button>
@@ -99,7 +99,6 @@ const WritePostContentInput: React.FC<WritePostContentInputProps> = ({
           ref={fileInputRef}
           style={{ display: "none" }}
           accept="image/*"
-          multiple
           onChange={handleImageChange}
         />
       </div>

@@ -36,10 +36,10 @@ export const getThreadLatest = async (
 };
 
 /**
- * @function getPostsFilter
+ * @function postThreadsFilter
  * @description 서버에 필터 처리된 게시글을 요청하는 API 함수입니다.
  */
-export const getPostsFilter = async (
+export const postThreadsFilter = async (
   params: PostThreadsFilterRequest,
 ): Promise<PostThreadsFilterResponse> => {
   const response = await axiosInstance.post<PostThreadsFilterResponse>(
