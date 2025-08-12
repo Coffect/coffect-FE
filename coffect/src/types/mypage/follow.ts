@@ -3,7 +3,7 @@ export type getIsFollowType = {
   error: null | {
     errorCode: string;
     reason: string;
-    data: null;
+    data: null | string;
   };
   success: null | boolean;
 };
@@ -13,7 +13,7 @@ export type postFollowRequestType = {
   error: null | {
     errorCode: string;
     reason: string;
-    data: null;
+    data: null | string;
   };
   success: null | boolean;
 };

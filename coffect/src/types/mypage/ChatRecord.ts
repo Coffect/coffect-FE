@@ -1,21 +1,17 @@
 export type getPastCoffeeChatType = {
-  resultType: "string";
+  resultType: string;
   error: null | {
     errorCode: string;
     reason: string;
-    data: null;
+    data: null | string;
   };
-  success:
-    | null
-    | [
-        {
-          coffectId: number;
-          opponentName: string;
-          color1: string;
-          color2: string;
-          coffeeDate: string;
-        },
-      ];
+  success: null | Array<{
+    coffectId: number;
+    opponentName: string;
+    color1: string;
+    color2: string;
+    coffeeDate: string;
+  }>;
 };
 
 export type getSpecifyCoffeeChatType = {
@@ -23,7 +19,7 @@ export type getSpecifyCoffeeChatType = {
   error: null | {
     errorCode: string;
     reason: string;
-    data: null;
+    data: null | string;
   };
   success: null | {
     opponentName: string;

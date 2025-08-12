@@ -20,8 +20,14 @@ const ChatCard = () => {
     error,
   } = useQuery<getSpecifyCoffeeChatType["success"]>({
     queryKey: ["specifyCoffeeChat", id],
-    queryFn: () => getSpecifyCoffeeChat({ coffectId: Number(id) }),
-    enabled: !!id,
+    queryFn: () => {
+      const chatId = Number(id);
+      if (!Number.isFinite(chatId)) {
+        throw new Error("잘못된 채팅 ID");
+      }
+      return getSpecifyCoffeeChat({ coffectId: chatId });
+    },
+    enabled: typeof id === "string" && /^[0-9]+$/.test(id),
     staleTime: 5 * 60 * 1000, // 5분
     gcTime: 10 * 60 * 1000, // 10분
   });

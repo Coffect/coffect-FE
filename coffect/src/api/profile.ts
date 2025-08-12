@@ -89,9 +89,9 @@ export const patchProfileDetail = async (
 
 export const getProfileSearch = async (id: string): Promise<profileType> => {
   try {
-    const res = await axiosInstance.get<profileType>(
-      `/profile/search?id=${id}`,
-    );
+    const res = await axiosInstance.get<profileType>("/profile/search", {
+      params: { id },
+    });
     return res.data;
   } catch (error) {
     console.error("API 호출 중 에러 발생:", error);

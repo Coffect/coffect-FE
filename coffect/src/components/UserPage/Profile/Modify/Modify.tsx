@@ -180,15 +180,25 @@ const Modify = () => {
     const originalName = userInfo?.name || "";
     const originalIntroduce = userInfo?.introduce || "";
 
-    formData.append("id", userId.trim() === originalId ? "" : userId.trim());
-    formData.append(
-      "name",
-      userName.trim() === originalName ? "" : userName.trim(),
-    );
-    formData.append(
-      "introduce",
-      userIntroduce.trim() === originalIntroduce ? "" : userIntroduce.trim(),
-    );
+    // formData.append("id", userId.trim() === originalId ? "" : userId.trim());
+    // formData.append(
+    //   "name",
+    //   userName.trim() === originalName ? "" : userName.trim(),
+    // );
+    // formData.append(
+    //   "introduce",
+    //   userIntroduce.trim() === originalIntroduce ? "" : userIntroduce.trim(),
+    // );
+
+    if (userId.trim() !== originalId) {
+      formData.append("id", userId.trim());
+    }
+    if (userName.trim() !== originalName) {
+      formData.append("name", userName.trim());
+    }
+    if (userIntroduce.trim() !== originalIntroduce) {
+      formData.append("introduce", userIntroduce.trim());
+    }
 
     // 이미지가 선택된 경우에만 추가
     if (selectedImage) {

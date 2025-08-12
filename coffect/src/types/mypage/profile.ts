@@ -3,12 +3,12 @@ export type profileType = {
   error: null | {
     errorCode: string;
     reason: string;
-    data: null;
+    data: null | string;
   };
   success: null | {
-    threadCount: 0;
-    following: 0;
-    follower: 0;
+    threadCount: number;
+    following: number;
+    follower: number;
     userInfo: {
       userId: number;
       id: string;
@@ -21,23 +21,19 @@ export type profileType = {
         name: string;
       };
     };
-    interest: [
-      {
-        category: {
-          categoryId: 0;
-          categoryName: string;
-          categoryColor: string;
-        };
-      },
-    ];
+    interest: Array<{
+      category: {
+        categoryId: number;
+        categoryName: string;
+        categoryColor: string;
+      };
+    }>;
     specifyProfile: {
-      info: [
-        {
-          answer: string;
-          isMain: boolean;
-          question: string;
-        },
-      ];
+      info: Array<{
+        answer: string;
+        isMain: boolean;
+        question: string;
+      }>;
     };
   };
 };
@@ -47,7 +43,7 @@ export type patchProfileType = {
   error: null | {
     errorCode: string;
     reason: string;
-    data: string;
+    data: null | string;
   };
   success: string;
 };
@@ -57,7 +53,7 @@ export type patchProfileInterestType = {
   error: null | {
     errorCode: string;
     reason: string;
-    data: null;
+    data: null | string;
   };
   success: null | string;
 };
@@ -67,7 +63,7 @@ export type patchProfileDetailType = {
   error: null | {
     errorCode: string;
     reason: string;
-    data: null;
+    data: null | string;
   };
   success: string;
 };

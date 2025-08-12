@@ -109,7 +109,7 @@ function Profile() {
   });
 
   // 현재 로그인한 사용자 ID
-  const currentUserId = myProfileData?.success?.userInfo?.id;
+  const currentUserId: string | unknown = myProfileData?.success?.userInfo?.id;
 
   // URL 파라미터와 현재 사용자 ID 비교하여 마이페이지 여부 판단
   const isMyProfile: boolean = !id || id === currentUserId;
@@ -297,7 +297,11 @@ function Profile() {
               onClick={() => {
                 followMutation.mutate(userInfo?.userId || 0);
               }}
-              disabled={followMutation.isPending}
+              disabled={
+                followMutation.isPending ||
+                !userInfo?.userId ||
+                userInfo?.userId === 0
+              }
             >
               {followMutation.isPending
                 ? "처리중..."

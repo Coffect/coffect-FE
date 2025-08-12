@@ -21,7 +21,7 @@ export const getPastCoffeeChat = async (): Promise<getPastCoffeeChatType> => {
     }
 
     // 다른 에러들도 처리
-    console.error("API 호출 중 에러 발생:", error);
+    console.error("API 호출 중 에러 발생:", errorData);
     throw new Error("커피챗 기록을 불러올 수 없습니다. 다시 시도해주세요.");
   }
 };
@@ -43,7 +43,8 @@ export const getSpecifyCoffeeChat = async ({
     );
     return res.data.success;
   } catch (error) {
-    console.error("API 호출 중 에러 발생:", error);
+    const axiosError = error as AxiosError;
+    console.error("API 호출 중 에러 발생:", axiosError.response?.data);
     throw new Error("커피챗 상세 정보를 불러오는데 실패했습니다.");
   }
 };

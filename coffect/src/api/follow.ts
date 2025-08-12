@@ -6,9 +6,9 @@ import type {
 
 export const getIsFollow = async (userId: number): Promise<getIsFollowType> => {
   try {
-    const res = await axiosInstance.get<getIsFollowType>(
-      `/follow/isfollow?oppentUserId=${userId}`,
-    );
+    const res = await axiosInstance.get<getIsFollowType>("/follow/isfollow", {
+      params: { oppentUserId: userId },
+    });
     return res.data;
   } catch (error) {
     console.error("API 호출 중 에러 발생:", error);
