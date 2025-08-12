@@ -9,7 +9,7 @@ import profileImg from "../../../assets/icon/mypage/profile.png";
 import FeedItem from "../../shareComponents/FeedItem";
 import emptyFeedImg from "../../../assets/icon/mypage/emptyFeed.png";
 
-import DetailIntro from "../MyPage/MyProfile/DetailIntro";
+// import DetailIntro from "../MyPage/MyProfile/DetailIntro";
 import type { ThreadSummary } from "@/types/community/postTypes";
 
 type UserProfileTab = "피드" | "상세 소개";
@@ -207,7 +207,7 @@ function UserProfile() {
           ))}
 
         {/* 상세 소개 탭이 활성화된 경우 상세 소개 컴포넌트 출력 */}
-        {activeTab === "상세 소개" && <DetailIntro />}
+        {/* {activeTab === "상세 소개" && <DetailIntro />} */}
       </div>
     </div>
   );
