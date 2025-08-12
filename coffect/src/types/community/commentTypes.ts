@@ -33,6 +33,8 @@ export interface getCommentResponse {
   success: null | Comment[];
 }
 
+/********************************* 댓글 작성 API Type  *************************************/
+
 /**
  * @interface postCommentRequest
  * @description: 댓글 작성 API 요청 타입
@@ -41,9 +43,9 @@ export interface getCommentResponse {
  * @property {string} threadId - 게시글 ID (댓글을 작성할 게시글의 ID)
  */
 export interface postCommentRequest {
-  quote: number; // 인용 댓글 여부 (0: 일반 댓글, 1: 인용 댓글)
-  commentBody: string; // 댓글 본문
-  threadId: string; // 게시글 ID (댓글을 작성할 게시글의 ID)
+  quote: number;
+  commentBody: string;
+  threadId: string;
 }
 
 /**

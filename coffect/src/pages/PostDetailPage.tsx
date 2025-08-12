@@ -13,11 +13,9 @@
  */
 
 import { usePostDetail } from "@/hooks/community/query/usePostDetail";
-// import { useGetComments } from "@/hooks/community/query/useGetComments"; // 경로 수정
 import PostAuthorInfo from "@/components/shareComponents/post/PostAuthorInfo";
 import PostBody from "@/components/shareComponents/post/PostBody";
 import PostDetailHeader from "@/components/postDetailComponents/PostDetailHeader";
-// import PostDetailComments from "@/components/postDetailComponents/PostDetailComments";
 import CommentInput from "@/components/communityComponents/comment/CommentInput";
 import { useGetComments } from "@/hooks/community/query/useGetComments";
 import PostDetailComments from "@/components/postDetailComponents/PostDetailComments";
@@ -45,7 +43,7 @@ const PostDetail = () => {
   // 데이터 로딩 중일 때 표시할 UI (게시글 또는 댓글 중 하나라도 로딩 중일 때)
   if (isPostLoading || isCommentsLoading) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-screen items-center justify-center bg-white">
         게시글을 불러오는 중입니다...
       </div>
     );

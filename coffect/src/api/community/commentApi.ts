@@ -61,12 +61,9 @@ export const addComment = async (
       commentData,
     );
 
-    return response.data; // 이 데이터에는 성공 여부(data.resultType), 성공 데이터(data.success) 또는 에러 정보(data.error)가 포함됩니다.
+    return response.data;
   } catch (error) {
-    // 네트워크 오류 등 axios 요청 과정에서 발생한 에러를 처리합니다.
     console.error("Error adding comment:", error);
-    // 여기서 잡힌 에러를 다시 throw하여, 이 함수를 호출한 상위 로직(예: react-query의 mutation)에서
-    // 에러 상태를 인지하고 UI에 피드백을 주거나 다른 처리를 할 수 있도록 합니다.
     throw error;
   }
 };
