@@ -60,8 +60,7 @@ export const getRelativeTime = (date: Date | string): string => {
       day: "numeric",
     });
   }
-<<<<<<< HEAD
-}
+};
 
 /**
  * @author 흥부/강신욱
@@ -112,6 +111,3 @@ export function formatAmPmTo24Hour(timeString: string): string {
   const hh = hour.toString().padStart(2, "0");
   return `${hh}:${minute}`;
 }
-=======
-};
->>>>>>> 552b968a2bb03d7cc903cac53139a56fd74252fb
