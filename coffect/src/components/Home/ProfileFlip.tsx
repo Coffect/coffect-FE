@@ -10,8 +10,8 @@
 
 import React, { useEffect, useRef, useState } from "react"; // 제안 완료 후 스킵 처리를 위해 useEffect, useRef 추가
 import { useNavigate } from "react-router-dom";
-import CoffeeSuggestModal from "./CoffeeSuggestModal";
-import CoffeeSuggestCompleteModal from "./CoffeeSuggestCompleteModal";
+import CoffeeSuggestModal from "../shareComponents/CoffeeSuggestModal";
+import CoffeeSuggestCompleteModal from "../shareComponents/CoffeeSuggestCompleteModal";
 import CardLeftImage from "../../assets/icon/home/CardLeft.png";
 import CardMidImage from "../../assets/icon/home/CardMid.png";
 import CardRightUpImage from "@/assets/icon/home/CardRightUp.png";
