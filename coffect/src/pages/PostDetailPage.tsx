@@ -13,33 +13,37 @@
  */
 
 import { usePostDetail } from "@/hooks/community/query/usePostDetail";
-import { useGetComments } from "@/hooks/community/query/useGetComments"; // 경로 수정
+// import { useGetComments } from "@/hooks/community/query/useGetComments"; // 경로 수정
 import PostAuthorInfo from "@/components/shareComponents/post/PostAuthorInfo";
 import PostBody from "@/components/shareComponents/post/PostBody";
 import PostDetailHeader from "@/components/postDetailComponents/PostDetailHeader";
-import PostDetailComments from "@/components/postDetailComponents/PostDetailComments";
+// import PostDetailComments from "@/components/postDetailComponents/PostDetailComments";
 import CommentInput from "@/components/communityComponents/comment/CommentInput";
+import { useGetComments } from "@/hooks/community/query/useGetComments";
+import PostDetailComments from "@/components/postDetailComponents/PostDetailComments";
 
 const PostDetail = () => {
   // 1. 게시글 상세 정보 로딩: usePostDetail 훅을 호출합니다.
   const {
     post,
-    postId,
+    postId: postId,
     timeAgo,
     isLoading: isPostLoading,
     error: postError,
   } = usePostDetail();
 
-  // 2. 댓글 목록 로딩: useGetComments 훅을 호출합니다.
-  //    게시글 데이터와 댓글 데이터는 독립적으로 로딩 및 에러 처리가 됩니다.
+  console.log("댓글 조회를 위해 전달하는 postId:", postId);
+
   const {
-    data: commentList = [], // 데이터가 없을 경우 기본값으로 빈 배열 사용
-    isLoading: areCommentsLoading,
+    comments,
+    postId: commentPostId,
+    isLoading: isCommentsLoading,
     error: commentsError,
-  } = useGetComments(postId || ""); // postId가 없을 경우 빈 문자열을 전달하여 쿼리가 실행되지 않도록 함
+  } = useGetComments();
+  console.log("댓글 조회를 위해 전달하는 postId:", commentPostId);
 
   // 데이터 로딩 중일 때 표시할 UI (게시글 또는 댓글 중 하나라도 로딩 중일 때)
-  if (isPostLoading || areCommentsLoading) {
+  if (isPostLoading || isCommentsLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
         게시글을 불러오는 중입니다...
@@ -53,6 +57,7 @@ const PostDetail = () => {
       <div className="flex h-screen items-center justify-center text-red-500">
         게시글을 불러오는 데 실패했습니다:{" "}
         {postError?.message || commentsError?.message}
+        {postError?.message}
       </div>
     );
   }
@@ -72,25 +77,36 @@ const PostDetail = () => {
 
       <main className="flex-1 overflow-y-auto pb-19">
         <PostAuthorInfo
-          user={{ name: post.user.name, profileImage: post.user.profileImage }}
+          user={{
+            name: post.user.name,
+            profileImage: post.user.profileImage,
+            dept: post.user.dept,
+            studentId: post.user.studentId,
+          }}
           timeAgo={timeAgo}
         />
         <PostBody
           post={{
             threadId: post.threadId,
-            userId: post.user.userId,
             threadTitle: post.threadTitle,
             threadBody: post.threadBody,
-            createdAt: post.createdAt,
-            threadShare: post.threadShare,
-            name: post.user.name,
-            profileImage: post.user.profileImage,
-            likeCount: post.like,
+            images: post.images.map((img) => img.imageId),
+            type: post.type,
+            subjects: post.subjects,
+            likeCount: post.likeCount,
+            commentCount: post.commentCount,
           }}
           isDetailView={true}
         />
 
-        <PostDetailComments commentList={commentList} />
+        {comments && comments.length > 0 ? (
+          <PostDetailComments commentList={comments} />
+        ) : (
+          <div className="py-10 text-center text-[var(--gray-50)]">
+            <p>현재 작성된 댓글이 없습니다!</p>
+            <p>첫 댓글을 작성해보세요 !</p>
+          </div>
+        )}
       </main>
 
       <div className="fixed bottom-0 left-1/2 w-full max-w-[430px] -translate-x-1/2 border-t border-gray-200 bg-white p-3 pb-4">

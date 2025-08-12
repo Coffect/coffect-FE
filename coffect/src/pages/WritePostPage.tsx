@@ -20,7 +20,6 @@ import WritePostContentInput from "@/components/communityComponents/writeCompone
 import WritePostTopicSelector from "@/components/communityComponents/writeComponents/WritePostTopicSelector";
 
 const WritePostPage: React.FC = () => {
-  // `src/hooks/community/writePost/useWritePost` 에서 관련 훅들을 가져옴.
   const {
     postType,
     handlePostTypeSelect,
@@ -37,16 +36,6 @@ const WritePostPage: React.FC = () => {
     handleBackClick,
     handleUpload,
   } = useWritePost();
-
-  // TODO: error, isSuccess 상태를 활용하여 사용자에게 피드백 (예: 토스트 메시지, 모달) 제공 로직 추가
-  // useEffect(() => {
-  //   if (isSuccess) {
-  //     // 성공 메시지 표시
-  //   }
-  //   if (error) {
-  //     // 에러 메시지 표시
-  //   }
-  // }, [isSuccess, error]);
 
   return (
     <div className="flex h-screen flex-col bg-white">

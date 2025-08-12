@@ -13,8 +13,6 @@ import { axiosInstance } from "@/api/axiosInstance"; // axios 인스턴스를 �
 import type {
   PostUploadRequest,
   PostUploadResponse,
-  // PostImageUploadRequest,
-  PostImageUploadResponse,
 } from "@/types/community/writePostTypes";
 
 /**
@@ -25,35 +23,6 @@ import type {
  * @returns {Promise<PostImageUploadResponse>} 이미지 업로드 응답을 담은 Promise를 반환합니다.
  * @throws API 요청이 실패하거나 응답이 'success'가 아닐 경우 에러를 발생시킵니다.
  */
-export const uploadPostImage = async (
-  imageFile: File,
-): Promise<PostImageUploadResponse> => {
-  try {
-    const formData = new FormData();
-    formData.append("images", imageFile); // 'images'는 백엔드에서 기대하는 필드명입니다.
-
-    const response = await axiosInstance.post<PostImageUploadResponse>(
-      "/thread/addImage", // 이미지 업로드 엔드포인트
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data", // multipart/form-data 헤더 설정
-        },
-      },
-    );
-
-    if (response.data.resultType === "success") {
-      return response.data; // PostImageUploadResponse 전체를 반환합니다.
-    } else {
-      throw new Error(
-        response.data.error?.reason || "이미지 업로드 API 통신에 실패했습니다.",
-      );
-    }
-  } catch (error) {
-    console.error("Error uploading image:", error);
-    throw error;
-  }
-};
 
 /**
  * @function uploadPost

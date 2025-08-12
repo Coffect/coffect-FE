@@ -11,8 +11,8 @@
 
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { useWriteForm } from "./useWriteForm";
-import { usePostCreation } from "./usePostCreation";
+import { useWritePostForm } from "./useWritePostForm";
+import { postSubjectOptions } from "@/components/communityComponents/ChipFilterComponent/filterData";
 
 /**
  * @function useWritePost
@@ -26,10 +26,10 @@ export const useWritePost = () => {
 
   // 폼 상태 관리 훅 사용
   const {
-    postType,
-    setPostType,
-    topic,
-    setTopic,
+    type: postType,
+    setType: setPostType,
+    subject: topic,
+    setSubject: setTopic,
     title,
     setTitle,
     content,
@@ -42,15 +42,7 @@ export const useWritePost = () => {
     handleImageChange,
     handleImageRemove,
     resetForm,
-  } = useWriteForm();
-
-  // 게시글 생성 로직 훅 사용
-  const {
-    handleUpload: createPostAndImages,
-    isLoading,
-    error,
-    isSuccess,
-  } = usePostCreation();
+  } = useWritePostForm();
 
   /**
    * @description 전체 게시글 작성 상태를 초기화하고 커뮤니티 페이지로 이동합니다.
@@ -79,15 +71,14 @@ export const useWritePost = () => {
     }
 
     try {
-      await createPostAndImages(
-        {
-          threadSubject: [1],
-          threadBody: content,
-          threadTitle: title,
-          type: postType,
-        },
-        selectedImageFiles,
-      );
+      const subjectId = postSubjectOptions.find(
+        (option) => option.value === topic,
+      )?.id;
+
+      if (subjectId === undefined) {
+        console.error("유효하지 않은 주제입니다.");
+        return;
+      }
 
       resetAll();
       navigate("/community", { state: { showSuccessModal: true } });
@@ -112,9 +103,7 @@ export const useWritePost = () => {
     handlePostTypeSelect,
     handleImageChange,
     handleImageRemove,
-    isLoading,
-    error,
-    isSuccess,
+
     handleBackClick,
     handleUpload,
   };

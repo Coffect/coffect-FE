@@ -39,7 +39,7 @@ export const usePostDetail = () => {
      * - `select`를 통해 반환된 데이터가 이전과 동일하면 컴포넌트 리렌더링을 방지합니다.
      */
     select: (data: GetThreadLookUpResponse) => {
-      const post = data.success?.result || null;
+      const post = data.success || null;
 
       // 게시글이 없으면 null과 빈 문자열을 반환합니다.
       if (!post) {

@@ -12,7 +12,6 @@ import CommentItem from "./CommentItem";
 /**
  * @interface CommentListProps
  * @description: CommentList 컴포넌트에 전달되는 props 타입 정의
- * @property {Comment[]} commentList - 댓글 데이터 배열
  */
 interface CommentListProps {
   commentList: Comment[];

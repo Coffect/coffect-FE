@@ -11,8 +11,8 @@ import React from "react";
  * @property {string} topic - 게시글의 주제 태그 (예: 프론트엔드, 백엔드 등)
  */
 interface PostTagsProps {
-  type: string | null;
-  topic: string | null;
+  type: string | undefined;
+  topic: string[] | undefined;
 }
 
 const PostTags: React.FC<PostTagsProps> = ({ type, topic }) => {
@@ -20,9 +20,8 @@ const PostTags: React.FC<PostTagsProps> = ({ type, topic }) => {
     "inline-flex items-center justify-center rounded-lg border border-[var(--gray-5)] bg-[var(--gray-5)] px-3 py-1.5 text-[14px] text-[var(--gray-70)]";
   return (
     <div className="my-3 flex gap-1.5">
-      {/* 게시글 종류 태그 */}
       <span className={`${TagStyle}`}>{type}</span>
-      {/* 게시글 주제 태그 */}
+
       <span className={`${TagStyle}`}>{topic}</span>
     </div>
   );
