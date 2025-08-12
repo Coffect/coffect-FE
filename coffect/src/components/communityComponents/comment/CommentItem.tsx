@@ -27,7 +27,7 @@ const CommentItem = ({ comment }: CommentItemProps) => {
         alt={comment.user.name}
         className="h-10 w-10 rounded-full object-cover"
       />
-      <div className="flex flex-grow flex-col justify-center gap-1">
+      <div className="flex min-w-0 flex-grow flex-col justify-center gap-1">
         <div className="flex items-center gap-1.5">
           <span className="font-semibold text-[var(--gray-90)]">
             {comment.user.name}
@@ -37,10 +37,9 @@ const CommentItem = ({ comment }: CommentItemProps) => {
             {String(comment.user.studentId).substring(2, 4)}학번
           </span>
         </div>
-        <p className="font-md text-[var(--gray-90)]">{comment.commentBody}</p>
-        {/* <span className="text-xs text-[var(--gray-40)]">
-          {formatTimeAgo(comment.createdAtD)}
-        </span> */}
+        <p className="font-md break-words whitespace-pre-wrap text-[var(--gray-90)]">
+          {comment.commentBody}
+        </p>
       </div>
     </div>
   );
