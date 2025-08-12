@@ -133,14 +133,13 @@ const Community = () => {
         )}
       </main>
 
-      {/* 2. FilterModal에 새로운 props 전달 */}
       <FilterModal
         isVisible={isFilterModalOpen}
         onClose={closeFilterModal}
-        onApply={handleApplyFilters} // 새로 만든 핸들러 연결
+        onApply={handleApplyFilters}
         onReset={resetFilters}
-        selectedType={filters.type} // 초기값 전달용
-        selectedSubject={filters.subject} // 초기값 전달용
+        selectedType={filters.type}
+        selectedSubject={filters.subject}
       />
 
       <BottomNavbar activeLabel="커뮤니티" />

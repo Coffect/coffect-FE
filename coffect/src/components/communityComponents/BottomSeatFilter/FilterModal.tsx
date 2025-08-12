@@ -25,12 +25,10 @@ const FilterModal = ({
   selectedType,
   selectedSubject,
 }: FilterModalProps) => {
-  // 1. 모달 내부에서 사용할 임시 상태 추가
   const [tempSelectedType, setTempSelectedType] = useState(selectedType);
   const [tempSelectedSubject, setTempSelectedSubject] =
     useState(selectedSubject);
 
-  // 2. 모달이 열릴 때마다 부모의 상태로 임시 상태를 초기화
   useEffect(() => {
     if (isVisible) {
       setTempSelectedType(selectedType);
@@ -45,7 +43,6 @@ const FilterModal = ({
     });
   };
 
-  // 3. 적용하기 버튼 활성화 조건
   const isApplyDisabled = !tempSelectedType || !tempSelectedSubject;
 
   if (!isVisible) return null;
@@ -78,7 +75,7 @@ const FilterModal = ({
                   최대 1개
                 </span>
               </h3>
-              {/* 4. ChipGroup이 임시 상태를 사용하도록 변경 */}
+
               <ChipGroup
                 options={postTypeOptions}
                 selectedOption={tempSelectedType}
@@ -102,7 +99,6 @@ const FilterModal = ({
         </div>
         <div className="w-full flex-shrink-0 p-4">
           <div className="flex justify-center gap-2">
-            {/* 5. 적용하기 버튼 로직 수정 */}
             <button
               className={`flex-1 rounded-md px-12 py-4 ${
                 !isApplyDisabled
