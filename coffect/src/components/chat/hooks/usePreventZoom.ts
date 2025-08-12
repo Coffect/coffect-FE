@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 /*
  * author : 앨리스/박은지
+=======
+// author : 앨리스/박은지
+/*
+>>>>>>> 552b968a2bb03d7cc903cac53139a56fd74252fb
  * description : 터치 줌 방지
  */
 

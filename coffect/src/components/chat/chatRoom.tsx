@@ -4,6 +4,7 @@
  * 채팅방 내부 메시지 영역, 팝업 모달 연결, 일정 정보 표시
  */
 
+<<<<<<< HEAD
 import { useState, useRef, type MouseEvent, useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ChevronLeft, ChevronDown } from "lucide-react";
@@ -22,17 +23,27 @@ import ExampleProfile from "../../assets/icon/chat/ExampleProfile.png";
 import { ChatInterestSection } from "./ChatInterestSection";
 import { ChatSystemMessage } from "./ChatSystemMessage";
 import { useChatUser } from "./hooks/useChatUser";
+=======
+import usePreventZoom from "./hooks/usePreventZoom";
+import useModal from "./hooks/useModal";
+import RequestModal from "./RequestModal";
+import ChatInputBox from "./ChatInputBox";
+import ChatHeader from "./ChatHeader";
+import ChatInterestsSection from "./ChatInterestsSection";
+import ChatMessageArea from "./ChatMessageArea";
+import { useChatRoom } from "./hooks/useChatRoom";
+>>>>>>> 552b968a2bb03d7cc903cac53139a56fd74252fb
 
 const ChatRoom = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
   usePreventZoom();
+
   const {
     isOpen: isModalOpen,
     open: openModal,
     close: closeModal,
   } = useModal();
 
+<<<<<<< HEAD
   // 일정 정보 (전달받은 일정이 있으면 표시)
   const schedule = useMemo<Schedule | null>(() => {
     const s = location.state?.schedule;
@@ -118,9 +129,13 @@ const ChatRoom = () => {
   }, []);
 
   const handleSend = useHandleSend(
+=======
+  const {
+>>>>>>> 552b968a2bb03d7cc903cac53139a56fd74252fb
     messages,
-    setMessages,
+    inputValue,
     setInputValue,
+<<<<<<< HEAD
     getCurrentTime,
   );
 
@@ -145,6 +160,13 @@ const ChatRoom = () => {
   const user = useChatUser();
 
   const [showInterests, setShowInterests] = useState(true);
+=======
+    schedule,
+    user,
+    handleSend,
+    handleImageSend,
+  } = useChatRoom();
+>>>>>>> 552b968a2bb03d7cc903cac53139a56fd74252fb
 
   const handleToggleInterests = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -155,6 +177,7 @@ const ChatRoom = () => {
   return (
     <div className="flex h-full w-full flex-col bg-[var(--white)]">
       {/* Header */}
+<<<<<<< HEAD
       <div className="flex items-center border-b border-[var(--gray-10)] bg-[var(--white)] px-4 pt-6 pb-3">
         <button
           type="button"
@@ -191,13 +214,26 @@ const ChatRoom = () => {
         handleToggleInterests={handleToggleInterests}
         openModal={openModal}
       />
+=======
+      <ChatHeader username={user.username} userId={user.id} />
+
+      {/* 관심 주제 & 버튼 */}
+      <ChatInterestsSection
+        interests={user.interests}
+        schedule={schedule}
+        onOpenModal={openModal}
+      />
+
+>>>>>>> 552b968a2bb03d7cc903cac53139a56fd74252fb
       {/* 팝업 모달 */}
       <RequestModal
         isOpen={isModalOpen}
         onClose={closeModal}
         username={user.username}
       />
+
       {/* 메시지 영역 */}
+<<<<<<< HEAD
       <div className="flex-1 overflow-y-auto bg-[var(--gray-5)] px-4 py-2">
         {/* 시스템 메시지 */}
         <ChatSystemMessage user={user} />
@@ -219,6 +255,10 @@ const ChatRoom = () => {
         {/* 스크롤 타겟 */}
         <div ref={messagesEndRef} />
       </div>
+=======
+      <ChatMessageArea messages={messages} />
+
+>>>>>>> 552b968a2bb03d7cc903cac53139a56fd74252fb
       {/* 입력창 */}
       <ChatInputBox
         inputValue={inputValue}

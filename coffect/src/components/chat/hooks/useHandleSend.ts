@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 /*
  * author : 앨리스/박은지
  * description : 메시지 전송 핸들러
  * 메시지 전송 시 현재 시간 및 메시지 내용 추가
  */
+=======
+// author : 앨리스/박은지
+/*
+ * description : 메시지 전송 핸들러
+ */
+// 메시지 전송 시 현재 시간 및 메시지 내용 추가
+>>>>>>> 552b968a2bb03d7cc903cac53139a56fd74252fb
 
 import type { Dispatch, SetStateAction } from "react";
 import type { Message } from "../../../types/chat";

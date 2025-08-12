@@ -4,13 +4,12 @@
  * 날짜, 시간, 장소, 약속 전 알림 설정 입력 필드 및 완료/취소 버튼
  */
 
-import React, { useState } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { Calendar } from "lucide-react";
-import { Clock } from "lucide-react";
+import React from "react";
 import "../../assets/styles/chat-calendar.css";
-import TimeScrollModal from "./TimeScrollModal";
+import { useScheduleForm } from "./hooks/useScheduleForm";
+import DatePickerSection from "./DatePickerSection";
+import TimePickerSection from "./TimePickerSection";
+import PlaceInputSection from "./PlaceInputSection";
 
 export interface ScheduleFormValues {
   date: Date | string | undefined;
@@ -28,17 +27,6 @@ export interface ScheduleFormProps {
   cancelLabel?: string;
 }
 
-// 날짜를 한국어 형식으로 포맷팅하는 함수
-const formatDateToKorean = (date: Date | string | undefined): string => {
-  if (!date) return "";
-  const dateObj = date instanceof Date ? date : new Date(date);
-  if (isNaN(dateObj.getTime())) return "";
-  const year = dateObj.getFullYear();
-  const month = dateObj.getMonth() + 1;
-  const day = dateObj.getDate();
-  return `${year}년 ${month}월 ${day}일`;
-};
-
 const ScheduleForm: React.FC<ScheduleFormProps> = ({
   values,
   onChange,
@@ -47,27 +35,11 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
   completeLabel = "완료",
   cancelLabel = "취소",
 }) => {
-  const [showCalendarPicker, setShowCalendarPicker] = useState(false);
-  const [showTimeModal, setShowTimeModal] = useState(false);
-  const isCompleteEnabled = Boolean(
-    values.date && values.time && values.place.trim().length > 0,
-  );
-
-  // 시간 값을 파싱해서 TimeScrollModal에 넘길 초기값 생성
-  let initialTime = undefined;
-  if (values.time) {
-    const match = values.time.match(/(\d{1,2}):(\d{2})\s?(AM|PM)?/i);
-    if (match) {
-      initialTime = {
-        hour: Number(match[1]),
-        minute: match[2],
-        ampm: match[3] || "AM",
-      };
-    }
-  }
+  const { isCompleteEnabled } = useScheduleForm(values);
 
   return (
     <div className="flex h-full flex-col pb-2">
+<<<<<<< HEAD
       {/* 날짜 선택 */}
       <div className="mb-8">
         <div className="mt-5 mb-2 text-[18px] font-semibold text-[var(--gray-80)]">
@@ -169,6 +141,11 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
           placeholder="장소를 입력해주세요"
         />
       </div>
+=======
+      <DatePickerSection values={values} onChange={onChange} />
+      <TimePickerSection values={values} onChange={onChange} />
+      <PlaceInputSection values={values} onChange={onChange} />
+>>>>>>> 552b968a2bb03d7cc903cac53139a56fd74252fb
       {/* 약속 전 알림 */}
       <div className="text-[20px] font-semibold text-[var(--gray-90)]">
         약속 전 알림 설정
