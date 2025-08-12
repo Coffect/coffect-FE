@@ -1,6 +1,10 @@
 /*
  * author : 앨리스/박은지
+<<<<<<< HEAD
  * description : 채팅방 내부 일정 삭제 모달
+=======
+ * description : [커피챗 일정 삭제] 모달 컴포넌트
+>>>>>>> 552b968a2bb03d7cc903cac53139a56fd74252fb
  */
 
 import React from "react";

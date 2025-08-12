@@ -1,17 +1,23 @@
 /*
 author : 재하
-description : 마이페이지 내 프로필 및 피드/상세소개 탭을 출력하는 컴포넌트입니다.
+description : 마이페이지와 다른 사용자 페이지를 모두 처리합니다.
 */
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import DetailIntro from "./DetailIntro";
-import backIcon from "../../../../assets/icon/mypage/back.png";
-import profileImg from "../../../../assets/icon/mypage/profile.png";
-import FeedItem from "../../../shareComponents/FeedItem";
-import type { Post } from "../../../../types/community";
-import emptyFeedImg from "../../../../assets/icon/mypage/emptyFeed.png";
+import { useNavigate, useParams } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getProfile, getProfileSearch } from "@/api/profile";
+import { getIsFollow, postFollowRequest } from "@/api/follow";
+import type { profileType } from "@/types/mypage/profile";
+import type { getIsFollowType } from "@/types/mypage/follow";
+import backIcon from "@/assets/icon/mypage/back.png";
+import profileImg from "@/assets/icon/mypage/profile.png";
+import FeedItem from "@/components/shareComponents/FeedItem";
+import type { Post } from "@/types/community";
+import emptyFeedImg from "@/assets/icon/mypage/emptyFeed.png";
+import DetailIntroKeyword from "./DetailIntroKeyword";
+import DetailIntroProfile from "./DetailIntroProfile";
 
-type MyProfileTab = "피드" | "상세 소개";
+type ProfileTab = "피드" | "상세 소개";
 
 const myDummyPosts: Post[] = [
   {
@@ -73,18 +79,82 @@ const myDummyPosts: Post[] = [
   },
 ];
 
-function MyProfile() {
+function Profile() {
   /*
-  사용자의 마이페이지 프로필 화면을 렌더링하며, 탭에 따라 피드 또는 상세 소개를 보여줍니다.
+  통합된 프로필 컴포넌트 - URL 파라미터에 따라 마이페이지 또는 다른 사용자 페이지를 렌더링합니다.
   */
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   // 현재 활성화된 탭 상태 ("피드" 또는 "상세 소개")
-  const [activeTab, setActiveTab] = useState<MyProfileTab>("피드");
+  const [activeTab, setActiveTab] = useState<ProfileTab>("피드");
   // 텍스트 확장 상태
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   // 텍스트가 2줄 이상인지 확인하는 상태
   const [isOverflowing, setIsOverflowing] = useState<boolean>(false);
+  // 텍스트 참조
   const textRef = useRef<HTMLParagraphElement>(null);
+  // 팔로우 상태 (다른 사용자 페이지에서만 사용)
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
+
+  // URL 파라미터에 따라 마이페이지인지 다른 사용자 페이지인지 판단
+  const { id = "" } = useParams<{ id: string }>();
+
+  // API 호출 - 현재 로그인한 사용자 정보 가져오기
+  const { data: myProfileData } = useQuery<profileType>({
+    queryKey: ["profile"],
+    queryFn: getProfile,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  // 현재 로그인한 사용자 ID
+  const currentUserId: string | unknown = myProfileData?.success?.userInfo?.id;
+
+  // URL 파라미터와 현재 사용자 ID 비교하여 마이페이지 여부 판단
+  const isMyProfile: boolean = !id || id === currentUserId;
+
+  // API 호출 - 메인 프로필 데이터 호출 (마이페이지면 getProfile, 아니면 getProfileSearch)
+  const { data: profileData, isLoading } = useQuery<profileType>({
+    queryKey: isMyProfile ? ["profile"] : ["profileSearch", id],
+    queryFn: isMyProfile ? getProfile : () => getProfileSearch(id!),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    enabled: isMyProfile || !!id, // 마이페이지이거나 id가 있을 때만 실행
+  });
+  // 프로필 데이터
+  const profile = profileData?.success;
+  const userInfo = profile?.userInfo;
+
+  // 팔로잉 상태 확인 API 호출 (다른 사용자 페이지에서만)
+  const { data: followData } = useQuery<getIsFollowType>({
+    queryKey: ["isFollow", id],
+    queryFn: () => getIsFollow(userInfo?.userId || 0),
+    enabled: !isMyProfile && userInfo?.userId !== undefined,
+    staleTime: 5 * 60 * 1000, // 5분
+    gcTime: 10 * 60 * 1000, // 10분
+  });
+
+  // 팔로잉 상태 설정 (API 응답이 있을 때)
+  useEffect(() => {
+    if (followData?.success !== null && followData?.success !== undefined) {
+      setIsFollowing(followData.success);
+    }
+  }, [followData]);
+
+  // 팔로우 요청 mutation
+  const followMutation = useMutation({
+    mutationFn: (userId: number) => postFollowRequest(userId),
+    onSuccess: () => {
+      // 성공 시 팔로우 상태 무효화하여 다시 불러오기
+      queryClient.invalidateQueries({ queryKey: ["isFollow", id] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["profileSearch", id] });
+    },
+    onError: (error) => {
+      console.error("팔로우 요청 실패:", error);
+    },
+  });
 
   // 텍스트가 2줄 이상인지 확인하는 함수
   useEffect(() => {
@@ -106,18 +176,24 @@ function MyProfile() {
     };
 
     checkOverflow();
-    window.addEventListener("resize", checkOverflow);
+    window.addEventListener("resize", checkOverflow); // 이 부분을 react로 할 수는 없나?
 
     return () => window.removeEventListener("resize", checkOverflow);
   }, []);
 
-  function formatCount(num: number): string {
+  // 작성 게시글, 팔로우, 팔로잉 숫자 포맷팅 함수
+  const formatCount: (num: number) => string = (num) => {
     if (num >= 1_000_000_000_000)
       return Math.floor(num / 1_000_000_000_000) + "T+";
     if (num >= 1_000_000_000) return Math.floor(num / 1_000_000_000) + "B+";
     if (num >= 1_000_000) return Math.floor(num / 1_000_000) + "M+";
     if (num >= 1_000) return Math.floor(num / 1_000) + "K+";
     return num.toString();
+  };
+
+  // 로딩 중일 때 처리
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
   return (
@@ -126,12 +202,16 @@ function MyProfile() {
       <div className="flex items-center justify-between px-4 py-3">
         <button
           className="pr-9 text-left text-3xl"
-          onClick={() => navigate("/mypage")}
+          onClick={
+            !isMyProfile ? () => navigate(-1) : () => navigate("/mypage")
+          }
         >
           <img src={backIcon} className="h-6 w-6" />
         </button>
         <div className="flex-1 items-center justify-center pr-15 text-center">
-          <span className="text-lg font-semibold">jeha0714</span>
+          <span className="text-lg font-semibold">
+            {userInfo?.id || "사용자 아이디"}
+          </span>
         </div>
       </div>
 
@@ -140,27 +220,27 @@ function MyProfile() {
         <div className="mb-4 flex flex-row items-center justify-center">
           {/* Profile Image: 사용자 프로필 이미지 자리 */}
           <img
-            src={profileImg}
-            className="flex h-25 w-25 overflow-hidden rounded-full border-[1.5px] border-[var(--gray-10)]"
+            src={userInfo?.profileImage || profileImg}
+            className="flex h-25 w-25 overflow-hidden rounded-full border-[1.5px] border-[var(--gray-10)] object-cover"
           />
 
           {/* Stats: 포스트/팔로워/팔로잉 수 */}
           <div className="flex flex-1 items-center justify-evenly">
             <div className="text-center">
               <div className="text-lg font-semibold text-[var(--gray-70)]">
-                {formatCount(42)}
+                {formatCount(profile?.threadCount || 0)}
               </div>
               <div className="text-sm text-[var(--gray-50)]">포스트</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-semibold text-[var(--gray-70)]">
-                {formatCount(999456)}
+                {formatCount(profile?.follower || 0)}
               </div>
               <div className="text-sm text-[var(--gray-50)]">팔로워</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-semibold text-[var(--gray-70)]">
-                {formatCount(999456)}
+                {formatCount(profile?.following || 0)}
               </div>
               <div className="text-sm text-[var(--gray-50)]">팔로잉</div>
             </div>
@@ -169,12 +249,16 @@ function MyProfile() {
 
         {/* Profile Info: 사용자 이름, 전공, 학번, 자기소개 */}
         <div className="mb-4 ml-2">
-          <p className="text-xl font-bold text-[var(--gray-90)]">재하</p>
-          <div className="mb-1">
+          <p className="text-xl font-bold text-[var(--gray-90)]">
+            {userInfo?.name || "사용자 이름"}
+          </p>
+          <div className="mb-1 flex flex-wrap gap-1">
             <span className="text-sm text-[var(--gray-40)]">
-              컴퓨터컴퓨터과학전공{" "}
+              {userInfo?.dept || "전공"}
             </span>
-            <span className="text-sm text-[var(--gray-40)]">19학번</span>
+            <span className="text-sm text-[var(--gray-40)]">
+              {userInfo?.studentId ? `${userInfo.studentId}학번` : "학번"}
+            </span>
           </div>
           <div className="relative">
             <p
@@ -183,12 +267,7 @@ function MyProfile() {
                 !isExpanded && isOverflowing ? "line-clamp-2" : ""
               }`}
             >
-              계절이 지나가는 하늘에는 가을로 가득 차 있습니다. 나는 아무 걱정도
-              없이 가을 속의 별들을 다 헤일 듯합니다. 가슴속에 하나둘 새겨지는
-              별을 이제 다 못 헤는 것은 쉬이 아침이 오는 까닭이요, 내일 밤이
-              남은 까닭이요, 아직 나의 청춘이 다하지 않은 까닭입니다. 별 하나에
-              추억과 별 하나에 사랑과 별 하나에 쓸쓸함과 별 하나에 동경과 별
-              하나에 시와 별 하나에 어머니, 어머니,
+              {userInfo?.introduce || "자기소개가 없습니다."}
             </p>
             {isOverflowing && (
               <button
@@ -201,13 +280,40 @@ function MyProfile() {
           </div>
         </div>
 
-        {/* Profile Edit Button: 프로필 수정 페이지로 이동 */}
-        <button
-          className="text-md mb-3.5 w-full rounded-lg bg-[var(--gray-60)] py-3 text-white"
-          onClick={() => navigate("/mypage/myprofile/modify")}
-        >
-          프로필 수정
-        </button>
+        {/* Profile Buttons: 마이페이지와 다른 사용자 페이지에서 다른 버튼 표시 */}
+        {isMyProfile ? (
+          // 마이페이지: 프로필 수정 버튼
+          <button
+            className="text-md mb-3.5 w-full rounded-lg bg-[var(--gray-60)] py-3 text-white"
+            onClick={() => navigate("/mypage/myprofile/modify")}
+          >
+            프로필 수정
+          </button>
+        ) : (
+          // 다른 사용자 페이지: 팔로우/팔로잉, 채팅하기 버튼
+          <div className="mb-3.5 flex w-full gap-x-2">
+            <button
+              className={`text-md w-full rounded-lg py-3 text-white ${isFollowing ? "bg-[var(--orange-500)]" : "bg-[var(--gray-60)]"}`}
+              onClick={() => {
+                followMutation.mutate(userInfo?.userId || 0);
+              }}
+              disabled={
+                followMutation.isPending ||
+                !userInfo?.userId ||
+                userInfo?.userId === 0
+              }
+            >
+              {followMutation.isPending
+                ? "처리중..."
+                : isFollowing
+                  ? "팔로잉"
+                  : "팔로우"}
+            </button>
+            <button className="text-md w-full rounded-lg border border-[var(--gray-30)] bg-white py-3 text-[var(--gray-50)]">
+              채팅하기
+            </button>
+          </div>
+        )}
       </div>
 
       {/* 탭 구분선 */}
@@ -257,10 +363,23 @@ function MyProfile() {
           ))}
 
         {/* 상세 소개 탭이 활성화된 경우 상세 소개 컴포넌트 출력 */}
-        {activeTab === "상세 소개" && <DetailIntro />}
+        {activeTab === "상세 소개" && (
+          <div className="flex w-full flex-col justify-center px-4">
+            {/* 관심 키워드 컴포넌트 */}
+            <DetailIntroKeyword
+              interest={profile?.interest}
+              isReadOnly={!isMyProfile}
+            />
+            {/* 상세 프로필 컴포넌트 */}
+            <DetailIntroProfile
+              profileDetailData={profile?.specifyProfile?.info || []}
+              isReadOnly={!isMyProfile}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-export default MyProfile;
+export default Profile;
