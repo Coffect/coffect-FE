@@ -23,7 +23,7 @@ const FeedInteraction = ({
   likes,
   comments,
   isDetailView = false,
-  showBookmarkButton = true,
+  showBookmarkButton,
 }: FeedInteractionProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);

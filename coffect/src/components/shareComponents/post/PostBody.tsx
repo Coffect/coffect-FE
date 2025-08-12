@@ -44,7 +44,7 @@ const PostBody: React.FC<PostBodyProps> = ({
   post,
   isDetailView = false,
   onContentClick,
-  showBookmarkButton = true,
+  showBookmarkButton,
 }) => {
   return (
     // onContentClick 핸들러가 있으면 클릭 가능한 요소로 만듭니다.
