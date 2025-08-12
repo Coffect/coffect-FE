@@ -1,7 +1,11 @@
 /*
  * author : 앨리스/박은지
  * description : [커피챗 일정 등록] 컴포넌트
+<<<<<<< HEAD
+ * 일정 등록 폼, 완료 모달 연결
+=======
  * 완료 모달 연결
+>>>>>>> 552b968a2bb03d7cc903cac53139a56fd74252fb
  */
 
 import React, { useState } from "react";
@@ -74,15 +78,15 @@ const Schedule: React.FC = () => {
   return (
     <div className="flex h-full w-full flex-col bg-[var(--white)]">
       {/* 상단 헤더 */}
-      <div className="relative flex w-full flex-col items-center justify-center bg-[var(--white)] px-4 pt-6 pb-4">
+      <div className="relative flex w-full flex-col items-center justify-center bg-[var(--white)] px-4 pt-7 pb-3">
         <button
-          className="absolute top-6 left-4 text-2xl text-[var(--gray-70)]"
+          className="absolute top-7 left-4 text-2xl text-[var(--gray-70)]"
           onClick={() => navigate(-1)}
           aria-label="닫기"
         >
-          <X size={28} />
+          <X size={24} />
         </button>
-        <div className="mb-8 text-xl font-extrabold text-[var(--gray-90)]">
+        <div className="mb-7 text-[18px] font-semibold text-[var(--gray-90)]">
           일정 등록
         </div>
         <div className="flex w-full items-center justify-start">
@@ -100,10 +104,10 @@ const Schedule: React.FC = () => {
               className="h-full w-full object-cover"
             />
           </div>
-          <span className="ml-2 text-lg font-extrabold tracking-tight text-[#FF9100]">
+          <span className="ml-2 text-[20px] font-bold tracking-tight text-[#FF8126]">
             {NICKNAME}
           </span>
-          <span className="text-lg font-extrabold tracking-tight text-[var(--gray-90)]">
+          <span className="text-[20px] font-bold tracking-tight text-[var(--gray-90)]">
             님과의 커피챗
           </span>
         </div>
