@@ -53,11 +53,8 @@ const PostBody: React.FC<PostBodyProps> = ({
       onClick={onContentClick}
     >
       <PostTitle title={post.threadTitle} />
-
-      {/* 4. 게시글 이미지 (이미지가 있을 경우에만 표시) */}
-      <PostImage src={null} />
-
       <PostContent content={post.threadBody} isDetailView={isDetailView} />
+      <PostImage src={post.images?.[0] || null} />
 
       {isDetailView && <PostTags type={post.type} topic={post.subjects} />}
 

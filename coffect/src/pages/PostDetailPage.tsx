@@ -95,6 +95,7 @@ const PostDetail = () => {
             commentCount: post.commentCount,
           }}
           isDetailView={true}
+          showBookmarkButton={true}
         />
 
         {comments && comments.length > 0 ? (
