@@ -37,12 +37,14 @@ interface PostBodyProps {
   post: BodySummary;
   isDetailView?: boolean;
   onContentClick?: () => void;
+  showBookmarkButton?: boolean; // 북마크 버튼 표시 여부를 결정하는 prop
 }
 
 const PostBody: React.FC<PostBodyProps> = ({
   post,
   isDetailView = false,
   onContentClick,
+  showBookmarkButton = true,
 }) => {
   return (
     // onContentClick 핸들러가 있으면 클릭 가능한 요소로 만듭니다.
@@ -64,6 +66,7 @@ const PostBody: React.FC<PostBodyProps> = ({
         likes={post.likeCount}
         comments={post.commentCount}
         isDetailView={isDetailView}
+        showBookmarkButton={showBookmarkButton}
       />
     </div>
   );

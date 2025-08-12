@@ -7,6 +7,7 @@ import PostBody from "./post/PostBody";
 interface FeedItemProps {
   post: ThreadSummary;
   showFollowButton?: boolean; // 팔로우 버튼 표시 여부를 결정하는 prop
+  showBookmarkButton?: boolean; // 북마크 버튼 표시 여부를 결정하는 prop
 }
 
 // 날짜를 'X일 전' 형식으로 변환하는 간단한 유틸리티 함수입니다.
@@ -23,7 +24,7 @@ const getTimeAgo = (dateStr: string): string => {
   return `${diffDays}일 전`;
 };
 
-const FeedItem = ({ post, showFollowButton = true }: FeedItemProps) => {
+const FeedItem = ({ post, showFollowButton = true, showBookmarkButton = true }: FeedItemProps) => {
   const navigate = useNavigate();
 
   // 게시글 아이템 클릭 시 해당 게시글의 상세 페이지로 이동하는 함수입니다.
@@ -54,7 +55,7 @@ const FeedItem = ({ post, showFollowButton = true }: FeedItemProps) => {
       </PostAuthorInfo>
 
       {/* PostBody에 post prop을 직접 전달합니다. */}
-      <PostBody post={post} onContentClick={handlePostClick} />
+      <PostBody post={post} onContentClick={handlePostClick} showBookmarkButton={showBookmarkButton} />
     </div>
   );
 };

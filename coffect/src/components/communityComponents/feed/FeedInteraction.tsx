@@ -15,6 +15,7 @@ interface FeedInteractionProps {
   likes: number;
   comments: number;
   isDetailView?: boolean;
+  showBookmarkButton?: boolean;
 }
 
 const FeedInteraction = ({
@@ -22,6 +23,7 @@ const FeedInteraction = ({
   likes,
   comments,
   isDetailView = false,
+  showBookmarkButton = true,
 }: FeedInteractionProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -61,13 +63,15 @@ const FeedInteraction = ({
             <span>{comments}</span>
           </button>
         </div>
-        <button className={buttonStyle} onClick={handleBookmarkClick}>
-          <Bookmark
-            size={20}
-            fill={isBookmarked ? "black" : "none"}
-            color={isBookmarked ? "black" : "currentColor"}
-          />
-        </button>
+        {showBookmarkButton && (
+          <button className={buttonStyle} onClick={handleBookmarkClick}>
+            <Bookmark
+              size={20}
+              fill={isBookmarked ? "black" : "none"}
+              color={isBookmarked ? "black" : "currentColor"}
+            />
+          </button>
+        )}
       </div>
     </>
   );
