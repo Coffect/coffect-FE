@@ -11,27 +11,11 @@
 
 import { useState, useEffect, useCallback } from "react";
 
-/**
- * @interface UseWriteFormReturn
- * @description useWriteForm 훅이 반환하는 값들의 타입을 정의합니다.
- *              게시글 작성 폼의 상태와 상태를 업데이트하는 함수들을 포함합니다.
- * @state {string} postType - 게시글 종류 (예: 아티클, 팀원 모집 등)
- * @state {string} topic - 선택된 주제 (예: 프로덕트, 개발 등)
- * @state {string} title - 게시글 제목
- * @state {string} content - 게시글 내용
- * @state {File[]} selectedImageFiles - 선택된 이미지 파일 배열
- * @state {boolean} isFormValid - 폼 유효성 상태 (제목과 내용이 모두 입력되었는지 여부)
- * @handle {function} handleTopicSelect - 주제 선택 핸들러
- * @handle {function} handlePostTypeSelect - 게시글 종류 선택 핸들러
- * @handle {function} handleImageChange - 이미지 파일 선택 핸들러
- * @handle {function} handleImageRemove - 이미지 파일 삭제 핸들러
- * @handle {function} resetForm - 폼 상태 초기화 핸들러
- */
 export interface UseWriteFormReturn {
-  postType: string;
-  setPostType: (type: string) => void;
-  topic: string;
-  setTopic: (topic: string) => void;
+  type: string;
+  setType: (type: string) => void;
+  subject: string;
+  setSubject: (topic: string) => void;
   title: string;
   setTitle: (title: string) => void;
   content: string;
@@ -52,9 +36,9 @@ export interface UseWriteFormReturn {
  *              폼 입력 필드, 이미지 파일, 폼 유효성 상태를 관리하고 관련 핸들러를 제공합니다.
  * @returns {UseWriteFormReturn} 폼의 상태와 상태를 조작하는 함수들을 담은 객체
  */
-export const useWriteForm = (): UseWriteFormReturn => {
-  const [postType, setPostType] = useState<string>("");
-  const [topic, setTopic] = useState<string>("");
+export const useWritePostForm = (): UseWriteFormReturn => {
+  const [type, setType] = useState<string>("");
+  const [subject, setSubject] = useState<string>("");
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const [selectedImageFiles, setSelectedImageFiles] = useState<File[]>([]);
@@ -64,16 +48,22 @@ export const useWriteForm = (): UseWriteFormReturn => {
    * @description 제목과 내용이 비어있지 않은지 확인하여 폼 유효성 상태를 업데이트합니다.
    */
   useEffect(() => {
-    const isValid = title.trim() !== "" && content.trim() !== "";
+    const isValid =
+      title.trim() !== "" &&
+      content.trim() !== "" &&
+      type !== "" &&
+      subject !== "";
     setIsFormValid(isValid);
-  }, [title, content]);
+  }, [title, content, type, subject]);
 
   /**
    * @description 선택한 주제가 이미 선택되어 있다면 선택을 해제하고, 그렇지 않다면 선택한 칩으로 주제를 설정합니다.
    * @param {string} selectedTopic - 선택된 주제 문자열
    */
   const handleTopicSelect = (selectedTopic: string) => {
-    setTopic((prevTopic) => (prevTopic === selectedTopic ? "" : selectedTopic));
+    setSubject((prevTopic) =>
+      prevTopic === selectedTopic ? "" : selectedTopic,
+    );
   };
 
   /**
@@ -81,7 +71,7 @@ export const useWriteForm = (): UseWriteFormReturn => {
    * @param {string} selectedPostType - 선택된 게시글 종류 문자열
    */
   const handlePostTypeSelect = (selectedPostType: string) => {
-    setPostType((prevPostType) =>
+    setType((prevPostType) =>
       prevPostType === selectedPostType ? "" : selectedPostType,
     );
   };
@@ -112,8 +102,8 @@ export const useWriteForm = (): UseWriteFormReturn => {
    * @description 폼 상태를 초기화하는 함수입니다.
    */
   const resetForm = useCallback(() => {
-    setPostType("");
-    setTopic("");
+    setType("");
+    setSubject("");
     setTitle("");
     setContent("");
     setSelectedImageFiles([]);
@@ -121,10 +111,10 @@ export const useWriteForm = (): UseWriteFormReturn => {
   }, []);
 
   return {
-    postType,
-    setPostType,
-    topic,
-    setTopic,
+    type: type,
+    setType: setType,
+    subject: subject,
+    setSubject: setSubject,
     title,
     setTitle,
     content,

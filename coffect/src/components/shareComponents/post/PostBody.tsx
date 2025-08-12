@@ -8,8 +8,17 @@
  */
 
 import React from "react";
-import type { ThreadSummary } from "@/types/community/postTypes"; // PostSummary 타입 임포트
-// PostSummary 타입 임포트
+
+interface BodySummary {
+  threadId: string; // 게시글 고유 ID
+  threadTitle: string; // 게시글 제목
+  threadBody: string; // 게시글 본문 내용
+  images?: string[]; // 게시글 이미지 URL 배열 (선택적)
+  likeCount: number; // 좋아요 수
+  commentCount: number; // 댓글 수
+  type?: string; // 게시글 종류 (예: "아티클", "질문")
+  subjects?: string[]; // 게시글 주제 배열 (선택적, 예: ["프론트엔드", "백엔드"])
+}
 
 // 원자(Atom) 컴포넌트들을 가져옵니다.
 import PostTitle from "./PostTitle";
@@ -25,7 +34,7 @@ import FeedInteraction from "../../communityComponents/feed/FeedInteraction";
  * @property {() => void} [onContentClick] -  컨텐츠 영역 클릭 시 호출될 함수입니다. (피드에서 상세 페이지 이동 등)
  */
 interface PostBodyProps {
-  post: ThreadSummary;
+  post: BodySummary;
   isDetailView?: boolean;
   onContentClick?: () => void;
 }
@@ -41,25 +50,19 @@ const PostBody: React.FC<PostBodyProps> = ({
       className={`px-4 pb-2 ${onContentClick ? "cursor-pointer" : ""}`}
       onClick={onContentClick}
     >
-      {/* 1. 게시글 제목 (항상 표시) */}
       <PostTitle title={post.threadTitle} />
 
-      {/* 2. 게시글 본문 (요약 또는 전체) */}
-      <PostContent content={post.threadBody} isDetailView={isDetailView} />
-
-      {/* 3. 게시글 종류 및 주제 태그 (상세 페이지에서만 표시) */}
-      {/* PostSummary에 type과 topic이 없으므로 임시로 빈 문자열 전달 */}
-      {isDetailView && <PostTags type={null} topic={null} />}
-
       {/* 4. 게시글 이미지 (이미지가 있을 경우에만 표시) */}
-      {/* PostSummary에 image가 없으므로 임시로 빈 문자열 전달 */}
       <PostImage src={null} />
 
-      {/* 5. 좋아요 및 댓글 수 (항상 표시) */}
+      <PostContent content={post.threadBody} isDetailView={isDetailView} />
+
+      {isDetailView && <PostTags type={post.type} topic={post.subjects} />}
+
       <FeedInteraction
-        postId={post.threadId}
+        threadId={post.threadId}
         likes={post.likeCount}
-        comments={0} // PostSummary에 comments가 없으므로 0으로 고정
+        comments={post.commentCount}
         isDetailView={isDetailView}
       />
     </div>

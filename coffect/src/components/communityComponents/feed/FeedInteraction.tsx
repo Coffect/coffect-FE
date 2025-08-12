@@ -11,14 +11,14 @@ const buttonStyle =
   "text-sm text-gray-600 hover:text-blue-500 flex items-center gap-1";
 
 interface FeedInteractionProps {
-  postId: string;
+  threadId: string;
   likes: number;
   comments: number;
   isDetailView?: boolean;
 }
 
 const FeedInteraction = ({
-  postId,
+  threadId,
   likes,
   comments,
   isDetailView = false,
@@ -40,7 +40,7 @@ const FeedInteraction = ({
   const handleCommentClick = (event: React.MouseEvent) => {
     event.stopPropagation();
     if (!isDetailView) {
-      navigate(`/community/post/${postId}`);
+      navigate(`/community/post/${threadId}`);
     }
   };
 
