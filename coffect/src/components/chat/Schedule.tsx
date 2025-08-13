@@ -12,10 +12,18 @@ import ScheduleCompleteModal from "./ScheduleCompleteModal";
 import DeleteScheduleModal from "./DeleteScheduleModal";
 import { X } from "lucide-react";
 import { useChatUser } from "./hooks/useChatUser";
+import { useChatRooms } from "../../hooks/chat/useChatRooms";
 
 const Schedule: React.FC = () => {
   const location = useLocation();
   const user = useChatUser();
+  const { chatRooms } = useChatRooms();
+
+  // 현재 채팅방 ID 가져오기 (URL에서 추출하거나 location state에서)
+  const currentChatRoomId = location.state?.chatRoomId;
+  const currentChatRoom = chatRooms.find(
+    (room) => room.chatroomId === currentChatRoomId,
+  );
   const [form, setForm] = useState<ScheduleFormValues>(() => {
     // 기존 일정이 있는지 확인 (수정하기)
     const sch = location.state?.schedule;
@@ -83,9 +91,9 @@ const Schedule: React.FC = () => {
         </div>
         <div className="flex w-full items-center justify-start">
           <div className="z-10 -mr-2 h-9 w-9 overflow-hidden rounded-full border-2 border-[var(--white)] bg-[var(--gray-10)]">
-            {user.profileImage && (
+            {currentChatRoom?.userInfo?.profileImage && (
               <img
-                src={user.profileImage || ""}
+                src={currentChatRoom.userInfo.profileImage}
                 alt="상대 프로필"
                 className="h-full w-full object-cover"
               />

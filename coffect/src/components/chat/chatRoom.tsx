@@ -178,10 +178,7 @@ const ChatRoom = () => {
         onOpenModal={openModal}
         showInterests={showInterests}
         onToggleInterests={handleToggleInterests}
-        opponentInfo={{
-          name: currentChatRoom?.userInfo?.name || "상대방",
-          profileImage: currentChatRoom?.userInfo?.profileImage,
-        }}
+        chatRoomId={chatRoomId}
       />
 
       {/* 팝업 모달 */}
