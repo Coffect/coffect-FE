@@ -1,6 +1,9 @@
 /*
   author      : 이희선
   description : 커피챗 제안 배너 (FCM만으로 수신/표시)
+                - FCM/ServiceWorker에서 수신한 payload를 카드 형태로 표시
+                - 카드 표시/삭제용 식별자(cardId)와 서버 조회용 식별자(coffectId) 분리
+                - 모달에는 coffectId를 전달하여 최신 메시지 조회, 삭제는 cardId로 일관 처리
 */
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -12,80 +15,169 @@ import DeleteSuggestModal from "./DeleteSuggestModal";
 import { useNavigate } from "react-router-dom";
 import NoSuggestImage from "../../assets/icon/home/NoSuggest.png";
 
-// FCM 포그라운드 수신용
+// FCM 포그라운드 수신
 import { onMessageListener, type FcmPayload } from "@/utils/fcm";
+// 프로필 라우팅용: 숫자 기반 유저 ID → 문자열 ID 변환 API
+import { getUserStringId } from "@/api/home";
 
-/** 배너 카드 타입 */
+/* --------------------------------- 타입 --------------------------------- */
+
+/** 배너에 표시되는 제안 카드의 데이터 구조
+ *  - cardId     : 화면 표시/삭제를 위한 안정적인 식별자 (string)
+ *  - coffectId  : 서버에서 최신 메시지를 조회할 때 사용하는 실제 ID (number|null)
+ *  - userPageId : 프로필 화면 라우팅을 위해 숫자 기반 유저 ID를 보관 (string|number)
+ */
 interface Suggestion {
-  id: string;
+  cardId: string;
+  coffectId?: number | null;
   name: string;
   message: string;
   image: string;
+  userId?: string;
   userPageId?: string | number;
 }
 
-/** SW→페이지 postMessage에서 쓰는 타입(단건/배열 모두 지원) */
+/** 서비스워커 postMessage 수신 타입 (단건/배열 모두 수용) */
 type SwPostMessage =
   | { source?: string; payload?: FcmPayload; payloads?: FcmPayload[] }
   | FcmPayload;
 
-/** FCM payload → 배너 카드로 변환(우리 타입만 통과) */
-function toSuggestion(payload: FcmPayload): Suggestion | null {
-  const data = payload.data ?? {};
-  if (data.type !== "coffee_chat_proposal") return null;
-
-  const id = String(data.coffectId ?? Date.now());
-  const name = (data.firstUserName as string) ?? "알 수 없음";
-  const message =
-    (payload.notification?.body as string) ?? "커피챗 제안이 도착했어요!";
-  const image = (payload.notification?.image as string) ?? "/favicon.ico"; // 서버에서 image 오면 사용
-
-  return {
-    id,
-    name,
-    message,
-    image,
-    userPageId: data.firstUserId,
-  };
-}
-
-/** 타입 가드 */
+/** FCM payload 판별을 위한 타입 가드 */
 const isFcmPayload = (x: unknown): x is FcmPayload =>
   !!x &&
   typeof x === "object" &&
   ("data" in (x as Record<string, unknown>) ||
     "notification" in (x as Record<string, unknown>));
 
-const CoffeeSuggestBanner = () => {
+/* --------------------------- 변환 유틸리티 함수 --------------------------- */
+
+/** FCM payload → Suggestion 변환
+ *  - 다양한 키 네이밍(coffectId / coffeeChatId / coffeeid)을 흡수
+ *  - UI 식별자(cardId)와 서버 조회용(coffectId) 분리
+ *  - 알림 본문/이미지가 없는 경우 기본값 적용
+ */
+const toSuggestion = (payload: FcmPayload): Suggestion | null => {
+  const data = payload.data ?? {};
+  if (data.type !== "coffee_chat_proposal") return null;
+
+  // 서버 조회용 원본 식별자 추출
+  const coffectIdRaw =
+    (data.coffectId as string | number | undefined) ??
+    (data.coffeeChatId as string | number | undefined) ??
+    (data.coffeeid as string | number | undefined);
+
+  // number 변환 가능 시에만 coffectId로 사용
+  const coffectIdNum =
+    coffectIdRaw != null && !Number.isNaN(Number(coffectIdRaw))
+      ? Number(coffectIdRaw)
+      : null;
+
+  // 카드 표시/삭제용 식별자: 원본 값이 없으면 타임스탬프로 대체
+  const cardId = String(coffectIdRaw ?? Date.now());
+
+  // 표시용 텍스트/이미지 정리
+  const name = (data.firstUserName as string) ?? "알 수 없음";
+  const message =
+    (payload.notification?.body as string) ?? "커피챗 제안이 도착했어요!";
+  const image = (payload.notification?.image as string) ?? "/favicon.ico";
+
+  return {
+    cardId,
+    coffectId: coffectIdNum,
+    name,
+    message,
+    image,
+    userId: data.userId ? String(data.userId) : undefined,
+    userPageId: data.firstUserId,
+  };
+};
+
+/* -------------------------------- 컴포넌트 ------------------------------- */
+
+const CoffeeSuggestBanner: React.FC = () => {
+  /* ------------------------------ 변수(상태) ------------------------------ */
   const swiperRef = useRef<SwiperClass | null>(null);
   const navigate = useNavigate();
 
+  /** 화면에 표시할 제안 카드 목록
+   *  - 가장 최근 수신 항목이 앞에 오도록 prepend
+   *  - 동일 cardId 중복 추가 방지
+   */
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
 
-  /** 공통 push (중복 방지) */
+  /** 모달/삭제 상태 */
+  const [checkedMessage, setCheckedMessage] = useState<Suggestion | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null); // cardId 보관
+  const [isMessageHidden, setIsMessageHidden] = useState(false);
+
+  /* ------------------------------ 함수 선언부 ------------------------------ */
+
+  /** 새로운 FCM payload를 Suggestion으로 변환하여 목록에 추가
+   *  - 변환 실패(null) 시 무시
+   *  - cardId 기준으로 중복을 막고, 새 항목을 맨 앞에 추가
+   */
   const pushSuggestion = (p: FcmPayload) => {
     const s = toSuggestion(p);
     if (!s) return;
     setSuggestions((prev) =>
-      prev.some((v) => v.id === s.id) ? prev : [s, ...prev],
+      prev.some((v) => v.cardId === s.cardId) ? prev : [s, ...prev],
     );
   };
 
-  // 1) 포그라운드(onMessage) 수신
+  /** 모달 닫기 공통 처리 */
+  const handleClose = () => {
+    setCheckedMessage(null);
+    setPendingDeleteId(null);
+    setIsMessageHidden(false);
+  };
+
+  /** 삭제 요청 시작: 모달 내용 잠시 숨김 + 삭제 대상 cardId 보관 */
+  const handleDeleteRequest = (id: string) => {
+    setIsMessageHidden(true);
+    setPendingDeleteId(id);
+  };
+
+  /** 삭제 확인: 현재 목록에서 일치하는 cardId 제거 후 상태 초기화 */
+  const handleConfirmDelete = () => {
+    if (pendingDeleteId != null) {
+      setSuggestions((prev) =>
+        prev.filter((s) => s.cardId !== pendingDeleteId),
+      );
+      setCheckedMessage(null);
+      setPendingDeleteId(null);
+      setIsMessageHidden(false);
+    }
+  };
+
+  /** 삭제 취소: 숨김 해제 + 대상 해제 */
+  const handleCancelDelete = () => {
+    setIsMessageHidden(false);
+    setPendingDeleteId(null);
+  };
+
+  /** 대화 시작: 채팅 화면으로 이동 후 모달 닫기 */
+  const handleChat = () => {
+    navigate("/chat");
+    handleClose();
+  };
+
+  /* ------------------------------ 사이드이펙트 ------------------------------ */
+
+  // 1) FCM 포그라운드 메시지 수신
   useEffect(() => {
     const unsub = onMessageListener((payload) => pushSuggestion(payload));
     return () => unsub?.();
   }, []);
 
-  // 2) SW(백그라운드)에서 쏘는 postMessage 수신 + 누적분 flush 요청
+  // 2) 서비스워커 → 페이지 postMessage 수신
+  //    - 단건/배열 모두 처리
+  //    - 초기 진입 시 SW에게 캐시된 payload flush 요청
   useEffect(() => {
     const onSwMessage = (ev: MessageEvent<SwPostMessage>) => {
-      // 단건
       if (isFcmPayload(ev.data)) {
         pushSuggestion(ev.data);
         return;
       }
-      // { payload } / { payloads }
       if (ev.data && typeof ev.data === "object") {
         const single = (ev.data as { payload?: FcmPayload }).payload;
         const many = (ev.data as { payloads?: FcmPayload[] }).payloads;
@@ -94,34 +186,49 @@ const CoffeeSuggestBanner = () => {
       }
     };
 
-    // 채널 두 군데 모두 바인딩(브라우저/타이밍 이슈 회피)
-    navigator.serviceWorker.addEventListener("message", onSwMessage);
+    const hasSW =
+      typeof navigator !== "undefined" && "serviceWorker" in navigator;
+
+    if (hasSW && navigator.serviceWorker) {
+      navigator.serviceWorker.addEventListener("message", onSwMessage);
+    }
     window.addEventListener("message", onSwMessage);
 
-    // 마운트 직후, SW에 누적 payloads 요청(레이스 방지)
     (async () => {
-      const reg = await navigator.serviceWorker.getRegistration();
+      if (!hasSW) return;
+      const reg = await navigator.serviceWorker
+        .getRegistration()
+        .catch(() => null);
       reg?.active?.postMessage({ type: "fcm-flush" });
     })();
 
     return () => {
-      navigator.serviceWorker.removeEventListener("message", onSwMessage);
+      if (hasSW && navigator.serviceWorker) {
+        navigator.serviceWorker.removeEventListener("message", onSwMessage);
+      }
       window.removeEventListener("message", onSwMessage);
     };
   }, []);
 
-  // SW가 페이지를 컨트롤하지 않는 타이밍 보강
+  // 3) SW 제어권 획득 타이밍 보강
+  //    - controller가 없던 상태에서 생기는 시점(controllerchange)에 맞춰 flush 재요청
   useEffect(() => {
+    const hasSW =
+      typeof navigator !== "undefined" && "serviceWorker" in navigator;
+
     const flush = async () => {
-      const reg = await navigator.serviceWorker.getRegistration();
+      if (!hasSW) return;
+      const reg = await navigator.serviceWorker
+        .getRegistration()
+        .catch(() => null);
       reg?.active?.postMessage({ type: "fcm-flush" });
     };
 
-    if (navigator.serviceWorker.controller) {
-      // 이미 컨트롤 중이면 바로 요청
+    if (hasSW && navigator.serviceWorker?.controller) {
+      // 이미 제어권이 있으면 즉시 flush
       flush();
-    } else {
-      // 아직이면 컨트롤되자마자 1회 요청
+    } else if (hasSW) {
+      // 제어권이 생기는 순간을 기다렸다가 flush
       const onCtrl = () => {
         flush();
         navigator.serviceWorker.removeEventListener("controllerchange", onCtrl);
@@ -130,42 +237,14 @@ const CoffeeSuggestBanner = () => {
     }
   }, []);
 
-  // ===== 모달 상태 =====
-  const [checkedMessage, setCheckedMessage] = useState<Suggestion | null>(null);
-  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-  const [isMessageHidden, setIsMessageHidden] = useState(false);
-
-  const handleClose = () => {
-    setCheckedMessage(null);
-    setPendingDeleteId(null);
-    setIsMessageHidden(false);
-  };
-  const handleDeleteRequest = (id: string) => {
-    setIsMessageHidden(true);
-    setPendingDeleteId(id);
-  };
-  const handleCancelDelete = () => {
-    setIsMessageHidden(false);
-    setPendingDeleteId(null);
-  };
-  const handleConfirmDelete = () => {
-    if (pendingDeleteId != null) {
-      setSuggestions((prev) => prev.filter((s) => s.id !== pendingDeleteId));
-      setCheckedMessage(null);
-      setPendingDeleteId(null);
-      setIsMessageHidden(false);
-    }
-  };
-  const handleChat = () => {
-    navigate("/chat");
-    handleClose();
-  };
+  /* --------------------------------- 렌더 --------------------------------- */
 
   const hasSuggestions = suggestions.length > 0;
 
   return (
     <div className="mt-[2%] flex w-full items-center justify-center overflow-hidden">
       <div className="flex h-auto w-full">
+        {/* 제안이 없을 때: 안내 카드 + 일러스트 */}
         {!hasSuggestions ? (
           <div className="relative w-full items-center justify-center">
             <div className="rounded-[20px] bg-white px-[6%] py-[7%] text-left text-base leading-normal font-medium text-[var(--gray-50)] shadow-[0_0_20px_rgba(189,179,170,0.2)]">
@@ -183,6 +262,7 @@ const CoffeeSuggestBanner = () => {
             />
           </div>
         ) : (
+          // 제안이 있을 때: 스와이퍼로 카드 슬라이드
           <Swiper
             className="h-auto w-full"
             spaceBetween={16}
@@ -191,15 +271,18 @@ const CoffeeSuggestBanner = () => {
           >
             {suggestions.map((user) => (
               <SwiperSlide
-                key={user.id}
+                key={user.cardId}
                 className="flex items-center justify-center"
               >
                 <div className="flex w-full items-center gap-[12px] rounded-[20px] bg-white px-[5%] py-[4%] shadow-[0_0_20px_rgba(189,179,170,0.2)]">
+                  {/* 프로필 이미지 */}
                   <img
                     src={user.image}
                     alt="프로필 사진"
                     className="aspect-[1/1] w-[18%] rounded-full object-cover"
                   />
+
+                  {/* 텍스트/버튼 영역 */}
                   <div className="flex w-0 flex-1 flex-col justify-center">
                     <p className="mb-[3%] ml-[3%] overflow-hidden text-base font-medium text-[var(--gray-70)]">
                       <span className="text-base font-bold text-[var(--gray-85)]">
@@ -207,19 +290,32 @@ const CoffeeSuggestBanner = () => {
                       </span>
                       님의 {user.message}
                     </p>
+
                     <div className="ml-[3%] flex justify-start">
+                      {/* 프로필 보기: 숫자 ID → 문자열 ID 변환 후 라우팅 */}
                       <button
-                        onClick={() =>
-                          navigate(
-                            user.userPageId
-                              ? `/userpage/${user.userPageId}`
-                              : `/userpage/${user.id}`,
-                          )
-                        }
+                        onClick={async () => {
+                          const n = Number(user.userPageId);
+                          if (Number.isNaN(n)) {
+                            console.warn(
+                              "userPageId가 숫자가 아닙니다:",
+                              user.userPageId,
+                            );
+                            return;
+                          }
+                          try {
+                            const stringId = await getUserStringId(n);
+                            navigate(`/userpage/${stringId}`);
+                          } catch (e) {
+                            console.warn("getUserStringId 실패:", e);
+                          }
+                        }}
                         className="rounded-[12px] bg-[var(--gray-80)] px-4 py-1.5 text-base font-medium text-[var(--gray-0)]"
                       >
                         프로필 보기
                       </button>
+
+                      {/* 메시지 확인: 모달 열기 */}
                       <button
                         onClick={() => setCheckedMessage(user)}
                         className="ml-[3%] rounded-[12px] border-[1.5px] border-[var(--gray-20)] bg-[var(--gray-0)] px-3 py-1.5 text-base font-medium text-[var(--gray-50)] hover:bg-[var(--gray-10)]"
@@ -235,20 +331,23 @@ const CoffeeSuggestBanner = () => {
         )}
       </div>
 
+      {/* 메시지 모달: coffectId로 서버 최신 데이터를 조회, 삭제는 cardId 기준 */}
       {checkedMessage && !isMessageHidden && (
         <MessageModal
+          coffectId={checkedMessage.coffectId ?? null}
           message={{
-            id: checkedMessage.id,
+            id: checkedMessage.cardId, // 삭제/동기화를 위한 카드 식별자 유지
             name: checkedMessage.name,
             time: new Date().toLocaleString(),
             intro: checkedMessage.message ?? "커피챗 제안 메시지가 도착했어요!",
           }}
           onClose={handleClose}
-          onDelete={() => handleDeleteRequest(checkedMessage.id)}
+          onDelete={handleDeleteRequest}
           onChat={handleChat}
         />
       )}
 
+      {/* 삭제 확인 모달 */}
       {pendingDeleteId != null && checkedMessage && (
         <DeleteSuggestModal
           messageName={checkedMessage.name}
