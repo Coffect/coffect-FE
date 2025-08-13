@@ -22,7 +22,7 @@ export const useGetCommunityPostsQuery = (
     queryFn: ({ pageParam }) =>
       postThreadsFilter({
         ...params,
-        cursor: pageParam as number | undefined,
+        dateCursor: pageParam as string | undefined,
       }),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => {

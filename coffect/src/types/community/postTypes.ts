@@ -107,7 +107,7 @@ export interface GetThreadLatestResponse {
 /**************************** 게시글 페이지 필터링 조회 ************************/
 
 export interface PostThreadsFilterRequest {
-  cursor?: number;
+  dateCursor?: string;
   orderBy: string;
   threadSubject?: number[] | null;
   type?: string | null;
