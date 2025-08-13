@@ -82,9 +82,11 @@ const Chat = () => {
         ) : (
           chatRooms.map((chat, index) => (
             <div
-              key={chat.chatRoomId || `chat-${chat.userId}-${index}`}
+              key={chat.chatroomId || `chat-${chat.userId}-${index}`}
               className="mb-2 flex cursor-pointer items-start border-b border-[var(--gray-10)] px-3 py-5 hover:bg-[var(--gray-5)]"
-              onClick={() => navigate(`/chat/${chat.chatRoomId}`)}
+              onClick={() => {
+                navigate(`/chat/${chat.chatroomId}`);
+              }}
             >
               {/* 프로필 */}
               <div className="relative flex h-13 w-13 items-center justify-center rounded-full bg-[var(--gray-20)]">

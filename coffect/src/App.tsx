@@ -21,10 +21,7 @@ const router = createBrowserRouter([
         index: true,
         element: <Navigate to="signup" />,
       },
-      {
-        path: "chat",
-        element: <Chat />,
-      },
+      // chat 경로 제거 - ChatRouter에서 처리
       {
         path: "signup",
         element: <Signup />,

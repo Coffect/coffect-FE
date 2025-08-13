@@ -4,7 +4,7 @@
  * 채팅방 내부 메시지 영역, 팝업 모달 연결, 일정 정보 표시
  */
 
-import { useMemo, useState, useRef, useEffect } from "react";
+import { useMemo, useState, useRef, useEffect, useCallback } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import usePreventZoom from "./hooks/usePreventZoom";
 import useModal from "./hooks/useModal";
@@ -51,7 +51,7 @@ const ChatRoom = () => {
   // 채팅방 목록에서 현재 채팅방 정보 가져오기
   const { chatRooms, isLoading: chatRoomsLoading } = useChatRooms();
   const currentChatRoom = useMemo(() => {
-    const foundRoom = chatRooms.find((room) => room.chatRoomId === chatRoomId);
+    const foundRoom = chatRooms.find((room) => room.chatroomId === chatRoomId);
     return foundRoom;
   }, [chatRooms, chatRoomId]);
 
@@ -101,10 +101,11 @@ const ChatRoom = () => {
     createdObjectUrlsRef.current.push(url);
 
     // 낙관적 업데이트
+    const tempId = Date.now();
     setMessages((prev) => [
       ...prev,
       {
-        id: Date.now(),
+        id: tempId,
         type: "image",
         imageUrl: url,
         mine: true,
@@ -115,19 +116,35 @@ const ChatRoom = () => {
     try {
       // 서버로 이미지 전송
       const { sendPhoto } = await import("../../api/chat");
-      await sendPhoto(chatRoomId, file);
-      // 메시지 목록 새로고침
-      loadMessages();
+      const response = await sendPhoto(chatRoomId, file);
+
+      // 성공 시 임시 메시지를 실제 서버 응답으로 교체
+      if (response.success) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === tempId
+              ? {
+                  id: parseInt(response.success.id),
+                  type: "image" as const,
+                  imageUrl: response.success.messageBody,
+                  mine: true,
+                  time: new Date(response.success.createdAt).toLocaleTimeString(
+                    "ko-KR",
+                    {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    },
+                  ),
+                }
+              : msg,
+          ),
+        );
+      }
     } catch (error) {
       console.error("이미지 전송 실패:", error);
       // 실패 시 낙관적 업데이트 롤백
-      setMessages((prev) =>
-        prev.filter(
-          (msg) =>
-            msg.type !== "image" ||
-            (msg.type === "image" && msg.imageUrl !== url),
-        ),
-      );
+      setMessages((prev) => prev.filter((msg) => msg.id !== tempId));
       URL.revokeObjectURL(url);
     }
   };
@@ -144,10 +161,10 @@ const ChatRoom = () => {
     }, 500);
   };
 
-  const user = useChatUser();
+  const { user, loading: userLoading } = useChatUser();
 
   // 기존 메시지 로딩 함수
-  const loadMessages = async () => {
+  const loadMessages = useCallback(async () => {
     if (!chatRoomId) return;
 
     try {
@@ -196,18 +213,19 @@ const ChatRoom = () => {
     } catch (error) {
       console.error("메시지 로딩 오류:", error);
     }
-  };
+  }, [chatRoomId, user.id]);
 
   // 채팅방 입장 및 메시지 로딩
   useEffect(() => {
+    if (userLoading) return; // 사용자 정보 로딩 완료 후에만 메시지 로드
     loadMessages();
-  }, [chatRoomId, user.id]);
+  }, [chatRoomId, userLoading, loadMessages]);
 
   // 전체 로딩 상태 (채팅방 목록 로딩 + 프로필 클릭 로딩)
   const overallLoading = chatRoomsLoading || isProfileLoading;
 
-  // 전체 로딩 중일 때 LoadingScreen 표시
-  if (overallLoading) {
+  // chatRoomId가 없거나 로딩 중일 때 LoadingScreen 표시
+  if (overallLoading || !chatRoomId) {
     return <LoadingScreen />;
   }
 
@@ -249,6 +267,7 @@ const ChatRoom = () => {
         setInputValue={setInputValue}
         handleSend={handleSend}
         onImageSend={handleImageSend}
+        disabled={!chatRoomId}
       />
     </div>
   );

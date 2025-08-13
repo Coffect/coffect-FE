@@ -138,7 +138,7 @@ export const useChatRoom = () => {
       });
       setMessages(convertedMessages);
     }
-  }, [apiMessages]);
+  }, [apiMessages, currentUserId]);
 
   const [inputValue, setInputValue] = useState("");
 
@@ -177,9 +177,10 @@ export const useChatRoom = () => {
 
   // 언마운트 시 생성된 모든 URL 정리
   useEffect(() => {
+    const urls = createdUrlsRef.current;
     return () => {
       // 언마운트 시 생성된 모든 URL 정리
-      createdUrlsRef.current.forEach((url) => {
+      urls.forEach((url) => {
         try {
           URL.revokeObjectURL(url);
         } catch {

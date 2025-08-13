@@ -39,7 +39,7 @@ export interface CreateChatRoomErrorResponse {
 
 // 채팅방 목록 조회 응답 타입
 export interface ChatRoom {
-  chatRoomId: string;
+  chatroomId: string; // 백엔드 응답과 일치하도록 소문자로 변경
   userId: number;
   lastMessage: string;
   hasUnreadMessages: boolean;

@@ -16,13 +16,13 @@ import { useChatRooms } from "../../hooks/chat/useChatRooms";
 
 const Schedule: React.FC = () => {
   const location = useLocation();
-  const currentUser = useChatUser();
+  const { user: currentUser } = useChatUser();
   const { chatRooms } = useChatRooms();
 
   // 현재 채팅방 ID 가져오기 (URL에서 추출하거나 location state에서)
   const currentChatRoomId = location.state?.chatRoomId;
   const currentChatRoom = chatRooms.find(
-    (room) => room.chatRoomId === currentChatRoomId,
+    (room) => room.chatroomId === currentChatRoomId,
   );
   const [form, setForm] = useState<ScheduleFormValues>(() => {
     // 기존 일정이 있는지 확인 (수정하기)

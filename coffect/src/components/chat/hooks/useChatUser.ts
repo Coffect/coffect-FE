@@ -14,13 +14,14 @@ export interface ChatUser {
   profileImage?: string;
 }
 
-export const useChatUser = () => {
+export const useChatUser = (): { user: ChatUser; loading: boolean } => {
   const [user, setUser] = useState<ChatUser>({
     id: 1,
     username: "로딩 중...",
     info: "이런 주제에 관심 있어요!",
     interests: ["디자인", "개발", "창업", "글쓰기"],
   });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -49,11 +50,13 @@ export const useChatUser = () => {
         }
       } catch {
         // 프로필 로딩 실패 시 기본값 유지
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUserProfile();
   }, []);
 
-  return user;
+  return { user, loading };
 };

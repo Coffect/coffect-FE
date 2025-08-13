@@ -22,8 +22,12 @@ export const useSendMessage = (
 
   const sendMessageHandler = useCallback(
     async (message: string) => {
-      if (!chatRoomId || !message.trim()) {
-        setError("메시지를 입력해주세요.");
+      if (!chatRoomId || chatRoomId === "" || !message.trim()) {
+        const errorMsg = !chatRoomId || chatRoomId === "" 
+          ? "채팅방 ID가 유효하지 않습니다." 
+          : "메시지를 입력해주세요.";
+        setError(errorMsg);
+        console.error("sendMessage 호출 실패:", { chatRoomId, message });
         return false;
       }
 

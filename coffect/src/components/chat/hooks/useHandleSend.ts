@@ -10,7 +10,7 @@ import type { Message } from "../../../types/chat";
 interface UseHandleSendProps {
   chatRoomId: string;
   messages: Message[];
-  setMessages: (messages: Message[]) => void;
+  setMessages: (messages: Message[] | ((prev: Message[]) => Message[])) => void;
   setInputValue: (value: string) => void;
   getCurrentTime: () => string;
   onError?: (error: string) => void;
@@ -35,7 +35,10 @@ const useHandleSend = ({
 
   const handleSend = useCallback(
     async (msg: string) => {
-      if (!msg.trim() || !chatRoomId) return;
+      if (!msg.trim() || !chatRoomId || chatRoomId === "") {
+        console.error("유효하지 않은 chatRoomId:", chatRoomId);
+        return;
+      }
 
       const tempId = Date.now();
       // 먼저 로컬에 메시지 추가 (낙관적 업데이트)
@@ -58,7 +61,9 @@ const useHandleSend = ({
         onSuccess?.();
       } else {
         // 실패 시 로컬 메시지 제거
-        setMessages(messages.filter((m) => m.id !== tempId));
+        setMessages((prevMessages: Message[]) =>
+          prevMessages.filter((m: Message) => m.id !== tempId),
+        );
         setInputValue(msg); // 입력값 복원
       }
     },

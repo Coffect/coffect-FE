@@ -34,6 +34,10 @@ export const useChatRooms = (): UseChatRoomsReturn => {
       const response = await getChatRoomList();
       const chatRoomsData = response.success;
 
+      // API 응답 디버깅
+      console.log("getChatRoomList 응답:", response);
+      console.log("chatRoomsData:", chatRoomsData);
+
       // 현재 사용자 정보 가져오기
       const currentUserProfile = await getProfile();
       const currentUserId = currentUserProfile.success?.userInfo?.userId;

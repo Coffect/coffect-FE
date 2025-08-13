@@ -64,7 +64,7 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
 
   const handleChatRoomClick = (chatRoom: ChatRoomWithUser) => {
     onChatRoomSelect?.(chatRoom);
-    navigate(`/chat/${chatRoom.chatRoomId}`, {
+    navigate(`/chat/${chatRoom.chatroomId}`, {
       state: { chatRoom },
     });
   };
@@ -130,7 +130,7 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
       <div className="divide-y divide-gray-200">
         {chatRooms.map((chatRoom) => (
           <ChatRoomItem
-            key={chatRoom.chatRoomId}
+            key={chatRoom.chatroomId}
             chatRoom={chatRoom}
             onClick={handleChatRoomClick}
           />

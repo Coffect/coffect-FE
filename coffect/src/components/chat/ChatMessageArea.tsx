@@ -7,20 +7,12 @@ import { useRef } from "react";
 import ChatMessageList from "./ChatMessageList";
 import { ChatSystemMessage } from "./ChatSystemMessage";
 import useAutoScroll from "./hooks/useAutoScroll";
+import { getMessageMargin } from "./utils/chatUtils";
 import type { Message } from "../../types/chat";
 
 interface ChatMessageAreaProps {
   messages: Message[];
   username?: string;
-}
-
-function getMessageMargin(idx: number, messages: Message[]) {
-  if (idx === 0) return "mt-4";
-  const prev = messages[idx - 1];
-  const current = messages[idx];
-
-  // 연속된 메시지의 발신자가 다른 경우 더 큰 여백 적용
-  return prev.mine !== current.mine ? "mt-6" : "mt-2";
 }
 
 const ChatMessageArea = ({ messages, username }: ChatMessageAreaProps) => {

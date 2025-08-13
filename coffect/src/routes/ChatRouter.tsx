@@ -7,7 +7,7 @@ import Schedule from "../components/chat/Schedule";
 const ChatRouter: React.FC = () => {
   return (
     <Routes>
-      <Route path="" element={<Chat />} />
+      <Route index element={<Chat />} />
       <Route path=":chatRoomId" element={<ChatRoom />} />
       <Route path="schedule" element={<Schedule />} />
     </Routes>
