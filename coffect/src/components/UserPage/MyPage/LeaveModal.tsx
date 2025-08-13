@@ -5,7 +5,7 @@ description : 회원 탈퇴 시 확인 모달을 출력하는 컴포넌트입니
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteUser } from "@/api/profile";
 
 interface LeaveModalProps {
@@ -20,14 +20,20 @@ const LeaveModal: React.FC<LeaveModalProps> = ({ open, onClose }) => {
   // 모달이 열려있지 않으면 null 반환
 
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  const { mutate: deleteUserMutate } = useMutation({
-    mutationFn: () => deleteUser(),
+  const { mutate: deleteUserMutate, isPending: isDeleting } = useMutation({
+    mutationFn: deleteUser,
     onSuccess: () => {
+      // 인증 토큰 및 캐시 완전 정리
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
+      queryClient.clear();
       onClose();
-      navigate("/signup");
+      navigate("/signup", { replace: true });
+    },
+    onError: (error) => {
+      console.error("회원탈퇴 실패:", error);
     },
   });
 
@@ -70,8 +76,9 @@ const LeaveModal: React.FC<LeaveModalProps> = ({ open, onClose }) => {
           <button
             className="flex-1 rounded-br-2xl bg-[var(--gray-80)] py-4 font-semibold text-white transition"
             onClick={() => deleteUserMutate()}
+            disabled={isDeleting}
           >
-            떠날래요
+            {isDeleting ? "처리중..." : "떠날래요"}
           </button>
         </div>
       </div>

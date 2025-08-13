@@ -30,7 +30,7 @@ const BookMark = () => {
         </div>
       </div>
       {/* 저장된 콘텐츠 출력 */}
-      <div className="overflow-y-autopy-5 flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col overflow-y-auto py-5">
         {bookMarkPosts.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center px-4">
             <span className="text-md mb-3 text-[var(--gray-50)]">
