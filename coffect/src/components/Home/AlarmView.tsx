@@ -21,6 +21,7 @@ interface ApiNotification {
     firstUserId?: string;
     firstUserName?: string;
   };
+  firstUserImage?: string;
   isRead: boolean;
   createdAt: string; // ISO 문자열
 }
@@ -93,7 +94,7 @@ const AlarmView = () => {
                 ? n.body.replace(String(n?.data?.firstUserName ?? ""), "")
                 : ""),
             time: getRelativeTime(n.createdAt),
-            image: "https://picsum.photos/400/400",
+            image: n?.firstUserImage,
             unread: !n.isRead,
           }),
         );
