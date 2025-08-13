@@ -29,7 +29,11 @@ export interface getCommentRequest {
 
 export interface getCommentResponse {
   resultType: string; // 결과 타입 (예: "success", "FAIL")
-  error: null; // 에러 정보 (없을 경우 null)
+  error: null | {
+    errorCode: string; // 에러 코드
+    reason: string; // 에러 사유
+    data: null; // 에러 데이터 (없을 경우 null)
+  };
   success: null | Comment[];
 }
 

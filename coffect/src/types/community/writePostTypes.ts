@@ -9,7 +9,7 @@
 /**
  * @interface PostUploadRequest
  * @description 게시글 업로드 요청 시 필요한 데이터 구조를 정의합니다.
- * @params {number[]} threadSubject - 주제 ID 배열
+ * @params {string} threadSubject - 주제 ID 배열
  * - 1 : "프로덕트" / 2 : "개발" / 3 : "디자인" / 4 : "기획" / 5 : "인사이트" / 6 : "취업" / 7 : "창업" / 8 : "학교" / 9 : "기타"
  * @params {string} type - 게시글 종류 (예: 아티클, 팀원 모집 등)
  * @params {string} threadBody - 게시글 내용

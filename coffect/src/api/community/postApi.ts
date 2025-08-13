@@ -42,11 +42,16 @@ export const getThreadLatest = async (
 export const postThreadsFilter = async (
   params: PostThreadsFilterRequest,
 ): Promise<PostThreadsFilterResponse> => {
-  const response = await axiosInstance.post<PostThreadsFilterResponse>(
-    "/thread/main",
-    params,
-  );
-  return response.data;
+  try {
+    const response = await axiosInstance.post<PostThreadsFilterResponse>(
+      "/thread/main",
+      params,
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching filtered threads:", error);
+    throw error;
+  }
 };
 
 /**
@@ -56,11 +61,16 @@ export const postThreadsFilter = async (
 export const getPostDetail = async (
   params: GetThreadLookUpRequest,
 ): Promise<GetThreadLookUpResponse> => {
-  const response = await axiosInstance.get<GetThreadLookUpResponse>(
-    "/thread/lookUp",
-    {
-      params: { threadId: params.threadId },
-    },
-  );
-  return response.data;
+  try {
+    const response = await axiosInstance.get<GetThreadLookUpResponse>(
+      "/thread/lookUp",
+      {
+        params: { threadId: params.threadId },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching post detail:", error);
+    throw error;
+  }
 };
