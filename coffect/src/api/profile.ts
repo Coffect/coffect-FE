@@ -6,6 +6,7 @@ import type {
   patchProfileDetailType,
   profileDetailItemType,
   logoutType,
+  timeLineType,
 } from "@/types/mypage/profile";
 import { AxiosError } from "axios";
 
@@ -97,6 +98,34 @@ export const getProfileSearch = async (id: string): Promise<profileType> => {
   } catch (error) {
     console.error("API 호출 중 에러 발생:", error);
     throw new Error("프로필을 불러올 수 없습니다. 다시 시도해주세요.");
+  }
+};
+
+export const getTimeLine = async (): Promise<timeLineType> => {
+  try {
+    const res = await axiosInstance.get<timeLineType>("/profile/getTimeLine");
+    return res.data;
+  } catch (error) {
+    console.error("API 호출 중 에러 발생:", error);
+    throw new Error("타임라인을 불러올 수 없습니다. 다시 시도해주세요.");
+  }
+};
+
+export const patchTimeLine = async (
+  timeline: string,
+): Promise<timeLineType> => {
+  try {
+    const res = await axiosInstance.patch<timeLineType>(
+      "/profile/fixTimeLine",
+      undefined,
+      {
+        params: { timeLine: timeline },
+      },
+    );
+    return res.data;
+  } catch (error) {
+    console.error("API 호출 중 에러 발생:", error);
+    throw new Error("타임라인을 불러올 수 없습니다. 다시 시도해주세요.");
   }
 };
 

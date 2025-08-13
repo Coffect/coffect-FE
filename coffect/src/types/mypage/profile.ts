@@ -74,6 +74,16 @@ export type profileDetailItemType = {
   isMain: boolean;
 };
 
+export type timeLineType = {
+  resultType: string;
+  error: null | {
+    errorCode: string;
+    reason: string;
+    data: null | string;
+  };
+  success: null | string;
+};
+
 export type logoutType = {
   resultType: string;
   error: null | {
