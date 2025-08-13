@@ -59,7 +59,7 @@ const FeedItem = ({
             // disabled={isFollowing}
             className="rounded-md bg-[var(--gray-60)] px-4 py-1.5 text-sm font-semibold text-white disabled:bg-gray-300"
           >
-            팔로우
+            {post.isFollowing ? "팔로잉" : "팔로우"}
           </button>
         )}
       </PostAuthorInfo>

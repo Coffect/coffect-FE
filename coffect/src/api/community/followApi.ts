@@ -21,7 +21,7 @@ export const postFollow = async (
     }
     return response.data;
   } catch (error) {
-    console.error("Error fetching comments:", error);
+    console.error("Error fetching follow:", error);
     throw error;
   }
 };
