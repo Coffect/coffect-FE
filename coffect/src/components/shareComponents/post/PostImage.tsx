@@ -11,7 +11,7 @@ import React from "react";
  * @property {string} [alt] - 이미지에 대한 설명 텍스트입니다. (웹 접근성)
  */
 interface PostImageProps {
-  src?: string;
+  src: string | null;
   alt?: string;
 }
 

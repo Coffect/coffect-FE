@@ -33,34 +33,35 @@ export function formatKoreanDateShort(dateStr: string) {
 }
 
 /**
- * 시간을 상대적으로 표시하는 함수
- * @param date - 표시할 날짜
- * @returns 상대적 시간 문자열 (예: "지금", "20분 전", "1시간 전", "2일 전")
+ * @author 흥부/강신욱
+ * @description 주어진 날짜 문자열을 현재 시간과 비교하여 "X분 전", "X시간 전", "X일 전" 등의 형식으로 변환합니다.
+ * @param dateString
+ * @example "2023-10-01T12:00:00Z" 형식의 날짜 문자열을 입력으로 받습니다.
+ * "2023-10-01T12:00:00Z" -> "2시간 전" (현재 시간이 2023-10-01T14:00:00Z인 경우)
+ * "2023-10-01T12:00:00Z" -> "어제" (현재 시간이 2023-10-02T12:00:00Z인 경우)
+ * @returns
  */
-export const getRelativeTime = (date: Date | string): string => {
+export function getTimeAgo(dateString: string): string {
   const now = new Date();
-  const targetDate = typeof date === "string" ? new Date(date) : date;
+  const date = new Date(dateString);
+  const diffMilliseconds = now.getTime() - date.getTime();
+  const diffSeconds = Math.floor(diffMilliseconds / 1000);
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
 
-  const diffInMs = now.getTime() - targetDate.getTime();
-  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-
-  if (diffInMinutes < 1) {
-    return "지금";
-  } else if (diffInMinutes < 60) {
-    return `${diffInMinutes}분 전`;
-  } else if (diffInHours < 24) {
-    return `${diffInHours}시간 전`;
-  } else if (diffInDays < 7) {
-    return `${diffInDays}일 전`;
+  if (diffMinutes < 1) {
+    return "방금 전";
+  } else if (diffMinutes < 60) {
+    return `${diffMinutes}분 전`;
+  } else if (diffHours < 24) {
+    return `${diffHours}시간 전`;
+  } else if (diffDays === 1) {
+    return "어제";
   } else {
-    return targetDate.toLocaleDateString("ko-KR", {
-      month: "short",
-      day: "numeric",
-    });
+    return `${diffDays}일 전`;
   }
-};
+}
 
 /**
  * @author 흥부/강신욱
