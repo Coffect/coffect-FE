@@ -60,10 +60,7 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
   showEmptyState = true,
 }) => {
   const navigate = useNavigate();
-  const { chatRooms, isLoading, error, unreadCount } = useChatRooms({
-    autoRefresh: true,
-    refreshInterval: 30000, // 30초마다 새로고침
-  });
+  const { chatRooms, isLoading, error } = useChatRooms();
 
   const handleChatRoomClick = (chatRoom: ChatRoom) => {
     onChatRoomSelect?.(chatRoom);
@@ -126,11 +123,6 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
       <div className="border-b border-gray-200 px-4 py-3">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">채팅</h2>
-          {unreadCount > 0 && (
-            <span className="rounded-full bg-red-500 px-2 py-1 text-xs text-white">
-              {unreadCount}
-            </span>
-          )}
         </div>
       </div>
 

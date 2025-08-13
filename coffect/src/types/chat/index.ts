@@ -52,6 +52,7 @@ export interface ChatRoomWithUser extends ChatRoom {
   userInfo?: {
     name: string;
     major: string;
+    profileImage?: string;
   };
 }
 

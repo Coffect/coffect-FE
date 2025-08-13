@@ -1,11 +1,7 @@
 /*
  * author : 앨리스/박은지
  * description : [커피챗 일정 등록] 컴포넌트
-<<<<<<< HEAD
  * 일정 등록 폼, 완료 모달 연결
-=======
- * 완료 모달 연결
->>>>>>> 552b968a2bb03d7cc903cac53139a56fd74252fb
  */
 
 import React, { useState } from "react";
@@ -15,15 +11,11 @@ import type { ScheduleFormValues } from "./ScheduleForm";
 import ScheduleCompleteModal from "./ScheduleCompleteModal";
 import DeleteScheduleModal from "./DeleteScheduleModal";
 import { X } from "lucide-react";
-import ExampleProfile from "../../assets/icon/chat/ExampleProfile.png";
-import ExampleProfile2 from "../../assets/icon/chat/ExampleProfile2.png";
-
-const MY_PROFILE_IMG = ExampleProfile2;
-const OTHER_PROFILE_IMG = ExampleProfile;
-const NICKNAME = "김라떼";
+import { useChatUser } from "./hooks/useChatUser";
 
 const Schedule: React.FC = () => {
   const location = useLocation();
+  const user = useChatUser();
   const [form, setForm] = useState<ScheduleFormValues>(() => {
     // 기존 일정이 있는지 확인 (수정하기)
     const sch = location.state?.schedule;
@@ -90,22 +82,26 @@ const Schedule: React.FC = () => {
           일정 등록
         </div>
         <div className="flex w-full items-center justify-start">
-          <div className="z-10 -mr-2 h-9 w-9 overflow-hidden rounded-full border-2 border-[var(--white)]">
-            <img
-              src={OTHER_PROFILE_IMG}
-              alt="상대 프로필"
-              className="h-full w-full object-cover"
-            />
+          <div className="z-10 -mr-2 h-9 w-9 overflow-hidden rounded-full border-2 border-[var(--white)] bg-[var(--gray-10)]">
+            {user.profileImage && (
+              <img
+                src={user.profileImage || ""}
+                alt="상대 프로필"
+                className="h-full w-full object-cover"
+              />
+            )}
           </div>
-          <div className="z-0 h-9 w-9 overflow-hidden rounded-full border-2 border-[var(--white)]">
-            <img
-              src={MY_PROFILE_IMG}
-              alt="내 프로필"
-              className="h-full w-full object-cover"
-            />
+          <div className="z-0 h-9 w-9 overflow-hidden rounded-full border-2 border-[var(--white)] bg-[var(--gray-10)]">
+            {user.profileImage && (
+              <img
+                src={user.profileImage}
+                alt="내 프로필"
+                className="h-full w-full object-cover"
+              />
+            )}
           </div>
           <span className="ml-2 text-[20px] font-bold tracking-tight text-[#FF8126]">
-            {NICKNAME}
+            {user.username}
           </span>
           <span className="text-[20px] font-bold tracking-tight text-[var(--gray-90)]">
             님과의 커피챗

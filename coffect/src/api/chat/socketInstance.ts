@@ -13,19 +13,24 @@ class SocketManager {
   // Socket 연결
   connect(token?: string) {
     if (this.socket?.connected) {
-      console.log("Socket is already connected");
+      console.log("Socket 연결됨");
       return;
     }
 
     const socketUrl =
       import.meta.env.VITE_SOCKET_URL || "http://13.124.169.70:3000";
 
+    console.log("소켓 연결 시도:", socketUrl);
+
     this.socket = io(socketUrl, {
       auth: {
         token: token || localStorage.getItem("accessToken"),
       },
-      transports: ["websocket", "polling"],
+      transports: ["polling", "websocket"], // polling을 먼저 시도
       autoConnect: true,
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
 
     this.setupEventListeners();
@@ -36,25 +41,34 @@ class SocketManager {
     if (!this.socket) return;
 
     this.socket.on("connect", () => {
-      console.log("Socket connected:", this.socket?.id);
+      console.log("Socket 연결 성공");
       this.isConnected = true;
     });
 
     this.socket.on("disconnect", (reason) => {
-      console.log("Socket disconnected:", reason);
+      console.log("Socket 연결 해제:", reason);
       this.isConnected = false;
     });
 
     this.socket.on("connect_error", (error) => {
-      console.error("Socket connection error:", error);
+      console.error("Socket 연결 실패:", error);
       this.isConnected = false;
+    });
+
+    this.socket.on("reconnect", (attemptNumber) => {
+      console.log("Socket 재연결 성공:", attemptNumber);
+      this.isConnected = true;
+    });
+
+    this.socket.on("reconnect_error", (error) => {
+      console.error("Socket 재연결 실패:", error);
     });
   }
 
   // 채팅방 입장
   joinRoom(chatRoomId: string, userId: number) {
     if (!this.socket?.connected) {
-      console.error("Socket is not connected");
+      console.error("Socket 연결 끊김");
       return;
     }
 
@@ -67,7 +81,7 @@ class SocketManager {
   // 채팅방 퇴장
   leaveRoom(chatRoomId: string, userId: number) {
     if (!this.socket?.connected) {
-      console.error("Socket is not connected");
+      console.error("Socket 연결 끊김");
       return;
     }
 

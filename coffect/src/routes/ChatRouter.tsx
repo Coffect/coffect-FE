@@ -8,9 +8,8 @@ const ChatRouter: React.FC = () => {
   return (
     <Routes>
       <Route path="" element={<Chat />} />
-      <Route path=":id" element={<ChatRoom />} />
-      <Route path="room/:id" element={<ChatRoom />} />
-      <Route path="/schedule" element={<Schedule />} />
+      <Route path=":chatRoomId" element={<ChatRoom />} />
+      <Route path="schedule" element={<Schedule />} />
     </Routes>
   );
 };

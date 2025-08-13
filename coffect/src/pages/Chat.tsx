@@ -7,22 +7,17 @@
 import BottomNavbar from "../components/shareComponents/BottomNavbar";
 import { useNavigate } from "react-router-dom";
 import EmptyChatList from "../assets/icon/chat/EmptyChatList.png";
-import ExampleProfile from "../assets/icon/chat/ExampleProfile.png";
+
 import { useChatRooms } from "../hooks/chat";
-import TestAPI from "../components/TestAPI";
-import { socketManager } from "../api/chat";
 
 const Chat = () => {
   const navigate = useNavigate();
-  const { chatRooms, isLoading, error } = useChatRooms({
-    autoRefresh: true,
-    refreshInterval: 30000, // 30초마다 새로고침
-  });
+  const { chatRooms, isLoading, error } = useChatRooms();
 
   if (isLoading) {
     return (
       <div className="flex h-full w-full flex-col bg-[var(--white)]">
-        <div className="flex items-center justify-between px-5 pt-8 pb-3">
+        <div className="flex items-center justify-between px-5 pt-8">
           <span className="ml-2 text-2xl font-bold text-[var(--gray-90)]">
             채팅
           </span>
@@ -60,23 +55,9 @@ const Chat = () => {
         <span className="ml-2 text-2xl font-bold text-[var(--gray-90)]">
           채팅
         </span>
-        {/* Socket 연결 상태 표시 */}
-        <div className="flex items-center gap-2">
-          <div
-            className={`h-3 w-3 rounded-full ${socketManager.isSocketConnected() ? "bg-green-500" : "bg-red-500"}`}
-          ></div>
-          <span
-            className={`text-sm ${socketManager.isSocketConnected() ? "text-green-600" : "text-red-600"}`}
-          >
-            {socketManager.isSocketConnected() ? "연결됨" : "연결 안됨"}
-          </span>
-        </div>
       </div>
       {/* Chat List */}
       <div className="flex-1 overflow-y-auto px-2 pb-20">
-        {/* API 테스트 컴포넌트 (임시) */}
-        <TestAPI />
-
         {/* 메시지 없을 때 */}
         {chatRooms.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center pt-24">
@@ -104,13 +85,8 @@ const Chat = () => {
               className="mb-2 flex cursor-pointer items-start border-b border-[var(--gray-10)] px-3 py-5 hover:bg-[var(--gray-5)]"
               onClick={() => navigate(`/chat/${chat.chatroomId}`)}
             >
-              {/* 임시 프로필 */}
+              {/* 프로필 */}
               <div className="relative flex h-13 w-13 items-center justify-center rounded-full bg-[var(--gray-20)]">
-                <img
-                  src={ExampleProfile}
-                  alt="프로필"
-                  className="h-full w-full object-cover"
-                />
                 {!chat.check && (
                   <span className="absolute -top-0 -right-1 h-4 w-4 rounded-full border-2 border-[var(--white)] bg-[var(--noti)]"></span>
                 )}

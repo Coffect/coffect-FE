@@ -32,9 +32,8 @@ const getBaseURL = () => {
     return import.meta.env.VITE_SERVER_API_URL;
   }
 
-  // vercel에서 mixed content 방지를 위해 빈 문자열 반환
-  // vercel.json을 통해 path 설정
-  return "/api";
+  // 실제 서버 주소로 설정
+  return "http://13.124.169.70:3000";
 };
 
 // Axios 인스턴스 생성

@@ -41,7 +41,7 @@ const useHandleSend = ({
 
   const handleSend = useCallback(
     async (msg: string) => {
-      if (!msg.trim()) return;
+      if (!msg.trim() || !chatRoomId) return;
 
       // 먼저 로컬에 메시지 추가 (낙관적 업데이트)
       const tempMessage: Message = {
@@ -74,6 +74,7 @@ const useHandleSend = ({
       getCurrentTime,
       sendMessage,
       onSuccess,
+      chatRoomId,
     ],
   );
 

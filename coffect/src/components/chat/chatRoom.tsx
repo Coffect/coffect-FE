@@ -5,7 +5,7 @@
  */
 
 import { useMemo, useState, useRef, useEffect } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import usePreventZoom from "./hooks/usePreventZoom";
 import useModal from "./hooks/useModal";
 import RequestModal from "./RequestModal";
@@ -13,19 +13,22 @@ import ChatInputBox from "./ChatInputBox";
 import ChatHeader from "./ChatHeader";
 import ChatInterestsSection from "./ChatInterestsSection";
 import ChatMessageArea from "./ChatMessageArea";
+import LoadingScreen from "../shareComponents/LoadingScreen";
 import { useChatUser } from "./hooks/useChatUser";
+import { useChatRooms } from "../../hooks/chat/useChatRooms";
 import useHandleSend from "./hooks/useHandleSend";
 import useAutoScroll from "./hooks/useAutoScroll";
 import useCurrentTime from "./hooks/useCurrentTime";
-import { socketManager } from "../../api/chat";
 import { getChatMessages } from "../../api/chat";
 import type { Schedule } from "./hooks/useSchedule";
-import type { Message, SocketMessage } from "../../types/chat";
+import type { Message } from "../../types/chat";
 
 const ChatRoom = () => {
   usePreventZoom();
   const location = useLocation();
+  const navigate = useNavigate();
   const { chatRoomId } = useParams<{ chatRoomId: string }>();
+  const [isProfileLoading, setIsProfileLoading] = useState(false);
 
   const {
     isOpen: isModalOpen,
@@ -45,10 +48,18 @@ const ChatRoom = () => {
     };
   }, [location.state?.schedule]);
 
+  // 채팅방 목록에서 현재 채팅방 정보 가져오기
+  const { chatRooms, isLoading: chatRoomsLoading } = useChatRooms();
+  const currentChatRoom = useMemo(() => {
+    const foundRoom = chatRooms.find((room) => room.chatroomId === chatRoomId);
+    return foundRoom;
+  }, [chatRooms, chatRoomId]);
+
   // 메시지 배열 (실제 소켓 통신용)
   const [messages, setMessages] = useState<Message[]>([]);
 
   const [inputValue, setInputValue] = useState("");
+  const [showInterests, setShowInterests] = useState(true);
   const getCurrentTime = useCurrentTime();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const createdObjectUrlsRef = useRef<string[]>([]);
@@ -68,7 +79,7 @@ const ChatRoom = () => {
   }, []);
 
   const { handleSend } = useHandleSend({
-    chatRoomId: chatRoomId || "temp-room-id",
+    chatRoomId: chatRoomId || "",
     messages,
     setMessages,
     setInputValue,
@@ -96,22 +107,23 @@ const ChatRoom = () => {
     ]);
   };
 
+  const handleToggleInterests = () => {
+    setShowInterests((prev) => !prev);
+  };
+
+  const handleProfileClick = () => {
+    setIsProfileLoading(true);
+    setTimeout(() => {
+      navigate(`/userpage/${currentChatRoom?.userId || "0"}`);
+      setIsProfileLoading(false); // Reset after navigation
+    }, 500);
+  };
+
   const user = useChatUser();
 
   // 채팅방 입장 및 메시지 로딩
   useEffect(() => {
     if (!chatRoomId) return;
-
-    // 소켓 연결 확인 및 채팅방 입장
-    if (socketManager.isSocketConnected()) {
-      socketManager.joinRoom(chatRoomId, user.id);
-    } else {
-      // 소켓이 연결되지 않은 경우 연결 후 입장
-      socketManager.connect();
-      setTimeout(() => {
-        socketManager.joinRoom(chatRoomId, user.id);
-      }, 1000);
-    }
 
     // 기존 메시지 로딩
     const loadMessages = async () => {
@@ -131,6 +143,7 @@ const ChatRoom = () => {
             }),
             mine: msg.userId === user.id,
           }));
+
           setMessages(convertedMessages);
         }
       } catch (error) {
@@ -139,47 +152,36 @@ const ChatRoom = () => {
     };
 
     loadMessages();
+  }, [chatRoomId, user.id]);
 
-    // 메시지 수신 리스너 설정
-    const handleReceiveMessage = (message: SocketMessage) => {
-      if (message.chatRoomId === chatRoomId) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: parseInt(message.id),
-            type: message.isPhoto ? "image" : "text",
-            text: message.isPhoto ? "" : message.messageBody,
-            imageUrl: message.isPhoto ? message.messageBody : "",
-            time: new Date(message.createdAt).toLocaleTimeString("ko-KR", {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            }),
-            mine: message.userId === user.id,
-          },
-        ]);
-      }
-    };
+  // 전체 로딩 상태 (채팅방 목록 로딩 + 프로필 클릭 로딩)
+  const overallLoading = chatRoomsLoading || isProfileLoading;
 
-    socketManager.onReceiveMessage(handleReceiveMessage);
-
-    // 컴포넌트 언마운트 시 채팅방 퇴장
-    return () => {
-      socketManager.leaveRoom(chatRoomId, user.id);
-      socketManager.off("receive_message");
-    };
-  }, [chatRoomId, user.id, getCurrentTime]);
+  // 전체 로딩 중일 때 LoadingScreen 표시
+  if (overallLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="flex h-full w-full flex-col bg-[var(--white)]">
       {/* Header */}
-      <ChatHeader username={user.username} userId={user.id.toString()} />
+      <ChatHeader
+        username={currentChatRoom?.userInfo?.name || "상대방"}
+        profileImage={currentChatRoom?.userInfo?.profileImage}
+        onProfileClick={handleProfileClick}
+      />
 
       {/* 관심 주제 & 버튼 */}
       <ChatInterestsSection
         interests={user.interests}
         schedule={schedule}
         onOpenModal={openModal}
+        showInterests={showInterests}
+        onToggleInterests={handleToggleInterests}
+        opponentInfo={{
+          name: currentChatRoom?.userInfo?.name || "상대방",
+          profileImage: currentChatRoom?.userInfo?.profileImage,
+        }}
       />
 
       {/* 팝업 모달 */}
@@ -190,7 +192,10 @@ const ChatRoom = () => {
       />
 
       {/* 메시지 영역 */}
-      <ChatMessageArea messages={messages} />
+      <ChatMessageArea
+        messages={messages}
+        username={currentChatRoom?.userInfo?.name}
+      />
 
       {/* 입력창 */}
       <ChatInputBox

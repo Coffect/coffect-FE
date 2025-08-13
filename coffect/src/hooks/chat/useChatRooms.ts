@@ -3,48 +3,35 @@
  * description : 채팅방 목록 조회, 소켓 연결 관리
  */
 
-import { useState, useEffect, useCallback } from "react";
-import { getChatRoomList, socketManager } from "../../api/chat";
-import {
-  getUserStringId,
-  getUserNameById,
-  getUserDeptById,
-} from "../../api/home";
-import { getProfile } from "../../api/profile";
+import { useState, useEffect } from "react";
+import { getChatRoomList } from "../../api/chat/chatRoomApi";
+import { getProfile, getProfileSearch } from "../../api/profile";
+import { getUserStringId } from "../../api/home";
+// import { socketManager } from "../../api/chat"; // CORS 문제로 비활성화
 import type { ChatRoomWithUser } from "../../types/chat";
 
-interface UseChatRoomsOptions {
-  autoRefresh?: boolean;
-  refreshInterval?: number;
-}
-
-export const useChatRooms = ({
-  autoRefresh = false,
-  refreshInterval = 30000, // 30초마다 자동 새로고침
-}: UseChatRoomsOptions = {}) => {
+export const useChatRooms = () => {
   const [chatRooms, setChatRooms] = useState<ChatRoomWithUser[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // 채팅방 목록 조회
-  const loadChatRooms = useCallback(async () => {
+  const loadChatRooms = async () => {
     try {
       setIsLoading(true);
       setError(null);
 
-      // 소켓 연결 시작
-      socketManager.connect();
+      // 소켓 연결 비활성화 (CORS 문제로 인해)
+      // socketManager.connect();
 
       const response = await getChatRoomList();
       const chatRoomsData = response.success;
 
-      // 각 채팅방의 사용자 정보를 병렬로 가져오기
       // 현재 사용자 정보 가져오기
       const currentUserProfile = await getProfile();
       const currentUserId = currentUserProfile.success?.userInfo?.userId;
 
       if (!currentUserId) {
-        console.error("현재 사용자 ID를 가져올 수 없음");
         setError("사용자 정보를 가져올 수 없습니다.");
         return;
       }
@@ -52,73 +39,68 @@ export const useChatRooms = ({
       const chatRoomsWithUserInfo = await Promise.all(
         chatRoomsData.map(async (chatRoom) => {
           try {
-            // chatRoom.userId가 상대방의 ID인지 확인
-            // 만약 chatRoom.userId가 현재 사용자의 ID라면, 다른 방법으로 상대방 ID를 찾아야 함
+            // 상대방 ID 찾기
             const opponentUserId =
-              chatRoom.userId === currentUserId
-                ? null // 현재 사용자와 같은 ID라면 상대방 ID를 찾는 다른 방법 필요
-                : chatRoom.userId; // 상대방의 ID
+              chatRoom.userId === currentUserId ? null : chatRoom.userId;
 
             if (!opponentUserId) {
-              console.log(
-                `채팅방 ${chatRoom.chatroomId}에서 상대방 ID를 찾을 수 없음`,
-              );
               return {
                 ...chatRoom,
                 userInfo: {
-                  name: `상대방`,
+                  name: "상대방",
                   major: "전공 정보 없음",
+                  profileImage: "",
                 },
               };
             }
 
-            console.log(`상대방 ${opponentUserId} 정보 가져오기 시작`);
-
-            // 상대방의 사용자 정보 가져오기
+            // 상대방의 stringId 가져오기
             const stringId = await getUserStringId(opponentUserId);
-            console.log(`상대방 ${opponentUserId}의 stringId:`, stringId);
 
-            if (stringId) {
-              // 상대방 이름과 전공 정보 가져오기
-              const [nameResponse, deptResponse] = await Promise.all([
-                getUserNameById(stringId),
-                getUserDeptById(stringId),
-              ]);
-
-              console.log(`상대방 ${opponentUserId}의 이름:`, nameResponse);
-              console.log(`상대방 ${opponentUserId}의 전공:`, deptResponse);
+            // 상대방의 전체 프로필 가져오기
+            try {
+              const profileResponse = await getProfileSearch(stringId);
+              const userInfo = profileResponse.success?.userInfo;
 
               return {
                 ...chatRoom,
                 userInfo: {
-                  name: nameResponse || `상대방`,
-                  major: deptResponse || "전공 정보 없음",
+                  name: userInfo?.name || "상대방",
+                  major: userInfo?.dept || "전공 정보 없음",
+                  profileImage: userInfo?.profileImage || "",
                 },
               };
-            } else {
-              console.log(
-                `상대방 ${opponentUserId}의 stringId를 가져올 수 없음`,
-              );
+            } catch {
+              // 프로필 로딩 실패 시 기본값 반환
+              return {
+                ...chatRoom,
+                userInfo: {
+                  name: "상대방",
+                  major: "전공 정보 없음",
+                  profileImage: "",
+                },
+              };
             }
-          } catch (error) {
-            console.error(
-              `상대방 ${chatRoom.userId} 정보 가져오기 실패:`,
-              error,
-            );
+          } catch {
+            // 전체 처리 실패 시 기본값 반환
+            return {
+              ...chatRoom,
+              userInfo: {
+                name: "상대방",
+                major: "전공 정보 없음",
+                profileImage: "",
+              },
+            };
           }
-
-          // 실패 시 기본값 반환
-          return {
-            ...chatRoom,
-            userInfo: {
-              name: `상대방`,
-              major: "전공 정보 없음",
-            },
-          };
         }),
       );
 
-      setChatRooms(chatRoomsWithUserInfo);
+      // undefined 값 필터링 및 타입 명시
+      const validChatRooms = chatRoomsWithUserInfo.filter(
+        (room) => room !== undefined,
+      ) as ChatRoomWithUser[];
+
+      setChatRooms(validChatRooms);
     } catch (err: unknown) {
       const error = err as {
         response?: { data?: { error?: { reason?: string } } };
@@ -130,25 +112,12 @@ export const useChatRooms = ({
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  };
 
   // 초기 로드
   useEffect(() => {
     loadChatRooms();
-  }, [loadChatRooms]);
-
-  // 자동 새로고침
-  useEffect(() => {
-    if (!autoRefresh) return;
-
-    const interval = setInterval(() => {
-      loadChatRooms();
-    }, refreshInterval);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [autoRefresh, refreshInterval, loadChatRooms]);
+  }, []); // 빈 dependency array로 한 번만 실행
 
   // 채팅방 목록 정렬 (최근 메시지 순)
   const sortedChatRooms = [...chatRooms].sort((a, b) => {
