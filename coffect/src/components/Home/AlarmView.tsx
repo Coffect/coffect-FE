@@ -1,11 +1,29 @@
 /*
   author      : 이희선
-  description : 전체 알림 목록을 보여주는 화면 컴포넌트
+  description : 전체 알림 목록 화면 (API 연동 + 개별 읽음 처리)
 */
 
+import { useEffect, useState } from "react";
 import TopNavbar from "./TopNavbar";
-import NoAlarm from "./NoAlarm"; // 추가: 알림 없음 컴포넌트 import
+import NoAlarm from "./NoAlarm";
+import { getNotifications, markAsRead } from "@/api/alert";
+import { getRelativeTime } from "@/utils/dateUtils";
 
+interface ApiNotification {
+  notificationId: number;
+  userId: number;
+  type: string;
+  title: string;
+  body: string;
+  data?: {
+    type?: string;
+    coffectId?: string;
+    firstUserId?: string;
+    firstUserName?: string;
+  };
+  isRead: boolean;
+  createdAt: string; // ISO 문자열
+}
 interface AlarmItem {
   id: number;
   username: string;
@@ -15,44 +33,20 @@ interface AlarmItem {
   unread?: boolean;
 }
 
-// 더미 알림 데이터 (없을 때는 빈 배열로 테스트)
-const dummyAlarms: AlarmItem[] = [
-  {
-    id: 1,
-    username: "김라떼",
-    message: " 커피챗을 수락했어요!",
-    time: "2분전",
-    image: "https://picsum.photos/seed/user1/40",
-    unread: true,
-  },
-  {
-    id: 2,
-    username: "김라떼",
-    message: " 회원님의 게시글을 좋아합니다!",
-    time: "1시간전",
-    image: "https://picsum.photos/seed/user2/40",
-    unread: false,
-  },
-  {
-    id: 3,
-    username: "김라떼",
-    message: " 회원님을 팔로우하기 시작했어요!",
-    time: "3일전",
-    image: "https://picsum.photos/seed/user3/40",
-    unread: false,
-  },
-];
-
-// 알림 항목 UI
 const AlarmItemView = ({
   username,
   message,
   time,
   image,
   unread,
-}: AlarmItem) => {
+  onClick,
+}: AlarmItem & { onClick?: () => void }) => {
   return (
-    <div className="flex items-center gap-[12px] border-b-2 border-[var(--gray-10)] bg-[var(--gray-0)] py-4 pl-[5%]">
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex w-full items-center gap-[12px] border-b-2 border-[var(--gray-10)] bg-[var(--gray-0)] py-4 pl-[5%] text-left"
+    >
       {/* 프로필 이미지 + 빨간 점 */}
       <div className="relative">
         <img
@@ -75,25 +69,82 @@ const AlarmItemView = ({
           {time}
         </p>
       </div>
-    </div>
+    </button>
   );
 };
 
-// 전체 알림 리스트 화면
 const AlarmView = () => {
+  const [alarms, setAlarms] = useState<AlarmItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // 알림 목록 로드
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await getNotifications();
+        const mapped: AlarmItem[] = (res?.success ?? []).map(
+          (n: ApiNotification) => ({
+            id: n.notificationId,
+            username: n?.data?.firstUserName ?? "알 수 없음",
+            // 예: "김더미님의 커피챗 제안이 도착했어요!" → 앞의 이름 제거
+            message:
+              " " +
+              (n?.body
+                ? n.body.replace(String(n?.data?.firstUserName ?? ""), "")
+                : ""),
+            time: getRelativeTime(n.createdAt),
+            image: "https://picsum.photos/400/400",
+            unread: !n.isRead,
+          }),
+        );
+        setAlarms(mapped);
+      } catch (e) {
+        console.error("알림 불러오기 실패:", e);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  // 개별 읽음 처리(낙관적 업데이트)
+  const handleMarkRead = async (id: number) => {
+    // 1) UI 먼저 반영
+    const prev = alarms;
+    setAlarms((list) =>
+      list.map((a) => (a.id === id ? { ...a, unread: false } : a)),
+    );
+
+    try {
+      await markAsRead(id);
+    } catch (e) {
+      console.error("읽음 처리 실패:", e);
+      // 2) 실패 시 롤백
+      setAlarms(prev);
+    }
+  };
+
   return (
     <div className="relative flex h-screen w-full flex-col bg-[var(--gray-0)]">
       {/* 상단바 */}
       <div className="flex">
         <TopNavbar pageType="alarm" />
       </div>
-      {/* 알림 리스트 or 빈 상태 */}
+
+      {/* 본문 */}
       <div className="flex-1 overflow-y-auto">
-        {dummyAlarms.length === 0 ? (
+        {loading ? (
+          <div className="flex h-full items-center justify-center text-[var(--gray-50)]">
+            불러오는 중...
+          </div>
+        ) : alarms.length === 0 ? (
           <NoAlarm />
         ) : (
-          dummyAlarms.map((alarm) => (
-            <AlarmItemView key={alarm.id} {...alarm} />
+          alarms.map((alarm) => (
+            <AlarmItemView
+              key={alarm.id}
+              {...alarm}
+              onClick={() => handleMarkRead(alarm.id)}
+            />
           ))
         )}
       </div>
