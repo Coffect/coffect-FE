@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { axiosInstance } from "../api/axiosInstance";
 
 export interface TimeTableData {
@@ -11,7 +11,7 @@ export const useTimeTable = (userId: number) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTimeTable = async () => {
+  const fetchTimeTable = useCallback(async () => {
     if (!userId) return;
 
     setLoading(true);
@@ -35,11 +35,11 @@ export const useTimeTable = (userId: number) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
 
   useEffect(() => {
     fetchTimeTable();
-  }, [userId]);
+  }, [fetchTimeTable]);
 
   return {
     timeTable,

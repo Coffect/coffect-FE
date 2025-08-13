@@ -176,7 +176,7 @@ const ChatRoom = () => {
     setIsProfileLoading(true);
     // string ID로 네비게이션
     navigate(`/userpage/${id}`);
-    setIsProfileLoading(false);
+    // 로딩 상태는 언마운트 시 자동으로 정리됨
   };
 
   const { user, loading: userLoading } = useChatUser();

@@ -22,11 +22,16 @@ export const useScheduleForm = (values: ScheduleFormValues) => {
     coffeeDate: string;
     coffectId: number;
   }) => {
-    const response = await axiosInstance.patch(
-      "/home/fixCoffeeChatSchedule",
-      scheduleData,
-    );
-    return response.data;
+    try {
+      const response = await axiosInstance.patch(
+        "/home/fixCoffeeChatSchedule",
+        scheduleData,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("[fixCoffeeChatSchedule] API 호출 실패:", error);
+      throw error;
+    }
   };
 
   return {
