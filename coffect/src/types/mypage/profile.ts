@@ -120,3 +120,13 @@ export type postChatStartType = {
     chatRoomId: string;
   };
 };
+
+export type deleteUserType = {
+  resultType: string;
+  error: null | {
+    errorCode: string;
+    reason: string;
+    data: null | string;
+  };
+  success: null | string;
+};

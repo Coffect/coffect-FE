@@ -4,6 +4,9 @@ description : 회원 탈퇴 시 확인 모달을 출력하는 컴포넌트입니
 */
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { deleteUser } from "@/api/profile";
 
 interface LeaveModalProps {
   open: boolean;
@@ -15,6 +18,19 @@ interface LeaveModalProps {
 */
 const LeaveModal: React.FC<LeaveModalProps> = ({ open, onClose }) => {
   // 모달이 열려있지 않으면 null 반환
+
+  const navigate = useNavigate();
+
+  const { mutate: deleteUserMutate } = useMutation({
+    mutationFn: () => deleteUser(),
+    onSuccess: () => {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      onClose();
+      navigate("/signup");
+    },
+  });
+
   if (!open) return null;
 
   return (
@@ -51,7 +67,10 @@ const LeaveModal: React.FC<LeaveModalProps> = ({ open, onClose }) => {
           >
             더 써볼래요
           </button>
-          <button className="flex-1 rounded-br-2xl bg-[var(--gray-80)] py-4 font-semibold text-white transition">
+          <button
+            className="flex-1 rounded-br-2xl bg-[var(--gray-80)] py-4 font-semibold text-white transition"
+            onClick={() => deleteUserMutate()}
+          >
             떠날래요
           </button>
         </div>

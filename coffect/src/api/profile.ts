@@ -9,6 +9,7 @@ import type {
   timeLineType,
   postIsCoffeeChatType,
   postChatStartType,
+  deleteUserType,
 } from "@/types/mypage/profile";
 import { AxiosError } from "axios";
 
@@ -176,5 +177,15 @@ export const postChatStart = async (
 
     console.error("API 호출 중 에러 발생:", error);
     throw new Error("채팅을 시작할 수 없습니다. 다시 시도해주세요.");
+  }
+};
+
+export const deleteUser = async (): Promise<deleteUserType> => {
+  try {
+    const res = await axiosInstance.delete<deleteUserType>("/user/userDelete");
+    return res.data;
+  } catch (error) {
+    console.error("API 호출 중 에러 발생:", error);
+    throw new Error("회원탈퇴를 할 수 없습니다. 다시 시도해주세요.");
   }
 };
