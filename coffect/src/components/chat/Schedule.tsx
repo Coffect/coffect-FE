@@ -68,7 +68,9 @@ const Schedule: React.FC = () => {
   const handleDelete = () => {
     setShowDeleteModal(false);
     // 현재 채팅방으로 이동하면서 일정 정보 없음 상태로 전달
-    navigate(`/chat/${currentChatRoomId}`, { state: { schedule: null } });
+    navigate(currentChatRoomId ? `/chat/${currentChatRoomId}` : "/chat", {
+      state: { schedule: null },
+    });
   };
 
   // 일정 수정하기
@@ -143,16 +145,19 @@ const Schedule: React.FC = () => {
             onClose={() => {
               setShowComplete(false);
               resetForm();
-              navigate("/chat/room", {
-                state: {
-                  schedule: {
-                    date: form.date,
-                    time: form.time,
-                    place: form.place,
-                    alert: form.alert,
+              navigate(
+                currentChatRoomId ? `/chat/${currentChatRoomId}` : "/chat",
+                {
+                  state: {
+                    schedule: {
+                      date: form.date,
+                      time: form.time,
+                      place: form.place,
+                      alert: form.alert,
+                    },
                   },
                 },
-              });
+              );
             }}
           />
         )}

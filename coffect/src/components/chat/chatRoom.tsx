@@ -119,22 +119,35 @@ const ChatRoom = () => {
 
       // 성공 시 임시 메시지를 실제 서버 응답으로 교체
       if (response.success) {
+        const messageId =
+          typeof response.success.id === "string"
+            ? parseInt(response.success.id, 10)
+            : response.success.id;
+
+        if (isNaN(messageId)) {
+          console.error("Invalid message id:", response.success.id);
+          throw new Error("Invalid message id received from server");
+        }
+
+        const createdAt = new Date(response.success.createdAt);
+        if (isNaN(createdAt.getTime())) {
+          console.error("Invalid date:", response.success.createdAt);
+          throw new Error("Invalid date received from server");
+        }
+
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === tempId
               ? {
-                  id: parseInt(response.success.id),
+                  id: messageId,
                   type: "image" as const,
                   imageUrl: response.success.messageBody,
                   mine: true,
-                  time: new Date(response.success.createdAt).toLocaleTimeString(
-                    "ko-KR",
-                    {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: true,
-                    },
-                  ),
+                  time: createdAt.toLocaleTimeString("ko-KR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  }),
                 }
               : msg,
           ),
@@ -152,12 +165,18 @@ const ChatRoom = () => {
     setShowInterests((prev) => !prev);
   };
 
+  const PROFILE_NAVIGATION_DELAY = 500; // 상수로 분리
+
   const handleProfileClick = () => {
+    if (!currentChatRoom?.userId) {
+      console.error("사용자 ID를 찾을 수 없습니다");
+      return;
+    }
     setIsProfileLoading(true);
     setTimeout(() => {
-      navigate(`/userpage/${currentChatRoom?.userId || "0"}`);
+      navigate(`/userpage/${currentChatRoom.userId}`);
       setIsProfileLoading(false); // Reset after navigation
-    }, 500);
+    }, PROFILE_NAVIGATION_DELAY);
   };
 
   const { user, loading: userLoading } = useChatUser();
@@ -172,8 +191,7 @@ const ChatRoom = () => {
         // ChatMessage를 Message 타입으로 변환
         const convertedMessages: Message[] = response.success
           .map((msg) => {
-            const id =
-              typeof msg.id === "string" ? parseInt(msg.id, 10) : msg.id;
+            const id = parseInt(msg.id, 10);
             if (isNaN(id)) {
               console.error("Invalid message id:", msg.id);
               return null;

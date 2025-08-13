@@ -17,7 +17,7 @@ const ChatRoomItem: React.FC<ChatRoomItemProps> = ({ chatRoom, onClick }) => {
   return (
     <button
       type="button"
-      className="flex w-full items-center border-b border-gray-200 p-4 text-left transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="flex w-full items-center border-b border-gray-200 p-4 text-left transition-colors hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none"
       onClick={() => onClick(chatRoom)}
     >
       {/* 프로필 이미지 */}
@@ -47,7 +47,7 @@ const ChatRoomItem: React.FC<ChatRoomItemProps> = ({ chatRoom, onClick }) => {
           )}
         </div>
       </div>
-    </div>
+    </button>
   );
 };
 

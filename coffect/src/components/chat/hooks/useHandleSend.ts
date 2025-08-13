@@ -33,10 +33,10 @@ const useHandleSend = ({
 
   const handleSend = useCallback(
     async (msg: string) => {
-      console.log("handleSend 호출됨:", { msg, chatRoomId });
-
       if (!msg.trim() || !chatRoomId || chatRoomId === "") {
-        console.error("유효하지 않은 chatRoomId:", chatRoomId);
+        if (import.meta.env.MODE === "development") {
+          console.error("유효하지 않은 chatRoomId:", chatRoomId);
+        }
         return;
       }
 
@@ -50,22 +50,17 @@ const useHandleSend = ({
         mine: true,
       };
 
-      console.log("낙관적 업데이트 - 메시지 추가:", tempMessage);
       setMessages((prevMessages: Message[]) => [...prevMessages, tempMessage]);
       setInputValue("");
 
       // API로 메시지 전송
-      console.log("API 호출 시작...");
       const success = await sendMessage(msg);
-      console.log("API 호출 결과:", success);
 
       if (success) {
         // 성공 시 콜백 실행
-        console.log("메시지 전송 성공");
         onSuccess?.();
       } else {
         // 실패 시 로컬 메시지 제거
-        console.log("메시지 전송 실패 - 롤백");
         setMessages((prevMessages: Message[]) =>
           prevMessages.filter((m: Message) => m.id !== tempId),
         );
