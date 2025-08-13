@@ -8,7 +8,9 @@ description : 로그인 및 로그아웃 처리
 import { axiosInstance } from "./axiosInstance"; // 설정된 Axios 인스턴스 import
 import { LOCAL_STORAGE_KEY } from "../constants/key"; // 토큰 저장용 localStorage 키 상수 import
 import type { AxiosError } from "axios"; // Axios 에러 타입 import
-
+// FCM 유틸/API
+import { getFcmToken, deleteFcmToken } from "@/utils/fcm";
+import { registerFcmToken } from "@/api/alert";
 // 로그인 요청 시 필요한 파라미터 타입 정의
 type LoginRequest = {
   userId: string; // 사용자 ID
@@ -20,7 +22,17 @@ export const login = async (payload: LoginRequest) => {
   try {
     // POST 요청으로 로그인 API 호출
     const res = await axiosInstance.post("/user/login", payload);
+    // FCM 등록은 실패해도 로그인 자체는 성공으로 처리
+    void (async () => {
+      try {
+        const fcmToken = await getFcmToken();
+        console.log("FCM Token:", fcmToken);
 
+        if (fcmToken) await registerFcmToken(fcmToken);
+      } catch {
+        console.log("FCM Token 등록 실패, 로그인은 성공했습니다.");
+      }
+    })();
     // 응답에서 accessToken(aToken)과 refreshToken(rToken) 추출
     const { aToken, rToken } = res.data.success;
 
@@ -48,10 +60,15 @@ export const login = async (payload: LoginRequest) => {
   }
 };
 // 로그아웃 함수: 토큰 삭제 후 로그인 페이지로 이동
-export const logout = () => {
+export const logout = async () => {
   // 토큰 모두 제거
   localStorage.removeItem(LOCAL_STORAGE_KEY.accessToken);
   localStorage.removeItem(LOCAL_STORAGE_KEY.refreshToken);
+  try {
+    await deleteFcmToken();
+  } catch {
+    // ignore
+  }
 
   // 로그인 페이지로 이동
   window.location.href = "/";
