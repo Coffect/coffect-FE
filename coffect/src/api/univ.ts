@@ -30,7 +30,7 @@ export const sendMailCode = async (email: string, univName: string) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Failed to send mail code:', error);
+    console.error("Failed to send mail code:", error);
     throw error;
   }
 };
@@ -43,7 +43,7 @@ export const verifyEmailCode = async (email: string, certCode: number) => {
     });
     return res.data;
   } catch (error) {
-    console.error('Failed to verify email code:', error);
+    console.error("Failed to verify email code:", error);
     throw error;
   }
 };
@@ -89,4 +89,21 @@ export const signUpRequest = async ({
   });
 
   return response.data;
+};
+
+// 특정 이메일의 대학교 도메인 유효성 검증
+export const checkUnivDomain = async (email: string) => {
+  try {
+    const res = await axiosInstance.post(
+      "/univ/domain",
+      { email },
+      {
+        headers: { "X-Skip-Auth-Redirect": "true" }, // 이 요청만 401 리다이렉트 예외
+      },
+    );
+    return res.data;
+  } catch (error) {
+    console.error("Failed to check university domain:", error);
+    throw error;
+  }
 };
