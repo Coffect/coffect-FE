@@ -43,17 +43,17 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
       <TimePickerSection values={values} onChange={onChange} />
       <PlaceInputSection values={values} onChange={onChange} />
       {/* 약속 전 알림 */}
-      <div className="text-lg font-extrabold text-[var(--gray-90)]">
+      <div className="text-[20px] font-semibold text-[var(--gray-90)]">
         약속 전 알림 설정
       </div>
-      <div className="mb-2 text-xs font-semibold text-[var(--gray-50)]">
+      <div className="mb-4 text-[16px] font-medium text-[var(--gray-50)]">
         까먹지 않게 알림을 보내드려요!
       </div>
       <div className="mb-6 flex flex-wrap justify-start gap-x-1 gap-y-2">
         {["5분 전", "15분 전", "30분 전", "1시간 전"].map((option) => (
           <button
             key={option}
-            className={`min-w-[80px] rounded-3xl border px-4 py-3 text-[15px] font-medium transition-all duration-100 ${values.alert === option ? "bg-[var(--gray-70)] text-[var(--white)]" : "border-[var(--gray-30)] bg-[var(--white)] text-[var(--gray-70)]"}`}
+            className={`min-w-[80px] rounded-3xl border px-4 py-2 text-[16px] font-medium transition-all duration-100 ${values.alert === option ? "bg-[var(--gray-70)] text-[var(--white)]" : "border-[var(--gray-30)] bg-[var(--white)] text-[var(--gray-70)]"}`}
             onClick={() =>
               onChange({
                 ...values,
@@ -66,7 +66,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
           </button>
         ))}
         <button
-          className={`min-w-[90px] rounded-3xl border border-[var(--gray-30)] px-4 py-3 text-[15px] font-medium transition-all duration-100 ${!values.alert ? "bg-[var(--gray-70)] text-[var(--white)]" : "bg-[var(--white)] text-[var(--gray-70)]"}`}
+          className={`min-w-[90px] rounded-3xl border border-[var(--gray-30)] px-4 py-2 text-[16px] font-medium transition-all duration-100 ${!values.alert ? "bg-[var(--gray-70)] text-[var(--white)]" : "bg-[var(--white)] text-[var(--gray-70)]"}`}
           onClick={() => onChange({ ...values, alert: null })}
           type="button"
         >
@@ -93,8 +93,8 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
           <button
             className={
               completeLabel === "수정하기"
-                ? `basis-3/5 rounded-xl bg-[var(--gray-80)] py-3 text-sm font-bold text-[var(--white)]`
-                : `flex-1 rounded-lg py-3 text-base font-bold transition-colors duration-100 ${isCompleteEnabled ? "bg-[var(--gray-70)] text-[var(--white)]" : "bg-[var(--gray-10)] text-[var(--gray-50)]"}`
+                ? `basis-3/5 rounded-[12px] bg-[var(--gray-80)] py-3 text-sm font-bold text-[var(--white)]`
+                : `flex-1 rounded-[12px] py-3 text-[18px] font-semibold transition-colors duration-100 ${isCompleteEnabled ? "bg-[var(--gray-70)] text-[var(--white)]" : "bg-[var(--gray-10)] text-[var(--gray-50)]"}`
             }
             style={completeLabel === "수정하기" ? { minWidth: 0 } : {}}
             onClick={isCompleteEnabled ? onComplete : undefined}

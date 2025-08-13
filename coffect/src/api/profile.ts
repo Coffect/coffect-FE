@@ -5,6 +5,10 @@ import type {
   patchProfileInterestType,
   patchProfileDetailType,
   profileDetailItemType,
+  logoutType,
+  timeLineType,
+  postIsCoffeeChatType,
+  postChatStartType,
 } from "@/types/mypage/profile";
 import { AxiosError } from "axios";
 
@@ -96,5 +100,81 @@ export const getProfileSearch = async (id: string): Promise<profileType> => {
   } catch (error) {
     console.error("API 호출 중 에러 발생:", error);
     throw new Error("프로필을 불러올 수 없습니다. 다시 시도해주세요.");
+  }
+};
+
+export const getTimeLine = async (): Promise<timeLineType> => {
+  try {
+    const res = await axiosInstance.get<timeLineType>("/profile/getTimeLine");
+    return res.data;
+  } catch (error) {
+    console.error("API 호출 중 에러 발생:", error);
+    throw new Error("타임라인을 불러올 수 없습니다. 다시 시도해주세요.");
+  }
+};
+
+export const patchTimeLine = async (
+  timeline: string,
+): Promise<timeLineType> => {
+  try {
+    const res = await axiosInstance.patch<timeLineType>(
+      "/profile/fixTimeLine",
+      undefined,
+      {
+        params: { timeLine: timeline },
+      },
+    );
+    return res.data;
+  } catch (error) {
+    console.error("API 호출 중 에러 발생:", error);
+    throw new Error("타임라인을 수정할 수 없습니다. 다시 시도해주세요.");
+  }
+};
+
+export const deleteLogout = async (): Promise<logoutType> => {
+  try {
+    const res = await axiosInstance.delete<logoutType>("/user/logout");
+    return res.data;
+  } catch (error) {
+    console.error("API 호출 중 에러 발생:", error);
+    throw new Error("로그아웃을 할 수 없습니다. 다시 시도해주세요.");
+  }
+};
+
+export const postIsCoffeeChat = async (
+  userId: number,
+): Promise<postIsCoffeeChatType> => {
+  try {
+    const res = await axiosInstance.post<postIsCoffeeChatType>(
+      "/profile/isCoffeeChat",
+      undefined,
+      { params: { otherUserId: userId } },
+    );
+
+    return res.data;
+  } catch (error) {
+    console.error("API 호출 중 에러 발생:", error);
+    throw new Error("커피챗 여부를 확인할 수 없습니다. 다시 시도해주세요.");
+  }
+};
+
+export const postChatStart = async (
+  userId: number,
+): Promise<postChatStartType> => {
+  try {
+    const res = await axiosInstance.post<postChatStartType>("/chat/start", {
+      userId: userId,
+    });
+    return res.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    const errorData = axiosError.response?.data as postChatStartType;
+
+    if (errorData?.error?.errorCode === "EC409") {
+      throw error;
+    }
+
+    console.error("API 호출 중 에러 발생:", error);
+    throw new Error("채팅을 시작할 수 없습니다. 다시 시도해주세요.");
   }
 };

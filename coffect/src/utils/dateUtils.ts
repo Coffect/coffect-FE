@@ -1,4 +1,6 @@
-// 날짜를 한글 형식으로 변환하는 함수 (요일 포함)
+/* author: 앨리스/박은지
+ * description: 날짜를 한글 형식으로 변환하는 함수 (요일 포함)
+ */
 export function formatKoreanDate(dateStr: string) {
   if (!dateStr) return "";
   const date = new Date(dateStr);
@@ -18,7 +20,9 @@ export function formatKoreanDate(dateStr: string) {
   return `${month}월 ${day}일 ${dayOfWeek}`;
 }
 
-// 날짜를 한글 형식으로 변환하는 함수 (요일 제외)
+/* author: 앨리스/박은지
+ * description: 날짜를 한글 형식으로 변환하는 함수 (요일 제외)
+ */
 export function formatKoreanDateShort(dateStr: string) {
   if (!dateStr) return "";
   const date = new Date(dateStr);
@@ -58,6 +62,7 @@ export function getTimeAgo(dateString: string): string {
     return `${diffDays}일 전`;
   }
 }
+
 /**
  * @author 흥부/강신욱
  * @description 주어진 날짜 문자열을 현재 시간과 비교하여 "N분 후", "N시간 후", "내일", "N일 후" 등의 형식으로 변환합니다.
@@ -88,4 +93,22 @@ export function getTimeUntil(dateString: string): string {
   } else {
     return `${diffDays}일 후`;
   }
+}
+
+/* author: 앨리스/박은지
+ * description: 12시간제 시간을 24시간제로 변환
+ */
+export function formatAmPmTo24Hour(timeString: string): string {
+  const match = timeString.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (!match) return timeString;
+  let hour = parseInt(match[1], 10);
+  const minute = match[2];
+  const period = match[3].toUpperCase();
+  if (period === "AM") {
+    if (hour === 12) hour = 0;
+  } else {
+    if (hour !== 12) hour += 12;
+  }
+  const hh = hour.toString().padStart(2, "0");
+  return `${hh}:${minute}`;
 }

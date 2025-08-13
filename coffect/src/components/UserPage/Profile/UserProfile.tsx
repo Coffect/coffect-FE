@@ -5,9 +5,18 @@ description : 마이페이지와 다른 사용자 페이지를 모두 처리합�
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getProfile, getProfileSearch } from "@/api/profile";
+import {
+  getProfile,
+  getProfileSearch,
+  postIsCoffeeChat,
+  postChatStart,
+} from "@/api/profile";
 import { getIsFollow, postFollowRequest } from "@/api/follow";
-import type { profileType } from "@/types/mypage/profile";
+import type {
+  postChatStartType,
+  postIsCoffeeChatType,
+  profileType,
+} from "@/types/mypage/profile";
 import type { getIsFollowType } from "@/types/mypage/follow";
 import backIcon from "@/assets/icon/mypage/back.png";
 import profileImg from "@/assets/icon/mypage/profile.png";
@@ -17,6 +26,10 @@ import emptyFeedImg from "@/assets/icon/mypage/emptyFeed.png";
 import DetailIntroKeyword from "./DetailIntroKeyword";
 import DetailIntroProfile from "./DetailIntroProfile";
 import type { ThreadSummary } from "@/types/community/postTypes";
+import { useCoffeeSuggest } from "@/hooks/useCoffeeSuggest";
+import { AxiosError } from "axios";
+import CoffeeSuggestModal from "@/components/shareComponents/CoffeeSuggestModal";
+import CoffeeSuggestCompleteModal from "@/components/shareComponents/CoffeeSuggestCompleteModal";
 
 type ProfileTab = "피드" | "상세 소개";
 
@@ -98,6 +111,65 @@ function Profile() {
       console.error("팔로우 요청 실패:", error);
     },
   });
+
+  const { data: isCoffeeChatData, isLoading: isCoffeeChatLoading } =
+    useQuery<postIsCoffeeChatType>({
+      queryKey: ["isCoffeeChat", id],
+      queryFn: () => postIsCoffeeChat(userInfo?.userId || 0),
+      enabled: !isMyProfile && userInfo?.userId !== undefined,
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+    });
+
+  // 제안/채팅 버튼 상태 분기
+  const coffeeChatStatus = isCoffeeChatData?.success;
+  const isCoffeeChat: boolean = coffeeChatStatus?.isCoffeeChat === true;
+  const isCheck = coffeeChatStatus?.check === true;
+  let coffeeChatButtonText = "불러오는 중";
+  let coffeeChatButtonDisabled = true;
+  if (!isCoffeeChat && !isCoffeeChatLoading) {
+    coffeeChatButtonText = "제안하기";
+    coffeeChatButtonDisabled = false;
+  } else if (isCoffeeChat && !isCheck) {
+    coffeeChatButtonText = "제안 중";
+    coffeeChatButtonDisabled = true; // 클릭 무효
+  } else if (isCoffeeChat && isCheck) {
+    coffeeChatButtonText = "채팅하기";
+    coffeeChatButtonDisabled = false;
+  }
+
+  const {
+    isSuggestOpen,
+    isCompleteOpen,
+    openSuggest,
+    closeSuggest,
+    submitSuggest,
+    closeComplete,
+  } = useCoffeeSuggest();
+
+  const handleClick = () => openSuggest(userInfo?.userId || 0);
+
+  // 채팅 시작
+  const { mutate: chatStart, isPending: isChatStarting } = useMutation({
+    mutationFn: (userId: number) => postChatStart(userId),
+    onSuccess: () => {
+      navigate("/chat");
+    },
+    onError: (error) => {
+      if (error instanceof AxiosError) {
+        const errorData = error.response?.data as postChatStartType;
+        if (errorData?.error?.errorCode === "EC409") {
+          navigate(`/chat/${errorData.error.data}`);
+        }
+      }
+    },
+  });
+
+  // 완료 모달 닫을 때 커피챗 상태 쿼리 새로고침
+  const handleCloseComplete = () => {
+    closeComplete();
+    queryClient.invalidateQueries({ queryKey: ["isCoffeeChat", id] });
+  };
 
   // 텍스트가 2줄 이상인지 확인하는 함수
   useEffect(() => {
@@ -252,9 +324,34 @@ function Profile() {
                   ? "팔로잉"
                   : "팔로우"}
             </button>
-            <button className="text-md w-full rounded-lg border border-[var(--gray-30)] bg-white py-3 text-[var(--gray-50)]">
-              채팅하기
+            <button
+              className={`text-md w-full rounded-lg border border-[var(--gray-30)] bg-white py-3 text-[var(--gray-50)]`}
+              disabled={
+                coffeeChatButtonDisabled ||
+                userInfo?.userId === undefined ||
+                isChatStarting
+              }
+              onClick={() => {
+                if (coffeeChatButtonText === "채팅하기") {
+                  chatStart(userInfo?.userId || 0);
+                } else if (coffeeChatButtonText === "제안하기") {
+                  handleClick();
+                }
+              }}
+            >
+              {isChatStarting && coffeeChatButtonText === "채팅하기"
+                ? "연결 중..."
+                : coffeeChatButtonText}
             </button>
+            {isSuggestOpen && (
+              <CoffeeSuggestModal
+                onSubmit={submitSuggest}
+                onCancel={closeSuggest}
+              />
+            )}
+            {isCompleteOpen && (
+              <CoffeeSuggestCompleteModal onClose={handleCloseComplete} />
+            )}
           </div>
         )}
       </div>

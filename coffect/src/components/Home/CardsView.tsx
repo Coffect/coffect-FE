@@ -9,6 +9,7 @@ import CoffeeBanner from "./CoffeeSuggestBanner";
 import ProfileModal from "./ProfileModal";
 import ProfileFlip from "./ProfileFlip";
 import { useState } from "react";
+import Toast from "./Toast";
 
 const CardsView = () => {
   const [showModal, setShowModal] = useState(false); // 프로필 작성 유도 모달 여부
@@ -35,6 +36,7 @@ const CardsView = () => {
       <div className="flex w-full">
         <BottomNavbar activeLabel="홈" />
       </div>
+      <Toast />
     </div>
   );
 };
