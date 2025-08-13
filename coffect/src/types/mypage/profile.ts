@@ -1,3 +1,5 @@
+import type { ThreadSummary } from "../community/postTypes";
+
 export type profileType = {
   resultType: string;
   error: null | {
@@ -119,4 +121,44 @@ export type postChatStartType = {
   success: null | {
     chatRoomId: string;
   };
+};
+
+export type deleteUserType = {
+  resultType: string;
+  error: null | {
+    errorCode: string;
+    reason: string;
+    data: null | string;
+  };
+  success: null | string;
+};
+
+export type getBookMarkType = {
+  resultType: string;
+  error: null | {
+    errorCode: string;
+    reason: string;
+    data: null | string;
+  };
+  success: null | ThreadSummary[];
+};
+
+export type getProfileThreadType = {
+  resultType: string;
+  error: null | {
+    errorCode: string;
+    reason: string;
+    data: null | string;
+  };
+  success: null | ThreadSummary[];
+};
+
+export type getProfileThreadSearchType = {
+  resultType: string;
+  error: null | {
+    errorCode: string;
+    reason: string;
+    data: null | string;
+  };
+  success: null | ThreadSummary[];
 };
