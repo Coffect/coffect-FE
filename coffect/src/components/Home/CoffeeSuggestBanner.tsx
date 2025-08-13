@@ -1,12 +1,10 @@
 /*
   author      : 이희선
-  description : 커피챗 제안 배너 슬라이드 컴포넌트
-                - Swiper를 이용한 슬라이드형 알림 UI
-                - 각 제안에 대해 메시지 확인/삭제/대화 시작 가능
+  description : 커피챗 제안 배너 (FCM만으로 수신/표시)
 */
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "swiper/css";
 import { Swiper as SwiperClass } from "swiper";
 import MessageModal from "./MessageModal";
@@ -14,77 +12,161 @@ import DeleteSuggestModal from "./DeleteSuggestModal";
 import { useNavigate } from "react-router-dom";
 import NoSuggestImage from "../../assets/icon/home/NoSuggest.png";
 
-// 커피챗 제안 베너 데이터 타입 정의
+// FCM 포그라운드 수신용
+import { onMessageListener, type FcmPayload } from "@/utils/fcm";
+
+/** 배너 카드 타입 */
 interface Suggestion {
   id: string;
   name: string;
   message: string;
   image: string;
+  userPageId?: string | number;
 }
 
+/** SW→페이지 postMessage에서 쓰는 타입(단건/배열 모두 지원) */
+type SwPostMessage =
+  | { source?: string; payload?: FcmPayload; payloads?: FcmPayload[] }
+  | FcmPayload;
+
+/** FCM payload → 배너 카드로 변환(우리 타입만 통과) */
+function toSuggestion(payload: FcmPayload): Suggestion | null {
+  const data = payload.data ?? {};
+  if (data.type !== "coffee_chat_proposal") return null;
+
+  const id = String(data.coffectId ?? Date.now());
+  const name = (data.firstUserName as string) ?? "알 수 없음";
+  const message =
+    (payload.notification?.body as string) ?? "커피챗 제안이 도착했어요!";
+  const image = (payload.notification?.image as string) ?? "/favicon.ico"; // 서버에서 image 오면 사용
+
+  return {
+    id,
+    name,
+    message,
+    image,
+    userPageId: data.firstUserId,
+  };
+}
+
+/** 타입 가드 */
+const isFcmPayload = (x: unknown): x is FcmPayload =>
+  !!x &&
+  typeof x === "object" &&
+  ("data" in (x as Record<string, unknown>) ||
+    "notification" in (x as Record<string, unknown>));
+
 const CoffeeSuggestBanner = () => {
-  const swiperRef = useRef<SwiperClass | null>(null); // Swiper 인스턴스 접근용 ref
-  const navigate = useNavigate(); // 페이지 이동용
+  const swiperRef = useRef<SwiperClass | null>(null);
+  const navigate = useNavigate();
 
-  // 제안 목록 상태 (더미 데이터)
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([
-    {
-      id: "coffect",
-      name: "하은",
-      message: "커피챗 제안이 도착했어요!",
-      image: "https://picsum.photos/200?random=1",
-    },
-    {
-      id: "jun",
-      name: "김라떼",
-      message: "커피챗 제안이 도착했어요!",
-      image: "https://picsum.photos/200?random=2",
-    },
-  ]);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
 
-  const [checkedMessage, setCheckedMessage] = useState<Suggestion | null>(null); // 메시지 모달에 표시할 항목
-  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null); // 삭제 확인 모달을 위한 ID
-  const [isMessageHidden, setIsMessageHidden] = useState(false); // 삭제 확인 모달 확인 시 메시지 모달 숨김
+  /** 공통 push (중복 방지) */
+  const pushSuggestion = (p: FcmPayload) => {
+    const s = toSuggestion(p);
+    if (!s) return;
+    setSuggestions((prev) =>
+      prev.some((v) => v.id === s.id) ? prev : [s, ...prev],
+    );
+  };
 
-  // 모달 닫기 (모두 초기화)
+  // 1) 포그라운드(onMessage) 수신
+  useEffect(() => {
+    const unsub = onMessageListener((payload) => pushSuggestion(payload));
+    return () => unsub?.();
+  }, []);
+
+  // 2) SW(백그라운드)에서 쏘는 postMessage 수신 + 누적분 flush 요청
+  useEffect(() => {
+    const onSwMessage = (ev: MessageEvent<SwPostMessage>) => {
+      // 단건
+      if (isFcmPayload(ev.data)) {
+        pushSuggestion(ev.data);
+        return;
+      }
+      // { payload } / { payloads }
+      if (ev.data && typeof ev.data === "object") {
+        const single = (ev.data as { payload?: FcmPayload }).payload;
+        const many = (ev.data as { payloads?: FcmPayload[] }).payloads;
+        if (single) pushSuggestion(single);
+        if (Array.isArray(many)) many.forEach(pushSuggestion);
+      }
+    };
+
+    // 채널 두 군데 모두 바인딩(브라우저/타이밍 이슈 회피)
+    navigator.serviceWorker.addEventListener("message", onSwMessage);
+    window.addEventListener("message", onSwMessage);
+
+    // 마운트 직후, SW에 누적 payloads 요청(레이스 방지)
+    (async () => {
+      const reg = await navigator.serviceWorker.getRegistration();
+      reg?.active?.postMessage({ type: "fcm-flush" });
+    })();
+
+    return () => {
+      navigator.serviceWorker.removeEventListener("message", onSwMessage);
+      window.removeEventListener("message", onSwMessage);
+    };
+  }, []);
+
+  // SW가 페이지를 컨트롤하지 않는 타이밍 보강
+  useEffect(() => {
+    const flush = async () => {
+      const reg = await navigator.serviceWorker.getRegistration();
+      reg?.active?.postMessage({ type: "fcm-flush" });
+    };
+
+    if (navigator.serviceWorker.controller) {
+      // 이미 컨트롤 중이면 바로 요청
+      flush();
+    } else {
+      // 아직이면 컨트롤되자마자 1회 요청
+      const onCtrl = () => {
+        flush();
+        navigator.serviceWorker.removeEventListener("controllerchange", onCtrl);
+      };
+      navigator.serviceWorker.addEventListener("controllerchange", onCtrl);
+    }
+  }, []);
+
+  // ===== 모달 상태 =====
+  const [checkedMessage, setCheckedMessage] = useState<Suggestion | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [isMessageHidden, setIsMessageHidden] = useState(false);
+
   const handleClose = () => {
     setCheckedMessage(null);
     setPendingDeleteId(null);
     setIsMessageHidden(false);
   };
-
-  // 삭제 요청 시 → 메시지 모달 숨김 및 삭제 확인 모달 띄우기
   const handleDeleteRequest = (id: string) => {
     setIsMessageHidden(true);
     setPendingDeleteId(id);
   };
-  //삭제 취소 시 → 다시 메시지 모달 보여줌
   const handleCancelDelete = () => {
     setIsMessageHidden(false);
     setPendingDeleteId(null);
   };
-
-  // 삭제 확정 처리
   const handleConfirmDelete = () => {
     if (pendingDeleteId != null) {
       setSuggestions((prev) => prev.filter((s) => s.id !== pendingDeleteId));
-      setIsMessageHidden(false);
       setCheckedMessage(null);
       setPendingDeleteId(null);
+      setIsMessageHidden(false);
     }
   };
-
-  // 채팅 페이지 이동
   const handleChat = () => {
     navigate("/chat");
     handleClose();
   };
 
+  const hasSuggestions = suggestions.length > 0;
+
   return (
     <div className="mt-[2%] flex w-full items-center justify-center overflow-hidden">
-      {/* 커피쳇 제안 베너 슬라이드 */}
       <div className="flex h-auto w-full">
-        {suggestions.length === 0 ? (
+        {!hasSuggestions ? (
           <div className="relative w-full items-center justify-center">
             <div className="rounded-[20px] bg-white px-[6%] py-[7%] text-left text-base leading-normal font-medium text-[var(--gray-50)] shadow-[0_0_20px_rgba(189,179,170,0.2)]">
               아직{" "}
@@ -105,24 +187,19 @@ const CoffeeSuggestBanner = () => {
             className="h-auto w-full"
             spaceBetween={16}
             slidesPerView={1}
-            onSwiper={(sw) => (swiperRef.current = sw)} // Swiper 인스턴스 저장
+            onSwiper={(sw) => (swiperRef.current = sw)}
           >
-            {/* 제안 하나씩 렌더링 */}
             {suggestions.map((user) => (
               <SwiperSlide
                 key={user.id}
                 className="flex items-center justify-center"
               >
-                {/* 제안 카드 */}
                 <div className="flex w-full items-center gap-[12px] rounded-[20px] bg-white px-[5%] py-[4%] shadow-[0_0_20px_rgba(189,179,170,0.2)]">
-                  {/* 프로필 이미지 */}
                   <img
                     src={user.image}
                     alt="프로필 사진"
                     className="aspect-[1/1] w-[18%] rounded-full object-cover"
                   />
-
-                  {/* 메시지 내용 + 버튼 */}
                   <div className="flex w-0 flex-1 flex-col justify-center">
                     <p className="mb-[3%] ml-[3%] overflow-hidden text-base font-medium text-[var(--gray-70)]">
                       <span className="text-base font-bold text-[var(--gray-85)]">
@@ -130,10 +207,15 @@ const CoffeeSuggestBanner = () => {
                       </span>
                       님의 {user.message}
                     </p>
-
                     <div className="ml-[3%] flex justify-start">
                       <button
-                        onClick={() => navigate(`/userpage/${user.id}`)}
+                        onClick={() =>
+                          navigate(
+                            user.userPageId
+                              ? `/userpage/${user.userPageId}`
+                              : `/userpage/${user.id}`,
+                          )
+                        }
                         className="rounded-[12px] bg-[var(--gray-80)] px-4 py-1.5 text-base font-medium text-[var(--gray-0)]"
                       >
                         프로필 보기
@@ -153,15 +235,13 @@ const CoffeeSuggestBanner = () => {
         )}
       </div>
 
-      {/* 메시지 확인 모달 (커피챗 제안 확인) */}
       {checkedMessage && !isMessageHidden && (
         <MessageModal
-          // UI 작동 실험용 더미 데이터
           message={{
             id: checkedMessage.id,
-            name: checkedMessage.name.split("님")[0],
-            time: `2025.1.17. 15:00`,
-            intro: `안녕하세요! 사람과 이야기를 나누는 것을 좋아하고, 새로운 것을 배우는 데 늘 열려있는 ${checkedMessage.name}입니다. 즐겁고 의미있는 경험을 함께 만들고 싶어요! 특히 디자인, 마케팅에 관심이 많습니다! 아무나 환영이니 커피쳇 제안주세요!!`,
+            name: checkedMessage.name,
+            time: new Date().toLocaleString(),
+            intro: checkedMessage.message ?? "커피챗 제안 메시지가 도착했어요!",
           }}
           onClose={handleClose}
           onDelete={() => handleDeleteRequest(checkedMessage.id)}
@@ -169,7 +249,6 @@ const CoffeeSuggestBanner = () => {
         />
       )}
 
-      {/* 제안 삭제 확인 모달 */}
       {pendingDeleteId != null && checkedMessage && (
         <DeleteSuggestModal
           messageName={checkedMessage.name}

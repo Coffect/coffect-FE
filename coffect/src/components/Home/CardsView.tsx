@@ -10,6 +10,7 @@ import ProfileModal from "./ProfileModal";
 import ProfileFlip from "./ProfileFlip";
 import { useState } from "react";
 import Toast from "./Toast";
+import FcmDebugPanel from "../dev/FcmDebugPanel";
 
 const CardsView = () => {
   const [showModal, setShowModal] = useState(false); // 프로필 작성 유도 모달 여부
@@ -30,6 +31,7 @@ const CardsView = () => {
         <CoffeeBanner />
         {/*추천 프로필 카드들 */}
         <ProfileFlip />
+        <FcmDebugPanel />
       </main>
 
       {/* 하단 네비게이션 (고정 위치) */}
