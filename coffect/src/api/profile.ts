@@ -5,6 +5,7 @@ import type {
   patchProfileInterestType,
   patchProfileDetailType,
   profileDetailItemType,
+  logoutType,
 } from "@/types/mypage/profile";
 import { AxiosError } from "axios";
 
@@ -96,5 +97,15 @@ export const getProfileSearch = async (id: string): Promise<profileType> => {
   } catch (error) {
     console.error("API 호출 중 에러 발생:", error);
     throw new Error("프로필을 불러올 수 없습니다. 다시 시도해주세요.");
+  }
+};
+
+export const deleteLogout = async (): Promise<logoutType> => {
+  try {
+    const res = await axiosInstance.delete<logoutType>("/user/logout");
+    return res.data;
+  } catch (error) {
+    console.error("API 호출 중 에러 발생:", error);
+    throw new Error("로그아웃을 할 수 없습니다. 다시 시도해주세요.");
   }
 };

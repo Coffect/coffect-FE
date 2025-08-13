@@ -73,3 +73,13 @@ export type profileDetailItemType = {
   answer: string;
   isMain: boolean;
 };
+
+export type logoutType = {
+  resultType: string;
+  error: null | {
+    errorCode: string;
+    reason: string;
+    data: null | string;
+  };
+  success: null | string;
+};
