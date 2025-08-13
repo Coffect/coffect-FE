@@ -13,11 +13,9 @@ class SocketManager {
   // Socket 연결
   connect(token?: string) {
     if (this.socket?.connected) {
-      console.log("Socket 연결됨");
       return;
     }
 
-    // 개발 환경에서는 로컬 프록시 사용
     const socketUrl = import.meta.env.DEV
       ? "http://localhost:5173"
       : import.meta.env.VITE_SERVER_API_URL || "http://13.124.169.70:3000";
@@ -25,8 +23,6 @@ class SocketManager {
       console.error("VITE_SERVER_API_URL 환경 변수가 설정되지 않았습니다");
       throw new Error("Socket URL이 구성되지 않았습니다");
     }
-
-    console.log("소켓 연결 시도:", socketUrl);
 
     this.socket = io(socketUrl, {
       auth: {

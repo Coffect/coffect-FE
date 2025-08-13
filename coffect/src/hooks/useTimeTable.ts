@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { axiosInstance } from "../api/axiosInstance";
 import type { GetTimeTableResponse } from "../types/mypage/timeTable";
 
@@ -33,18 +33,18 @@ export const useTimeTable = (userId: number) => {
         setTimeTable(response.data.success);
       } else {
         setError("시간표를 불러올 수 없습니다.");
+        // 에러가 발생해도 null로 설정하여 앱이 중단되지 않도록 함
+        setTimeTable(null);
       }
     } catch (err) {
       console.error("시간표 조회 실패:", err);
       setError("시간표를 불러오는 중 오류가 발생했습니다.");
+      // 네트워크 에러 등이 발생해도 null로 설정
+      setTimeTable(null);
     } finally {
       setLoading(false);
     }
   }, [userId]);
-
-  useEffect(() => {
-    fetchTimeTable();
-  }, [fetchTimeTable]);
 
   return {
     timeTable,
@@ -64,36 +64,53 @@ export const useTimeTableComparison = (
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { timeTable: myTimeTable, loading: myLoading } = useTimeTable(myUserId);
-  const { timeTable: opponentTimeTable, loading: opponentLoading } =
-    useTimeTable(opponentUserId);
+  const {
+    timeTable: myTimeTable,
+    loading: myLoading,
+    refetch: fetchMyTimeTable,
+  } = useTimeTable(myUserId);
+  const {
+    timeTable: opponentTimeTable,
+    loading: opponentLoading,
+    refetch: fetchOpponentTimeTable,
+  } = useTimeTable(opponentUserId);
 
-  useEffect(() => {
-    const compareTimeTables = async () => {
-      if (!myTimeTable || !opponentTimeTable) {
-        setCommonFreeTime("시간 협의 가능");
-        return;
-      }
+  const compareTimeTables = useCallback(async () => {
+    if (!myTimeTable || !opponentTimeTable) {
+      setCommonFreeTime("시간 협의 가능");
+      return;
+    }
 
-      setLoading(true);
-      setError(null);
+    setLoading(true);
+    setError(null);
 
-      try {
-        // 두 시간표를 비교해서 겹치는 공강 시간 계산
-        const commonTime = getCommonFreeTime(myTimeTable, opponentTimeTable);
-        setCommonFreeTime(commonTime);
-        console.log("겹치는 공강 시간:", commonTime);
-      } catch (err) {
-        console.error("시간표 비교 실패:", err);
-        setError("시간표 비교 중 오류가 발생했습니다.");
-        setCommonFreeTime("시간 협의 가능");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    compareTimeTables();
+    try {
+      // 두 시간표를 비교해서 겹치는 공강 시간 계산
+      const commonTime = getCommonFreeTime(myTimeTable, opponentTimeTable);
+      setCommonFreeTime(commonTime);
+      console.log("겹치는 공강 시간:", commonTime);
+    } catch (err) {
+      console.error("시간표 비교 실패:", err);
+      setError("시간표 비교 중 오류가 발생했습니다.");
+      setCommonFreeTime("시간 협의 가능");
+    } finally {
+      setLoading(false);
+    }
   }, [myTimeTable, opponentTimeTable]);
+
+  const fetchAndCompareTimeTables = useCallback(async () => {
+    try {
+      // 먼저 두 사용자의 시간표를 불러옴
+      await Promise.allSettled([fetchMyTimeTable(), fetchOpponentTimeTable()]);
+
+      // 시간표 비교 실행
+      await compareTimeTables();
+    } catch (error) {
+      console.error("시간표 비교 중 오류 발생:", error);
+      // 에러가 발생해도 기본값 설정
+      setCommonFreeTime("시간 협의 가능");
+    }
+  }, [fetchMyTimeTable, fetchOpponentTimeTable, compareTimeTables]);
 
   return {
     commonFreeTime,
@@ -101,6 +118,7 @@ export const useTimeTableComparison = (
     error,
     myTimeTable,
     opponentTimeTable,
+    fetchAndCompare: fetchAndCompareTimeTables,
   };
 };
 

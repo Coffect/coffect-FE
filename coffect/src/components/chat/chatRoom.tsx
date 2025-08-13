@@ -184,14 +184,26 @@ const ChatRoom = () => {
 
   const { user, loading: userLoading } = useChatUser();
 
-  // 커피챗 제안 데이터 가져오기
-  const { suggestions } = useCoffeeChatSuggestions();
+  // 커피챗 제안 데이터 가져오기 (수동 호출)
+  const { suggestions, refetch: fetchSuggestions } = useCoffeeChatSuggestions();
 
-  // 시간표 비교 훅 사용
-  const { commonFreeTime } = useTimeTableComparison(
-    user.id,
-    currentChatRoom?.userId || 0,
-  );
+  // 시간표 비교 훅 사용 (수동 호출)
+  const { commonFreeTime, fetchAndCompare: fetchTimeTables } =
+    useTimeTableComparison(user.id, currentChatRoom?.userId || 0);
+
+  // 상대 요청 보기 모달 열기 함수
+  const handleOpenRequestModal = async () => {
+    try {
+      // 제안 요청과 시간표를 먼저 불러옴
+      await Promise.allSettled([fetchSuggestions(), fetchTimeTables()]);
+    } catch (error) {
+      console.error("데이터 로딩 중 오류 발생:", error);
+      // API 호출이 실패해도 모달은 열어줌
+    }
+
+    // 모달 열기
+    openModal();
+  };
 
   // 상대방의 string ID 가져오기
   const [id, setId] = useState<string | null>(null);
@@ -200,27 +212,40 @@ const ChatRoom = () => {
     // 채팅방 변경 시 이전 상대방 ID 초기화
     setId(null);
 
+    const abortController = new AbortController();
+
     const fetchOpponentId = async () => {
       if (!currentChatRoom?.userId) return;
 
       try {
-        const response = await axiosInstance.post("/profile/id", {
-          userId: currentChatRoom.userId,
-        });
+        const response = await axiosInstance.post(
+          "/profile/id",
+          {
+            userId: currentChatRoom.userId,
+          },
+          {
+            signal: abortController.signal,
+          },
+        );
 
         if (
           response.data.resultType === "SUCCESS" &&
           response.data.success?.id
         ) {
           setId(response.data.success.id);
-          console.log("상대방 string ID:", response.data.success.id);
         }
       } catch (err) {
-        console.error("상대방 ID 조회 실패:", err);
+        if (err instanceof Error && err.name !== "AbortError") {
+          console.error("상대방 ID 조회 실패:", err);
+        }
       }
     };
 
     fetchOpponentId();
+
+    return () => {
+      abortController.abort();
+    };
   }, [currentChatRoom?.userId]);
 
   // 현재 채팅방의 커피챗 제안 찾기
@@ -229,11 +254,7 @@ const ChatRoom = () => {
     const found = suggestions.find(
       (suggestion) => suggestion.otherUserid === currentChatRoom.userId,
     );
-    console.log("현재 채팅방 제안 찾기:", {
-      currentUserId: currentChatRoom.userId,
-      suggestions,
-      found,
-    });
+
     return found;
   }, [suggestions, currentChatRoom?.userId]);
 
@@ -244,8 +265,8 @@ const ChatRoom = () => {
     try {
       const response = await getChatMessages(chatRoomId);
       if (response.success) {
-        // ChatMessage를 Message 타입으로 변환
-        const convertedMessages: Message[] = response.success
+        // ChatMessage를 Message 타입으로 변환하고 정렬
+        const messagesWithDate = response.success
           .map((msg) => {
             const id = parseInt(msg.id, 10);
             if (isNaN(id)) {
@@ -253,35 +274,48 @@ const ChatRoom = () => {
               return null;
             }
 
+            const createdAt = new Date(msg.createdAt);
+            const timeString = createdAt.toLocaleTimeString("ko-KR", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            });
+
             if (msg.isPhoto) {
               return {
                 id,
                 type: "image" as const,
                 imageUrl: msg.messageBody,
-                time: new Date(msg.createdAt).toLocaleTimeString("ko-KR", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                }),
+                time: timeString,
                 mine: msg.userId === user.id,
+                createdAt, // 정렬용 임시 속성
               };
             } else {
               return {
                 id,
                 type: "text" as const,
                 text: msg.messageBody,
-                time: new Date(msg.createdAt).toLocaleTimeString("ko-KR", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                }),
+                time: timeString,
                 mine: msg.userId === user.id,
+                createdAt, // 정렬용 임시 속성
               };
             }
           })
-          .filter(Boolean) as Message[];
+          .filter(Boolean);
 
-        setMessages(convertedMessages);
+        // 시간 순서대로 정렬 (오래된 메시지부터 최신 메시지 순)
+        const sortedMessages = messagesWithDate
+          .filter((msg): msg is NonNullable<typeof msg> => msg !== null)
+          .sort((a, b) => {
+            return a.createdAt.getTime() - b.createdAt.getTime();
+          });
+
+        // createdAt 속성 제거하고 Message 타입으로 변환
+        const finalMessages: Message[] = sortedMessages.map(
+          ({ createdAt, ...message }) => message,
+        );
+
+        setMessages(finalMessages);
       }
     } catch (error) {
       console.error("메시지 로딩 오류:", error);
@@ -315,7 +349,7 @@ const ChatRoom = () => {
       <ChatInterestsSection
         interests={user.interests}
         schedule={schedule}
-        onOpenModal={openModal}
+        onOpenModal={handleOpenRequestModal}
         showInterests={showInterests}
         onToggleInterests={handleToggleInterests}
         chatRoomId={chatRoomId}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { axiosInstance } from "../api/axiosInstance";
 
 export interface CoffeeChatSuggestion {
@@ -49,18 +49,18 @@ export const useCoffeeChatSuggestions = () => {
         setSuggestions(transformedSuggestions);
       } else {
         setError("커피챗 제안을 불러올 수 없습니다.");
+        // 에러가 발생해도 빈 배열로 설정하여 앱이 중단되지 않도록 함
+        setSuggestions([]);
       }
     } catch (err) {
       console.error("커피챗 제안 조회 실패:", err);
       setError("커피챗 제안을 불러오는 중 오류가 발생했습니다.");
+      // 네트워크 에러 등이 발생해도 빈 배열로 설정
+      setSuggestions([]);
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchSuggestions();
-  }, []);
 
   return {
     suggestions,

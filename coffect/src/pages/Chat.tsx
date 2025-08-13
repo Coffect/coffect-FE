@@ -63,7 +63,7 @@ const Chat = () => {
   return (
     <div className="flex h-full w-full flex-col bg-[var(--white)]">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-8 pb-3">
+      <div className="flex items-center justify-between px-5 pt-8 pb-5">
         <span className="ml-2 text-2xl font-bold text-[var(--gray-90)]">
           채팅
         </span>
@@ -94,7 +94,7 @@ const Chat = () => {
           chatRooms.map((chat, index) => (
             <div
               key={chat.chatroomId || `chat-${chat.userId}-${index}`}
-              className="mb-2 flex cursor-pointer items-start border-b border-[var(--gray-10)] px-3 py-5 hover:bg-[var(--gray-5)]"
+              className="mb-2 flex cursor-pointer items-start border-b border-[var(--gray-10)] px-3 py-4 hover:bg-[var(--gray-5)]"
               onClick={() => {
                 navigate(`/chat/${chat.chatroomId}`);
               }}

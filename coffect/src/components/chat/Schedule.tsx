@@ -103,16 +103,25 @@ const Schedule: React.FC = () => {
         return;
       }
 
+      // 채팅방 ID 검증
+      if (!currentChatRoomId) {
+        console.error("채팅방 ID를 찾을 수 없습니다.");
+        return;
+      }
+
+      const coffectId = parseInt(currentChatRoomId, 10);
+      if (isNaN(coffectId)) {
+        return;
+      }
+
       dateObj.setHours(hours, minutes, 0, 0);
 
       const scheduleData = {
         time: dateObj.toISOString(),
         location: form.place,
         coffeeDate: dateObj.toISOString(),
-        coffectId: currentUser.id || 0, // 현재 사용자 ID (숫자)
+        coffectId: coffectId,
       };
-
-      console.log("API 요청 데이터:", scheduleData);
 
       const response = await fixCoffeeChatSchedule(scheduleData);
 
@@ -124,7 +133,6 @@ const Schedule: React.FC = () => {
       }
     } catch (error) {
       console.error("일정 등록 API 호출 실패:", error);
-      console.error("전체 에러 객체:", JSON.stringify(error, null, 2));
     }
   };
 

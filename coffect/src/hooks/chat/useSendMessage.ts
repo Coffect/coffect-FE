@@ -38,12 +38,11 @@ export const useSendMessage = (
         setSending(true);
         setError(null);
 
-        console.log("API 호출 시작 - sendMessage:", { chatRoomId, message });
         const response: SendMessageResponse = await sendMessage(
           chatRoomId,
           message,
         );
-        console.log("API 응답:", response);
+
         onSuccess?.(response.success);
         return true; // 성공 시 true 반환
       } catch (err: unknown) {
