@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import TopNavbar from "./TopNavbar";
 import NoAlarm from "./NoAlarm";
 import { getNotifications, markAsRead } from "@/api/alert";
-import { getRelativeTime } from "@/utils/dateUtils";
+import { getTimeAgo } from "@/utils/dateUtils";
 
 interface ApiNotification {
   notificationId: number;
@@ -93,7 +93,7 @@ const AlarmView = () => {
               (n?.body
                 ? n.body.replace(String(n?.data?.firstUserName ?? ""), "")
                 : ""),
-            time: getRelativeTime(n.createdAt),
+            time: getTimeAgo(n.createdAt),
             image: n?.firstUserImage,
             unread: !n.isRead,
           }),
