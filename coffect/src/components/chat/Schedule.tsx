@@ -16,13 +16,13 @@ import { useChatRooms } from "../../hooks/chat/useChatRooms";
 
 const Schedule: React.FC = () => {
   const location = useLocation();
-  const user = useChatUser();
+  const currentUser = useChatUser();
   const { chatRooms } = useChatRooms();
 
   // 현재 채팅방 ID 가져오기 (URL에서 추출하거나 location state에서)
   const currentChatRoomId = location.state?.chatRoomId;
   const currentChatRoom = chatRooms.find(
-    (room) => room.chatroomId === currentChatRoomId,
+    (room) => room.chatRoomId === currentChatRoomId,
   );
   const [form, setForm] = useState<ScheduleFormValues>(() => {
     // 기존 일정이 있는지 확인 (수정하기)
@@ -100,16 +100,16 @@ const Schedule: React.FC = () => {
             )}
           </div>
           <div className="z-0 h-9 w-9 overflow-hidden rounded-full border-2 border-[var(--white)] bg-[var(--gray-10)]">
-            {user.profileImage && (
+            {currentUser.profileImage && (
               <img
-                src={user.profileImage}
+                src={currentUser.profileImage}
                 alt="내 프로필"
                 className="h-full w-full object-cover"
               />
             )}
           </div>
           <span className="ml-2 text-[20px] font-bold tracking-tight text-[#FF8126]">
-            {user.username}
+            {currentChatRoom?.userInfo?.name || "상대방"}
           </span>
           <span className="text-[20px] font-bold tracking-tight text-[var(--gray-90)]">
             님과의 커피챗

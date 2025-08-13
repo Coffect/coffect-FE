@@ -19,8 +19,8 @@ function getMessageMargin(idx: number, messages: Message[]) {
   const prev = messages[idx - 1];
   const current = messages[idx];
 
-  // 일반 메시지인 경우 mine 속성 비교
-  return prev && prev.mine !== current.mine ? "mt-6" : "mt-2";
+  // 연속된 메시지의 발신자가 다른 경우 더 큰 여백 적용
+  return prev.mine !== current.mine ? "mt-6" : "mt-2";
 }
 
 const ChatMessageArea = ({ messages, username }: ChatMessageAreaProps) => {
@@ -30,7 +30,7 @@ const ChatMessageArea = ({ messages, username }: ChatMessageAreaProps) => {
   return (
     <div className="flex-1 overflow-y-auto bg-[var(--gray-5)] px-4 py-2">
       {/* 시스템 메시지 */}
-      {username && <ChatSystemMessage username={username} />}
+      <ChatSystemMessage username={username || "상대방"} />
 
       <ChatMessageList
         messages={messages}

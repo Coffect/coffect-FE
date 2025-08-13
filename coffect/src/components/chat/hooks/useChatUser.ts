@@ -31,10 +31,19 @@ export const useChatUser = () => {
             id: response.success.userInfo.userId,
             username: response.success.userInfo.name || "사용자",
             info: "이런 주제에 관심 있어요!",
-            interests: response.success.interest?.map(
-              (item: { category: { categoryName: string } }) =>
-                item.category.categoryName,
-            ) || ["디자인", "개발", "창업", "글쓰기"],
+            interests: response.success.interest
+              ?.map((item: unknown) => {
+                const interestItem = item as {
+                  category?: { categoryName?: string };
+                };
+                return interestItem?.category?.categoryName;
+              })
+              .filter((interest): interest is string => Boolean(interest)) || [
+              "디자인",
+              "개발",
+              "창업",
+              "글쓰기",
+            ],
             profileImage: response.success.userInfo.profileImage,
           });
         }

@@ -2,7 +2,7 @@
  * description : 채팅방 훅 (API 연동)
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import useCurrentTime from "./useCurrentTime";
 import useHandleSend from "./useHandleSend";
@@ -62,6 +62,24 @@ export const useChatRoom = () => {
   const { id: chatRoomId } = useParams<{ id: string }>();
   const getCurrentTime = useCurrentTime();
 
+  // 현재 사용자 정보 가져오기
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      try {
+        const { getProfile } = await import("../../../api/profile");
+        const response = await getProfile();
+        if (response.success) {
+          setCurrentUserId(response.success.userInfo.userId);
+        }
+      } catch (error) {
+        console.error("사용자 정보 조회 실패:", error);
+      }
+    };
+    fetchUserId();
+  }, []);
+
   // API로 메시지 조회
   const {
     messages: apiMessages,
@@ -101,7 +119,7 @@ export const useChatRoom = () => {
             minute: "2-digit",
             hour12: true,
           }),
-          mine: msg.userId === 1, // 임시로 userId가 1이면 내 메시지로 처리
+          mine: currentUserId ? msg.userId === currentUserId : false,
         };
 
         if (msg.isPhoto) {
@@ -124,6 +142,9 @@ export const useChatRoom = () => {
 
   const [inputValue, setInputValue] = useState("");
 
+  // 생성된 Object URL 추적
+  const createdUrlsRef = useRef<Set<string>>(new Set());
+
   const handleSend = useHandleSend({
     chatRoomId: chatRoomId || "",
     messages,
@@ -141,6 +162,7 @@ export const useChatRoom = () => {
 
   const handleImageSend = (file: File) => {
     const url = URL.createObjectURL(file);
+    createdUrlsRef.current.add(url);
     setMessages((prev) => [
       ...prev,
       {
@@ -153,16 +175,19 @@ export const useChatRoom = () => {
     ]);
   };
 
-  // 컴포넌트 언마운트 시 모든 이미지 URL 정리
+  // 언마운트 시 생성된 모든 URL 정리
   useEffect(() => {
     return () => {
-      messages.forEach((message) => {
-        if (message.type === "image" && message.imageUrl) {
-          URL.revokeObjectURL(message.imageUrl);
+      // 언마운트 시 생성된 모든 URL 정리
+      createdUrlsRef.current.forEach((url) => {
+        try {
+          URL.revokeObjectURL(url);
+        } catch {
+          // 이미 해제된 URL 무시
         }
       });
     };
-  }, [messages]);
+  }, []);
 
   return {
     messages,

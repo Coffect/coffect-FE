@@ -6,11 +6,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useChatRooms } from "../../hooks/chat";
-import type { ChatRoom } from "../../types/chat";
+import type { ChatRoomWithUser } from "../../types/chat";
 
 interface ChatRoomItemProps {
-  chatRoom: ChatRoom;
-  onClick: (chatRoom: ChatRoom) => void;
+  chatRoom: ChatRoomWithUser;
+  onClick: (chatRoom: ChatRoomWithUser) => void;
 }
 
 const ChatRoomItem: React.FC<ChatRoomItemProps> = ({ chatRoom, onClick }) => {
@@ -28,7 +28,7 @@ const ChatRoomItem: React.FC<ChatRoomItemProps> = ({ chatRoom, onClick }) => {
       <div className="min-w-0 flex-1">
         <div className="mb-1 flex items-center justify-between">
           <h3 className="truncate text-sm font-medium text-gray-900">
-            사용자 {chatRoom.userId}
+            {chatRoom.userInfo?.name || `사용자 ${chatRoom.userId}`}
           </h3>
           <span className="text-xs text-gray-500">
             {/* 마지막 메시지 시간 표시 */}
@@ -41,7 +41,7 @@ const ChatRoomItem: React.FC<ChatRoomItemProps> = ({ chatRoom, onClick }) => {
           </p>
 
           {/* 읽지 않은 메시지 표시 */}
-          {!chatRoom.check && (
+          {chatRoom.hasUnreadMessages && (
             <div className="ml-2 h-2 w-2 flex-shrink-0 rounded-full bg-blue-500" />
           )}
         </div>
@@ -51,7 +51,7 @@ const ChatRoomItem: React.FC<ChatRoomItemProps> = ({ chatRoom, onClick }) => {
 };
 
 interface ChatRoomListProps {
-  onChatRoomSelect?: (chatRoom: ChatRoom) => void;
+  onChatRoomSelect?: (chatRoom: ChatRoomWithUser) => void;
   showEmptyState?: boolean;
 }
 
@@ -62,9 +62,9 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
   const navigate = useNavigate();
   const { chatRooms, isLoading, error } = useChatRooms();
 
-  const handleChatRoomClick = (chatRoom: ChatRoom) => {
+  const handleChatRoomClick = (chatRoom: ChatRoomWithUser) => {
     onChatRoomSelect?.(chatRoom);
-    navigate(`/chat/${chatRoom.chatroomId}`, {
+    navigate(`/chat/${chatRoom.chatRoomId}`, {
       state: { chatRoom },
     });
   };
@@ -130,7 +130,7 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
       <div className="divide-y divide-gray-200">
         {chatRooms.map((chatRoom) => (
           <ChatRoomItem
-            key={chatRoom.chatroomId}
+            key={chatRoom.chatRoomId}
             chatRoom={chatRoom}
             onClick={handleChatRoomClick}
           />

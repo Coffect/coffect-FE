@@ -7,6 +7,7 @@
 import BottomNavbar from "../components/shareComponents/BottomNavbar";
 import { useNavigate } from "react-router-dom";
 import EmptyChatList from "../assets/icon/chat/EmptyChatList.png";
+import { getRelativeTime } from "../utils/dateUtils";
 
 import { useChatRooms } from "../hooks/chat";
 
@@ -79,15 +80,15 @@ const Chat = () => {
             </div>
           </div>
         ) : (
-          chatRooms.map((chat) => (
+          chatRooms.map((chat, index) => (
             <div
-              key={chat.chatroomId}
+              key={chat.chatRoomId || `chat-${chat.userId}-${index}`}
               className="mb-2 flex cursor-pointer items-start border-b border-[var(--gray-10)] px-3 py-5 hover:bg-[var(--gray-5)]"
-              onClick={() => navigate(`/chat/${chat.chatroomId}`)}
+              onClick={() => navigate(`/chat/${chat.chatRoomId}`)}
             >
               {/* 프로필 */}
               <div className="relative flex h-13 w-13 items-center justify-center rounded-full bg-[var(--gray-20)]">
-                {!chat.check && (
+                {chat.hasUnreadMessages && (
                   <span className="absolute -top-0 -right-1 h-4 w-4 rounded-full border-2 border-[var(--white)] bg-[var(--noti)]"></span>
                 )}
               </div>
@@ -106,7 +107,9 @@ const Chat = () => {
                     {chat.lastMessage}
                   </span>
                   <span className="ml-2 flex-shrink-0 truncate overflow-hidden text-sm text-ellipsis whitespace-nowrap text-[var(--gray-40)]">
-                    지금
+                    {chat.lastMessageTime
+                      ? getRelativeTime(chat.lastMessageTime)
+                      : "지금"}
                   </span>
                 </div>
               </div>

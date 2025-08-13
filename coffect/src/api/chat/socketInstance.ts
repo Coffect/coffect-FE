@@ -17,8 +17,11 @@ class SocketManager {
       return;
     }
 
-    const socketUrl =
-      import.meta.env.VITE_SOCKET_URL || "http://13.124.169.70:3000";
+    const socketUrl = import.meta.env.VITE_SOCKET_URL;
+    if (!socketUrl) {
+      console.error("VITE_SOCKET_URL 환경 변수가 설정되지 않았습니다");
+      throw new Error("Socket URL이 구성되지 않았습니다");
+    }
 
     console.log("소켓 연결 시도:", socketUrl);
 
@@ -112,17 +115,17 @@ class SocketManager {
   }
 
   // 타이핑 시작
-  startTyping(chatRoomId: string) {
+  startTyping(chatRoomId: string, userId: number) {
     if (!this.socket?.connected) return;
 
-    this.socket.emit(SOCKET_EVENTS.TYPING, { chatRoomId });
+    this.socket.emit(SOCKET_EVENTS.TYPING, { chatRoomId, userId });
   }
 
   // 타이핑 중지
-  stopTyping(chatRoomId: string) {
+  stopTyping(chatRoomId: string, userId: number) {
     if (!this.socket?.connected) return;
 
-    this.socket.emit(SOCKET_EVENTS.STOP_TYPING, { chatRoomId });
+    this.socket.emit(SOCKET_EVENTS.STOP_TYPING, { chatRoomId, userId });
   }
 
   // 타이핑 이벤트 리스너
@@ -155,9 +158,13 @@ class SocketManager {
   }
 
   // 이벤트 리스너 제거
-  off(event: string) {
+  off(event: string, listener?: (...args: unknown[]) => void) {
     if (this.socket) {
-      this.socket.off(event);
+      if (listener) {
+        this.socket.off(event, listener);
+      } else {
+        this.socket.off(event);
+      }
     }
   }
 }

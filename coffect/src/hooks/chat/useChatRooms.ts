@@ -10,7 +10,14 @@ import { getUserStringId } from "../../api/home";
 // import { socketManager } from "../../api/chat"; // CORS 문제로 비활성화
 import type { ChatRoomWithUser } from "../../types/chat";
 
-export const useChatRooms = () => {
+interface UseChatRoomsReturn {
+  chatRooms: ChatRoomWithUser[];
+  isLoading: boolean;
+  error: string | null;
+  loadChatRooms: () => Promise<void>;
+}
+
+export const useChatRooms = (): UseChatRoomsReturn => {
   const [chatRooms, setChatRooms] = useState<ChatRoomWithUser[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +39,19 @@ export const useChatRooms = () => {
       const currentUserId = currentUserProfile.success?.userInfo?.userId;
 
       if (!currentUserId) {
-        setError("사용자 정보를 가져올 수 없습니다.");
+        console.warn(
+          "사용자 정보를 가져올 수 없습니다. 기본 채팅방 목록만 표시합니다.",
+        );
+        // 사용자 정보 없이 기본 채팅방 목록만 설정
+        const basicChatRooms = chatRoomsData.map((room) => ({
+          ...room,
+          userInfo: {
+            name: "알 수 없는 사용자",
+            major: "정보 없음",
+            profileImage: "",
+          },
+        }));
+        setChatRooms(basicChatRooms);
         return;
       }
 

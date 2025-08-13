@@ -51,7 +51,7 @@ const ChatRoom = () => {
   // 채팅방 목록에서 현재 채팅방 정보 가져오기
   const { chatRooms, isLoading: chatRoomsLoading } = useChatRooms();
   const currentChatRoom = useMemo(() => {
-    const foundRoom = chatRooms.find((room) => room.chatroomId === chatRoomId);
+    const foundRoom = chatRooms.find((room) => room.chatRoomId === chatRoomId);
     return foundRoom;
   }, [chatRooms, chatRoomId]);
 
@@ -89,12 +89,18 @@ const ChatRoom = () => {
     },
   });
 
-  const handleImageSend = (file: File) => {
+  const handleImageSend = async (file: File) => {
     if (!file || !file.type.startsWith("image/")) return;
+
+    if (!chatRoomId) {
+      console.error("채팅방 ID가 없습니다");
+      return;
+    }
 
     const url = URL.createObjectURL(file);
     createdObjectUrlsRef.current.push(url);
 
+    // 낙관적 업데이트
     setMessages((prev) => [
       ...prev,
       {
@@ -105,6 +111,25 @@ const ChatRoom = () => {
         time: getCurrentTime(),
       },
     ]);
+
+    try {
+      // 서버로 이미지 전송
+      const { sendPhoto } = await import("../../api/chat");
+      await sendPhoto(chatRoomId, file);
+      // 메시지 목록 새로고침
+      loadMessages();
+    } catch (error) {
+      console.error("이미지 전송 실패:", error);
+      // 실패 시 낙관적 업데이트 롤백
+      setMessages((prev) =>
+        prev.filter(
+          (msg) =>
+            msg.type !== "image" ||
+            (msg.type === "image" && msg.imageUrl !== url),
+        ),
+      );
+      URL.revokeObjectURL(url);
+    }
   };
 
   const handleToggleInterests = () => {
@@ -121,36 +146,60 @@ const ChatRoom = () => {
 
   const user = useChatUser();
 
-  // 채팅방 입장 및 메시지 로딩
-  useEffect(() => {
+  // 기존 메시지 로딩 함수
+  const loadMessages = async () => {
     if (!chatRoomId) return;
 
-    // 기존 메시지 로딩
-    const loadMessages = async () => {
-      try {
-        const response = await getChatMessages(chatRoomId);
-        if (response.success) {
-          // ChatMessage를 Message 타입으로 변환
-          const convertedMessages: Message[] = response.success.map((msg) => ({
-            id: parseInt(msg.id),
-            type: msg.isPhoto ? "image" : "text",
-            text: msg.isPhoto ? "" : msg.messageBody,
-            imageUrl: msg.isPhoto ? msg.messageBody : "",
-            time: new Date(msg.createdAt).toLocaleTimeString("ko-KR", {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            }),
-            mine: msg.userId === user.id,
-          }));
+    try {
+      const response = await getChatMessages(chatRoomId);
+      if (response.success) {
+        // ChatMessage를 Message 타입으로 변환
+        const convertedMessages: Message[] = response.success
+          .map((msg) => {
+            const id =
+              typeof msg.id === "string" ? parseInt(msg.id, 10) : msg.id;
+            if (isNaN(id)) {
+              console.error("Invalid message id:", msg.id);
+              return null;
+            }
 
-          setMessages(convertedMessages);
-        }
-      } catch (error) {
-        console.error("메시지 로딩 오류:", error);
+            if (msg.isPhoto) {
+              return {
+                id,
+                type: "image" as const,
+                imageUrl: msg.messageBody,
+                time: new Date(msg.createdAt).toLocaleTimeString("ko-KR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                }),
+                mine: msg.userId === user.id,
+              };
+            } else {
+              return {
+                id,
+                type: "text" as const,
+                text: msg.messageBody,
+                time: new Date(msg.createdAt).toLocaleTimeString("ko-KR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                }),
+                mine: msg.userId === user.id,
+              };
+            }
+          })
+          .filter(Boolean) as Message[];
+
+        setMessages(convertedMessages);
       }
-    };
+    } catch (error) {
+      console.error("메시지 로딩 오류:", error);
+    }
+  };
 
+  // 채팅방 입장 및 메시지 로딩
+  useEffect(() => {
     loadMessages();
   }, [chatRoomId, user.id]);
 
@@ -191,7 +240,7 @@ const ChatRoom = () => {
       {/* 메시지 영역 */}
       <ChatMessageArea
         messages={messages}
-        username={currentChatRoom?.userInfo?.name}
+        username={currentChatRoom?.userInfo?.name || "상대방"}
       />
 
       {/* 입력창 */}

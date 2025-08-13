@@ -39,10 +39,10 @@ export interface CreateChatRoomErrorResponse {
 
 // 채팅방 목록 조회 응답 타입
 export interface ChatRoom {
-  chatroomId: string;
+  chatRoomId: string;
   userId: number;
   lastMessage: string;
-  check: boolean;
+  hasUnreadMessages: boolean;
   lastReadMessageId?: string; // 마지막으로 읽은 메시지 ID
   lastMessageTime?: string; // 마지막 메시지 시간 (시간순 정렬용)
 }

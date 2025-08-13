@@ -27,13 +27,7 @@ const useHandleSend = ({
   onSuccess,
 }: UseHandleSendProps) => {
   const { sendMessage, sending, error } = useSendMessage(chatRoomId, {
-    onSuccess: (messageId: string) => {
-      // API 성공 시 서버에서 반환된 messageId로 메시지 ID 업데이트
-      const updatedMessages = messages.map((msg: Message) =>
-        msg.id === Date.now() ? { ...msg, id: parseInt(messageId) } : msg,
-      );
-      setMessages(updatedMessages);
-    },
+    onSuccess: undefined, // handleSend 내부에서 처리
     onError: (errorMessage: string) => {
       onError?.(errorMessage);
     },
@@ -43,9 +37,10 @@ const useHandleSend = ({
     async (msg: string) => {
       if (!msg.trim() || !chatRoomId) return;
 
+      const tempId = Date.now();
       // 먼저 로컬에 메시지 추가 (낙관적 업데이트)
       const tempMessage: Message = {
-        id: Date.now(), // 임시 ID
+        id: tempId, // 임시 ID
         type: "text",
         text: msg,
         time: getCurrentTime(),
@@ -63,7 +58,7 @@ const useHandleSend = ({
         onSuccess?.();
       } else {
         // 실패 시 로컬 메시지 제거
-        setMessages(messages.filter((m) => m.id !== tempMessage.id));
+        setMessages(messages.filter((m) => m.id !== tempId));
         setInputValue(msg); // 입력값 복원
       }
     },
