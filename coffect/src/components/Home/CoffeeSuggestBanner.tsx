@@ -143,6 +143,17 @@ const CoffeeSuggestBanner: React.FC = () => {
       setSuggestions((prev) =>
         prev.filter((s) => s.cardId !== pendingDeleteId),
       );
+
+      // ★ SW 저장분 삭제 요청
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.ready.then((reg) => {
+          reg.active?.postMessage({
+            type: "fcm-delete",
+            cardId: pendingDeleteId,
+          });
+        });
+      }
+
       setCheckedMessage(null);
       setPendingDeleteId(null);
       setIsMessageHidden(false);
