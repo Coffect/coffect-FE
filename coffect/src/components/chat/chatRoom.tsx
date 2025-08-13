@@ -5,7 +5,7 @@
  */
 
 import { useMemo, useState, useRef, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import usePreventZoom from "./hooks/usePreventZoom";
 import useModal from "./hooks/useModal";
 import RequestModal from "./RequestModal";
@@ -17,12 +17,15 @@ import { useChatUser } from "./hooks/useChatUser";
 import useHandleSend from "./hooks/useHandleSend";
 import useAutoScroll from "./hooks/useAutoScroll";
 import useCurrentTime from "./hooks/useCurrentTime";
+import { socketManager } from "../../api/chat";
+import { getChatMessages } from "../../api/chat";
 import type { Schedule } from "./hooks/useSchedule";
-import type { Message } from "../../types/chat";
+import type { Message, SocketMessage } from "../../types/chat";
 
 const ChatRoom = () => {
   usePreventZoom();
   const location = useLocation();
+  const { chatRoomId } = useParams<{ chatRoomId: string }>();
 
   const {
     isOpen: isModalOpen,
@@ -42,58 +45,8 @@ const ChatRoom = () => {
     };
   }, [location.state?.schedule]);
 
-  // 메시지 배열
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      type: "text",
-      text: "안녕하세요!",
-      time: "오전 11:47",
-      mine: false,
-    },
-    {
-      id: 2,
-      type: "text",
-      text: "꼭 한번 커피챗 해보고 싶어서 제안\n드렸습니다 :)",
-      time: "오전 11:47",
-      mine: false,
-    },
-    {
-      id: 3,
-      type: "text",
-      text: "안녕하세요!",
-      time: "오전 11:47",
-      mine: true,
-    },
-    {
-      id: 4,
-      type: "text",
-      text: "네 좋아요!\n이번주에 시간 언제 가능하세요?",
-      time: "오전 11:47",
-      mine: true,
-    },
-    {
-      id: 5,
-      type: "text",
-      text: "목요일 두시 공강이신걸로 아는데\n그때 어떠세요??",
-      time: "오전 11:48",
-      mine: false,
-    },
-    {
-      id: 6,
-      type: "text",
-      text: "좋습니다!\n정문 앞 스벅에서 만나요!!",
-      time: "오전 11:49",
-      mine: true,
-    },
-    {
-      id: 7,
-      type: "text",
-      text: "네 그럼 거기서 2시에 봅시다!",
-      time: "오전 11:49",
-      mine: false,
-    },
-  ]);
+  // 메시지 배열 (실제 소켓 통신용)
+  const [messages, setMessages] = useState<Message[]>([]);
 
   const [inputValue, setInputValue] = useState("");
   const getCurrentTime = useCurrentTime();
@@ -114,10 +67,8 @@ const ChatRoom = () => {
     };
   }, []);
 
-  const chatRoomId = location.pathname.split("/").pop() || "temp-room-id";
-
   const { handleSend } = useHandleSend({
-    chatRoomId,
+    chatRoomId: chatRoomId || "temp-room-id",
     messages,
     setMessages,
     setInputValue,
@@ -146,6 +97,78 @@ const ChatRoom = () => {
   };
 
   const user = useChatUser();
+
+  // 채팅방 입장 및 메시지 로딩
+  useEffect(() => {
+    if (!chatRoomId) return;
+
+    // 소켓 연결 확인 및 채팅방 입장
+    if (socketManager.isSocketConnected()) {
+      socketManager.joinRoom(chatRoomId, user.id);
+    } else {
+      // 소켓이 연결되지 않은 경우 연결 후 입장
+      socketManager.connect();
+      setTimeout(() => {
+        socketManager.joinRoom(chatRoomId, user.id);
+      }, 1000);
+    }
+
+    // 기존 메시지 로딩
+    const loadMessages = async () => {
+      try {
+        const response = await getChatMessages(chatRoomId);
+        if (response.success) {
+          // ChatMessage를 Message 타입으로 변환
+          const convertedMessages: Message[] = response.success.map((msg) => ({
+            id: parseInt(msg.id),
+            type: msg.isPhoto ? "image" : "text",
+            text: msg.isPhoto ? "" : msg.messageBody,
+            imageUrl: msg.isPhoto ? msg.messageBody : "",
+            time: new Date(msg.createdAt).toLocaleTimeString("ko-KR", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            }),
+            mine: msg.userId === user.id,
+          }));
+          setMessages(convertedMessages);
+        }
+      } catch (error) {
+        console.error("메시지 로딩 오류:", error);
+      }
+    };
+
+    loadMessages();
+
+    // 메시지 수신 리스너 설정
+    const handleReceiveMessage = (message: SocketMessage) => {
+      if (message.chatRoomId === chatRoomId) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: parseInt(message.id),
+            type: message.isPhoto ? "image" : "text",
+            text: message.isPhoto ? "" : message.messageBody,
+            imageUrl: message.isPhoto ? message.messageBody : "",
+            time: new Date(message.createdAt).toLocaleTimeString("ko-KR", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            }),
+            mine: message.userId === user.id,
+          },
+        ]);
+      }
+    };
+
+    socketManager.onReceiveMessage(handleReceiveMessage);
+
+    // 컴포넌트 언마운트 시 채팅방 퇴장
+    return () => {
+      socketManager.leaveRoom(chatRoomId, user.id);
+      socketManager.off("receive_message");
+    };
+  }, [chatRoomId, user.id, getCurrentTime]);
 
   return (
     <div className="flex h-full w-full flex-col bg-[var(--white)]">

@@ -119,10 +119,10 @@ const Chat = () => {
               <div className="ml-3 flex min-w-0 flex-1 flex-col">
                 <div className="flex min-w-0 items-center">
                   <span className="mr-2 flex-shrink-0 text-lg font-bold whitespace-nowrap text-[var(--gray-90)]">
-                    사용자 {chat.userId}
+                    {chat.userInfo?.name}
                   </span>
                   <span className="min-w-0 flex-1 truncate overflow-hidden text-sm font-medium text-ellipsis whitespace-nowrap text-[var(--gray-50)]">
-                    상대방
+                    {chat.userInfo?.major}
                   </span>
                 </div>
                 <div className="flex min-w-0 items-center justify-between">

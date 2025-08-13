@@ -10,6 +10,7 @@ const TestAPI = () => {
   const [chatRoomsResult, setChatRoomsResult] = useState("");
   const [messagesResult, setMessagesResult] = useState("");
   const [markReadResult, setMarkReadResult] = useState("");
+  const [socketResult, setSocketResult] = useState("");
   const [loading, setLoading] = useState(false);
 
   const testChatRooms = async () => {
@@ -59,6 +60,28 @@ const TestAPI = () => {
     } catch (error: any) {
       setMarkReadResult(`Error: ${error.message || error}`);
     } finally {
+      setLoading(false);
+    }
+  };
+
+  const testSocketConnection = () => {
+    setLoading(true);
+    try {
+      // 소켓 연결 시도
+      socketManager.connect();
+      
+      // 연결 상태 확인
+      setTimeout(() => {
+        const isConnected = socketManager.isSocketConnected();
+        setSocketResult(
+          isConnected 
+            ? "소켓 연결 성공!" 
+            : "소켓 연결 실패 - 연결 상태를 확인해주세요."
+        );
+        setLoading(false);
+      }, 2000);
+    } catch (error: any) {
+      setSocketResult(`소켓 연결 오류: ${error.message || error}`);
       setLoading(false);
     }
   };
@@ -122,4 +145,3 @@ const TestAPI = () => {
 };
 
 export default TestAPI;
-

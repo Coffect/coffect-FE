@@ -47,6 +47,14 @@ export interface ChatRoom {
   lastMessageTime?: string; // 마지막 메시지 시간 (시간순 정렬용)
 }
 
+// 사용자 정보가 포함된 채팅방 타입
+export interface ChatRoomWithUser extends ChatRoom {
+  userInfo?: {
+    name: string;
+    major: string;
+  };
+}
+
 export interface ChatRoomListResponse {
   resultType: string;
   error: null;
