@@ -17,7 +17,7 @@ export default defineConfig({
       filename: "firebase-messaging-sw.ts",
       registerType: "autoUpdate", // 새 버전 자동 적용
       injectRegister: null, // ★ 플러그인의 자동 register 스크립트 주입 금지
-      devOptions: { enabled: false }, // ★ 개발모드에서 PWA(dev-sw) 완전 비활성
+      devOptions: { enabled: true, type: "module" }, // 개발모드에서 PWA(dev-sw) 완전 비활성
     }),
   ],
   build: {

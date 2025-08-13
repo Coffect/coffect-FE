@@ -19,26 +19,33 @@ root.render(
     console.log("[Firebase] 초기화 완료");
 
     if ("serviceWorker" in navigator) {
-      // (중요) 예전에 켜져 있던 vite PWA dev-sw가 있으면 제거
+      const isDev = import.meta.env.DEV;
+
+      // ★ (중요) '현재 모드의 반대편' SW만 정리
       const regs = await navigator.serviceWorker.getRegistrations();
       for (const r of regs) {
-        if (r.active?.scriptURL.includes("dev-sw")) {
+        const url = r.active?.scriptURL || "";
+        if (
+          isDev
+            ? url.includes("firebase-messaging-sw") // dev에서는 prod SW만 제거
+            : url.includes("dev-sw")
+        ) {
+          // prod에서는 dev-sw만 제거
           await r.unregister();
         }
       }
 
-      // ★ 여기서 우리 FCM SW만 등록
-      const swUrl = import.meta.env.DEV
-        ? "/src/firebase-messaging-sw.ts" // dev에서는 TS 그대로
-        : "/firebase-messaging-sw.js"; // build 산출물
+      // ★ dev는 dev-sw, prod는 빌드 산출물
+      const swUrl = isDev ? "/dev-sw.js?dev-sw" : "/firebase-messaging-sw.js";
 
       const reg = await navigator.serviceWorker.register(swUrl, {
-        type: "module",
-        scope: "/", // 루트 스코프
+        // ★ dev-sw는 ESM이므로 module로! (prod도 모듈 SW면 그대로 module 유지)
+        type: isDev ? "module" : "classic", // prod 파일이 classic이면 classic, ESM이면 "module"로 변경
+        scope: "/",
       });
       console.log("[SW] register ok:", reg.scope);
 
-      // SW가 이 페이지를 컨트롤 잡으면 누적 FCM flush
+      // SW가 페이지를 잡으면 FCM flush
       const flush = () => reg.active?.postMessage({ type: "fcm-flush" });
       if (navigator.serviceWorker.controller) {
         flush();
