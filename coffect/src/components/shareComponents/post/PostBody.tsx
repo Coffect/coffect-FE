@@ -54,6 +54,8 @@ const PostBody: React.FC<PostBodyProps> = ({
         comments={post.commentCount}
         isDetailView={isDetailView}
         showBookmarkButton={showBookmarkButton}
+        isLiked={post.isLiked}
+        isScraped={post.isScraped}
       />
     </div>
   );

@@ -5,31 +5,32 @@ import type {
   ScrapResponse,
 } from "@/types/community/threadInteractionTypes";
 import { axiosInstance } from "../axiosInstance";
-
-export const postLike = async (params: LikeRequest): Promise<LikeResponse> => {
-  try {
-    const response = await axiosInstance.post<LikeResponse>(
-      "/thread/like",
-      params,
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching likes:", error);
-    throw error;
-  }
-};
-
 export const postScrap = async (
-  params: ScrapRequest,
+  scrap: ScrapRequest,
 ): Promise<ScrapResponse> => {
   try {
     const response = await axiosInstance.post<ScrapResponse>(
       "/thread/scrap",
-      params,
+      null, // body는 없음
+      { params: { threadId: scrap.threadId } }, // query string에 추가
     );
     return response.data;
   } catch (error) {
     console.error("Error fetching scrap:", error);
+    throw error;
+  }
+};
+
+export const postLike = async (like: LikeRequest): Promise<LikeResponse> => {
+  try {
+    const response = await axiosInstance.post<LikeResponse>(
+      "/thread/like",
+      null, // body는 없음
+      { params: { threadId: like.threadId } },
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching like:", error);
     throw error;
   }
 };

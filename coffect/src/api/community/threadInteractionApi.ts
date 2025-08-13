@@ -8,9 +8,10 @@ import type {
 
 export const postLike = async (like: LikeRequest): Promise<LikeResponse> => {
   try {
-    const response = await axiosInstance.post<LikeResponse>("/thread/like", {
-      params: { threadId: like.threadId },
-    });
+    const response = await axiosInstance.post<LikeResponse>(
+      "/thread/like",
+      like,
+    );
     return response.data;
   } catch (error) {
     console.error("Error fetching like:", error);
@@ -22,12 +23,13 @@ export const postScrap = async (
   scrap: ScrapRequest,
 ): Promise<ScrapResponse> => {
   try {
-    const response = await axiosInstance.post<ScrapResponse>("/thread/scrap", {
-      params: { threadId: scrap.threadId },
-    });
+    const response = await axiosInstance.post<ScrapResponse>(
+      "/thread/scrap",
+      scrap,
+    );
     return response.data;
   } catch (error) {
-    console.error("Error fetching like:", error);
+    console.error("Error fetching scrap:", error);
     throw error;
   }
 };
