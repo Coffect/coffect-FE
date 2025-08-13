@@ -23,6 +23,13 @@ const RequestModal = ({
   availableTime = "가능한 시간 정보가 없습니다.",
 }: RequestModalProps) => {
   if (!isOpen) return null;
+
+  console.log("RequestModal 데이터:", {
+    opponentName,
+    requestMessage,
+    requestTime,
+    availableTime,
+  });
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="relative mx-auto w-[90%] max-w-[340px] min-w-[200px] rounded-2xl bg-[var(--white)] px-6 py-7 shadow-lg max-[320px]:px-3 max-[320px]:py-4">

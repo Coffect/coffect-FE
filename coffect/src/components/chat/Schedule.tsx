@@ -13,6 +13,8 @@ import DeleteScheduleModal from "./DeleteScheduleModal";
 import { X } from "lucide-react";
 import { useChatUser } from "./hooks/useChatUser";
 import { useChatRooms } from "../../hooks/chat/useChatRooms";
+import { formatAmPmTo24Hour } from "../../utils/dateUtils";
+import { useScheduleForm } from "./hooks/useScheduleForm";
 
 const Schedule: React.FC = () => {
   const location = useLocation();
@@ -25,6 +27,7 @@ const Schedule: React.FC = () => {
   const currentChatRoom = chatRooms.find(
     (room) => room.chatroomId === currentChatRoomId,
   );
+
   const [form, setForm] = useState<ScheduleFormValues>(() => {
     // 기존 일정이 있는지 확인 (수정하기)
     const sch = location.state?.schedule;
@@ -49,6 +52,10 @@ const Schedule: React.FC = () => {
       alert: "5분 전",
     };
   });
+
+  // 일정 폼 훅 사용
+  const { fixCoffeeChatSchedule } = useScheduleForm(form);
+
   const [showComplete, setShowComplete] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const navigate = useNavigate();
@@ -73,9 +80,57 @@ const Schedule: React.FC = () => {
     });
   };
 
+  // 일정 등록/수정 API 호출
+  const handleScheduleSubmit = async () => {
+    try {
+      // 날짜와 시간을 ISO 문자열로 변환
+      const dateObj =
+        typeof form.date === "string" ? new Date(form.date) : form.date!;
+
+      // 날짜 유효성 검사
+      if (isNaN(dateObj.getTime())) {
+        console.error("유효하지 않은 날짜:", form.date);
+        return;
+      }
+
+      // AM/PM 형식을 24시간 형식으로 변환
+      const time24Hour = formatAmPmTo24Hour(form.time);
+      const [hours, minutes] = time24Hour.split(":").map(Number);
+
+      // 시간 유효성 검사
+      if (isNaN(hours) || isNaN(minutes)) {
+        console.error("유효하지 않은 시간 형식:", form.time);
+        return;
+      }
+
+      dateObj.setHours(hours, minutes, 0, 0);
+
+      const scheduleData = {
+        time: dateObj.toISOString(),
+        location: form.place,
+        coffeeDate: dateObj.toISOString(),
+        coffectId: currentUser.id || 0, // 현재 사용자 ID (숫자)
+      };
+
+      console.log("API 요청 데이터:", scheduleData);
+
+      const response = await fixCoffeeChatSchedule(scheduleData);
+
+      if (response.resultType === "SUCCESS") {
+        console.log("일정 등록 성공:", response.success);
+        setShowComplete(true);
+      } else {
+        console.error("일정 등록 실패:", response.error);
+      }
+    } catch (error) {
+      console.error("일정 등록 API 호출 실패:", error);
+      console.error("전체 에러 객체:", JSON.stringify(error, null, 2));
+    }
+  };
+
   // 일정 수정하기
   const handleEdit = () => {
-    setShowComplete(true);
+    handleScheduleSubmit();
   };
 
   return (
@@ -124,7 +179,7 @@ const Schedule: React.FC = () => {
         <ScheduleForm
           values={form}
           onChange={setForm}
-          onComplete={isEdit ? handleEdit : () => setShowComplete(true)}
+          onComplete={isEdit ? handleEdit : handleScheduleSubmit}
           completeLabel={isEdit ? "수정하기" : undefined}
           onCancel={isEdit ? () => setShowDeleteModal(true) : undefined}
           cancelLabel={isEdit ? "일정 삭제하기" : undefined}

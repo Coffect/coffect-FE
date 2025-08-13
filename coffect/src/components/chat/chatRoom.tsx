@@ -20,6 +20,9 @@ import useHandleSend from "./hooks/useHandleSend";
 import useAutoScroll from "./hooks/useAutoScroll";
 import useCurrentTime from "./hooks/useCurrentTime";
 import { getChatMessages } from "../../api/chat";
+import { useCoffeeChatSuggestions } from "../../hooks/useCoffeeChatSuggestions";
+import { useTimeTableComparison } from "../../hooks/useTimeTable";
+import { axiosInstance } from "../../api/axiosInstance";
 import type { Schedule } from "./hooks/useSchedule";
 import type { Message } from "../../types/chat";
 
@@ -165,21 +168,68 @@ const ChatRoom = () => {
     setShowInterests((prev) => !prev);
   };
 
-  const PROFILE_NAVIGATION_DELAY = 500; // 상수로 분리
-
   const handleProfileClick = () => {
-    if (!currentChatRoom?.userId) {
-      console.error("사용자 ID를 찾을 수 없습니다");
+    if (!id) {
+      console.error("상대방 ID를 찾을 수 없습니다");
       return;
     }
     setIsProfileLoading(true);
-    setTimeout(() => {
-      navigate(`/userpage/${currentChatRoom.userId}`);
-      setIsProfileLoading(false);
-    }, PROFILE_NAVIGATION_DELAY);
+    // string ID로 네비게이션
+    navigate(`/userpage/${id}`);
+    setIsProfileLoading(false);
   };
 
   const { user, loading: userLoading } = useChatUser();
+
+  // 커피챗 제안 데이터 가져오기
+  const { suggestions } = useCoffeeChatSuggestions();
+
+  // 시간표 비교 훅 사용
+  const { commonFreeTime } = useTimeTableComparison(
+    user.id,
+    currentChatRoom?.userId || 0,
+  );
+
+  // 상대방의 string ID 가져오기
+  const [id, setId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchOpponentId = async () => {
+      if (!currentChatRoom?.userId) return;
+
+      try {
+        const response = await axiosInstance.post("/profile/id", {
+          userId: currentChatRoom.userId,
+        });
+
+        if (
+          response.data.resultType === "SUCCESS" &&
+          response.data.success?.id
+        ) {
+          setId(response.data.success.id);
+          console.log("상대방 string ID:", response.data.success.id);
+        }
+      } catch (err) {
+        console.error("상대방 ID 조회 실패:", err);
+      }
+    };
+
+    fetchOpponentId();
+  }, [currentChatRoom?.userId]);
+
+  // 현재 채팅방의 커피챗 제안 찾기
+  const currentSuggestion = useMemo(() => {
+    if (!currentChatRoom?.userId) return null;
+    const found = suggestions.find(
+      (suggestion) => suggestion.otherUserid === currentChatRoom.userId,
+    );
+    console.log("현재 채팅방 제안 찾기:", {
+      currentUserId: currentChatRoom.userId,
+      suggestions,
+      found,
+    });
+    return found;
+  }, [suggestions, currentChatRoom?.userId]);
 
   // 기존 메시지 로딩 함수
   const loadMessages = useCallback(async () => {
@@ -270,9 +320,13 @@ const ChatRoom = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         opponentName={currentChatRoom?.userInfo?.name}
-        requestMessage="안녕하세요! 커피챗 제안을 받아서 기쁩니다. 함께 이야기 나누고 싶어요!"
-        requestTime="2025. 1. 13. 오후 2:39"
-        availableTime="목요일 14:00"
+        requestMessage={
+          currentSuggestion?.suggestion || "커피챗 제안이 도착했습니다."
+        }
+        requestTime={
+          currentSuggestion?.requestTime || "요청 시간 정보가 없습니다."
+        }
+        availableTime={commonFreeTime}
       />
 
       {/* 메시지 영역 */}

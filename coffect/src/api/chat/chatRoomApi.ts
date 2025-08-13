@@ -55,8 +55,17 @@ export const getChatRoomList = async (): Promise<ChatRoomListResponse> => {
 export const getChatMessages = async (
   chatRoomId: string,
 ): Promise<ChatMessageListResponse> => {
-  const response = await axiosInstance.get(`/chat?chatRoomId=${chatRoomId}`);
-  return response.data;
+  try {
+    const response = await axiosInstance.get(`/chat?chatRoomId=${chatRoomId}`);
+    return response.data;
+  } catch (error) {
+    console.error("메시지 조회 실패:", error);
+    return {
+      resultType: "FAIL",
+      error: null,
+      success: [],
+    };
+  }
 };
 
 // 메시지 전송 API
