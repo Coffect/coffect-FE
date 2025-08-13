@@ -8,13 +8,18 @@ import BottomNavbar from "../components/shareComponents/BottomNavbar";
 import { useNavigate } from "react-router-dom";
 import EmptyChatList from "../assets/icon/chat/EmptyChatList.png";
 import ExampleProfile from "../assets/icon/chat/ExampleProfile.png";
-import { useChatRoomList } from "../hooks/chat";
+import { useChatRooms } from "../hooks/chat";
+import TestAPI from "../components/TestAPI";
+import { socketManager } from "../api/chat";
 
 const Chat = () => {
   const navigate = useNavigate();
-  const { chatRooms, loading, error } = useChatRoomList();
+  const { chatRooms, isLoading, error } = useChatRooms({
+    autoRefresh: true,
+    refreshInterval: 30000, // 30초마다 새로고침
+  });
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex h-full w-full flex-col bg-[var(--white)]">
         <div className="flex items-center justify-between px-5 pt-8 pb-3">
@@ -55,26 +60,40 @@ const Chat = () => {
         <span className="ml-2 text-2xl font-bold text-[var(--gray-90)]">
           채팅
         </span>
+        {/* Socket 연결 상태 표시 */}
+        <div className="flex items-center gap-2">
+          <div
+            className={`h-3 w-3 rounded-full ${socketManager.isSocketConnected() ? "bg-green-500" : "bg-red-500"}`}
+          ></div>
+          <span
+            className={`text-sm ${socketManager.isSocketConnected() ? "text-green-600" : "text-red-600"}`}
+          >
+            {socketManager.isSocketConnected() ? "연결됨" : "연결 안됨"}
+          </span>
+        </div>
       </div>
       {/* Chat List */}
       <div className="flex-1 overflow-y-auto px-2 pb-20">
+        {/* API 테스트 컴포넌트 (임시) */}
+        <TestAPI />
+
         {/* 메시지 없을 때 */}
         {chatRooms.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center pt-24">
-            <span className="mb-2 text-lg font-bold text-[var(--gray-90)]">
+            <span className="mb-2 text-[20px] font-bold text-[var(--gray-90)]">
               아직 시작된 대화가 없어요!
             </span>
-            <span className="mb-6 text-sm text-[var(--gray-50)]">
+            <span className="mb-2 text-[16px] font-medium text-[var(--gray-50)]">
               지금 바로 추천 카드를 통해
               <br />
               커피챗을 제안해보세요!
             </span>
 
-            <div className="mt-2 flex flex-col items-center">
+            <div className="flex flex-col items-center">
               <img
                 src={EmptyChatList}
                 alt="빈 채팅 목록"
-                className="h-[100px] w-[100px]"
+                className="h-[110px] w-[110px]"
               />
             </div>
           </div>

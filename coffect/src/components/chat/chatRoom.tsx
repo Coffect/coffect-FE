@@ -117,12 +117,18 @@ const ChatRoom = () => {
     };
   }, []);
 
-  const handleSend = useHandleSend(
+  const chatRoomId = location.pathname.split("/").pop() || "temp-room-id";
+
+  const { handleSend } = useHandleSend({
+    chatRoomId,
     messages,
     setMessages,
     setInputValue,
     getCurrentTime,
-  );
+    onError: (error) => {
+      console.error("메시지 전송 오류:", error);
+    },
+  });
 
   const handleImageSend = (file: File) => {
     if (!file || !file.type.startsWith("image/")) return;

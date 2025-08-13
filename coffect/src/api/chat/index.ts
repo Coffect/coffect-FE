@@ -4,4 +4,4 @@
  */
 
 export * from "./chatRoomApi";
-export * from "./types";
+export * from "./socketInstance";

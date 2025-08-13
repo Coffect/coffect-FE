@@ -4,16 +4,46 @@
  */
 
 import { axiosInstance } from "../axiosInstance";
-import type { 
-  ChatRoomListResponse, 
+import type {
+  ChatRoomListResponse,
   ChatMessageListResponse,
-  SendMessageResponse 
-} from "./types";
+  SendMessageResponse,
+  CreateChatRoomResponse,
+  MarkAsReadResponse,
+  SendPhotoResponse,
+} from "../../types/chat";
+
+// 채팅방 생성 API
+export const createChatRoom = async (
+  userId: number,
+): Promise<CreateChatRoomResponse> => {
+  const response = await axiosInstance.post("/chat/start", {
+    userId,
+  });
+  return response.data;
+};
 
 // 채팅방 목록 조회 API
 export const getChatRoomList = async (): Promise<ChatRoomListResponse> => {
-  const response = await axiosInstance.get("/chat/rooms");
-  return response.data;
+  try {
+    const response = await axiosInstance.get("/chat/rooms");
+    // 응답 데이터가 없거나 success 필드가 없을 경우 기본값 제공
+    if (!response.data || !response.data.success) {
+      return {
+        resultType: "SUCCESS",
+        error: null,
+        success: [],
+      };
+    }
+    return response.data;
+  } catch {
+    // 에러 발생 시 기본 응답 반환
+    return {
+      resultType: "FAIL",
+      error: null,
+      success: [],
+    };
+  }
 };
 
 // 채팅방 메시지 조회 API
@@ -29,8 +59,41 @@ export const sendMessage = async (
   chatRoomId: string,
   message: string,
 ): Promise<SendMessageResponse> => {
-  const response = await axiosInstance.post(`/chat/message?chatRoomId=${chatRoomId}`, {
-    message,
-  });
+  const response = await axiosInstance.post(
+    `/chat/message?chatRoomId=${chatRoomId}`,
+    {
+      message,
+    },
+  );
+  return response.data;
+};
+
+// 채팅방 메시지 읽음 처리 API
+export const markChatAsRead = async (
+  chatRoomId: string,
+): Promise<MarkAsReadResponse> => {
+  const response = await axiosInstance.patch(
+    `/chat/read?chatRoomId=${chatRoomId}`,
+  );
+  return response.data;
+};
+
+// 메시지 사진 전송 API
+export const sendPhoto = async (
+  chatRoomId: string,
+  imageFile: File,
+): Promise<SendPhotoResponse> => {
+  const formData = new FormData();
+  formData.append("image", imageFile);
+
+  const response = await axiosInstance.post(
+    `/chat/photo?chatRoomId=${chatRoomId}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    },
+  );
   return response.data;
 };
