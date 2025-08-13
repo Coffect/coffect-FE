@@ -17,7 +17,6 @@ import LoadingScreen from "../shareComponents/LoadingScreen";
 import { useChatUser } from "./hooks/useChatUser";
 import { useChatRooms } from "../../hooks/chat/useChatRooms";
 import useHandleSend from "./hooks/useHandleSend";
-import useAutoScroll from "./hooks/useAutoScroll";
 import useCurrentTime from "./hooks/useCurrentTime";
 import { getChatMessages } from "../../api/chat";
 import { useCoffeeChatSuggestions } from "../../hooks/useCoffeeChatSuggestions";
@@ -64,9 +63,7 @@ const ChatRoom = () => {
   const [inputValue, setInputValue] = useState("");
   const [showInterests, setShowInterests] = useState(true);
   const getCurrentTime = useCurrentTime();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const createdObjectUrlsRef = useRef<string[]>([]);
-  useAutoScroll(messagesEndRef, [messages]);
 
   useEffect(() => {
     const urls = createdObjectUrlsRef.current;
@@ -155,6 +152,12 @@ const ChatRoom = () => {
               : msg,
           ),
         );
+
+        // 임시 객체 URL 정리 및 목록에서 제거
+        URL.revokeObjectURL(url);
+        createdObjectUrlsRef.current = createdObjectUrlsRef.current.filter(
+          (u) => u !== url,
+        );
       }
     } catch (error) {
       console.error("이미지 전송 실패:", error);
@@ -194,6 +197,9 @@ const ChatRoom = () => {
   const [id, setId] = useState<string | null>(null);
 
   useEffect(() => {
+    // 채팅방 변경 시 이전 상대방 ID 초기화
+    setId(null);
+
     const fetchOpponentId = async () => {
       if (!currentChatRoom?.userId) return;
 

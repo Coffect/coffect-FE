@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { axiosInstance } from "../api/axiosInstance";
+import type { GetTimeTableResponse } from "../types/mypage/timeTable";
 
 export interface TimeTableData {
   userId: number;
@@ -12,19 +13,23 @@ export const useTimeTable = (userId: number) => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchTimeTable = useCallback(async () => {
-    if (!userId) return;
+    if (!userId || userId <= 0) return;
 
     setLoading(true);
     setError(null);
 
     try {
-      const response = await axiosInstance.get(
+      const response = await axiosInstance.get<GetTimeTableResponse>(
         `/profile/getTimeLine?userId=${userId}`,
       );
 
       console.log("시간표 API 응답:", response.data);
 
-      if (response.data.resultType === "SUCCESS" && response.data.success) {
+      if (
+        response.data.resultType === "SUCCESS" &&
+        response.data.success &&
+        typeof response.data.success === "string"
+      ) {
         setTimeTable(response.data.success);
       } else {
         setError("시간표를 불러올 수 없습니다.");
@@ -176,7 +181,7 @@ const isConsecutive = (slot1: string, slot2: string): boolean => {
 
   // 다음 요일의 첫 시간인 경우 (time1이 마지막 시간, time2가 첫 시간)
   if (day2 === day1 + 1 && time1 === 21 && time2 === 0) {
-    // 20:30 -> 다음날 9:00
+    // 19:30 -> 다음날 9:00
     return true;
   }
 
