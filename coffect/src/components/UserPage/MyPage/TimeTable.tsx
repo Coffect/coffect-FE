@@ -3,12 +3,21 @@ author : 재하
 description : 내 공강 시간표를 보여주고, 시간대 선택/수정이 가능한 컴포넌트입니다.
 */
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import backIcon from "../../../assets/icon/mypage/back.png";
+import { getTimeLine, patchTimeLine } from "@/api/profile";
 
 const TimeTable = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const { data: timeLineData } = useQuery({
+    queryKey: ["timeLine"],
+    queryFn: getTimeLine,
+  });
+
   const days = ["월", "화", "수", "목", "금", "토", "일"];
   // 9:00 ~ 24:00 (30분 단위)
   const timeSlots = [];
@@ -24,6 +33,26 @@ const TimeTable = () => {
   const [secondSelected, setSecondSelected] = useState<CellPos>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // 서버에서 내려온 154자(7일 × 22슬롯) 문자열을 요일 우선(day-major)으로 매핑하여 초기 선택 상태로 반영
+  useEffect(() => {
+    const timelineString = timeLineData?.success;
+    const expectedLength = 154; // 7일 × 22슬롯
+    if (!timelineString || timelineString.length !== expectedLength) return;
+
+    const dayCount = 7;
+    const timeCount = 22;
+    const newSet = new Set<string>();
+    for (let dayIndex = 0; dayIndex < dayCount; dayIndex++) {
+      for (let timeIndex = 0; timeIndex < timeCount; timeIndex++) {
+        const linearIndex = dayIndex * timeCount + timeIndex; // day-major
+        if (timelineString[linearIndex] === "1") {
+          newSet.add(`${dayIndex}-${timeIndex}`);
+        }
+      }
+    }
+    setSelectedSlots(newSet);
+  }, [timeLineData?.success]);
 
   const getSlotId = (dayIndex: number, timeIndex: number) =>
     `${dayIndex}-${timeIndex}`;
@@ -74,11 +103,43 @@ const TimeTable = () => {
   const handleEditStart = () => {
     setIsEditing(true);
   };
+
+  const { mutate: patchTimeline, isPending } = useMutation({
+    mutationFn: patchTimeLine,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["timeLine"] });
+      setIsEditing(false);
+      setFirstSelected(null);
+      setSecondSelected(null);
+    },
+    onError: (error) => {
+      console.error("타임라인 수정 실패:", error);
+    },
+  });
+
   const handleSave = () => {
-    setIsEditing(false);
-    setFirstSelected(null);
-    setSecondSelected(null);
-    console.log("저장된 시간대:", Array.from(selectedSlots));
+    const dayCount = 7;
+    const timeCount = 22;
+    const total = dayCount * timeCount; // 154
+    const timelineArray = Array<string>(total).fill("0");
+    selectedSlots.forEach((slotId) => {
+      const [dayStr, timeStr] = slotId.split("-");
+      const dayIndex = Number(dayStr);
+      const timeIndex = Number(timeStr);
+      if (
+        Number.isInteger(dayIndex) &&
+        Number.isInteger(timeIndex) &&
+        dayIndex >= 0 &&
+        dayIndex < dayCount &&
+        timeIndex >= 0 &&
+        timeIndex < timeCount
+      ) {
+        const linearIndex = dayIndex * timeCount + timeIndex; // day-major
+        timelineArray[linearIndex] = "1";
+      }
+    });
+    const timelineString = timelineArray.join("");
+    patchTimeline(timelineString);
   };
 
   return (
@@ -157,7 +218,7 @@ const TimeTable = () => {
                     key={dayIndex}
                     className={`relative m-0 h-9 w-17.5 p-0 ${
                       isSelected || isFirstSelected
-                        ? "bg-[var(--orange-100)]"
+                        ? "bg-[var(--timetable-cell)]"
                         : "bg-[var(--gray-5)]"
                     } ${isEditing ? "cursor-pointer" : "cursor-default"} ${
                       isLastRow
@@ -183,7 +244,7 @@ const TimeTable = () => {
           className="w-full rounded-xl bg-[var(--gray-80)] py-3 text-lg font-semibold text-white"
           onClick={isEditing ? handleSave : handleEditStart}
         >
-          {isEditing ? "완료" : "수정하기"}
+          {isEditing ? (isPending ? "저장 중..." : "완료") : "수정하기"}
         </button>
       </div>
     </div>

@@ -144,3 +144,15 @@ export const getSpecifyCoffeeChat = async ({
     throw new Error("커피챗 상세 정보를 불러오는데 실패했습니다.");
   }
 };
+
+// 특정 커피챗(coffectId)의 메시지 조회
+export const getMessageShowUp = async (coffectId: number) => {
+  try {
+    const { data } = await axiosInstance.get("/home/messageShowUp", {
+      params: { coffectId },
+    });
+    return data;
+  } catch {
+    throw new Error("메시지를 불러오지 못했습니다.");
+  }
+};
