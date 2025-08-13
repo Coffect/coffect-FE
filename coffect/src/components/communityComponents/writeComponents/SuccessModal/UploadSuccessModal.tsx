@@ -7,15 +7,14 @@ import SuccessPost from "../../../../assets/icon/community/SuccessPost.png";
 
 interface UploadSuccessModalProps {
   isOpen: boolean;
-  onViewPost: () => void;
+  onClose: () => void;
 }
 
 const UploadSuccessModal: React.FC<UploadSuccessModalProps> = ({
   isOpen,
-  onViewPost,
+  onClose,
 }) => {
   if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 z-50 flex justify-center">
       <div className="bg-opacity-50 pointer-events-auto flex h-full w-full max-w-[430px] items-center justify-center backdrop-brightness-50">
@@ -34,7 +33,7 @@ const UploadSuccessModal: React.FC<UploadSuccessModalProps> = ({
             />
           </div>
           <button
-            onClick={onViewPost}
+            onClick={onClose}
             className="w-full bg-[#2d2d2d] py-5 font-semibold text-white"
           >
             확인하기

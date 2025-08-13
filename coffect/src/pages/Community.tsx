@@ -146,7 +146,7 @@ const Community = () => {
       <FloatingWriteButton />
       <UploadSuccessModal
         isOpen={isSuccessModalOpen}
-        onViewPost={() => setIsSuccessModalOpen(false)}
+        onClose={() => setIsSuccessModalOpen(false)}
       />
     </div>
   );

@@ -15,19 +15,23 @@
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAddPostMutation } from "@/hooks/community/mutation/useAddPostMutation";
-import type { postUploadRequest } from "@/types/community/writePostTypes";
+// import type { postUploadRequest } from "@/types/community/writePostTypes";
 import WritePostHeader from "@/components/communityComponents/writeComponents/WritePostHeader";
 import WritePostTitleInput from "@/components/communityComponents/writeComponents/WritePostTitleInput";
 import WritePostContentInput from "@/components/communityComponents/writeComponents/WritePostContentInput";
 import WritePostTopicSelector from "@/components/communityComponents/writeComponents/WritePostTopicSelector";
-import type { ChipOption } from "@/components/communityComponents/ChipFilterComponent/filterData";
+import {
+  // postSubjectOptions,
+  type ChipOption,
+} from "@/components/communityComponents/ChipFilterComponent/filterData";
 
 const WritePostPage: React.FC = () => {
   const navigate = useNavigate();
 
   const [threadTitle, setThreadTitle] = useState<string>("");
   const [threadBody, setThreadBody] = useState<string>("");
-  const [images, setImages] = useState<File[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [type, setType] = useState<string>("");
   const [threadSubject, setThreadSubject] = useState<string>("");
 
@@ -36,18 +40,21 @@ const WritePostPage: React.FC = () => {
   const handleImageChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files.length > 0) {
-        setImages([e.target.files[0]]);
-      } else {
-        setImages([]);
+        const files = Array.from(e.target.files);
+        setImageFiles((prev) => [...prev, ...files]);
+        const lastFile = files[files.length - 1];
+        const lastFileUrl = URL.createObjectURL(lastFile);
+        setPreviewUrls([lastFileUrl]);
+        // const urls = files.map((file) => URL.createObjectURL(file));
+        // setPreviewUrls((prev) => [...prev, ...urls]);
       }
     },
     [],
   );
 
   const handleImageRemove = useCallback((indexToRemove: number) => {
-    setImages((prevFiles) =>
-      prevFiles.filter((_, index) => index !== indexToRemove),
-    );
+    setImageFiles((prev) => prev.filter((_, i) => i !== indexToRemove));
+    setPreviewUrls((prev) => prev.filter((_, i) => i !== indexToRemove));
   }, []);
 
   const handleTypeSelect = useCallback((option: ChipOption) => {
@@ -55,37 +62,49 @@ const WritePostPage: React.FC = () => {
   }, []);
 
   const handleThreadSubjectSelect = useCallback((option: ChipOption) => {
-    setThreadSubject(option.value as string);
+    setThreadSubject(String(option.id));
   }, []);
 
   const isFormValid =
     threadTitle.trim().length > 0 &&
     threadBody.trim().length > 0 &&
     type.length > 0 &&
-    threadSubject.length > 0;
+    threadSubject !== "";
+
+  // const selectedTopicValue =
+  //   postSubjectOptions.find((option) => String(option.id) === threadSubject)
+  //     ?.value || "";
 
   const handleBackClick = useCallback(() => {
-    navigate("/community"); // Assuming '/community' is the path to the community page
+    navigate("/community");
   }, [navigate]);
 
-  const handleUpload = useCallback(() => {
+  const handleUpload = () => {
     if (!isFormValid) {
       alert("모든 필수 필드를 채워주세요.");
       return;
     }
-    const postData: postUploadRequest = {
-      threadTitle: threadTitle,
-      threadBody: threadBody,
-      type: type,
-      threadSubject: threadSubject,
-      images: images as unknown as string[],
-    };
+    const formData = new FormData();
+    formData.append("threadTitle", threadTitle);
+    formData.append("threadBody", threadBody);
+    formData.append("type", type);
+    formData.append("threadSubject", threadSubject);
 
-    addPost(postData, {
+    if (imageFiles.length > 0) {
+      formData.append("images", imageFiles[imageFiles.length - 1]);
+    }
+
+    // imageFiles.forEach((file) => {
+    //   formData.append("images", file);
+    // });
+
+    addPost(formData, {
+      // uploadPost에서 multipart/form-data 처리
       onSuccess: (response) => {
-        if (response.resultType === "SUCCESS") {
-          alert("게시글이 성공적으로 작성되었습니다!");
-          navigate("/community"); // 게시글 작성 후 커뮤니티 페이지로 이동
+        if (response.success) {
+          navigate("/community", {
+            state: { showSuccessModal: true, newPost: response.success }, // 모달 표시 플래그
+          });
         } else {
           alert(
             `게시글 작성 실패: ${response.error?.reason || "알 수 없는 오류"}`,
@@ -96,7 +115,7 @@ const WritePostPage: React.FC = () => {
         alert(`게시글 작성 중 오류 발생: ${err.message}`);
       },
     });
-  }, [threadTitle, threadBody, type, threadSubject, images]);
+  };
 
   return (
     <div className="flex h-screen flex-col bg-white">
@@ -112,7 +131,7 @@ const WritePostPage: React.FC = () => {
         <WritePostContentInput
           content={threadBody}
           setContent={setThreadBody}
-          images={images}
+          images={previewUrls}
           handleImageChange={handleImageChange}
           handleImageRemove={handleImageRemove}
         />

@@ -18,15 +18,20 @@ interface PostAuthorInfoProps {
   user: UserInfo;
   timeAgo: string;
   children?: React.ReactNode;
+  onAuthorClick?: () => void;
 }
 
 const PostAuthorInfo: React.FC<PostAuthorInfoProps> = ({
   user,
   timeAgo,
   children,
-}) => {
+  onAuthorClick = () => {},
+}: PostAuthorInfoProps) => {
   return (
-    <div className="flex items-center justify-between px-4 py-2">
+    <div
+      className="flex items-center justify-between px-4 py-2"
+      onClick={onAuthorClick}
+    >
       <div className="flex items-center">
         <img
           src={user.profileImage}
@@ -43,7 +48,7 @@ const PostAuthorInfo: React.FC<PostAuthorInfoProps> = ({
           <div>
             <div className="mb-1">
               <p className="text-[12px] text-gray-500">
-                {user.dept} {user.studentId}
+                {user.dept} {String(user.studentId).substring(2, 4)}학번
               </p>
             </div>
             <div>

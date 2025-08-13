@@ -22,7 +22,7 @@ import ImageAttachmentModal from "../../shareComponents/ImageAttachmentModal";
 interface WritePostContentInputProps {
   content: string;
   setContent: React.Dispatch<React.SetStateAction<string>>;
-  images: File[];
+  images: string[];
   handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleImageRemove: (indexToRemove: number) => void;
 }
@@ -58,7 +58,7 @@ const WritePostContentInput: React.FC<WritePostContentInputProps> = ({
           {selectedImageFiles.map((image, index) => (
             <div key={index} className="relative">
               <img
-                src={URL.createObjectURL(image)}
+                src={image}
                 alt={`preview ${index}`}
                 className="h-24 w-full rounded-md object-cover"
               />

@@ -5,7 +5,10 @@
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { postThreadsFilter } from "@/api/community/postApi";
-import type { PostThreadsFilterResponse, PostThreadsFilterRequest } from "@/types/community/postTypes";
+import type {
+  PostThreadsFilterResponse,
+  PostThreadsFilterRequest,
+} from "@/types/community/postTypes";
 
 const QUERY_KEY = ["community", "posts"];
 

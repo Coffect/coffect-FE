@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import type { ThreadSummary } from "@/types/community/postTypes";
 import PostAuthorInfo from "./post/PostAuthorInfo";
 import PostBody from "./post/PostBody";
+import { getTimeAgo } from "@/utils/dateUtils";
 
 // FeedItem이 받을 props 타입을 정의합니다.
 interface FeedItemProps {
@@ -10,26 +11,21 @@ interface FeedItemProps {
   showBookmarkButton?: boolean; // 북마크 버튼 표시 여부를 결정하는 prop
 }
 
-// 날짜를 'X일 전' 형식으로 변환하는 간단한 유틸리티 함수입니다.
-const getTimeAgo = (dateStr: string): string => {
-  if (!dateStr) return "";
-  const date = new Date(dateStr);
-  if (isNaN(date.getTime())) return ""; // 유효하지 않은 날짜 처리
-
-  const now = new Date();
-  const diffTime = Math.abs(now.getTime() - date.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  if (diffDays === 0) return "오늘";
-  if (diffDays === 1) return "어제";
-  return `${diffDays}일 전`;
-};
-
-const FeedItem = ({ post, showFollowButton = true, showBookmarkButton = true }: FeedItemProps) => {
+const FeedItem = ({
+  post,
+  showFollowButton = true,
+  showBookmarkButton = true,
+}: FeedItemProps) => {
   const navigate = useNavigate();
 
   // 게시글 아이템 클릭 시 해당 게시글의 상세 페이지로 이동하는 함수입니다.
   const handlePostClick = () => {
     navigate(`/community/post/${post.threadId}`);
+  };
+
+  // 작성자 클릭 시 해당 작성자의 프로필 페이지로 이동하는 함수입니다
+  const handleAuthorClick = () => {
+    navigate(`/userpage/${post.userId}`); // Use post.userId here
   };
 
   // 작성 시간을 "X일 전" 형식의 문자열로 변환합니다.
@@ -46,6 +42,7 @@ const FeedItem = ({ post, showFollowButton = true, showBookmarkButton = true }: 
           dept: post.user.dept,
         }}
         timeAgo={timeAgo}
+        onAuthorClick={handleAuthorClick}
       >
         {showFollowButton && (
           <button className="rounded-md bg-[var(--gray-60)] px-4 py-1.5 text-sm font-semibold text-white">
@@ -55,7 +52,11 @@ const FeedItem = ({ post, showFollowButton = true, showBookmarkButton = true }: 
       </PostAuthorInfo>
 
       {/* PostBody에 post prop을 직접 전달합니다. */}
-      <PostBody post={post} onContentClick={handlePostClick} showBookmarkButton={showBookmarkButton} />
+      <PostBody
+        post={post}
+        onContentClick={handlePostClick}
+        showBookmarkButton={showBookmarkButton}
+      />
     </div>
   );
 };

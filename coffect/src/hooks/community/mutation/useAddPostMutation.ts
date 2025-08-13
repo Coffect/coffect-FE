@@ -1,6 +1,6 @@
 import { uploadPost } from "@/api/community/writeApi";
 import type {
-  postUploadRequest,
+  // postUploadRequest,
   postUploadResponse,
 } from "@/types/community/writePostTypes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -8,7 +8,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 export const useAddPostMutation = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<postUploadResponse, Error, postUploadRequest>({
+  return useMutation<postUploadResponse, Error, FormData>({
     mutationFn: uploadPost,
     onSuccess: (response) => {
       if (response.success) {

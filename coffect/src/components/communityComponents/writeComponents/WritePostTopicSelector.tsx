@@ -34,7 +34,7 @@ interface WritePostTopicSelectorProps {
 const WritePostTopicSelector: React.FC<WritePostTopicSelectorProps> = ({
   type: postType,
   handleTypeSelect: handlePostTypeSelect,
-  topic,
+  topic: subject,
   handleThreadSubjectSelect: handleTopicSelect,
 }) => {
   return (
@@ -52,7 +52,7 @@ const WritePostTopicSelector: React.FC<WritePostTopicSelectorProps> = ({
           <h3 className="mb-5 text-base font-semibold">글 주제</h3>
           <ChipGroup
             options={postSubjectOptions}
-            selectedOption={topic}
+            selectedOption={[Number(subject)]}
             onSelect={handleTopicSelect}
           />
         </div>

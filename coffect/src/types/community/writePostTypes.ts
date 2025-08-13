@@ -17,7 +17,7 @@
  * @description API 수정 예정: images 필드 추가 예정
  */
 export interface postUploadRequest {
-  images?: string[]; // 이미지 URL 배열 (선택 사항, multipart/form-data로 전송됨)
+  images?: File[]; // 이미지 URL 배열 (선택 사항, multipart/form-data로 전송됨)
   type: string; // 게시글 종류 (예: 아티클, 팀원 모집 등)
   threadSubject: string; // 주제 ID 배열
   threadTitle: string; // 게시글 제목

@@ -11,7 +11,7 @@
 
 import { axiosInstance } from "@/api/axiosInstance"; // axios 인스턴스를 가져옵니다.
 import type {
-  postUploadRequest,
+  // postUploadRequest,
   postUploadResponse,
 } from "@/types/community/writePostTypes";
 
@@ -24,7 +24,7 @@ import type {
  * @throws API 요청이 실패하거나 응답이 'success'가 아닐 경우 에러를 발생시킵니다.
  */
 export const uploadPost = async (
-  data: postUploadRequest,
+  data: FormData,
 ): Promise<postUploadResponse> => {
   try {
     const response = await axiosInstance.post<postUploadResponse>(
