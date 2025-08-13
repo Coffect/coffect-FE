@@ -22,10 +22,13 @@ export const useSendMessage = (
 
   const sendMessageHandler = useCallback(
     async (message: string) => {
+      console.log("sendMessageHandler 호출됨:", { chatRoomId, message });
+
       if (!chatRoomId || chatRoomId === "" || !message.trim()) {
-        const errorMsg = !chatRoomId || chatRoomId === "" 
-          ? "채팅방 ID가 유효하지 않습니다." 
-          : "메시지를 입력해주세요.";
+        const errorMsg =
+          !chatRoomId || chatRoomId === ""
+            ? "채팅방 ID가 유효하지 않습니다."
+            : "메시지를 입력해주세요.";
         setError(errorMsg);
         console.error("sendMessage 호출 실패:", { chatRoomId, message });
         return false;
@@ -35,16 +38,33 @@ export const useSendMessage = (
         setSending(true);
         setError(null);
 
+        console.log("API 호출 시작 - sendMessage:", { chatRoomId, message });
         const response: SendMessageResponse = await sendMessage(
           chatRoomId,
           message,
         );
+        console.log("API 응답:", response);
         onSuccess?.(response.success);
         return true; // 성공 시 true 반환
       } catch (err: unknown) {
         const error = err as {
-          response?: { data?: { error?: { reason?: string } } };
+          response?: {
+            data?: { error?: { reason?: string } };
+            status?: number;
+            statusText?: string;
+            headers?: Record<string, string>;
+          };
         };
+
+        console.error("서버 응답 상세:", {
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data,
+          dataString: JSON.stringify(error.response?.data, null, 2),
+          headers: error.response?.headers,
+          fullError: err,
+        });
+
         const errorMessage =
           error.response?.data?.error?.reason || "메시지 전송에 실패했습니다.";
         setError(errorMessage);

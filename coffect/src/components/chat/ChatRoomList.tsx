@@ -15,8 +15,9 @@ interface ChatRoomItemProps {
 
 const ChatRoomItem: React.FC<ChatRoomItemProps> = ({ chatRoom, onClick }) => {
   return (
-    <div
-      className="flex cursor-pointer items-center border-b border-gray-200 p-4 transition-colors hover:bg-gray-50"
+    <button
+      type="button"
+      className="flex w-full items-center border-b border-gray-200 p-4 text-left transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
       onClick={() => onClick(chatRoom)}
     >
       {/* 프로필 이미지 */}

@@ -73,8 +73,8 @@ const ChatInterestsSection = ({
               <button
                 className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-[16px] font-medium whitespace-nowrap text-[var(--gray-90)] sm:text-sm"
                 onClick={() =>
-                  navigate("/chat/schedule", {
-                    state: { schedule, chatRoomId },
+                  navigate(`/chat/${chatRoomId}/schedule`, {
+                    state: { schedule },
                   })
                 }
               >
@@ -101,7 +101,7 @@ const ChatInterestsSection = ({
               <button
                 className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--gray-10)] py-2 text-sm font-medium text-[var(--gray-70)]"
                 onClick={() =>
-                  navigate("/chat/schedule", { state: { chatRoomId } })
+                  navigate(`/chat/${chatRoomId}/schedule`)
                 }
               >
                 <Calendar size={17} />

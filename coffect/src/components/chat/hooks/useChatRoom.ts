@@ -147,7 +147,6 @@ export const useChatRoom = () => {
 
   const handleSend = useHandleSend({
     chatRoomId: chatRoomId || "",
-    messages,
     setMessages,
     setInputValue,
     getCurrentTime,

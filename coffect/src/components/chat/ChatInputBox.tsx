@@ -92,9 +92,9 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
           <div className="relative">
             <button
               className={`mr-2 flex h-8 w-8 items-center justify-center rounded-full ${
-                disabled 
-                  ? "bg-[rgba(200,200,200,1)] cursor-not-allowed" 
-                  : "bg-[rgba(74,74,74,1)] cursor-pointer"
+                disabled
+                  ? "cursor-not-allowed bg-[rgba(200,200,200,1)]"
+                  : "cursor-pointer bg-[rgba(74,74,74,1)]"
               } text-white`}
               onClick={disabled ? undefined : handlePlusClick}
               type="button"
@@ -147,18 +147,26 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
           <textarea
             ref={inputRef}
             className={`flex-1 resize-none rounded-full px-3 py-2 text-[16px] outline-none ${
-              disabled ? "bg-gray-100 cursor-not-allowed" : ""
+              disabled ? "cursor-not-allowed bg-gray-100" : ""
             } placeholder:text-[var(--gray-30)]`}
-            placeholder={disabled ? "채팅방을 로딩 중입니다..." : "메시지를 입력해주세요"}
+            placeholder={
+              disabled ? "채팅방을 로딩 중입니다..." : "메시지를 입력해주세요"
+            }
             value={inputValue}
-            onChange={disabled ? undefined : (e) => setInputValue(e.target.value)}
-            onKeyDown={disabled ? undefined : (e) => {
-              // Enter로 전송, Shift+Enter로 줄바꿈
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                trySend();
-              }
-            }}
+            onChange={
+              disabled ? undefined : (e) => setInputValue(e.target.value)
+            }
+            onKeyDown={
+              disabled
+                ? undefined
+                : (e) => {
+                    // Enter로 전송, Shift+Enter로 줄바꿈
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      trySend();
+                    }
+                  }
+            }
             style={{ fontSize: "16px", minHeight: "40px", maxHeight: "120px" }}
             rows={1}
             disabled={disabled}

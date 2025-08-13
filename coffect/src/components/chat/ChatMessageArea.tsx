@@ -17,7 +17,7 @@ interface ChatMessageAreaProps {
 
 const ChatMessageArea = ({ messages, username }: ChatMessageAreaProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  useAutoScroll(messagesEndRef, [messages]);
+  useAutoScroll(messagesEndRef, messages);
 
   return (
     <div className="flex-1 overflow-y-auto bg-[var(--gray-5)] px-4 py-2">

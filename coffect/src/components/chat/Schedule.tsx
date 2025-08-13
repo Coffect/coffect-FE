@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import ScheduleForm from "./ScheduleForm";
 import type { ScheduleFormValues } from "./ScheduleForm";
 import ScheduleCompleteModal from "./ScheduleCompleteModal";
@@ -16,11 +16,12 @@ import { useChatRooms } from "../../hooks/chat/useChatRooms";
 
 const Schedule: React.FC = () => {
   const location = useLocation();
+  const { chatRoomId } = useParams<{ chatRoomId: string }>();
   const { user: currentUser } = useChatUser();
   const { chatRooms } = useChatRooms();
 
   // 현재 채팅방 ID 가져오기 (URL에서 추출하거나 location state에서)
-  const currentChatRoomId = location.state?.chatRoomId;
+  const currentChatRoomId = chatRoomId || location.state?.chatRoomId;
   const currentChatRoom = chatRooms.find(
     (room) => room.chatroomId === currentChatRoomId,
   );
@@ -66,8 +67,8 @@ const Schedule: React.FC = () => {
   // 일정 삭제하기
   const handleDelete = () => {
     setShowDeleteModal(false);
-    // chatRoom으로 이동하면서 일정 정보 없음 상태로 전달
-    navigate("/chat/room", { state: { schedule: null } });
+    // 현재 채팅방으로 이동하면서 일정 정보 없음 상태로 전달
+    navigate(`/chat/${currentChatRoomId}`, { state: { schedule: null } });
   };
 
   // 일정 수정하기

@@ -80,7 +80,6 @@ const ChatRoom = () => {
 
   const { handleSend } = useHandleSend({
     chatRoomId: chatRoomId || "",
-    messages,
     setMessages,
     setInputValue,
     getCurrentTime,

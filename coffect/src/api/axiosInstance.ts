@@ -45,6 +45,14 @@ export const axiosInstance: AxiosInstance = axios.create({
 // 요청 시 accessToken이 있다면 Authorization 헤더에 추가
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem(LOCAL_STORAGE_KEY.accessToken);
+  console.log("요청 토큰 확인:", {
+    url: config.url,
+    method: config.method,
+    hasToken: !!token,
+    token: token ? `${token.substring(0, 20)}...` : null,
+    headers: config.headers,
+  });
+
   if (token) {
     config.headers = config.headers || {};
     // config.headers.Authorization = `Bearer ${token}`;

@@ -3,7 +3,7 @@
  * description : 채팅방 목록 조회, 소켓 연결 관리
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { getChatRoomList } from "../../api/chat/chatRoomApi";
 import { getProfile, getProfileSearch } from "../../api/profile";
 import { getUserStringId } from "../../api/home";
@@ -22,8 +22,11 @@ export const useChatRooms = (): UseChatRoomsReturn => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // 언마운트 가드
+  const isMountedRef = useRef(true);
+
   // 채팅방 목록 조회
-  const loadChatRooms = async () => {
+  const loadChatRooms = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -123,6 +126,7 @@ export const useChatRooms = (): UseChatRoomsReturn => {
         (room) => room !== undefined,
       ) as ChatRoomWithUser[];
 
+      if (!isMountedRef.current) return;
       setChatRooms(validChatRooms);
     } catch (err: unknown) {
       const error = err as {
@@ -131,24 +135,34 @@ export const useChatRooms = (): UseChatRoomsReturn => {
       const errorMessage =
         error.response?.data?.error?.reason ||
         "채팅방 목록 조회에 실패했습니다.";
+      if (!isMountedRef.current) return;
       setError(errorMessage);
     } finally {
-      setIsLoading(false);
+      if (isMountedRef.current) {
+        setIsLoading(false);
+      }
     }
-  };
+  }, []);
 
   // 초기 로드
   useEffect(() => {
     loadChatRooms();
-  }, []); // 빈 dependency array로 한 번만 실행
+
+    // 언마운트 시 가드 설정
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, [loadChatRooms]); // loadChatRooms를 의존성 배열에 추가
 
   // 채팅방 목록 정렬 (최근 메시지 순)
-  const sortedChatRooms = [...chatRooms].sort((a, b) => {
-    // 시간순 정렬 (최신 메시지가 위로)
-    const timeA = new Date(a.lastMessageTime ?? 0).getTime();
-    const timeB = new Date(b.lastMessageTime ?? 0).getTime();
-    return timeB - timeA;
-  });
+  const sortedChatRooms = useMemo(() => {
+    return [...chatRooms].sort((a, b) => {
+      // 시간순 정렬 (최신 메시지가 위로)
+      const timeA = new Date(a.lastMessageTime ?? 0).getTime();
+      const timeB = new Date(b.lastMessageTime ?? 0).getTime();
+      return timeB - timeA;
+    });
+  }, [chatRooms]);
 
   return {
     chatRooms: sortedChatRooms,
