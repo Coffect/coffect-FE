@@ -90,7 +90,8 @@ const Chat = () => {
             >
               {/* 프로필 */}
               <div className="relative flex h-13 w-13 items-center justify-center rounded-full bg-[var(--gray-20)]">
-                {chat.hasUnreadMessages && (
+                {(chat.hasUnreadMessages ||
+                  ("check" in chat && Boolean(chat.check))) && (
                   <span className="absolute -top-0 -right-1 h-4 w-4 rounded-full border-2 border-[var(--white)] bg-[var(--noti)]"></span>
                 )}
               </div>

@@ -58,10 +58,13 @@ const ChatInterestsSection = ({
               이런 주제에 관심 있대요!
             </span>
             <button
+              type="button"
               onClick={onToggleInterests}
+              aria-label="관심사 섹션 접기"
+              aria-expanded={true}
               className="cursor-pointer rounded-full bg-[var(--gray-5)] p-1 text-[var(--gray-50)]"
             >
-              <ChevronUp size={24} />
+              <ChevronUp size={24} aria-hidden="true" />
             </button>
           </div>
           <div className="mb-3 flex flex-wrap gap-1">
@@ -121,10 +124,13 @@ const ChatInterestsSection = ({
       ) : (
         <div className="flex justify-end bg-[var(--gray-5)] px-4 py-3">
           <button
+            type="button"
             onClick={onToggleInterests}
+            aria-label="관심사 섹션 펼치기"
+            aria-expanded={false}
             className="cursor-pointer rounded-full bg-[var(--white)] p-1 text-[var(--gray-50)] shadow-[0_0_12px_0_rgba(0,0,0,0.15)]"
           >
-            <ChevronDown size={24} />
+            <ChevronDown size={24} aria-hidden="true" />
           </button>
         </div>
       )}

@@ -152,7 +152,7 @@ export const useChatRooms = (): UseChatRoomsReturn => {
     return () => {
       isMountedRef.current = false;
     };
-  }, [loadChatRooms]); // loadChatRooms를 의존성 배열에 추가
+  }, []); // 빈 의존성 배열로 변경
 
   // 채팅방 목록 정렬 (최근 메시지 순)
   const sortedChatRooms = useMemo(() => {
