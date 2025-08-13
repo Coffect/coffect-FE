@@ -112,6 +112,9 @@ const TimeTable = () => {
       setFirstSelected(null);
       setSecondSelected(null);
     },
+    onError: (error) => {
+      console.error("타임라인 수정 실패:", error);
+    },
   });
 
   const handleSave = () => {
