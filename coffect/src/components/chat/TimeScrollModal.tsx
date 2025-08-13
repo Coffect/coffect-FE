@@ -1,6 +1,10 @@
 /*
  * author : 앨리스/박은지
+<<<<<<< HEAD
  * description : 시간 선택 모달
+=======
+ * description : 시간 선택 모달 컴포넌트
+>>>>>>> 552b968a2bb03d7cc903cac53139a56fd74252fb
  */
 
 import React, { useRef, useState, useCallback, useEffect } from "react";

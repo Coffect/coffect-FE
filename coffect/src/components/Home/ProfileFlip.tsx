@@ -5,28 +5,33 @@
                 - 왼쪽 버튼: 현재 카드 제거
                 - 가운데 버튼: 커피챗 제안 모달 열기
                 - 오른쪽 버튼: 팔로워 요청(아직 작동x)
+                - 제안 플로우는 useCoffeeSuggest 훅 사용
 */
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react"; // 제안 완료 후 스킵 처리를 위해 useEffect, useRef 추가
 import { useNavigate } from "react-router-dom";
-import CoffeeSuggestModal from "./CoffeeSuggestModal";
-import CoffeeSuggestCompleteModal from "./CoffeeSuggestCompleteModal";
+import CoffeeSuggestModal from "../shareComponents/CoffeeSuggestModal";
+import CoffeeSuggestCompleteModal from "../shareComponents/CoffeeSuggestCompleteModal";
 import CardLeftImage from "../../assets/icon/home/CardLeft.png";
 import CardMidImage from "../../assets/icon/home/CardMid.png";
-import CardRightImage from "../../assets/icon/home/CardRight.png";
+import CardRightUpImage from "@/assets/icon/home/CardRightUp.png";
+import CardRightDownImage from "@/assets/icon/home/CardRightDown.png";
 import NoCardImage from "../../assets/icon/home/NoCard.png";
+import type { UserProfile } from "@/types/home";
+import {
+  initOrSkipCard,
+  getCurrentRecommendedCard,
+  getIsFollow,
+  getUserDeptById,
+  getUserQnAById,
+  getUserStringId,
+  postFollowRequest,
+} from "@/api/home";
+import { useQuery } from "@tanstack/react-query";
+import { useToastStore } from "@/hooks/useToastStore";
 
-// 유저 프로필 타입 정의
-interface UserProfile {
-  id: number;
-  name: string;
-  major: string;
-  year: string;
-  tags: string[];
-  intro: string;
-  image: string;
-  answers: { question: string; answer: string }[];
-}
+// 제안 플로우 전역 훅
+import { useCoffeeSuggest } from "@/hooks/useCoffeeSuggest";
 
 // 태그별 전역 색상 클래스 반환
 const getTagColor = (tag: string) => {
@@ -66,120 +71,158 @@ const getTagColor = (tag: string) => {
   }
 };
 
-// 임시 사용자 데이터 (더미)
-const dummyData: UserProfile[] = [
-  {
-    id: 1,
-    name: "김라떼",
-    major: "디자인테크놀로지학과",
-    year: "21학번",
-    tags: ["디자인", "개발", "창업", "글쓰기"],
-    intro:
-      "안녕하세요! 사람과 이야기를 나누는 것을\n좋아하고, 새로운 것을 배우는 데 늘 열려 있어요.\n즐겁고 의미있는 경험을 함께 만들고 싶어요!\n특히 디자인, 마케팅에 관심이 많습니다!\n아무나 환영이니 커피쳇 제안주세요!!",
-    image: "https://picsum.photos/200?random=3",
-    answers: [
-      {
-        question: "어떤 분야에서 성장하고 싶나요?",
-        answer:
-          "스타트업 창업과 제품 기획 분야에서 전문성을 쌓고 싶어요.특히 사용자 중심의 서비스를 만드는 PM 역할에 관심이 많습니다.",
-      },
-      {
-        question: "커피챗에서 나누고 싶은 이야기는?",
-        answer:
-          "창업 경험담, 마케팅 전략, 제품 기획 노하우를 공유하고 싶어요. 함께 아이디어를 발전시키는 대화를 나누면 좋겠어요!",
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: "이협업",
-    major: "컴퓨터공학과",
-    year: "22학번",
-    tags: ["개발", "독서", "AI", "여행"],
-    intro: "꾸준함이 제 무기입니다.\n좋은 사람들과 함께 성장하고 싶어요.",
-    image: "https://picsum.photos/200?random=4",
-    answers: [
-      {
-        question: "최근 집중하고 있는 기술은?",
-        answer: "리액트 최적화와 사용자 경험 개선에 관심이 많아요.",
-      },
-      {
-        question: "커피챗에서 얻고 싶은 것은?",
-        answer: "협업 노하우와 새로운 개발 트렌드를 배우고 싶어요.",
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: "박개발",
-    major: "컴퓨터공학과",
-    year: "21학번",
-    tags: ["개발", "데이터 분석", "창업", "외국어"],
-    intro:
-      "안녕하세요! 컴퓨터 분해를 좋아하고,\n새로운 것을 배우는 데 늘 열려 있는 뉴비입니다.\n사람을 행복하게 만들고 싶다는 목표를 함께 이뤄나가고 싶어요!\n특히 프론트 개발에 관심이 많습니다!\n아무나 환영이니 커피쳇 제안주세요!!",
-    image: "https://picsum.photos/200?random=5",
-    answers: [
-      {
-        question: "어떤 분야에서 성장하고 싶나요?",
-        answer:
-          "스타트업 창업과 제품 기획 분야에서 전문성을 쌓고 싶어요.특히 사용자 중심의 서비스를 만드는 PM 역할에 관심이 많습니다.",
-      },
-      {
-        question: "커피챗에서 나누고 싶은 이야기는?",
-        answer:
-          "창업 경험담, 마케팅 전략, 제품 기획 노하우를 공유하고 싶어요. 함께 아이디어를 발전시키는 대화를 나누면 좋겠어요!",
-      },
-    ],
-  },
-];
-
 const ProfileFlip: React.FC = () => {
+  // 토스트 표시, 숨김
+  const { showToast, hideToast } = useToastStore();
+
+  // 제안 플로우 훅 사용
+  const {
+    isSuggestOpen,
+    isCompleteOpen,
+    selectedProfileId,
+    openSuggest,
+    closeSuggest,
+    submitSuggest,
+    closeComplete,
+  } = useCoffeeSuggest();
+
+  // 서버에서 프로필 카드 데이터 불러오기
+  const { data: currentCard } = useQuery<UserProfile | null>({
+    queryKey: ["recommendedCard"],
+    queryFn: async () => {
+      const hasVisited = localStorage.getItem("cardViewVisited");
+      if (!hasVisited) {
+        await initOrSkipCard();
+        localStorage.setItem("cardViewVisited", "true");
+      }
+
+      try {
+        const card = await getCurrentRecommendedCard();
+        const isFollow = await getIsFollow(card.userId);
+        const stringId = await getUserStringId(card.userId);
+
+        // 각 서브요청이 실패하더라도 전체를 null로 만들지 않기
+        const [deptRes, qnaRes] = await Promise.allSettled([
+          getUserDeptById(stringId),
+          getUserQnAById(stringId),
+        ]);
+
+        const major = deptRes.status === "fulfilled" ? deptRes.value : "";
+        const answers = qnaRes.status === "fulfilled" ? qnaRes.value : [];
+
+        return {
+          id: card.userId,
+          name: card.name,
+          major: major,
+          year: card.grade,
+          tags: card.categoryMatch,
+          intro: card.introduce,
+          image: card.profileImage,
+          answers: answers,
+          isFollow: isFollow,
+        };
+      } catch {
+        return null;
+      }
+    },
+  });
+
   const navigate = useNavigate();
-  // 현재 남은 프로필 목록
-  const [profiles, setProfiles] = useState<UserProfile[]>(dummyData);
-  // 현재 스킵된 카드 수
-  const [skipped, setSkipped] = useState(0);
+
+  // 현재 스킵된 카드 수 (로컬스토리지에서 불러오기->다른 라우팅 위치 이동 이후에도 같은 페이징 유지를 위해)
+  const [skipped, setSkipped] = useState(() => {
+    const stored = localStorage.getItem("skippedCardCount");
+    return stored ? parseInt(stored) : 0;
+  });
+
   // 스킵 애니메이션 동작 여부
   const [skipAnimation, setSkipAnimation] = useState(false);
-  // 커피챗 제안 대상 프로필 ID
-  const [selectedProfileId, setSelectedProfileId] = useState<number | null>(
-    null,
-  );
-  // 커피챗 제안 모달 열림 여부
-  const [showSuggestModal, setShowSuggestModal] = useState(false);
-  // 커피챗 제안 완료 모달 열림 여부
-  const [showCompleteModal, setShowCompleteModal] = useState(false);
+
+  // 제안 완료 모달이 열렸을 때 카드 스킵(기존 onSuccess 동작을 훅 사용 구조로 유지)
+  const didSkipAfterSuggestRef = useRef(false);
+  useEffect(() => {
+    if (isCompleteOpen && !didSkipAfterSuggestRef.current) {
+      didSkipAfterSuggestRef.current = true;
+
+      setSkipAnimation(true);
+      setTimeout(async () => {
+        try {
+          await initOrSkipCard();
+        } finally {
+          setSkipped((prev) => {
+            const next = prev + 1;
+            localStorage.setItem("skippedCardCount", next.toString());
+            return next;
+          });
+          setSkipAnimation(false);
+        }
+      }, 300);
+    }
+    if (!isCompleteOpen) {
+      didSkipAfterSuggestRef.current = false;
+    }
+  }, [isCompleteOpen]);
 
   // 카드 제거(왼쪽 버튼)
-  const handleSkip = (id: number) => {
+  const handleSkip = async () => {
     setSkipAnimation(true);
-    //애니메이션 중에 삭제 방지를 위해
-    setTimeout(() => {
-      setProfiles((prev) => prev.filter((p) => p.id !== id));
-      setSkipped((prev) => prev + 1);
-      setSkipAnimation(false); // 다음 카드용 초기화
+    setTimeout(async () => {
+      try {
+        await initOrSkipCard();
+      } finally {
+        setSkipped((prev) => {
+          const next = prev + 1;
+          localStorage.setItem("skippedCardCount", next.toString());
+          return next;
+        });
+        setSkipAnimation(false);
+      }
     }, 300);
   };
-  // 커피쳇 제안 모달 열기(가운데 버튼)
+
+  // 커피쳇 제안 모달 열기(가운데 버튼) - 훅 사용
   const handleSuggestClick = (id: number) => {
-    setSelectedProfileId(id);
-    setShowSuggestModal(true);
+    openSuggest(id);
   };
-  // 제안 메시지 작성 완료
-  const handleSuggestSubmit = () => {
-    setShowSuggestModal(false);
-    setShowCompleteModal(true);
+
+  // 제안 메시지 작성 완료 - 훅 사용
+  const handleSuggestSubmit = (message: string) => {
+    submitSuggest(message);
   };
-  // 제안 작성 취소
+
+  // 제안 작성 취소 - 훅 사용
   const handleSuggestCancel = () => {
-    setShowSuggestModal(false);
-    setSelectedProfileId(null);
+    closeSuggest();
   };
-  // 제안 완료 모달 닫기
+
+  // 제안 완료 모달 닫기 - 훅 사용
   const handleCompleteClose = () => {
-    setShowCompleteModal(false);
-    setSelectedProfileId(null);
+    closeComplete();
   };
+
+  // 오른쪽 버튼(팔로우) 클릭 시 상태 토글 및 토스트 메시지
+  const handleFollowToggle = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // 카드 클릭 방지
+    if (!currentCard) return;
+
+    try {
+      // 서버에 팔로우 요청(이미 팔로우면 취소요청)
+      await postFollowRequest(currentCard.id);
+      // 요청 성공 시 상태 토글(서버 API 요청 자주 안하려고 FOLLOW GET 요청은 초기 화면 불러올 때만 사용됨)
+      currentCard.isFollow = !currentCard.isFollow;
+      // 팔로우 추가일 때만 토스트 표시
+      if (currentCard.isFollow) {
+        showToast(`${currentCard.name}님을 팔로우했어요!`, "success");
+      } else {
+        // 팔로우 해제 시 즉시 토스트 숨김
+        hideToast();
+      }
+      return currentCard.isFollow;
+    } catch {
+      showToast("팔로우에 실패했습니다.", "error");
+    }
+  };
+
   // 카드 클릭 시 상세 페이지 이동
   const handleCardClick = (profile: UserProfile) => {
     navigate(`/home/cards/${profile.id}`, {
@@ -188,10 +231,9 @@ const ProfileFlip: React.FC = () => {
       },
     });
   };
-  // 현재 표시 중인 카드
-  const current = profiles[0] || null;
+
   // 카드가 모두 제거되었을 경우
-  if (!current) {
+  if (!currentCard) {
     return (
       <div className="mt-[15%] flex flex-col items-center justify-center pt-[5vh] pb-20 text-center">
         <h3 className="mt-[2%] text-xl font-bold text-[var(--gray-90)]">
@@ -213,7 +255,7 @@ const ProfileFlip: React.FC = () => {
           커뮤니티 둘러보기
         </button>
         <button
-          onClick={() => navigate("/userpage")}
+          onClick={() => navigate("/mypage/myprofile")}
           className="mt-[3%] rounded-lg border-[1.5px] border-[var(--gray-30)] px-[4%] py-[3%] text-base text-[var(--gray-60)]"
         >
           내 프로필 더 꾸미기
@@ -226,54 +268,58 @@ const ProfileFlip: React.FC = () => {
     <div className="mt-[3%] px-[6%]">
       {/* 프로필 카드 */}
       <div
-        className={`mx-auto h-full w-full transform overflow-hidden rounded-3xl bg-white p-[3%] transition-all duration-300 ease-in-out ${
+        className={`mx-auto h-full w-full transform overflow-hidden rounded-[20px] bg-white p-[3%] shadow-[0_0_20px_4px_rgba(189,179,170,0.2)] transition-all duration-500 ease-in-out ${
           skipAnimation
-            ? "translate-x-full opacity-0"
-            : "translate-x-0 opacity-100"
+            ? "origin-top-right translate-x-[60%] -translate-y-[60%] -rotate-[75deg] opacity-0"
+            : "origin-center translate-x-0 translate-y-0 rotate-0 opacity-100"
         }`}
-        onClick={() => handleCardClick(current)}
+        onClick={() => handleCardClick(currentCard)}
       >
         {/* 상단 이미지 영역 */}
-        <div className="relative aspect-[3/2] w-full overflow-hidden rounded-3xl">
+        <div className="relative aspect-[3/2] w-full overflow-hidden rounded-[20px]">
           <img
-            src={current.image}
+            src={currentCard.image}
             alt="프로필 사진"
             className="absolute inset-0 h-full w-full object-cover"
           />
-          <div className="absolute top-3 left-3 rounded-[60px] bg-[#2D2D2D]/90 px-3 py-2 text-[14px] font-semibold text-[var(--gray-10)]">
-            {skipped + 1}/{dummyData.length}
+          <div className="absolute top-1.5 left-3 rounded-[60px] bg-[#2D2D2D]/90 px-3 py-1 text-[14px] font-semibold text-[var(--gray-10)]">
+            {skipped + 1}/3
           </div>
-          <div className="absolute bottom-0 left-0 w-full rounded-b-3xl bg-gradient-to-t from-black/70 to-transparent px-[4%] py-[5%]">
+          <div className="absolute bottom-0 left-0 w-full rounded-b-[20px] bg-gradient-to-t from-black/70 to-transparent px-[4%] py-[5%]">
             <div className="text-[22px] font-bold text-white">
-              {current.name}
+              {currentCard.name}
               <span className="ml-[3%] text-sm font-medium text-[var(--gray-10)]">
-                {current.major} {current.year}
+                {currentCard.major} {String(currentCard.year).slice(2)}학번
               </span>
             </div>
           </div>
         </div>
         {/* 하단 태그 + 소개 */}
         <div className="flex flex-wrap px-[2%] pt-[3%] pb-[1%]">
-          {current.tags.map((tag, idx) => (
+          {currentCard.tags.map((tag, idx) => (
             <span
               key={idx}
-              className={`mr-[2%] mb-[2%] rounded-[7px] px-[3%] py-[1.5%] text-sm font-medium ${getTagColor(
+              className={`mr-[2%] mb-[2%] rounded-[7px] px-[3.5%] py-[1.5%] text-sm font-medium ${getTagColor(
                 tag,
               )}`}
             >
               {tag}
             </span>
           ))}
+        </div>
+        <div className="flex flex-wrap px-[2%]">
           <p className="mt-[0.2rem] line-clamp-3 text-base leading-normal font-medium text-[var(--gray-70)]">
-            {current.intro}
+            {currentCard.intro}
           </p>
-          {/* 하단 버튼 3개 (스킵 / 제안 / 팔로우) */}
+        </div>
+        {/* 하단 버튼 3개 (스킵 / 제안 / 팔로우) */}
+        <div className="flex flex-wrap">
           <div
             className="mx-auto mt-[1.5rem] mb-[1rem] flex gap-[1rem]"
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              onClick={() => handleSkip(current.id)}
+              onClick={() => handleSkip()}
               className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-white text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
             >
               <img
@@ -283,7 +329,7 @@ const ProfileFlip: React.FC = () => {
               />
             </button>
             <button
-              onClick={() => handleSuggestClick(current.id)}
+              onClick={() => currentCard && handleSuggestClick(currentCard.id)}
               className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-orange-500 text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
             >
               <img
@@ -293,11 +339,13 @@ const ProfileFlip: React.FC = () => {
               />
             </button>
             <button
-              onClick={(e) => e.stopPropagation()}
+              onClick={handleFollowToggle}
               className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-white text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
             >
               <img
-                src={CardRightImage}
+                src={
+                  currentCard.isFollow ? CardRightDownImage : CardRightUpImage
+                }
                 alt="follow"
                 className="h-[40%] w-[40%] object-contain"
               />
@@ -307,14 +355,14 @@ const ProfileFlip: React.FC = () => {
       </div>
 
       {/* 제안 작성 모달 */}
-      {showSuggestModal && selectedProfileId !== null && (
+      {isSuggestOpen && selectedProfileId !== null && (
         <CoffeeSuggestModal
           onSubmit={handleSuggestSubmit}
           onCancel={handleSuggestCancel}
         />
       )}
       {/* 제안 완료 모달 */}
-      {showCompleteModal && (
+      {isCompleteOpen && (
         <CoffeeSuggestCompleteModal onClose={handleCompleteClose} />
       )}
     </div>

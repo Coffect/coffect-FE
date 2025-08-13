@@ -36,7 +36,7 @@ const WritePost: React.FC = () => {
     console.log("제목:", title);
     console.log("내용:", content);
     console.log("글 주제:", topic);
-    
+
     // 글 작성 마치고 state와 함께 커뮤니티 페이지로 이동
     navigate("/community", { state: { showSuccessModal: true } });
   };

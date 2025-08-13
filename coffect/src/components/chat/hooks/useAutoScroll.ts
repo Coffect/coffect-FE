@@ -1,5 +1,5 @@
+// author : 앨리스/박은지
 /*
- * author : 앨리스/박은지
  * description : 최신 메세지로 자동 스크롤
  */
 

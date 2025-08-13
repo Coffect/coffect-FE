@@ -4,29 +4,26 @@
  * 채팅방 내부 메시지 영역, 팝업 모달 연결, 일정 정보 표시
  */
 
-import { useState, useRef, type MouseEvent, useMemo, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { ChevronLeft, ChevronDown } from "lucide-react";
-import useCurrentTime from "./hooks/useCurrentTime";
+import { useMemo, useState, useRef, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import usePreventZoom from "./hooks/usePreventZoom";
 import useModal from "./hooks/useModal";
 import RequestModal from "./RequestModal";
-import useHandleSend from "./hooks/useHandleSend";
 import ChatInputBox from "./ChatInputBox";
-import ChatMessageList from "./ChatMessageList";
-import usePreventZoom from "./hooks/usePreventZoom";
-import useAutoScroll from "./hooks/useAutoScroll";
-import type { Message } from "../../types/chat";
-import type { Schedule } from "./hooks/useSchedule";
-import { getMessageMargin } from "./utils/chatUtils";
-import ExampleProfile from "../../assets/icon/chat/ExampleProfile.png";
-import { ChatInterestSection } from "./ChatInterestSection";
-import { ChatSystemMessage } from "./ChatSystemMessage";
+import ChatHeader from "./ChatHeader";
+import ChatInterestsSection from "./ChatInterestsSection";
+import ChatMessageArea from "./ChatMessageArea";
 import { useChatUser } from "./hooks/useChatUser";
+import useHandleSend from "./hooks/useHandleSend";
+import useAutoScroll from "./hooks/useAutoScroll";
+import useCurrentTime from "./hooks/useCurrentTime";
+import type { Schedule } from "./hooks/useSchedule";
+import type { Message } from "../../types/chat";
 
 const ChatRoom = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
   usePreventZoom();
+  const location = useLocation();
+
   const {
     isOpen: isModalOpen,
     open: openModal,
@@ -150,81 +147,28 @@ const ChatRoom = () => {
 
   const user = useChatUser();
 
-  const [showInterests, setShowInterests] = useState(true);
-
-  const handleToggleInterests = (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setShowInterests((prev) => !prev);
-  };
-
   return (
     <div className="flex h-full w-full flex-col bg-[var(--white)]">
       {/* Header */}
-      <div className="flex items-center border-b border-[var(--gray-10)] bg-[var(--white)] px-4 pt-6 pb-3">
-        <button
-          type="button"
-          aria-label="채팅 목록으로 돌아가기"
-          className="mr-2 text-2xl"
-          onClick={() => navigate("/chat")}
-        >
-          <ChevronLeft />
-        </button>
-        <div className="flex flex-1 flex-col items-center">
-          <span className="truncate text-[18px] font-semibold">
-            {user.username}
-          </span>
-        </div>
-        <button
-          type="button"
-          aria-label="프로필 페이지로 이동"
-          className="ml-2 h-8 w-8 overflow-hidden rounded-full bg-transparent"
-          onClick={() => navigate(`/userpage/${user.id}`)}
-        >
-          <img
-            src={ExampleProfile}
-            alt="프로필"
-            className="h-full w-full rounded-full object-cover"
-            loading="lazy"
-          />
-        </button>
-      </div>
+      <ChatHeader username={user.username} userId={user.id.toString()} />
+
       {/* 관심 주제 & 버튼 */}
-      <ChatInterestSection
-        user={user}
+      <ChatInterestsSection
+        interests={user.interests}
         schedule={schedule}
-        showInterests={showInterests}
-        handleToggleInterests={handleToggleInterests}
-        openModal={openModal}
+        onOpenModal={openModal}
       />
+
       {/* 팝업 모달 */}
       <RequestModal
         isOpen={isModalOpen}
         onClose={closeModal}
         username={user.username}
       />
+
       {/* 메시지 영역 */}
-      <div className="flex-1 overflow-y-auto bg-[var(--gray-5)] px-4 py-2">
-        {/* 시스템 메시지 */}
-        <ChatSystemMessage user={user} />
-        {/* 고정 토글 버튼 */}
-        {!showInterests && (
-          <div className="sticky top-0 z-10 -mt-13 flex justify-end">
-            <button
-              onClick={handleToggleInterests}
-              className="cursor-pointer rounded-full bg-[var(--white)] p-1 text-[var(--gray-50)] shadow-[0_0_12px_0_rgba(0,0,0,0.15)]"
-            >
-              <ChevronDown size={24} />
-            </button>
-          </div>
-        )}
-        <ChatMessageList
-          messages={messages}
-          getMessageMargin={getMessageMargin}
-        />
-        {/* 스크롤 타겟 */}
-        <div ref={messagesEndRef} />
-      </div>
+      <ChatMessageArea messages={messages} />
+
       {/* 입력창 */}
       <ChatInputBox
         inputValue={inputValue}

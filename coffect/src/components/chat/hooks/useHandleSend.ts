@@ -3,7 +3,6 @@
  * description : 메시지 전송 핸들러
  * 메시지 전송 시 API 호출 및 로컬 상태 업데이트
  */
-
 import { useCallback } from "react";
 import { useSendMessage } from "../../../hooks/chat";
 import type { Message } from "../../../types/chat";
@@ -69,7 +68,6 @@ const useHandleSend = ({
       }
     },
     [
-      chatRoomId,
       messages,
       setMessages,
       setInputValue,
