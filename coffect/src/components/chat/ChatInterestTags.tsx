@@ -17,7 +17,7 @@ const ChatInterestTags: React.FC<{ interests: string[] }> = ({ interests }) => (
     {interests.map((tag, i) => (
       <span
         key={tag}
-        className={`rounded-md px-3 py-1 text-xs font-medium ${TAG_COLORS[i % TAG_COLORS.length]}`}
+        className={`rounded-[7px] px-3 py-1 text-[14px] font-medium ${TAG_COLORS[i % TAG_COLORS.length]}`}
       >
         {tag}
       </span>

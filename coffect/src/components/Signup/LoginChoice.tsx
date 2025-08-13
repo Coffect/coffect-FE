@@ -11,17 +11,25 @@ description : 회원가입 화면 이동 또는 로그인 수행 선택 컴포�
 import { useState } from "react";
 import LogoImage from "../../assets/icon/home/Logo.png";
 import type { LoginChoiceProps } from "../../types/signup";
+import { useToastStore } from "@/hooks/useToastStore";
+import Toast from "../Home/Toast";
 
 const LoginChoice: React.FC<LoginChoiceProps> = ({ onSignUp, onLogin }) => {
   const [id, setID] = useState("");
   const [password, setPassword] = useState("");
+  const { showToast } = useToastStore();
 
+  const handleLoginClick = async () => {
+    const result = await onLogin(id, password);
+    if (typeof result === "string") {
+      showToast(result, "error"); // 실패 시 토스트로 메시지 출력
+    }
+  };
   return (
     <div className="relative mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-start overflow-x-hidden bg-white text-center">
       {/* 실제 콘텐츠 영역 */}
       <div className="mt-[14%] flex w-full flex-col items-center px-[3%]">
         <img src={LogoImage} alt="로고" className="mb-[15%] w-[192px]" />
-
         <input
           type="text"
           placeholder="학교 이메일 또는 사용자 아이디"
@@ -36,14 +44,12 @@ const LoginChoice: React.FC<LoginChoiceProps> = ({ onSignUp, onLogin }) => {
           onChange={(e) => setPassword(e.target.value)}
           className="mb-5 h-[56px] w-full rounded-[12px] bg-[var(--gray-5)] px-4 py-3 text-base font-medium text-[var(--gray-90)] placeholder:text-[var(--gray-30)]"
         />
-
         <button
-          onClick={() => onLogin(id, password)}
+          onClick={handleLoginClick}
           className="h-[56px] w-full rounded-[12px] bg-[var(--gray-80)] py-3 text-lg font-semibold text-white"
         >
           로그인
         </button>
-
         {/* 구분선 */}
         <div className="mt-10 mb-5 flex w-full items-center">
           <div className="h-px flex-grow bg-[var(--gray-10)]" />
@@ -52,13 +58,13 @@ const LoginChoice: React.FC<LoginChoiceProps> = ({ onSignUp, onLogin }) => {
           </span>
           <div className="h-px flex-grow bg-[var(--gray-30)]" />
         </div>
-
         <button
           onClick={onSignUp}
           className="mb-3 h-[56px] w-full rounded-[12px] border border-[var(--gray-30)] py-3 text-lg text-[var(--gray-50)]"
         >
           학교 이메일로 가입하기
         </button>
+        <Toast />
       </div>
     </div>
   );

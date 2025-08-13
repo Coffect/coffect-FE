@@ -16,7 +16,7 @@ import NoSuggestImage from "../../assets/icon/home/NoSuggest.png";
 
 // 커피챗 제안 베너 데이터 타입 정의
 interface Suggestion {
-  id: number;
+  id: string;
   name: string;
   message: string;
   image: string;
@@ -29,13 +29,13 @@ const CoffeeSuggestBanner = () => {
   // 제안 목록 상태 (더미 데이터)
   const [suggestions, setSuggestions] = useState<Suggestion[]>([
     {
-      id: 1,
+      id: "coffect",
       name: "하은",
       message: "커피챗 제안이 도착했어요!",
       image: "https://picsum.photos/200?random=1",
     },
     {
-      id: 2,
+      id: "jun",
       name: "김라떼",
       message: "커피챗 제안이 도착했어요!",
       image: "https://picsum.photos/200?random=2",
@@ -43,7 +43,7 @@ const CoffeeSuggestBanner = () => {
   ]);
 
   const [checkedMessage, setCheckedMessage] = useState<Suggestion | null>(null); // 메시지 모달에 표시할 항목
-  const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null); // 삭제 확인 모달을 위한 ID
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null); // 삭제 확인 모달을 위한 ID
   const [isMessageHidden, setIsMessageHidden] = useState(false); // 삭제 확인 모달 확인 시 메시지 모달 숨김
 
   // 모달 닫기 (모두 초기화)
@@ -54,7 +54,7 @@ const CoffeeSuggestBanner = () => {
   };
 
   // 삭제 요청 시 → 메시지 모달 숨김 및 삭제 확인 모달 띄우기
-  const handleDeleteRequest = (id: number) => {
+  const handleDeleteRequest = (id: string) => {
     setIsMessageHidden(true);
     setPendingDeleteId(id);
   };
@@ -119,22 +119,22 @@ const CoffeeSuggestBanner = () => {
                   <img
                     src={user.image}
                     alt="프로필 사진"
-                    className="aspect-[1/1] w-[15%] rounded-full object-cover"
+                    className="aspect-[1/1] w-[18%] rounded-full object-cover"
                   />
 
                   {/* 메시지 내용 + 버튼 */}
                   <div className="flex w-0 flex-1 flex-col justify-center">
-                    <p className="mb-[3%] overflow-hidden text-base font-medium text-[var(--gray-70)]">
+                    <p className="mb-[3%] ml-[3%] overflow-hidden text-base font-medium text-[var(--gray-70)]">
                       <span className="text-base font-bold text-[var(--gray-85)]">
                         {user.name}
                       </span>
                       님의 {user.message}
                     </p>
 
-                    <div className="flex justify-start">
+                    <div className="ml-[3%] flex justify-start">
                       <button
-                        onClick={() => navigate("/userpage/1")}
-                        className="rounded-[12px] bg-[var(--gray-80)] px-3 py-1.5 text-base font-medium text-[var(--gray-0)]"
+                        onClick={() => navigate(`/userpage/${user.id}`)}
+                        className="rounded-[12px] bg-[var(--gray-80)] px-4 py-1.5 text-base font-medium text-[var(--gray-0)]"
                       >
                         프로필 보기
                       </button>
