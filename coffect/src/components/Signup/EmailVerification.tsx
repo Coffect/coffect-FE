@@ -6,15 +6,14 @@ description : 이메일 인증 코드 발송 화면
 import { useState, useEffect } from "react";
 import SignupPageLayout from "./shared/SignupLayout";
 import type { StepProps } from "../../types/signup";
-import { isValidSchoolEmail } from "@/utils/validation";
 import { useToastStore } from "@/hooks/useToastStore";
+import { checkUnivDomain } from "@/api/univ";
+import axios from "axios";
 
 const EmailVerification: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   // 이메일 입력값 상태 관리
   const [email, setEmail] = useState<string>("");
 
-  // 입력된 이메일이 유효한지 여부 판단
-  const valid = isValidSchoolEmail(email);
   //이메일 오류 메시지 토스트 표시
   const { showToast } = useToastStore();
 
@@ -26,6 +25,27 @@ const EmailVerification: React.FC<StepProps> = ({ onNext, onUpdate }) => {
       sessionStorage.removeItem("mailSent");
     }
     onNext?.(); // 다음 화면으로 이동
+  };
+  // 입력된 이메일이 유효한지 여부 판단
+  const handleValidate = async () => {
+    try {
+      const res = await checkUnivDomain(email);
+      if (res?.resultType === "FAIL") {
+        showToast(
+          res?.error?.reason || "올바른 학교 이메일이 아니에요!",
+          "error",
+        );
+        return;
+      }
+      handleSend();
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e) && e.response?.status === 401) {
+        showToast("올바른 학교 이메일이 아니에요!", "error");
+        return;
+      }
+      console.error("[EmailVerification] domain check failed:", e);
+      showToast("이메일 확인 중 오류가 발생했어요.", "error");
+    }
   };
 
   useEffect(() => {
@@ -41,13 +61,7 @@ const EmailVerification: React.FC<StepProps> = ({ onNext, onUpdate }) => {
     <SignupPageLayout
       bottomButton={
         <button
-          onClick={() => {
-            if (!valid) {
-              showToast("올바른 학교 이메일이 아니에요!", "error");
-              return;
-            }
-            handleSend();
-          }}
+          onClick={handleValidate}
           className="w-full rounded-xl bg-[var(--gray-80)] py-[4%] text-center text-lg font-semibold text-[var(--gray-0)]"
         >
           인증코드 발송하기
