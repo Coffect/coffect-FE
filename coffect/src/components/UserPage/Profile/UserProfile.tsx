@@ -10,12 +10,15 @@ import {
   getProfileSearch,
   postIsCoffeeChat,
   postChatStart,
+  getProfileThread,
+  getProfileThreadSearch,
 } from "@/api/profile";
 import { getIsFollow, postFollowRequest } from "@/api/follow";
 import type {
   postChatStartType,
   postIsCoffeeChatType,
   profileType,
+  getProfileThreadType,
 } from "@/types/mypage/profile";
 import type { getIsFollowType } from "@/types/mypage/follow";
 import backIcon from "@/assets/icon/mypage/back.png";
@@ -25,15 +28,12 @@ import FeedItem from "@/components/shareComponents/FeedItem";
 import emptyFeedImg from "@/assets/icon/mypage/emptyFeed.png";
 import DetailIntroKeyword from "./DetailIntroKeyword";
 import DetailIntroProfile from "./DetailIntroProfile";
-import type { ThreadSummary } from "@/types/community/postTypes";
 import { useCoffeeSuggest } from "@/hooks/useCoffeeSuggest";
 import { AxiosError } from "axios";
 import CoffeeSuggestModal from "@/components/shareComponents/CoffeeSuggestModal";
 import CoffeeSuggestCompleteModal from "@/components/shareComponents/CoffeeSuggestCompleteModal";
 
 type ProfileTab = "피드" | "상세 소개";
-
-const myDummyPosts: ThreadSummary[] = [];
 
 function Profile() {
   /*
@@ -205,6 +205,15 @@ function Profile() {
     if (num >= 1_000) return Math.floor(num / 1_000) + "K+";
     return num.toString();
   };
+
+  const { data: profileThreadData } = useQuery<getProfileThreadType>({
+    queryKey: isMyProfile ? ["profileThread"] : ["profileThreadSearch", id],
+    queryFn: isMyProfile ? getProfileThread : () => getProfileThreadSearch(id!),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    enabled: isMyProfile || !!id, // 마이페이지이거나 id가 있을 때만 실행
+  });
+  const profileThreadPosts = profileThreadData?.success || [];
 
   // 로딩 중일 때 처리
   if (isLoading) {
@@ -387,7 +396,7 @@ function Profile() {
       <div className="flex flex-1 flex-col py-5">
         {/* 피드 탭이 활성화된 경우 피드 내용 출력 */}
         {activeTab === "피드" &&
-          (myDummyPosts.length === 0 ? (
+          (profileThreadPosts.length === 0 ? (
             <div className="flex flex-1 flex-col items-center justify-center">
               <span className="text-md mb-3 text-[var(--gray-50)]">
                 아직 작성한 글이 없어요!
@@ -396,11 +405,12 @@ function Profile() {
             </div>
           ) : (
             <>
-              {myDummyPosts.map((post) => (
+              {profileThreadPosts.map((post) => (
                 <FeedItem
                   key={post.threadId}
                   post={post}
                   showFollowButton={false}
+                  showBookmarkButton={true}
                 />
               ))}
             </>

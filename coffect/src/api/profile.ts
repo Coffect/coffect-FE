@@ -9,6 +9,10 @@ import type {
   timeLineType,
   postIsCoffeeChatType,
   postChatStartType,
+  deleteUserType,
+  getBookMarkType,
+  getProfileThreadType,
+  getProfileThreadSearchType,
 } from "@/types/mypage/profile";
 import { AxiosError } from "axios";
 
@@ -176,5 +180,51 @@ export const postChatStart = async (
 
     console.error("API 호출 중 에러 발생:", error);
     throw new Error("채팅을 시작할 수 없습니다. 다시 시도해주세요.");
+  }
+};
+
+export const deleteUser = async (): Promise<deleteUserType> => {
+  try {
+    const res = await axiosInstance.delete<deleteUserType>("/user/userDelete");
+    return res.data;
+  } catch (error) {
+    console.error("API 호출 중 에러 발생:", error);
+    throw new Error("회원탈퇴를 할 수 없습니다. 다시 시도해주세요.");
+  }
+};
+
+export const getBookMark = async (): Promise<getBookMarkType> => {
+  try {
+    const res = await axiosInstance.get<getBookMarkType>("/profile/scrap");
+    return res.data;
+  } catch (error) {
+    console.error("API 호출 중 에러 발생:", error);
+    throw new Error("북마크를 불러올 수 없습니다. 다시 시도해주세요.");
+  }
+};
+
+export const getProfileThread = async (): Promise<getProfileThreadType> => {
+  try {
+    const res =
+      await axiosInstance.get<getProfileThreadType>("/profile/mythread");
+    return res.data;
+  } catch (error) {
+    console.error("API 호출 중 에러 발생:", error);
+    throw new Error("프로필 게시글을 불러올 수 없습니다. 다시 시도해주세요.");
+  }
+};
+
+export const getProfileThreadSearch = async (
+  id: string,
+): Promise<getProfileThreadSearchType> => {
+  try {
+    const res = await axiosInstance.get<getProfileThreadSearchType>(
+      "/profile/thread/search",
+      { params: { id: id } },
+    );
+    return res.data;
+  } catch (error) {
+    console.error("API 호출 중 에러 발생:", error);
+    throw new Error("프로필 게시글을 불러올 수 없습니다. 다시 시도해주세요.");
   }
 };
