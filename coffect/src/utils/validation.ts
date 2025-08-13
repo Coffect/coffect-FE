@@ -1,21 +1,4 @@
 /*
-  이메일 포맷 검사 + 도메인 검사
-  @ 앞 부분: 영문 대소문자, 숫자, 언더바(_), 점(.)만 허용, 1자 이상
-  @ 뒤 부분: 공백과 @ 제외한 1자 이상, 마지막 . 뒤에도 1자 이상
-  도메인 ac.kr, edu.kr, .edu 포함만 가능
-*/
-export const isValidSchoolEmail = (email: string): boolean => {
-  // 기본 이메일 형식 검사
-  const emailRegex = /^[A-Za-z0-9_.]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) return false;
-
-  // 학교 이메일 도메인 검사
-  const domain = email.split("@")[1];
-  const domainRegex = /(ac\.kr|edu(\.kr)?|\.edu)$/i;
-  return domainRegex.test(domain);
-};
-
-/*
   비밀번호 포맷 검사
   영문/숫자/특수문자를 모두 포함하며 최소 8자 이상이어야 함
 */
