@@ -127,7 +127,7 @@ export const patchTimeLine = async (
     return res.data;
   } catch (error) {
     console.error("API 호출 중 에러 발생:", error);
-    throw new Error("타임라인을 불러올 수 없습니다. 다시 시도해주세요.");
+    throw new Error("타임라인을 수정할 수 없습니다. 다시 시도해주세요.");
   }
 };
 
