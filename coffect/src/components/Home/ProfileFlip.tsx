@@ -87,7 +87,7 @@ const ProfileFlip: React.FC = () => {
   } = useCoffeeSuggest();
 
   // 서버에서 프로필 카드 데이터 불러오기
-  const { data: currentCard } = useQuery<UserProfile | null>({
+  const { data: currentCard, refetch } = useQuery<UserProfile | null>({
     queryKey: ["recommendedCard"],
     queryFn: async () => {
       const hasVisited = localStorage.getItem("cardViewVisited");
@@ -138,6 +138,12 @@ const ProfileFlip: React.FC = () => {
   // 스킵 애니메이션 동작 여부
   const [skipAnimation, setSkipAnimation] = useState(false);
 
+  // 팔로우 로컬 상태(React Query 데이터 직접 변이 방지)
+  const [isFollowing, setIsFollowing] = useState(false);
+  useEffect(() => {
+    setIsFollowing(!!currentCard?.isFollow);
+  }, [currentCard?.isFollow]);
+
   // 제안 완료 모달이 열렸을 때 카드 스킵(기존 onSuccess 동작을 훅 사용 구조로 유지)
   const didSkipAfterSuggestRef = useRef(false);
   useEffect(() => {
@@ -148,6 +154,7 @@ const ProfileFlip: React.FC = () => {
       setTimeout(async () => {
         try {
           await initOrSkipCard();
+          await refetch(); // 다음 카드 즉시 로드
         } finally {
           setSkipped((prev) => {
             const next = prev + 1;
@@ -161,7 +168,7 @@ const ProfileFlip: React.FC = () => {
     if (!isCompleteOpen) {
       didSkipAfterSuggestRef.current = false;
     }
-  }, [isCompleteOpen]);
+  }, [isCompleteOpen, refetch]);
 
   // 카드 제거(왼쪽 버튼)
   const handleSkip = async () => {
@@ -169,6 +176,7 @@ const ProfileFlip: React.FC = () => {
     setTimeout(async () => {
       try {
         await initOrSkipCard();
+        await refetch(); // 다음 카드 즉시 로드
       } finally {
         setSkipped((prev) => {
           const next = prev + 1;
@@ -208,16 +216,16 @@ const ProfileFlip: React.FC = () => {
     try {
       // 서버에 팔로우 요청(이미 팔로우면 취소요청)
       await postFollowRequest(currentCard.id);
-      // 요청 성공 시 상태 토글(서버 API 요청 자주 안하려고 FOLLOW GET 요청은 초기 화면 불러올 때만 사용됨)
-      currentCard.isFollow = !currentCard.isFollow;
-      // 팔로우 추가일 때만 토스트 표시
-      if (currentCard.isFollow) {
-        showToast(`${currentCard.name}님을 팔로우했어요!`, "success");
-      } else {
-        // 팔로우 해제 시 즉시 토스트 숨김
-        hideToast();
-      }
-      return currentCard.isFollow;
+      // 요청 성공 시 로컬 상태 토글
+      setIsFollowing((prev) => {
+        const next = !prev;
+        if (next) {
+          showToast(`${currentCard.name}님을 팔로우했어요!`, "success");
+        } else {
+          hideToast();
+        }
+        return next;
+      });
     } catch {
       showToast("팔로우에 실패했습니다.", "error");
     }
@@ -320,6 +328,7 @@ const ProfileFlip: React.FC = () => {
           >
             <button
               onClick={() => handleSkip()}
+              disabled={skipAnimation}
               className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-white text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
             >
               <img
@@ -330,6 +339,7 @@ const ProfileFlip: React.FC = () => {
             </button>
             <button
               onClick={() => currentCard && handleSuggestClick(currentCard.id)}
+              disabled={skipAnimation}
               className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-orange-500 text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
             >
               <img
@@ -340,12 +350,11 @@ const ProfileFlip: React.FC = () => {
             </button>
             <button
               onClick={handleFollowToggle}
+              disabled={skipAnimation}
               className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-white text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
             >
               <img
-                src={
-                  currentCard.isFollow ? CardRightDownImage : CardRightUpImage
-                }
+                src={isFollowing ? CardRightDownImage : CardRightUpImage}
                 alt="follow"
                 className="h-[40%] w-[40%] object-contain"
               />
