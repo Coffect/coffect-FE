@@ -43,7 +43,7 @@ const ChatMessageList: React.FC<Props> = ({ messages, getMessageMargin }) => {
 
           return (
             <div
-              key={msg.id}
+              key={`${msg.id}-${idx}`}
               className={`w-full ${getMessageMargin(idx, messages)} ${msg.mine ? "justify-end" : "justify-start"} flex`}
             >
               {msg.type === "image" ? (

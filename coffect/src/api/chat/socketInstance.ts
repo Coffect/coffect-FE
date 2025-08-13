@@ -17,9 +17,12 @@ class SocketManager {
       return;
     }
 
-    const socketUrl = import.meta.env.VITE_SOCKET_URL;
+    // 개발 환경에서는 로컬 프록시 사용
+    const socketUrl = import.meta.env.DEV
+      ? "http://localhost:5173"
+      : import.meta.env.VITE_SERVER_API_URL || "http://13.124.169.70:3000";
     if (!socketUrl) {
-      console.error("VITE_SOCKET_URL 환경 변수가 설정되지 않았습니다");
+      console.error("VITE_SERVER_API_URL 환경 변수가 설정되지 않았습니다");
       throw new Error("Socket URL이 구성되지 않았습니다");
     }
 
@@ -30,11 +33,15 @@ class SocketManager {
         token: token || localStorage.getItem("accessToken"),
       },
       transports: ["polling", "websocket"], // polling을 먼저 시도
-      autoConnect: true,
-      reconnection: true,
-      reconnectionAttempts: 5,
+      autoConnect: false, // 자동 연결 비활성화
+      reconnection: false, // 자동 재연결 비활성화
+      reconnectionAttempts: 0,
       reconnectionDelay: 1000,
+      timeout: 5000, // 연결 타임아웃 5초
     });
+
+    // 수동으로 연결 시도
+    this.socket.connect();
 
     this.setupEventListeners();
   }
@@ -56,6 +63,10 @@ class SocketManager {
     this.socket.on("connect_error", (error) => {
       console.error("Socket 연결 실패:", error);
       this.isConnected = false;
+      // 연결 실패 시 즉시 연결 중단
+      if (this.socket) {
+        this.socket.disconnect();
+      }
     });
 
     this.socket.on("reconnect", (attemptNumber) => {
@@ -65,6 +76,10 @@ class SocketManager {
 
     this.socket.on("reconnect_error", (error) => {
       console.error("Socket 재연결 실패:", error);
+      // 재연결 실패 시 즉시 연결 중단
+      if (this.socket) {
+        this.socket.disconnect();
+      }
     });
   }
 

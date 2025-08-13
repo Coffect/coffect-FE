@@ -58,7 +58,7 @@ export interface ChatRoomWithUser extends ChatRoom {
 
 export interface ChatRoomListResponse {
   resultType: string;
-  error: null;
+  error: { reason: string } | null;
   success: ChatRoom[];
 }
 

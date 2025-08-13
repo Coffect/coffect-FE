@@ -7,7 +7,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { getChatRoomList } from "../../api/chat/chatRoomApi";
 import { getProfile, getProfileSearch } from "../../api/profile";
 import { getUserStringId } from "../../api/home";
-// import { socketManager } from "../../api/chat"; // CORS 문제로 비활성화
+import { socketManager } from "../../api/chat";
 import type { ChatRoomWithUser } from "../../types/chat";
 
 interface UseChatRoomsReturn {
@@ -31,15 +31,24 @@ export const useChatRooms = (): UseChatRoomsReturn => {
       setIsLoading(true);
       setError(null);
 
-      // 소켓 연결 비활성화 (CORS 문제로 인해)
-      // socketManager.connect();
+      // 소켓 연결 (한 번만 시도)
+      try {
+        socketManager.connect();
+      } catch (error) {
+        console.warn("소켓 연결 실패 (무시됨):", error);
+      }
 
       const response = await getChatRoomList();
-      const chatRoomsData = response.success;
 
-      // API 응답 디버깅
-      console.log("getChatRoomList 응답:", response);
-      console.log("chatRoomsData:", chatRoomsData);
+      // 응답 타입 확인
+      if (response.resultType === "FAIL") {
+        const errorMessage =
+          response.error?.reason || "채팅방 목록 조회에 실패했습니다.";
+        setError(errorMessage);
+        return;
+      }
+
+      const chatRoomsData = response.success;
 
       // 현재 사용자 정보 가져오기
       const currentUserProfile = await getProfile();
@@ -126,7 +135,6 @@ export const useChatRooms = (): UseChatRoomsReturn => {
         (room) => room !== undefined,
       ) as ChatRoomWithUser[];
 
-      if (!isMountedRef.current) return;
       setChatRooms(validChatRooms);
     } catch (err: unknown) {
       const error = err as {
@@ -138,9 +146,7 @@ export const useChatRooms = (): UseChatRoomsReturn => {
       if (!isMountedRef.current) return;
       setError(errorMessage);
     } finally {
-      if (isMountedRef.current) {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     }
   }, []);
 
@@ -152,7 +158,7 @@ export const useChatRooms = (): UseChatRoomsReturn => {
     return () => {
       isMountedRef.current = false;
     };
-  }, []); // 빈 의존성 배열로 변경
+  }, [loadChatRooms]);
 
   // 채팅방 목록 정렬 (최근 메시지 순)
   const sortedChatRooms = useMemo(() => {

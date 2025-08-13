@@ -27,21 +27,25 @@ export const createChatRoom = async (
 export const getChatRoomList = async (): Promise<ChatRoomListResponse> => {
   try {
     const response = await axiosInstance.get("/chat/rooms");
-    // 응답 데이터가 없거나 success 필드가 없을 경우 기본값 제공
+
+    // 응답 데이터가 없거나 success 필드가 없을 경우 에러로 처리
     if (!response.data || !response.data.success) {
+      console.error("채팅방 목록 조회 실패: 응답 데이터가 없습니다");
       return {
-        resultType: "SUCCESS",
-        error: null,
+        resultType: "FAIL",
+        error: { reason: "응답 데이터가 없습니다" },
         success: [],
       };
     }
+
+    // success 배열이 비어있어도 SUCCESS로 반환 (채팅방이 없는 것은 정상적인 상황)
     return response.data;
   } catch (error) {
     console.error("채팅방 목록 조회 실패:", error);
-    // 에러 발생 시 기본 응답 반환
+    // 에러 발생 시 FAIL로 반환
     return {
       resultType: "FAIL",
-      error: null,
+      error: { reason: "채팅방 목록 조회에 실패했습니다" },
       success: [],
     };
   }

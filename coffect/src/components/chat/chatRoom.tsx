@@ -175,7 +175,7 @@ const ChatRoom = () => {
     setIsProfileLoading(true);
     setTimeout(() => {
       navigate(`/userpage/${currentChatRoom.userId}`);
-      setIsProfileLoading(false); // Reset after navigation
+      setIsProfileLoading(false);
     }, PROFILE_NAVIGATION_DELAY);
   };
 
@@ -269,7 +269,10 @@ const ChatRoom = () => {
       <RequestModal
         isOpen={isModalOpen}
         onClose={closeModal}
-        username={user.username}
+        opponentName={currentChatRoom?.userInfo?.name}
+        requestMessage="안녕하세요! 커피챗 제안을 받아서 기쁩니다. 함께 이야기 나누고 싶어요!"
+        requestTime="2025. 1. 13. 오후 2:39"
+        availableTime="목요일 14:00"
       />
 
       {/* 메시지 영역 */}
