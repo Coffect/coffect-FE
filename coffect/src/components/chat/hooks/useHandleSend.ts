@@ -1,26 +1,21 @@
 /*
  * author : 앨리스/박은지
  * description : 메시지 전송 핸들러
- * 메시지 전송 시 API 호출 및 로컬 상태 업데이트
+ * 메시지 전송 시 소켓을 통한 전송
  */
 import { useCallback } from "react";
 import { useSendMessage } from "../../../hooks/chat";
-import type { Message } from "../../../types/chat";
 
 interface UseHandleSendProps {
   chatRoomId: string;
-  setMessages: (messages: Message[] | ((prev: Message[]) => Message[])) => void;
   setInputValue: (value: string) => void;
-  getCurrentTime: () => string;
   onError?: (error: string) => void;
   onSuccess?: () => void; // 메시지 전송 성공 시 콜백
 }
 
 const useHandleSend = ({
   chatRoomId,
-  setMessages,
   setInputValue,
-  getCurrentTime,
   onError,
   onSuccess,
 }: UseHandleSendProps) => {
@@ -40,41 +35,21 @@ const useHandleSend = ({
         return;
       }
 
-      const tempId = Date.now();
-      // 먼저 로컬에 메시지 추가 (낙관적 업데이트)
-      const tempMessage: Message = {
-        id: tempId, // 임시 ID
-        type: "text",
-        text: msg,
-        time: getCurrentTime(),
-        mine: true,
-      };
-
-      setMessages((prevMessages: Message[]) => [...prevMessages, tempMessage]);
+      // 입력값 초기화
       setInputValue("");
 
-      // API로 메시지 전송
+      // 소켓을 통한 메시지 전송 (서버에서 receive 이벤트로 받아서 UI 업데이트)
       const success = await sendMessage(msg);
 
       if (success) {
         // 성공 시 콜백 실행
         onSuccess?.();
       } else {
-        // 실패 시 로컬 메시지 제거
-        setMessages((prevMessages: Message[]) =>
-          prevMessages.filter((m: Message) => m.id !== tempId),
-        );
-        setInputValue(msg); // 입력값 복원
+        // 실패 시 입력값 복원
+        setInputValue(msg);
       }
     },
-    [
-      setMessages,
-      setInputValue,
-      getCurrentTime,
-      sendMessage,
-      onSuccess,
-      chatRoomId,
-    ],
+    [setInputValue, sendMessage, onSuccess, chatRoomId],
   );
 
   return {

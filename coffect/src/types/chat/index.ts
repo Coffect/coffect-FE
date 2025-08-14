@@ -3,7 +3,7 @@
  * description : 채팅 관련 타입 정의
  */
 
-// 기존 메시지 타입 (UI용)
+// 기존 메시지 타입
 export type Message =
   | { id: number; type: "text"; text: string; time: string; mine: boolean }
   | {
@@ -39,7 +39,7 @@ export interface CreateChatRoomErrorResponse {
 
 // 채팅방 목록 조회 응답 타입
 export interface ChatRoom {
-  chatroomId: string; // 백엔드 응답과 일치하도록 소문자로 변경
+  chatroomId: string;
   userId: number;
   lastMessage: string;
   hasUnreadMessages: boolean;
@@ -135,12 +135,11 @@ export interface SocketLeaveRoom {
 
 // Socket.io 이벤트 이름들
 export const SOCKET_EVENTS = {
-  JOIN_ROOM: "join_room",
-  LEAVE_ROOM: "leave_room",
-  SEND_MESSAGE: "send_message",
-  RECEIVE_MESSAGE: "receive_message",
-  TYPING: "typing",
-  STOP_TYPING: "stop_typing",
-  USER_JOINED: "user_joined",
-  USER_LEFT: "user_left",
+  send: "send",
+  receive: "receive",
+  errorAck: "errorAck",
+  typing: "typing",
+  userTyping: "userTyping",
+  seen: "seen",
+  messageSeen: "messageSeen",
 } as const;

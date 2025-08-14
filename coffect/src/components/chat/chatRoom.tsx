@@ -21,8 +21,17 @@ import useCurrentTime from "./hooks/useCurrentTime";
 import { getChatMessages } from "../../api/chat";
 import { useTimeTableComparison } from "../../hooks/useTimeTable";
 import { axiosInstance } from "../../api/axiosInstance";
+import { socketManager } from "../../api/chat/socketInstance";
 import type { Schedule } from "./hooks/useSchedule";
 import type { Message } from "../../types/chat";
+
+// 서버에서 보내는 메시지 형식
+interface ServerMessage {
+  sender: number;
+  senderName: string;
+  message: string;
+  timestamp: string;
+}
 
 const ChatRoom = () => {
   usePreventZoom();
@@ -92,9 +101,7 @@ const ChatRoom = () => {
 
   const { handleSend } = useHandleSend({
     chatRoomId: chatRoomId || "",
-    setMessages,
     setInputValue,
-    getCurrentTime,
     onError: (error) => {
       console.error("메시지 전송 오류:", error);
     },
@@ -201,6 +208,89 @@ const ChatRoom = () => {
   // 시간표 비교 훅 사용 (수동 호출)
   const { commonFreeTime, fetchAndCompare: fetchTimeTables } =
     useTimeTableComparison(user.id, currentChatRoom?.userId || 0);
+
+  // 소켓 이벤트 핸들러들을 useCallback으로 메모이제이션
+  const handleConnect = useCallback(() => {
+    if (!user?.id || !chatRoomId) return;
+
+    socketManager.joinRoom(chatRoomId, user.id);
+  }, [chatRoomId, user?.id]);
+
+  const handleDisconnect = useCallback((...args: unknown[]) => {
+    const reason = args[0] as string;
+    console.log("소켓 연결 해제:", reason);
+  }, []);
+
+  const handleReceiveMessage = useCallback(
+    (...args: unknown[]) => {
+      const socketMessage = args[0] as ServerMessage;
+      console.log("소켓 메시지 수신:", socketMessage);
+
+      const newMessage: Message = {
+        id: Date.now(),
+        type: "text",
+        text: socketMessage.message,
+        time: new Date(socketMessage.timestamp).toLocaleTimeString("ko-KR", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        }),
+        mine: socketMessage.sender === user?.id,
+      };
+
+      setMessages((prev) => {
+        const updatedMessages = [...prev, newMessage];
+        return updatedMessages;
+      });
+    },
+    [user?.id],
+  );
+
+  const handleErrorAck = useCallback((...args: unknown[]) => {
+    const error = args[0];
+    console.error("소켓 에러:", error);
+  }, []);
+
+  // 소켓 연결 및 메시지 수신 설정
+  useEffect(() => {
+    if (!user?.id || !chatRoomId) return;
+
+    console.log("소켓 연결 시도:", { userId: user.id, chatRoomId });
+
+    // 소켓 연결
+    socketManager.connect();
+
+    // 기존 리스너 제거 후 새로 등록
+    socketManager.off("receive", handleReceiveMessage);
+    socketManager.off("errorAck", handleErrorAck);
+    socketManager.off("connect", handleConnect);
+    socketManager.off("disconnect", handleDisconnect);
+
+    // 새로운 리스너 등록
+    socketManager.onConnect(handleConnect);
+    socketManager.onDisconnect(handleDisconnect);
+    socketManager.onReceiveMessage(handleReceiveMessage);
+    socketManager.onErrorAck(handleErrorAck);
+
+    // 컴포넌트 언마운트 시 리스너 제거
+    return () => {
+      socketManager.off("receive", handleReceiveMessage);
+      socketManager.off("errorAck", handleErrorAck);
+      socketManager.off("connect", handleConnect);
+      socketManager.off("disconnect", handleDisconnect);
+
+      // 채팅방 퇴장 이벤트 전송
+      socketManager.leaveRoom(chatRoomId, user.id);
+      console.log("채팅방 퇴장 이벤트 전송 완료");
+    };
+  }, [
+    user?.id,
+    chatRoomId,
+    handleConnect,
+    handleDisconnect,
+    handleReceiveMessage,
+    handleErrorAck,
+  ]);
 
   // 상대 요청 보기 모달 열기 함수
   const handleOpenRequestModal = async () => {

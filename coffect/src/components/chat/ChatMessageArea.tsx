@@ -33,7 +33,7 @@ const ChatMessageArea = ({
     <div className="relative flex-1 overflow-y-auto bg-[var(--gray-5)] px-4 py-2">
       {/* 플로팅 버튼 - 관심사가 닫혀있을 때만 표시 */}
       {!showInterests && onToggleInterests && (
-        <div className="sticky top-1 z-50 -mr-2 mb-0 flex justify-end">
+        <div className="sticky top-1 z-50 mb-0 flex justify-end">
           <button
             type="button"
             onClick={onToggleInterests}
