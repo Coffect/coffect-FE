@@ -76,9 +76,9 @@ const fetchEnrichedCard = async (): Promise<UserProfile | null> => {
 
     const stringId = await getUserStringId(card.userId);
     const [isFollowRes, deptRes, qnaRes] = await Promise.allSettled([
-      getIsFollow(card.userId), // 숫자 id 전달
-      getUserDeptById(stringId), // 전공 조회는 문자열 id
-      getUserQnAById(stringId), // QnA 조회도 문자열 id
+      getIsFollow(card.userId),
+      getUserDeptById(stringId),
+      getUserQnAById(stringId),
     ]);
 
     const isFollow =
