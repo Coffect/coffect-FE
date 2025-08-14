@@ -55,6 +55,9 @@ export const useScrapPostMutation = () => {
 
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["community", "posts"] });
+      queryClient.invalidateQueries({ queryKey: ["bookMark"] });
+      queryClient.invalidateQueries({ queryKey: ["profileThread"] });
+      queryClient.invalidateQueries({ queryKey: ["profileThreadSearch"] });
     },
   });
 };
