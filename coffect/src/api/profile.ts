@@ -7,7 +7,7 @@ import type {
   profileDetailItemType,
   logoutType,
   timeLineType,
-  postIsCoffeeChatType,
+  getIsCoffeeChatType,
   postChatStartType,
   deleteUserType,
   getBookMarkType,
@@ -145,13 +145,12 @@ export const deleteLogout = async (): Promise<logoutType> => {
   }
 };
 
-export const postIsCoffeeChat = async (
+export const getIsCoffeeChat = async (
   userId: number,
-): Promise<postIsCoffeeChatType> => {
+): Promise<getIsCoffeeChatType> => {
   try {
-    const res = await axiosInstance.post<postIsCoffeeChatType>(
+    const res = await axiosInstance.get<getIsCoffeeChatType>(
       "/profile/isCoffeeChat",
-      undefined,
       { params: { otherUserId: userId } },
     );
 

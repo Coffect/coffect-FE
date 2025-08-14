@@ -96,7 +96,7 @@ export type logoutType = {
   success: null | string;
 };
 
-export type postIsCoffeeChatType = {
+export type getIsCoffeeChatType = {
   resultType: string;
   error: null | {
     errorCode: string;

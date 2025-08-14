@@ -66,6 +66,9 @@ export const useFollowMutation = () => {
 
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["community", "posts"] });
+      queryClient.invalidateQueries({ queryKey: ["bookMark"] });
+      queryClient.invalidateQueries({ queryKey: ["isFollow"] });
+      queryClient.invalidateQueries({ queryKey: ["profileThreadSearch"] });
     },
   });
 };
