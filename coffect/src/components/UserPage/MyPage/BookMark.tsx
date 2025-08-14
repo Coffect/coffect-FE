@@ -8,6 +8,7 @@ import { useInView } from "react-intersection-observer";
 
 import backIcon from "../../../assets/icon/mypage/back.png";
 import emptyFeedIcon from "../../../assets/icon/mypage/emptyFeed.png";
+import FeedListSkeleton from "@/components/communityComponents/feed/FeedListSkeleton";
 
 const BookMark = () => {
   const navigate = useNavigate();
@@ -97,8 +98,8 @@ const BookMark = () => {
             ))}
             {visibleCount < sortedBookMarkPosts.length && (
               <>
-                <div ref={sentinelRef} className="text-md h-1 text-center">
-                  더 불러오는 중...
+                <div ref={sentinelRef} className="flex h-1 justify-center py-4">
+                  <FeedListSkeleton count={1} />
                 </div>
               </>
             )}
