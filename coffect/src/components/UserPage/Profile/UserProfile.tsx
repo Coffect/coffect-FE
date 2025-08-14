@@ -214,6 +214,9 @@ function Profile() {
     enabled: isMyProfile || !!id, // 마이페이지이거나 id가 있을 때만 실행
   });
   const profileThreadPosts = profileThreadData?.success || [];
+  const sortedProfileThreadPosts = [...profileThreadPosts].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
 
   // 로딩 중일 때 처리
   if (isLoading) {
@@ -397,7 +400,7 @@ function Profile() {
         <div className="flex flex-1 flex-col py-5">
           {/* 피드 탭이 활성화된 경우 피드 내용 출력 */}
           {activeTab === "피드" &&
-            (profileThreadPosts.length === 0 ? (
+            (sortedProfileThreadPosts.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center">
                 <span className="text-md mb-3 text-[var(--gray-50)]">
                   아직 작성한 글이 없어요!
@@ -406,7 +409,7 @@ function Profile() {
               </div>
             ) : (
               <>
-                {profileThreadPosts.map((post) => (
+                {sortedProfileThreadPosts.map((post) => (
                   <FeedItem
                     key={post.threadId}
                     post={post}

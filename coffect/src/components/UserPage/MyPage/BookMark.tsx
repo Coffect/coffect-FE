@@ -19,6 +19,9 @@ const BookMark = () => {
     queryFn: () => getBookMark(),
   });
   const bookMarkPosts = bookMarkData?.success || [];
+  const sortedBookMarkPosts = [...bookMarkPosts].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
 
   return (
     <div className="flex h-full w-full flex-col bg-white">
@@ -36,7 +39,7 @@ const BookMark = () => {
       </div>
       {/* 저장된 콘텐츠 출력 */}
       <div className="flex flex-1 flex-col overflow-y-auto">
-        {bookMarkPosts.length === 0 ? (
+        {sortedBookMarkPosts.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center px-4">
             <span className="text-md mb-3 text-[var(--gray-50)]">
               아직 저장한 글이 없어요!
@@ -45,7 +48,7 @@ const BookMark = () => {
           </div>
         ) : (
           <>
-            {bookMarkPosts.map((post) => (
+            {sortedBookMarkPosts.map((post) => (
               <FeedItem
                 key={post.threadId}
                 post={post}
