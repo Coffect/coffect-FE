@@ -26,18 +26,16 @@ const TimePickerSection: React.FC<TimePickerSectionProps> = ({
   return (
     <>
       <div className="mb-2 flex items-center justify-between">
-        <div className="text-[18px] font-semibold text-[var(--gray-80)]">
+        <div className="text-base font-extrabold text-[var(--gray-80)]">
           몇 시에 만날까요?
         </div>
       </div>
       <button
-        className="mb-8 flex w-full items-center justify-between rounded-[10px] border-[1.5px] border-[var(--gray-10)] bg-[var(--white)] px-4 py-3 text-left text-[18px] font-medium text-[var(--gray-80)]"
+        className="mb-8 flex w-full items-center justify-between rounded-lg border-2 border-[var(--gray-10)] bg-[var(--white)] px-4 py-3 text-left text-[16px] font-extrabold text-[var(--gray-80)]"
         type="button"
         onClick={() => setShowTimeModal(true)}
       >
-        <span className="text-left font-medium">
-          {values.time ? values.time : ""}
-        </span>
+        <span className="text-left">{values.time ? values.time : ""}</span>
         <Clock size={20} className="ml-2 text-[var(--gray-40)]" />
       </button>
       <TimeScrollModal

@@ -4,11 +4,11 @@ description : 회원가입 서비스 약관 동의
 */
 import { useState, useEffect } from "react";
 import { AlertCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import SignupPageLayout from "./shared/SignupLayout";
 import CheckboxImage from "../../assets/icon/signup/checkbox.png";
 import ClickedCheckboxImage from "../../assets/icon/signup/clickCheckbox.png";
 import LogoImage from "../../assets/icon/home/Logo.png";
-import AgreementItem from "./AgreementItem";
 
 /** 다음 단계로 이동 */
 type Props = {
@@ -22,7 +22,7 @@ const ImageCheckbox = ({
   checked: boolean;
   onClick: () => void;
 }) => (
-  <button type="button" onClick={onClick} className="mr-[1rem] h-6 w-6">
+  <button type="button" onClick={onClick} className="mr-[1rem] h-5 w-5">
     <img
       src={checked ? ClickedCheckboxImage : CheckboxImage}
       alt={checked ? "체크됨" : "체크안됨"}
@@ -32,6 +32,7 @@ const ImageCheckbox = ({
 );
 
 const TermsAgreement = ({ onNext }: Props) => {
+  const navigate = useNavigate();
   // 각각의 약관 체크박스 상태 관리
   const [checkedAll, setCheckedAll] = useState(false);
   const [checkedService, setCheckedService] = useState(false);
@@ -110,49 +111,87 @@ const TermsAgreement = ({ onNext }: Props) => {
       <div className="mb-[8%] flex w-full items-center">
         <ImageCheckbox checked={checkedAll} onClick={handleAllChange} />
         <span className="text-lg font-bold text-[var(--gray-90)]">
-          모두 동의
+          모두 동의(선택 정보 포함)
         </span>
       </div>
 
       <div className="mb-[8%] w-full border-t border-[var(--gray-10)]" />
 
       {/* 필수 약관 */}
-      <AgreementItem
-        label="서비스 이용약관 동의"
-        required
-        checked={checkedService}
-        onToggle={() => setCheckedService((prev) => !prev)}
-      />
+      <div className="mb-[6%] flex w-full items-center justify-between">
+        <div className="flex flex-1 items-center">
+          <ImageCheckbox
+            checked={checkedService}
+            onClick={() => setCheckedService((prev) => !prev)}
+          />
+          <span className="text-base font-medium text-[var(--gray-90)]">
+            [필수] 서비스 이용약관 동의
+          </span>
+        </div>
+        <button
+          onClick={() => navigate("/signup/terms")}
+          className="text-base font-medium text-[var(--gray-40)] underline"
+        >
+          보기
+        </button>
+      </div>
 
-      <AgreementItem
-        label="개인정보 처리방침 동의"
-        required
-        checked={checkedPrivacy}
-        onToggle={() => setCheckedPrivacy((prev) => !prev)}
-      />
+      <div className="mb-[6%] flex w-full items-center justify-between">
+        <div className="flex flex-1 items-center">
+          <ImageCheckbox
+            checked={checkedPrivacy}
+            onClick={() => setCheckedPrivacy((prev) => !prev)}
+          />
+          <span className="text-base font-medium text-[var(--gray-90)]">
+            [필수] 개인정보 처리방침 동의
+          </span>
+        </div>
+        <button
+          onClick={() => navigate("/signup/terms")}
+          className="text-base font-medium text-[var(--gray-40)] underline"
+        >
+          보기
+        </button>
+      </div>
 
-      <AgreementItem
-        label="만 14세 이상입니다"
-        required
-        checked={checkedOver14}
-        onToggle={() => setCheckedOver14((prev) => !prev)}
-        showLink={false}
-      />
+      <div className="mb-[6%] flex w-full items-center">
+        <ImageCheckbox
+          checked={checkedOver14}
+          onClick={() => setCheckedOver14((prev) => !prev)}
+        />
+        <span className="text-base font-medium text-[var(--gray-90)]">
+          [필수] 만 14세 이상입니다
+        </span>
+      </div>
 
       {/* 선택 약관 */}
-      <AgreementItem
-        label="마케팅 정보 수신 동의"
-        checked={checkedMarketing}
-        onToggle={() => setCheckedMarketing((prev) => !prev)}
-        linkStep={3}
-      />
+      <div className="mb-[6%] flex w-full items-center justify-between">
+        <div className="flex flex-1 items-center">
+          <ImageCheckbox
+            checked={checkedMarketing}
+            onClick={() => setCheckedMarketing((prev) => !prev)}
+          />
+          <span className="text-base font-medium text-[var(--gray-90)]">
+            [선택] 마케팅 정보 수신 동의
+          </span>
+        </div>
+        <button
+          onClick={() => navigate("/signup/terms", { state: { step: 3 } })}
+          className="text-base font-medium text-[var(--gray-40)] underline"
+        >
+          보기
+        </button>
+      </div>
 
-      <AgreementItem
-        label="푸시 알림 수신 동의"
-        checked={checkedPush}
-        onToggle={() => setCheckedPush((prev) => !prev)}
-        showLink={false}
-      />
+      <div className="flex w-full items-center">
+        <ImageCheckbox
+          checked={checkedPush}
+          onClick={() => setCheckedPush((prev) => !prev)}
+        />
+        <span className="text-base font-medium text-[var(--gray-90)]">
+          [선택] 푸시 알림 수신 동의
+        </span>
+      </div>
 
       {/* 안내 문구 */}
       <div className="mt-[10%] w-full rounded bg-[var(--gray-5)] p-[4%]">

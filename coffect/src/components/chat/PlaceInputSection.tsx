@@ -17,12 +17,12 @@ const PlaceInputSection: React.FC<PlaceInputSectionProps> = ({
 }) => {
   return (
     <div className="mb-10">
-      <div className="mb-2 text-[18px] font-semibold text-[var(--gray-80)]">
+      <div className="mb-2 text-base font-extrabold text-[var(--gray-80)]">
         어디에서 만날까요?
       </div>
       <input
         type="text"
-        className="w-full rounded-[10px] border-[1.5px] border-[var(--gray-10)] bg-[var(--white)] px-4 py-3 text-[18px] font-medium text-[var(--gray-80)] placeholder:text-[var(--gray-30)]"
+        className="w-full rounded-lg border-2 border-[var(--gray-10)] bg-[var(--white)] px-4 py-3 text-[16px] font-medium text-[var(--gray-80)] placeholder:text-[var(--gray-30)]"
         value={values.place}
         onChange={(e) => onChange({ ...values, place: e.target.value })}
         placeholder="장소를 입력해주세요"

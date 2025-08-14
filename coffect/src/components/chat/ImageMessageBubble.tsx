@@ -9,14 +9,12 @@ interface ImageMessageBubbleProps {
   mine: boolean;
   imageUrl: string;
   showProfile: boolean;
-  profileImage?: string;
 }
 
 const ImageMessageBubble: React.FC<ImageMessageBubbleProps> = ({
   mine,
   imageUrl,
   showProfile,
-  profileImage,
 }) => (
   <div
     className={
@@ -27,17 +25,7 @@ const ImageMessageBubble: React.FC<ImageMessageBubbleProps> = ({
   >
     {/* 상대방이 이미지를 보냈을 때 프로필과 같이 띄어지기 */}
     {!mine && showProfile && (
-      <div className="h-8 w-8 flex-shrink-0 overflow-hidden rounded-full bg-[var(--gray-20)]">
-        {profileImage ? (
-          <img
-            src={profileImage}
-            alt="프로필"
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="h-full w-full rounded-full border border-[var(--gray-10)] bg-[var(--gray-30)]" />
-        )}
-      </div>
+      <div className="h-8 w-8 flex-shrink-0 rounded-full border border-[var(--gray-10)] bg-[var(--gray-30)]" />
     )}
     <img
       src={imageUrl}

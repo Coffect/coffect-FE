@@ -6,7 +6,7 @@
  */
 
 import React from "react";
-import useClampManager from "@/hooks/community/useClampManager";
+import useClampManager from "../../../hooks/community/useClampManager";
 
 /**
  * @interface PostContentProps

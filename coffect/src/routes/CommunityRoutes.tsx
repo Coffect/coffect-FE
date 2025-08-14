@@ -4,9 +4,9 @@ description : 커뮤니티, 글 작성, 게시글 상세 페이지 등 커뮤니
 */
 
 import type { RouteObject } from "react-router-dom";
-import Community from "@/pages/Community";
-import WritePostPage from "@/pages/WritePostPage";
-import PostDetail from "@/pages/PostDetailPage";
+import Community from "../pages/Community";
+import WritePost from "../components/communityComponents/writeComponents/WritePost";
+import PostDetail from "../pages/PostDetail";
 
 const CommunityRoutes: RouteObject[] = [
   {
@@ -15,7 +15,7 @@ const CommunityRoutes: RouteObject[] = [
   },
   {
     path: "community/write",
-    element: <WritePostPage />,
+    element: <WritePost />,
   },
   {
     path: "community/post/:id",

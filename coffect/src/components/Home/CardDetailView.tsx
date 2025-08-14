@@ -8,8 +8,6 @@
 
 import { useLocation, useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
-import { useEffect, useState } from "react";
-import { getProfile } from "@/api/profile";
 
 // 전달받은 프로필 타입 정의
 interface UserProfile {
@@ -64,19 +62,6 @@ const getTagColor = (tag: string) => {
 const CardDetailView = () => {
   const navigate = useNavigate(); // 페이지 이동 함수
   const location = useLocation(); // 전달받은 props(state)를 읽기 위함
-  const [myName, setMyName] = useState("");
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const me = await getProfile();
-        setMyName(me.success?.userInfo.name || "");
-      } catch (e) {
-        console.error(e);
-        setMyName(""); // 폴백
-      }
-    })();
-  }, []);
 
   // 전달받은 상태에서 profile, onSkip, onSuggest 추출
   const { profile } =
@@ -115,7 +100,7 @@ const CardDetailView = () => {
           />
           {/******나중에 api 생기면 인하 부분 유저의 이름 불러올것!(프로필 카드 이름 아님 기억하기) *******/}
           <div className="absolute bottom-1/10 left-1/2 z-20 -translate-x-1/2 transform rounded-xl bg-black/60 px-3 py-1 text-sm font-medium whitespace-nowrap">
-            <span className="text-[var(--gray-0)]">{myName}</span>
+            <span className="text-[var(--gray-0)]">인하</span>
             <span className="text-[var(--gray-20)]">
               님과 비슷한 관심사를 가졌어요!
             </span>
@@ -123,13 +108,13 @@ const CardDetailView = () => {
         </div>
 
         {/* 상세 정보, 구분선 */}
-        <div className="relative z-10 -mt-[5%] divide-y-2 divide-[var(--gray-5)] rounded-t-3xl bg-[var(--gray-0)] px-5 pt-5">
+        <div className="relative z-10 -mt-[5%] divide-y-2 divide-[var(--gray-5)] rounded-t-3xl bg-[var(--gray-0)] px-4 pt-8">
           {/* 이름 및 학과/학번 */}
-          <div className="pb-4 pl-1">
+          <div className="pb-6 pl-1">
             <h2 className="text-[22px] font-bold text-[var(--gray-80)]">
               {profile.name}
               <span className="ml-2 text-sm font-medium text-[var(--gray-40)]">
-                {profile.major} {String(profile.year).slice(-2)}학번
+                {profile.major} {profile.year}
               </span>
             </h2>
           </div>
@@ -165,7 +150,7 @@ const CardDetailView = () => {
             {profile.answers.map((qa, idx) => (
               <div key={idx} className={idx > 0 ? "mt-6" : ""}>
                 <p className="text-base font-medium text-[var(--gray-40)]">
-                  {qa.question}
+                  Q. {qa.question}
                 </p>
                 <p className="mt-1 text-base font-medium whitespace-pre-line text-[var(--gray-70)]">
                   {qa.answer}

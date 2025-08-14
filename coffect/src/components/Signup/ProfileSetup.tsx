@@ -4,15 +4,15 @@ description : 프로필 설정 화면 (프로필 사진 선택 및 사용자 이
 */
 
 import React, { useEffect, useState, useRef } from "react";
-import profilePencilImage from "../../assets/icon/signup/profilePencil.png";
-import defaultAvatarImage from "../../assets/icon/signup/defaultAvatar.png";
+import { Pencil } from "lucide-react";
+import defaultAvatar from "../../assets/icon/signup/DefaultAvatar.png";
 import SignupPageLayout from "./shared/SignupLayout";
 import type { StepProps } from "../../types/signup";
 
+
 const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   // 상태 선언
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null); // 미리보기용 DataURL
-  const [avatarFile, setAvatarFile] = useState<File | null>(null); // 최종 전송용 이미지 파일
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [name, setName] = useState<string>("");
   const [nameError, setNameError] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -22,41 +22,29 @@ const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setAvatarFile(file); // 이미지파일 저장
     const reader = new FileReader();
-    reader.onload = () => setAvatarUrl(reader.result as string); //미리보기 URL
+    reader.onload = () => setAvatarUrl(reader.result as string);
     reader.readAsDataURL(file);
   };
 
   // 이름 입력 핸들러
   const handleNameChange = (value: string) => {
     setName(value);
-    // 이름이 2자 이상이면 에러 해제
-    if (value.trim().length >= 2 && nameError) setNameError(false);
+    if (nameError && value.trim()) setNameError(false);
   };
 
   // 다음 단계
   const handleNext = (): void => {
     const trimmed = name.trim();
-    if (trimmed.length < 2) {
+    if (!trimmed) {
       setNameError(true);
       return;
     }
-    onUpdate?.({ name: trimmed, img: avatarFile || undefined }); // 부모에게 전달한 이름, 이미지 파일
-    onNext?.();
+    onUpdate?.({ name: trimmed, img: avatarUrl || undefined });
+    onNext();
   };
   // 버튼 비활성화 조건(이름x 또는 프로필사진 x)
-  const isButtonDisabled = name.trim().length < 2 || !avatarUrl || !avatarFile;
-  // 이름 2자 이상 입력 안하면 에러 메시지
-  useEffect(() => {
-    if (name.trim() === "") return;
-
-    const timer = setTimeout(() => {
-      setNameError(name.trim().length < 2);
-    }, 500); // 500ms 동안 입력 멈추면 검사
-
-    return () => clearTimeout(timer); // 입력 도중에는 이전 검사 취소
-  }, [name]);
+  const isButtonDisabled = !name.trim() || !avatarUrl;
 
   useEffect(() => {
     // 진입 시 스크롤 막기
@@ -77,7 +65,7 @@ const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
           onClick={handleNext}
           disabled={isButtonDisabled}
           className={`w-full rounded-xl py-[4%] text-center text-lg font-semibold ${
-            !isButtonDisabled
+            name.trim() && avatarUrl
               ? "bg-[var(--gray-80)] text-[var(--gray-0)]"
               : "bg-[var(--gray-10)] text-[var(--gray-50)]"
           }`}
@@ -107,7 +95,7 @@ const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
                 />
               ) : (
                 <img
-                  src={defaultAvatarImage}
+                  src={defaultAvatar}
                   alt="기본 프로필"
                   className="h-full w-full object-cover"
                 />
@@ -115,13 +103,9 @@ const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
             </div>
             <button
               onClick={handleAvatarClick}
-              className="absolute right-1 bottom-1 mt-2 h-[2.3rem] w-[2.3rem] rounded-full bg-[var(--gray-70)] pl-[10px] text-[var(--gray-0)]"
+              className="absolute right-1 bottom-1 mt-2 h-[2rem] w-[2rem] rounded-full bg-[var(--gray-70)] pl-[6px] text-[var(--gray-0)]"
             >
-              <img
-                src={profilePencilImage}
-                alt="avatar"
-                className="h-[65%] w-[65%] object-cover"
-              />
+              <Pencil size={20} />
             </button>
           </div>
           <input
@@ -142,7 +126,7 @@ const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
           <input
             ref={nameRef}
             type="text"
-            placeholder="이름을 입력해주세요(최소 2자)"
+            placeholder="이름을 입력해주세요"
             value={name}
             onChange={(e) => handleNameChange(e.target.value)}
             onFocus={() =>
@@ -157,7 +141,7 @@ const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
           />
           {nameError && (
             <p className="mt-1 text-xs text-[var(--noti)]">
-              이름은 최소 2자 이상 입력해주세요.
+              이름을 입력해주세요.
             </p>
           )}
         </div>

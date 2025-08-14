@@ -5,7 +5,6 @@
                 - 하단 버튼 고정이 아닌 자연스러운 위치 배치
 */
 
-import Toast from "@/components/Home/Toast";
 import type { ReactNode } from "react";
 
 interface Props {
@@ -25,8 +24,6 @@ const SignupPageLayout = ({ children, bottomButton }: Props) => {
       {bottomButton && (
         <div className="flex w-full px-[4%] py-[10px]">{bottomButton}</div>
       )}
-      {/* 하단: 오류 메시지 토스트*/}
-      <Toast />
     </div>
   );
 };

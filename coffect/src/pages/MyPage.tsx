@@ -5,9 +5,6 @@ description : 마이페이지 메인 화면. 프로필, 커피챗 기록, 저장
 
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { getProfile, deleteLogout } from "../api/profile";
-import type { profileType } from "../types/mypage/profile";
 import BottomNavbar from "../components/shareComponents/BottomNavbar";
 import LeaveModal from "../components/UserPage/MyPage/LeaveModal";
 import nextIcon from "../assets/icon/mypage/next.png";
@@ -15,7 +12,6 @@ import coffeeRecordIcon from "../assets/icon/mypage/coffeeRecord.png";
 import bookmarkIcon from "../assets/icon/mypage/bookmark.png";
 import alarmIcon from "../assets/icon/mypage/alarm.png";
 import profileImg from "../assets/icon/mypage/profile.png";
-import LoadingScreen from "../components/shareComponents/LoadingScreen";
 
 /*
 마이페이지 메인 화면을 렌더링하는 함수형 컴포넌트입니다.
@@ -24,22 +20,6 @@ const MyPage = () => {
   const navigate = useNavigate();
   // 회원탈퇴 모달 오픈 상태
   const [showModal, setShowModal] = useState<boolean>(false);
-
-  // getProfile API를 useQuery로 호출
-  const {
-    data: profileData,
-    isLoading,
-    error,
-  } = useQuery<profileType>({
-    queryKey: ["profile"],
-    queryFn: getProfile,
-    staleTime: 5 * 60 * 1000, // 5분
-    gcTime: 10 * 60 * 1000, // 10분
-  });
-
-  // 프로필 데이터
-  const profile = profileData?.success;
-  const userInfo = profile?.userInfo;
 
   function formatCount(num: number): string {
     if (num >= 1_000_000_000_000)
@@ -50,40 +30,6 @@ const MyPage = () => {
     return num.toString();
   }
 
-  const { mutate: logoutMutate } = useMutation({
-    mutationFn: deleteLogout,
-    onSuccess: () => {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      navigate("/signup");
-    },
-    onError: () => {
-      console.error("로그아웃 실패");
-    },
-  });
-
-  // 로딩 상태 처리
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
-
-  // 에러 상태 처리
-  if (error) {
-    return (
-      <div className="flex h-full w-full flex-col items-center justify-center bg-[var(--gray-5)] px-4">
-        <div className="mb-4 text-lg font-bold text-[var(--gray-90)]">
-          프로필을 불러오는데 실패했습니다
-        </div>
-        <button
-          onClick={() => window.location.reload()}
-          className="rounded-md bg-[var(--gray-70)] px-4 py-2 text-white"
-        >
-          다시 시도
-        </button>
-      </div>
-    );
-  }
-
   return (
     <>
       <div className="flex h-full w-full flex-col">
@@ -91,7 +37,7 @@ const MyPage = () => {
           {/* 상단 닉네임 + 알람 */}
           <div className="mx-4 mt-4 flex items-center justify-between">
             <div className="ml-2 text-2xl font-bold text-[var(--gray-90)]">
-              {userInfo?.id || "사용자 아이디"}
+              jeha_0714
             </div>
             <img
               src={alarmIcon}
@@ -105,30 +51,28 @@ const MyPage = () => {
             <div className="my-4 flex w-full flex-row items-center justify-around gap-2">
               {/* 프로필 이미지 */}
               <img
-                src={userInfo?.profileImage || profileImg}
-                className="aspect-square max-h-[100px] min-h-[80px] max-w-[100px] min-w-[80px] rounded-full border-[1.5px] border-[var(--gray-10)] object-cover"
+                src={profileImg}
+                className="max-h-[100px] min-h-[80px] max-w-[100px] min-w-[80px] rounded-full border-[1.5px] border-[var(--gray-10)]"
               />
               {/* 프로필 정보 */}
               <div className="flex flex-1 flex-col justify-center gap-2 px-2">
                 <div className="flex flex-col items-start justify-center gap-1">
                   <span className="text-xl font-bold text-[var(--gray-90)]">
-                    {userInfo?.name || "사용자 이름"}
+                    재하
                   </span>
                   <div className="flex flex-wrap gap-1">
                     <span className="text-xs text-[var(--gray-50)]">
-                      {userInfo?.dept || "학과"}
+                      디자인테크놀로지학과
                     </span>
                     <span className="text-xs text-[var(--gray-50)]">
-                      {userInfo?.studentId
-                        ? `${userInfo.studentId}학번`
-                        : "학번"}
+                      19학번
                     </span>
                   </div>
                 </div>
                 <div className="flex justify-between">
                   <div className="flex flex-col items-center">
                     <span className="text-lg font-semibold text-[var(--gray-70)]">
-                      {formatCount(profile?.threadCount || 0)}
+                      {formatCount(999456)}
                     </span>
                     <span className="text-sm text-[var(--gray-50)]">
                       포스트
@@ -136,7 +80,7 @@ const MyPage = () => {
                   </div>
                   <div className="flex flex-col items-center">
                     <span className="text-lg font-semibold text-[var(--gray-70)]">
-                      {formatCount(profile?.follower || 0)}
+                      {formatCount(999456)}
                     </span>
                     <span className="text-sm text-[var(--gray-50)]">
                       팔로워
@@ -144,7 +88,7 @@ const MyPage = () => {
                   </div>
                   <div className="flex flex-col items-center">
                     <span className="text-lg font-semibold text-[var(--gray-70)]">
-                      {formatCount(profile?.following || 0)}
+                      {formatCount(999456)}
                     </span>
                     <span className="text-sm text-[var(--gray-50)]">
                       팔로잉
@@ -210,10 +154,7 @@ const MyPage = () => {
             >
               <span>회원탈퇴</span>
             </button>
-            <button
-              className="flex items-center gap-2 rounded-lg px-4 py-3 text-left transition hover:bg-gray-200 hover:text-red-500"
-              onClick={() => logoutMutate()}
-            >
+            <button className="flex items-center gap-2 rounded-lg px-4 py-3 text-left transition hover:bg-gray-200 hover:text-red-500">
               <span>로그아웃</span>
             </button>
           </div>

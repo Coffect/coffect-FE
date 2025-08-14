@@ -5,9 +5,8 @@
 //Header UI
 */
 
-// import { SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
 import { useCommunityHeaderFilters } from "../../hooks/community/useCommunityHeaderFilters";
-import FilterIcon from "../../assets/icon/community/FilterIcon.png";
 
 // 공통 스타일 변수 정의
 const buttonStyle =
@@ -50,16 +49,9 @@ const Header = ({ openModal }: HeaderProps) => {
                 : "text-[var(--gray-60)]"
             }`}
           >
-            <img
-              src={FilterIcon}
-              alt="Filter Icon"
-              className="h-6 w-6"
-              style={{
-                filter:
-                  activeFilter === "filter"
-                    ? "brightness(0) invert(1)"
-                    : "none",
-              }}
+            <SlidersHorizontal
+              size={16}
+              className={`${activeFilter === "filter" ? "text-white" : "text-[var(--gray-60)]"}`}
             />
           </button>
           <button

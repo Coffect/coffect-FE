@@ -4,10 +4,6 @@
       "source": "/api/(.*)",
       "destination": "http://13.124.169.70:3000/$1"
     },
-    {
-      "source": "/mail/(.*)",
-      "destination": "http://211.207.2.189:3001/$1"
-    },
     { "source": "/(.*)", "destination": "/" }
   ]
 }
