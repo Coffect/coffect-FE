@@ -24,32 +24,38 @@ import FloatingWriteButton from "@/components/communityComponents/FloatingWriteB
 import UploadSuccessModal from "@/components/communityComponents/writeComponents/SuccessModal/UploadSuccessModal";
 
 // --- 훅 & 스토어 ---
-import { useGetCommunityPostsQuery } from "@/hooks/community/query/useGetCommunityPostsQuery"; // 통합 쿼리 훅 임포트
+import { useGetCommunityPostsQuery } from "@/hooks/community/query/useGetCommunityPostsQuery";
+import { useGetThreadLatestQuery } from "@/hooks/community/query/useGetThreadLatestQuery";
 import { useCommunityStore } from "@/store/community/communityStore";
 
 const Community = () => {
+  const [activeQuery, setActiveQuery] = useState<"latest" | "filtered">(
+    "latest",
+  );
   // --- Zustand 스토어에서 상태 및 액션 가져오기 ---
   const {
     sortOrder,
     filters,
     isFilterModalOpen,
-    resetFilters,
+    resetFilters: resetStoreFilters,
     closeFilterModal,
     setFilters,
   } = useCommunityStore();
 
-  // --- 디버깅을 위한 useEffect 추가 ---
-  useEffect(() => {
-    console.log("--- API Request Parameters ---", {
-      type: filters.type,
-      subject: filters.subject,
-      orderBy: sortOrder,
-      // 참고: cursor는 useInfiniteQuery 내부에서 pageParam으로 관리되며,
-      // 첫 페이지 요청 시에는 보통 null 또는 undefined입니다.
-    });
-  }, [filters, sortOrder]); // filters나 sortOrder가 변경될 때마다 실행
-
   // --- 데이터 페칭 ---
+  const latestQuery = useGetThreadLatestQuery({
+    enabled: activeQuery === "latest",
+  });
+
+  const filteredQuery = useGetCommunityPostsQuery(
+    {
+      orderBy: sortOrder,
+      type: filters.type || undefined,
+      threadSubject: filters.subject,
+    },
+    { enabled: activeQuery === "filtered" },
+  );
+
   const {
     data,
     isLoading,
@@ -57,14 +63,7 @@ const Community = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useGetCommunityPostsQuery(
-    {
-      orderBy: sortOrder, // 스토어의 sortOrder 사용
-      type: filters.type || undefined, // 필터 타입
-      threadSubject: filters.subject,
-    },
-    { enabled: true }, // 항상 활성화 (queryKey 변경 시 재실행)
-  );
+  } = activeQuery === "latest" ? latestQuery : filteredQuery;
 
   // --- 무한 스크롤 로직 ---
   const { ref, inView } = useInView({ threshold: 0 });
@@ -87,12 +86,18 @@ const Community = () => {
     }
   }, [location, navigate]);
 
-  // 1. onApply 핸들러 구현
   const handleApplyFilters = (newFilters: {
     type: string | null;
     subject: number[] | null;
   }) => {
     setFilters(newFilters);
+    setActiveQuery("filtered"); // 필터 적용 시 쿼리 변경
+    closeFilterModal();
+  };
+
+  const handleReset = () => {
+    setActiveQuery("latest"); // 초기화 시 쿼리 변경
+    resetStoreFilters();
     closeFilterModal();
   };
 
@@ -142,7 +147,7 @@ const Community = () => {
         isVisible={isFilterModalOpen}
         onClose={closeFilterModal}
         onApply={handleApplyFilters}
-        onReset={resetFilters}
+        onReset={handleReset}
         selectedType={filters.type}
         selectedSubject={filters.subject}
       />
