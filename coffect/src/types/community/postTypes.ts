@@ -60,6 +60,9 @@
  * @param {string[]} [images] - 게시글 이미지 URL 배열 (선택적, 예: ["image1.jpg", "image2.jpg"])
  * @param {number} likeCount - 게시글 좋아요 수 (예: 10)
  * @param {number} commentCount - 게시글 댓글 수 (예: 5)
+ * @param {boolean} isFollowing - 작성자 팔로우 여부 (예: true)
+ * @param {boolean} isScraped - 게시글 스크랩 여부 (예: false)
+ * @param {boolean} isLiked - 게시글 좋아요 여부 (예: true)
  *
  */
 
@@ -76,11 +79,15 @@ export interface ThreadSummary {
     studentId: number;
     profileImage: string;
     name: string;
+    id: string;
   };
   subjects?: string[];
   images?: string[];
   likeCount: number;
   commentCount: number;
+  isFollowing: boolean;
+  isScraped: boolean;
+  isLiked: boolean;
 }
 
 // --- API별 요청/응답 타입 ---
@@ -152,10 +159,14 @@ export interface GetThreadLookUpResponse {
       studentId: number; // 작성자 학번 (예: 20230001)
       profileImage: string; // 작성자 프로필 이미지 URL
       name: string; // 작성자 이름 (예: "홍길동")
+      id: string;
     };
     subjects: string[];
     images: string[];
     commentCount: number; // 게시글 댓글 수 (예: 5)
     likeCount: number; // 게시글 좋아요 수 (예: 10)
+    isFollowing: boolean; // 작성자 팔로우 여부 (예: true)
+    isScraped: boolean; // 게시글 스크랩 여부 (예: false)
+    isLiked: boolean; // 게시글 좋아요 여부 (예: true)
   };
 }

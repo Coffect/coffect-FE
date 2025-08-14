@@ -5,8 +5,17 @@
 
 import axios from "axios";
 
+const getMailBaseURL = () => {
+  // 배포 환경에서는 상대 경로(`/api`)로 고정 → vercel.json의 rewrites 사용
+  if (import.meta.env.PROD) {
+    return "/mail";
+  }
+  // 개발 환경에서는 환경변수 우선, 없으면 프록시 경유(`/api`)
+  return import.meta.env.VITE_MAIL_API_URL || "/mail";
+};
+
 export const axiosMail = axios.create({
-  baseURL: import.meta.env.VITE_MAIL_API_URL,
+  baseURL: getMailBaseURL(),
   headers: {
     "Content-Type": "application/json",
   },

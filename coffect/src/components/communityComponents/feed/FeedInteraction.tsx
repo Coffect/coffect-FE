@@ -2,9 +2,12 @@
 author : 강신욱
 description : 피드의 하단(좋아요 수, 댓글 수, 인용, 공유 수, 저장)버튼에 대한 컴포넌트입니다. 
 */
-import { useState } from "react";
+
 import { useNavigate } from "react-router-dom";
 import { Heart, MessageCircle, Bookmark } from "lucide-react";
+// import { useLikePostMutation } from "@/hooks/community/mutation/useLikePostMutation";
+import { useScrapPostMutation } from "@/hooks/community/mutation/useScrapPostMutation";
+import { useLikePostMutation } from "@/hooks/community/mutation/useLikePostMutation";
 
 // 공통 스타일 변수 정의
 const buttonStyle =
@@ -16,6 +19,8 @@ interface FeedInteractionProps {
   comments: number;
   isDetailView?: boolean;
   showBookmarkButton?: boolean;
+  isLiked: boolean;
+  isScraped: boolean;
 }
 
 const FeedInteraction = ({
@@ -24,19 +29,21 @@ const FeedInteraction = ({
   comments,
   isDetailView = false,
   showBookmarkButton,
+  isLiked,
+  isScraped,
 }: FeedInteractionProps) => {
-  const [isLiked, setIsLiked] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
   const navigate = useNavigate();
+  const { mutate: toggleLike } = useLikePostMutation();
+  const { mutate: toggleScrap } = useScrapPostMutation();
 
   const handleLikeClick = (event: React.MouseEvent) => {
     event.stopPropagation();
-    setIsLiked(!isLiked);
+    toggleLike(threadId);
   };
 
   const handleBookmarkClick = (event: React.MouseEvent) => {
     event.stopPropagation();
-    setIsBookmarked(!isBookmarked);
+    toggleScrap(threadId);
   };
 
   const handleCommentClick = (event: React.MouseEvent) => {
@@ -67,8 +74,8 @@ const FeedInteraction = ({
           <button className={buttonStyle} onClick={handleBookmarkClick}>
             <Bookmark
               size={20}
-              fill={isBookmarked ? "black" : "none"}
-              color={isBookmarked ? "black" : "currentColor"}
+              fill={isScraped ? "black" : "none"}
+              color={isScraped ? "black" : "currentColor"}
             />
           </button>
         )}

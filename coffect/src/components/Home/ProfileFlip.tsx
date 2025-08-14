@@ -4,11 +4,11 @@
                 - 카드 클릭 시 내용 자세히 보기 페이지(CardDetail)로 이동
                 - 왼쪽 버튼: 현재 카드 제거
                 - 가운데 버튼: 커피챗 제안 모달 열기
-                - 오른쪽 버튼: 팔로워 요청(아직 작동x)
+                - 오른쪽 버튼: 팔로워 요청
                 - 제안 플로우는 useCoffeeSuggest 훅 사용
 */
 
-import React, { useEffect, useRef, useState } from "react"; // 제안 완료 후 스킵 처리를 위해 useEffect, useRef 추가
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CoffeeSuggestModal from "../shareComponents/CoffeeSuggestModal";
 import CoffeeSuggestCompleteModal from "../shareComponents/CoffeeSuggestCompleteModal";
@@ -27,10 +27,8 @@ import {
   getUserStringId,
   postFollowRequest,
 } from "@/api/home";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToastStore } from "@/hooks/useToastStore";
-
-// 제안 플로우 전역 훅
 import { useCoffeeSuggest } from "@/hooks/useCoffeeSuggest";
 
 // 태그별 전역 색상 클래스 반환
@@ -71,9 +69,45 @@ const getTagColor = (tag: string) => {
   }
 };
 
+// 다음 카드까지 보강해서 가져오는 공통 함수
+const fetchEnrichedCard = async (): Promise<UserProfile | null> => {
+  try {
+    const card = await getCurrentRecommendedCard();
+
+    const stringId = await getUserStringId(card.userId);
+    const [isFollowRes, deptRes, qnaRes] = await Promise.allSettled([
+      getIsFollow(card.userId),
+      getUserDeptById(stringId),
+      getUserQnAById(stringId),
+    ]);
+
+    const isFollow =
+      isFollowRes.status === "fulfilled" ? !!isFollowRes.value : false;
+    const major =
+      deptRes.status === "fulfilled" ? (deptRes.value as string) : "";
+    const answers = qnaRes.status === "fulfilled" ? (qnaRes.value as []) : [];
+
+    return {
+      id: card.userId,
+      name: card.name,
+      major,
+      year: card.grade,
+      tags: card.categoryMatch,
+      intro: card.introduce,
+      image: card.profileImage,
+      answers,
+      isFollow,
+    };
+  } catch {
+    return null;
+  }
+};
+
 const ProfileFlip: React.FC = () => {
   // 토스트 표시, 숨김
   const { showToast, hideToast } = useToastStore();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // 제안 플로우 훅 사용
   const {
@@ -86,6 +120,18 @@ const ProfileFlip: React.FC = () => {
     closeComplete,
   } = useCoffeeSuggest();
 
+  // 현재 스킵된 카드 수
+  const [skipped, setSkipped] = useState(() => {
+    const stored = localStorage.getItem("skippedCardCount");
+    return stored ? parseInt(stored) : 0;
+  });
+
+  // 스킵 애니메이션 동작 여부
+  const [skipAnimation, setSkipAnimation] = useState(false);
+
+  // 팔로우 로컬 상태
+  const [isFollowing, setIsFollowing] = useState(false);
+
   // 서버에서 프로필 카드 데이터 불러오기
   const { data: currentCard } = useQuery<UserProfile | null>({
     queryKey: ["recommendedCard"],
@@ -95,130 +141,105 @@ const ProfileFlip: React.FC = () => {
         await initOrSkipCard();
         localStorage.setItem("cardViewVisited", "true");
       }
+      return await fetchEnrichedCard();
+    },
+    staleTime: 0,
+    refetchOnWindowFocus: false,
+    retry: 0,
+  });
 
-      try {
-        const card = await getCurrentRecommendedCard();
-        const isFollow = await getIsFollow(card.userId);
-        const stringId = await getUserStringId(card.userId);
+  useEffect(() => {
+    setIsFollowing(!!currentCard?.isFollow);
+  }, [currentCard?.isFollow]);
 
-        // 각 서브요청이 실패하더라도 전체를 null로 만들지 않기
-        const [deptRes, qnaRes] = await Promise.allSettled([
-          getUserDeptById(stringId),
-          getUserQnAById(stringId),
-        ]);
-
-        const major = deptRes.status === "fulfilled" ? deptRes.value : "";
-        const answers = qnaRes.status === "fulfilled" ? qnaRes.value : [];
-
-        return {
-          id: card.userId,
-          name: card.name,
-          major: major,
-          year: card.grade,
-          tags: card.categoryMatch,
-          intro: card.introduce,
-          image: card.profileImage,
-          answers: answers,
-          isFollow: isFollow,
-        };
-      } catch {
-        return null;
-      }
+  // initOrSkipCard 호출 후 다음 카드를 즉시 캐시에 반영하는 뮤테이션
+  const skipMutation = useMutation({
+    mutationFn: async () => {
+      await initOrSkipCard();
+      const next = await fetchEnrichedCard();
+      return next;
+    },
+    onMutate: async () => {
+      setSkipAnimation(true);
+      await queryClient.cancelQueries({ queryKey: ["recommendedCard"] });
+    },
+    onSuccess: (next) => {
+      queryClient.setQueryData(["recommendedCard"], next);
+      setSkipped((prev) => {
+        const nextCount = prev + 1;
+        localStorage.setItem("skippedCardCount", String(nextCount));
+        return nextCount;
+      });
+    },
+    onSettled: () => {
+      setTimeout(() => setSkipAnimation(false), 300);
     },
   });
 
-  const navigate = useNavigate();
-
-  // 현재 스킵된 카드 수 (로컬스토리지에서 불러오기->다른 라우팅 위치 이동 이후에도 같은 페이징 유지를 위해)
-  const [skipped, setSkipped] = useState(() => {
-    const stored = localStorage.getItem("skippedCardCount");
-    return stored ? parseInt(stored) : 0;
-  });
-
-  // 스킵 애니메이션 동작 여부
-  const [skipAnimation, setSkipAnimation] = useState(false);
-
-  // 제안 완료 모달이 열렸을 때 카드 스킵(기존 onSuccess 동작을 훅 사용 구조로 유지)
+  // 제안 완료 모달이 열렸을 때 카드 스킵
   const didSkipAfterSuggestRef = useRef(false);
   useEffect(() => {
     if (isCompleteOpen && !didSkipAfterSuggestRef.current) {
       didSkipAfterSuggestRef.current = true;
-
-      setSkipAnimation(true);
-      setTimeout(async () => {
-        try {
-          await initOrSkipCard();
-        } finally {
-          setSkipped((prev) => {
-            const next = prev + 1;
-            localStorage.setItem("skippedCardCount", next.toString());
-            return next;
-          });
-          setSkipAnimation(false);
-        }
-      }, 300);
+      skipMutation.mutate();
     }
     if (!isCompleteOpen) {
       didSkipAfterSuggestRef.current = false;
     }
-  }, [isCompleteOpen]);
+  }, [isCompleteOpen, skipMutation]);
 
   // 카드 제거(왼쪽 버튼)
-  const handleSkip = async () => {
-    setSkipAnimation(true);
-    setTimeout(async () => {
-      try {
-        await initOrSkipCard();
-      } finally {
-        setSkipped((prev) => {
-          const next = prev + 1;
-          localStorage.setItem("skippedCardCount", next.toString());
-          return next;
-        });
-        setSkipAnimation(false);
-      }
-    }, 300);
+  const handleSkip = (): void => {
+    if (!skipMutation.isPending) {
+      skipMutation.mutate();
+    }
   };
 
-  // 커피쳇 제안 모달 열기(가운데 버튼) - 훅 사용
+  // 커피쳇 제안 모달 열기(가운데 버튼)
   const handleSuggestClick = (id: number) => {
     openSuggest(id);
   };
 
-  // 제안 메시지 작성 완료 - 훅 사용
+  // 제안 메시지 작성 완료
   const handleSuggestSubmit = (message: string) => {
     submitSuggest(message);
   };
 
-  // 제안 작성 취소 - 훅 사용
+  // 제안 작성 취소
   const handleSuggestCancel = () => {
     closeSuggest();
   };
 
-  // 제안 완료 모달 닫기 - 훅 사용
+  // 제안 완료 모달 닫기
   const handleCompleteClose = () => {
     closeComplete();
   };
 
   // 오른쪽 버튼(팔로우) 클릭 시 상태 토글 및 토스트 메시지
   const handleFollowToggle = async (e: React.MouseEvent) => {
-    e.stopPropagation(); // 카드 클릭 방지
+    e.stopPropagation();
     if (!currentCard) return;
 
+    // 낙관적 토글
+    setIsFollowing((prev) => !prev);
+    queryClient.setQueryData<UserProfile | null>(["recommendedCard"], (old) =>
+      old ? { ...old, isFollow: !old.isFollow } : old,
+    );
+
     try {
-      // 서버에 팔로우 요청(이미 팔로우면 취소요청)
       await postFollowRequest(currentCard.id);
-      // 요청 성공 시 상태 토글(서버 API 요청 자주 안하려고 FOLLOW GET 요청은 초기 화면 불러올 때만 사용됨)
-      currentCard.isFollow = !currentCard.isFollow;
-      // 팔로우 추가일 때만 토스트 표시
-      if (currentCard.isFollow) {
+      if (!isFollowing) {
         showToast(`${currentCard.name}님을 팔로우했어요!`, "success");
       } else {
-        // 팔로우 해제 시 즉시 토스트 숨김
         hideToast();
       }
-      return currentCard.isFollow;
     } catch {
+      // 롤백
+      setIsFollowing((prev) => !prev);
+      queryClient.setQueryData<UserProfile | null>(
+        ["recommendedCard"],
+        (old) => (old ? { ...old, isFollow: !old.isFollow } : old),
+      );
       showToast("팔로우에 실패했습니다.", "error");
     }
   };
@@ -269,7 +290,7 @@ const ProfileFlip: React.FC = () => {
       {/* 프로필 카드 */}
       <div
         className={`mx-auto h-full w-full transform overflow-hidden rounded-[20px] bg-white p-[3%] shadow-[0_0_20px_4px_rgba(189,179,170,0.2)] transition-all duration-500 ease-in-out ${
-          skipAnimation
+          skipMutation.isPending || skipAnimation
             ? "origin-top-right translate-x-[60%] -translate-y-[60%] -rotate-[75deg] opacity-0"
             : "origin-center translate-x-0 translate-y-0 rotate-0 opacity-100"
         }`}
@@ -319,7 +340,8 @@ const ProfileFlip: React.FC = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              onClick={() => handleSkip()}
+              onClick={handleSkip}
+              disabled={skipMutation.isPending}
               className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-white text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
             >
               <img
@@ -330,6 +352,7 @@ const ProfileFlip: React.FC = () => {
             </button>
             <button
               onClick={() => currentCard && handleSuggestClick(currentCard.id)}
+              disabled={skipMutation.isPending}
               className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-orange-500 text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
             >
               <img
@@ -340,12 +363,11 @@ const ProfileFlip: React.FC = () => {
             </button>
             <button
               onClick={handleFollowToggle}
+              disabled={skipMutation.isPending}
               className="flex aspect-square w-[60px] items-center justify-center rounded-full bg-white text-lg shadow-[0_0_12px_rgba(88,88,88,0.19)]"
             >
               <img
-                src={
-                  currentCard.isFollow ? CardRightDownImage : CardRightUpImage
-                }
+                src={isFollowing ? CardRightDownImage : CardRightUpImage}
                 alt="follow"
                 className="h-[40%] w-[40%] object-contain"
               />

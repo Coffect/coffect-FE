@@ -6,7 +6,6 @@
  */
 import React from "react";
 
-// user prop의 타입을 더 유연하게 정의합니다.
 interface UserInfo {
   name: string;
   profileImage: string;
@@ -18,7 +17,7 @@ interface PostAuthorInfoProps {
   user: UserInfo;
   timeAgo: string;
   children?: React.ReactNode;
-  onAuthorClick?: () => void;
+  onAuthorClick?: (e: React.MouseEvent) => void;
 }
 
 const PostAuthorInfo: React.FC<PostAuthorInfoProps> = ({
