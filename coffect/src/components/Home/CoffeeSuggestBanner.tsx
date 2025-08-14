@@ -20,6 +20,7 @@ import { onMessageListener, type FcmPayload } from "@/utils/fcm";
 // 프로필 라우팅용: 숫자 기반 유저 ID → 문자열 ID 변환 API
 import { acceptCoffeeChat, getUserStringId } from "@/api/home";
 import { createChatRoom } from "@/api/chat";
+import CoffeeSuggestResponseModal from "./CoffeeSuggestResponseModal";
 
 /* --------------------------------- 타입 --------------------------------- */
 
