@@ -16,7 +16,7 @@ import {
 import { getIsFollow, postFollowRequest } from "@/api/follow";
 import type {
   postChatStartType,
-  postIsCoffeeChatType,
+  getIsCoffeeChatType,
   profileType,
   getProfileThreadType,
 } from "@/types/mypage/profile";
@@ -113,7 +113,7 @@ function Profile() {
   });
 
   const { data: isCoffeeChatData, isLoading: isCoffeeChatLoading } =
-    useQuery<postIsCoffeeChatType>({
+    useQuery<getIsCoffeeChatType>({
       queryKey: ["isCoffeeChat", id],
       queryFn: () => postIsCoffeeChat(userInfo?.userId || 0),
       enabled: !isMyProfile && userInfo?.userId !== undefined,
@@ -258,13 +258,13 @@ function Profile() {
             </div>
             <div className="text-center">
               <div className="text-lg font-semibold text-[var(--gray-70)]">
-                {formatCount(profile?.follower || 0)}
+                {formatCount(profile?.following || 0)}
               </div>
               <div className="text-sm text-[var(--gray-50)]">팔로워</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-semibold text-[var(--gray-70)]">
-                {formatCount(profile?.following || 0)}
+                {formatCount(profile?.follower || 0)}
               </div>
               <div className="text-sm text-[var(--gray-50)]">팔로잉</div>
             </div>

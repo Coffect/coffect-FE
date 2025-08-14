@@ -1,13 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import FeedItem from "../../shareComponents/FeedItem";
 import { useQuery } from "@tanstack/react-query";
-import { getBookMark } from "@/api/profile";
+import { getBookMark, getProfile } from "@/api/profile";
 
 import backIcon from "../../../assets/icon/mypage/back.png";
 import emptyFeedIcon from "../../../assets/icon/mypage/emptyFeed.png";
 
 const BookMark = () => {
   const navigate = useNavigate();
+
+  const { data: profileData } = useQuery({
+    queryKey: ["profile"],
+    queryFn: () => getProfile(),
+  });
 
   const { data: bookMarkData } = useQuery({
     queryKey: ["bookMark"],
@@ -44,7 +49,11 @@ const BookMark = () => {
               <FeedItem
                 key={post.threadId}
                 post={post}
-                showFollowButton={true}
+                showFollowButton={
+                  profileData?.success?.userInfo.id == post.user.id
+                    ? false
+                    : true
+                }
                 showBookmarkButton={true}
               />
             ))}
