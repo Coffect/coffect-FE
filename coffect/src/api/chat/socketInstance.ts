@@ -121,7 +121,6 @@ class SocketManager {
   // 메시지 수신 리스너
   onReceiveMessage(callback: (message: SocketMessage) => void) {
     if (!this.socket) return;
-
     this.socket.on(SOCKET_EVENTS.RECEIVE_MESSAGE, callback);
   }
 

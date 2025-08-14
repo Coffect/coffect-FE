@@ -373,6 +373,8 @@ const ChatRoom = () => {
         messages={messages}
         username={currentChatRoom?.userInfo?.name || "상대방"}
         opponentProfileImage={currentChatRoom?.userInfo?.profileImage}
+        showInterests={showInterests}
+        onToggleInterests={handleToggleInterests}
       />
 
       {/* 입력창 */}
