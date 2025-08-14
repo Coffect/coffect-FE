@@ -265,7 +265,7 @@ const ProfileFlip: React.FC = () => {
   }
 
   return (
-    <div className="mt-[3%] px-[6%]">
+    <div className="mt-[7%] px-[4%]">
       {/* 프로필 카드 */}
       <div
         className={`mx-auto h-full w-full transform overflow-hidden rounded-[20px] bg-white p-[3%] shadow-[0_0_20px_4px_rgba(189,179,170,0.2)] transition-all duration-500 ease-in-out ${
@@ -285,11 +285,11 @@ const ProfileFlip: React.FC = () => {
           <div className="absolute top-1.5 left-3 rounded-[60px] bg-[#2D2D2D]/90 px-3 py-1 text-[14px] font-semibold text-[var(--gray-10)]">
             {skipped + 1}/3
           </div>
-          <div className="absolute bottom-0 left-0 w-full rounded-b-[20px] bg-gradient-to-t from-black/70 to-transparent px-[4%] py-[5%]">
+          <div className="absolute -bottom-2 left-0 w-full rounded-b-[20px] bg-gradient-to-t from-black/90 to-transparent px-[5%] py-[5%]">
             <div className="text-[22px] font-bold text-white">
               {currentCard.name}
               <span className="ml-[3%] text-sm font-medium text-[var(--gray-10)]">
-                {currentCard.major} {String(currentCard.year).slice(2)}학번
+                {currentCard.major} {String(currentCard.year).slice(-2)}학번
               </span>
             </div>
           </div>
@@ -308,7 +308,7 @@ const ProfileFlip: React.FC = () => {
           ))}
         </div>
         <div className="flex flex-wrap px-[2%]">
-          <p className="mt-[0.2rem] line-clamp-3 text-base leading-normal font-medium text-[var(--gray-70)]">
+          <p className="mt-[0.2rem] ml-[2%] line-clamp-3 text-base leading-normal font-medium text-[var(--gray-70)]">
             {currentCard.intro}
           </p>
         </div>

@@ -11,12 +11,20 @@ const buttonStyle =
   "text-sm text-gray-600 hover:text-blue-500 flex items-center gap-1";
 
 interface FeedInteractionProps {
-  postId: number;
+  threadId: string;
   likes: number;
   comments: number;
+  isDetailView?: boolean;
+  showBookmarkButton?: boolean;
 }
 
-const FeedInteraction = ({ postId, likes, comments }: FeedInteractionProps) => {
+const FeedInteraction = ({
+  threadId,
+  likes,
+  comments,
+  isDetailView = false,
+  showBookmarkButton,
+}: FeedInteractionProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const navigate = useNavigate();
@@ -33,7 +41,9 @@ const FeedInteraction = ({ postId, likes, comments }: FeedInteractionProps) => {
 
   const handleCommentClick = (event: React.MouseEvent) => {
     event.stopPropagation();
-    navigate(`/community/post/${postId}`);
+    if (!isDetailView) {
+      navigate(`/community/post/${threadId}`);
+    }
   };
 
   return (
@@ -53,13 +63,15 @@ const FeedInteraction = ({ postId, likes, comments }: FeedInteractionProps) => {
             <span>{comments}</span>
           </button>
         </div>
-        <button className={buttonStyle} onClick={handleBookmarkClick}>
-          <Bookmark
-            size={20}
-            fill={isBookmarked ? "black" : "none"}
-            color={isBookmarked ? "black" : "currentColor"}
-          />
-        </button>
+        {showBookmarkButton && (
+          <button className={buttonStyle} onClick={handleBookmarkClick}>
+            <Bookmark
+              size={20}
+              fill={isBookmarked ? "black" : "none"}
+              color={isBookmarked ? "black" : "currentColor"}
+            />
+          </button>
+        )}
       </div>
     </>
   );

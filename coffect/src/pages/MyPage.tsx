@@ -5,8 +5,8 @@ description : 마이페이지 메인 화면. 프로필, 커피챗 기록, 저장
 
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getProfile } from "../api/profile";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getProfile, deleteLogout } from "../api/profile";
 import type { profileType } from "../types/mypage/profile";
 import BottomNavbar from "../components/shareComponents/BottomNavbar";
 import LeaveModal from "../components/UserPage/MyPage/LeaveModal";
@@ -49,15 +49,17 @@ const MyPage = () => {
     return num.toString();
   }
 
-  // 로그아웃 함수
-  const handleLogout = () => {
-    // localStorage에서 토큰 삭제
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-
-    // 로그인 페이지로 이동
-    navigate("/signup");
-  };
+  const { mutate: logoutMutate } = useMutation({
+    mutationFn: deleteLogout,
+    onSuccess: () => {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      navigate("/signup");
+    },
+    onError: () => {
+      console.error("로그아웃 실패");
+    },
+  });
 
   // 로딩 상태 처리
   if (isLoading) {
@@ -215,7 +217,7 @@ const MyPage = () => {
             </button>
             <button
               className="flex items-center gap-2 rounded-lg px-4 py-3 text-left transition hover:bg-gray-200 hover:text-red-500"
-              onClick={handleLogout}
+              onClick={() => logoutMutate()}
             >
               <span>로그아웃</span>
             </button>
