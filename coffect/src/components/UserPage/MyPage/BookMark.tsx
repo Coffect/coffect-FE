@@ -35,7 +35,7 @@ const BookMark = () => {
         </div>
       </div>
       {/* 저장된 콘텐츠 출력 */}
-      <div className="flex flex-1 flex-col overflow-y-auto py-5">
+      <div className="flex flex-1 flex-col overflow-y-auto">
         {bookMarkPosts.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center px-4">
             <span className="text-md mb-3 text-[var(--gray-50)]">
@@ -50,7 +50,7 @@ const BookMark = () => {
                 key={post.threadId}
                 post={post}
                 showFollowButton={
-                  profileData?.success?.userInfo.id == post.user.id
+                  profileData?.success?.userInfo.id === post.user.id
                     ? false
                     : true
                 }

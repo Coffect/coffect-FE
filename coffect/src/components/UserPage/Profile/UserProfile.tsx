@@ -8,7 +8,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getProfile,
   getProfileSearch,
-  postIsCoffeeChat,
+  getIsCoffeeChat,
   postChatStart,
   getProfileThread,
   getProfileThreadSearch,
@@ -115,7 +115,7 @@ function Profile() {
   const { data: isCoffeeChatData, isLoading: isCoffeeChatLoading } =
     useQuery<getIsCoffeeChatType>({
       queryKey: ["isCoffeeChat", id],
-      queryFn: () => postIsCoffeeChat(userInfo?.userId || 0),
+      queryFn: () => getIsCoffeeChat(userInfo?.userId || 0),
       enabled: !isMyProfile && userInfo?.userId !== undefined,
       staleTime: 5 * 60 * 1000,
       gcTime: 10 * 60 * 1000,

@@ -145,7 +145,7 @@ export const deleteLogout = async (): Promise<logoutType> => {
   }
 };
 
-export const postIsCoffeeChat = async (
+export const getIsCoffeeChat = async (
   userId: number,
 ): Promise<getIsCoffeeChatType> => {
   try {
