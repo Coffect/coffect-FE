@@ -19,6 +19,7 @@ import NoSuggestImage from "../../assets/icon/home/NoSuggest.png";
 import { onMessageListener, type FcmPayload } from "@/utils/fcm";
 // 프로필 라우팅용: 숫자 기반 유저 ID → 문자열 ID 변환 API
 import { getUserStringId } from "@/api/home";
+import { createChatRoom } from "@/api/chat";
 
 /* --------------------------------- 타입 --------------------------------- */
 
@@ -166,10 +167,71 @@ const CoffeeSuggestBanner: React.FC = () => {
     setPendingDeleteId(null);
   };
 
+  // 안전 접근 헬퍼 (any 금지)
+  const get = (o: unknown, k: string): unknown =>
+    o && typeof o === "object" && k in (o as Record<string, unknown>)
+      ? (o as Record<string, unknown>)[k]
+      : undefined;
+
+  // 응답/실패 포맷 모두에서 채팅방 ID 회수
+  const pickIdFromResponse = (res: unknown): string | number | undefined => {
+    // 성공 응답: { success: { chatRoomId } }
+    const idFromSuccess = get(get(res, "success"), "chatRoomId");
+    if (
+      typeof idFromSuccess === "string" ||
+      typeof idFromSuccess === "number"
+    ) {
+      return idFromSuccess;
+    }
+    // 실패(409) 응답: { error: { errorCode: "EC409", data } }
+    const err = get(res, "error");
+    const code = get(err, "errorCode");
+    const data = get(err, "data");
+    if (
+      code === "EC409" &&
+      (typeof data === "string" || typeof data === "number")
+    ) {
+      return data;
+    }
+    return undefined;
+  };
+
+  // AxiosError에서 409 ID 회수
+  const pickIdFromAxiosError = (err: unknown): string | number | undefined => {
+    const status = get(get(err, "response"), "status");
+    if (status !== 409) return undefined;
+    const data = get(get(get(get(err, "response"), "data"), "error"), "data");
+    return typeof data === "string" || typeof data === "number"
+      ? data
+      : undefined;
+  };
+
   /** 대화 시작: 채팅 화면으로 이동 후 모달 닫기 */
-  const handleChat = () => {
-    navigate("/chat");
-    handleClose();
+  const handleChat = async () => {
+    if (!checkedMessage) return;
+
+    try {
+      const res = await createChatRoom(checkedMessage.userPageId as number);
+
+      // 200(성공) 또는 서버가 FAIL로 돌려줘도 여기서 먼저 시도
+      const id = pickIdFromResponse(res);
+      if (id !== undefined) {
+        navigate(`/chat/${id}`);
+      } else {
+        console.error("채팅방 ID를 가져올 수 없습니다.", res);
+        navigate("/chat");
+      }
+    } catch (err) {
+      // Axios가 409를 throw한 경우 여기서 회수
+      const id409 = pickIdFromAxiosError(err);
+      if (id409 !== undefined) {
+        navigate(`/chat/${id409}`);
+      } else {
+        navigate("/chat");
+      }
+    } finally {
+      handleClose();
+    }
   };
 
   /* ------------------------------ 사이드이펙트 ------------------------------ */
