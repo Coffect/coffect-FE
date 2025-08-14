@@ -20,9 +20,11 @@ import CommentInput from "@/components/communityComponents/comment/CommentInput"
 import { useGetComments } from "@/hooks/community/query/useGetComments";
 import PostDetailComments from "@/components/postDetailComponents/PostDetailComments";
 import LoadingScreen from "@/components/shareComponents/LoadingScreen";
+import { useQuery } from "@tanstack/react-query";
+import { getProfile } from "@/api/profile";
+import type { profileType } from "@/types/mypage/profile";
 
 const PostDetail = () => {
-  // 1. 게시글 상세 정보 로딩: usePostDetail 훅을 호출합니다.
   const {
     post,
     postId: postId,
@@ -31,17 +33,17 @@ const PostDetail = () => {
     error: postError,
   } = usePostDetail();
 
-  console.log("댓글 조회를 위해 전달하는 postId:", postId);
-
   const {
     comments,
-    postId: commentPostId,
     isLoading: isCommentsLoading,
     error: commentsError,
   } = useGetComments();
-  console.log("댓글 조회를 위해 전달하는 postId:", commentPostId);
 
-  // 데이터 로딩 중일 때 표시할 UI (게시글 또는 댓글 중 하나라도 로딩 중일 때)
+  const { data: myProfile } = useQuery<profileType>({
+    queryKey: ["myProfile"],
+    queryFn: getProfile,
+  });
+
   if (isPostLoading || isCommentsLoading) {
     return <LoadingScreen />;
   }
@@ -93,7 +95,10 @@ const PostDetail = () => {
       </main>
 
       <div className="fixed bottom-0 left-1/2 w-full max-w-[430px] -translate-x-1/2 border-t border-gray-200 bg-white p-3 pb-4">
-        <CommentInput postId={postId} />
+        <CommentInput
+          postId={postId}
+          currentUserProfileImage={myProfile?.success?.userInfo.profileImage}
+        />
       </div>
     </div>
   );
