@@ -6,14 +6,15 @@ description : 내 공강 시간표를 보여주고, 시간대 선택/수정이 �
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import backIcon from "../../../assets/icon/mypage/back.png";
 import { getTimeLine, patchTimeLine } from "@/api/profile";
+import LoadingScreen from "@/components/shareComponents/LoadingScreen";
+import backIcon from "@/assets/icon/mypage/back.png";
 
 const TimeTable = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { data: timeLineData } = useQuery({
+  const { data: timeLineData, isLoading } = useQuery({
     queryKey: ["timeLine"],
     queryFn: getTimeLine,
   });
@@ -141,6 +142,10 @@ const TimeTable = () => {
     const timelineString = timelineArray.join("");
     patchTimeline(timelineString);
   };
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="flex h-full w-full flex-col bg-white px-4">

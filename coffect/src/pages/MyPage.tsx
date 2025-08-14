@@ -15,6 +15,7 @@ import coffeeRecordIcon from "../assets/icon/mypage/coffeeRecord.png";
 import bookmarkIcon from "../assets/icon/mypage/bookmark.png";
 import alarmIcon from "../assets/icon/mypage/alarm.png";
 import profileImg from "../assets/icon/mypage/profile.png";
+import LoadingScreen from "../components/shareComponents/LoadingScreen";
 
 /*
 마이페이지 메인 화면을 렌더링하는 함수형 컴포넌트입니다.
@@ -63,13 +64,7 @@ const MyPage = () => {
 
   // 로딩 상태 처리
   if (isLoading) {
-    return (
-      <div className="flex h-full w-full flex-col items-center justify-center bg-[var(--gray-5)]">
-        <div className="text-lg text-[var(--gray-50)]">
-          프로필을 불러오는 중...
-        </div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   // 에러 상태 처리

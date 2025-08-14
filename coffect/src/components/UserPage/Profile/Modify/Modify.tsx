@@ -12,6 +12,7 @@ import backIcon from "@/assets/icon/mypage/back.png";
 import defaultImg from "@/assets/icon/mypage/profile.png";
 import editIcon from "@/assets/icon/mypage/edit.png";
 import ModifyModal from "./ModifyModal";
+import LoadingScreen from "@/components/shareComponents/LoadingScreen";
 
 const Modify = () => {
   const queryClient = useQueryClient();
@@ -180,16 +181,6 @@ const Modify = () => {
     const originalName = userInfo?.name || "";
     const originalIntroduce = userInfo?.introduce || "";
 
-    // formData.append("id", userId.trim() === originalId ? "" : userId.trim());
-    // formData.append(
-    //   "name",
-    //   userName.trim() === originalName ? "" : userName.trim(),
-    // );
-    // formData.append(
-    //   "introduce",
-    //   userIntroduce.trim() === originalIntroduce ? "" : userIntroduce.trim(),
-    // );
-
     if (userId.trim() !== originalId) {
       formData.append("id", userId.trim());
     }
@@ -211,13 +202,7 @@ const Modify = () => {
 
   // 로딩 상태 처리
   if (isLoading) {
-    return (
-      <div className="flex h-full w-full flex-col items-center justify-center bg-[var(--gray-5)]">
-        <div className="text-lg text-[var(--gray-50)]">
-          프로필을 불러오는 중...
-        </div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   // 에러 상태 처리
