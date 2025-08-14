@@ -221,7 +221,7 @@ function Profile() {
   }
 
   return (
-    <div className="flex h-full w-full flex-col overflow-y-auto bg-white">
+    <div className="flex h-full w-full flex-col bg-white">
       {/* 상단 헤더 */}
       <div className="flex items-center justify-between px-4 py-3">
         <button
@@ -239,198 +239,200 @@ function Profile() {
         </div>
       </div>
 
-      {/* Profile Section: 프로필 이미지와 통계 정보 */}
-      <div className="px-4 py-2">
-        <div className="mb-4 flex flex-row items-center justify-center">
-          {/* Profile Image: 사용자 프로필 이미지 자리 */}
-          <img
-            src={userInfo?.profileImage || profileImg}
-            className="flex h-25 w-25 overflow-hidden rounded-full border-[1.5px] border-[var(--gray-10)] object-cover"
-          />
+      <div className="flex flex-1 flex-col overflow-y-auto">
+        {/* Profile Section: 프로필 이미지와 통계 정보 */}
+        <div className="px-4 py-2">
+          <div className="mb-4 flex flex-row items-center justify-center">
+            {/* Profile Image: 사용자 프로필 이미지 자리 */}
+            <img
+              src={userInfo?.profileImage || profileImg}
+              className="flex h-25 w-25 overflow-hidden rounded-full border-[1.5px] border-[var(--gray-10)] object-cover"
+            />
 
-          {/* Stats: 포스트/팔로워/팔로잉 수 */}
-          <div className="flex flex-1 items-center justify-evenly">
-            <div className="text-center">
-              <div className="text-lg font-semibold text-[var(--gray-70)]">
-                {formatCount(profile?.threadCount || 0)}
+            {/* Stats: 포스트/팔로워/팔로잉 수 */}
+            <div className="flex flex-1 items-center justify-evenly">
+              <div className="text-center">
+                <div className="text-lg font-semibold text-[var(--gray-70)]">
+                  {formatCount(profile?.threadCount || 0)}
+                </div>
+                <div className="text-sm text-[var(--gray-50)]">포스트</div>
               </div>
-              <div className="text-sm text-[var(--gray-50)]">포스트</div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-semibold text-[var(--gray-70)]">
-                {formatCount(profile?.following || 0)}
+              <div className="text-center">
+                <div className="text-lg font-semibold text-[var(--gray-70)]">
+                  {formatCount(profile?.following || 0)}
+                </div>
+                <div className="text-sm text-[var(--gray-50)]">팔로워</div>
               </div>
-              <div className="text-sm text-[var(--gray-50)]">팔로워</div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-semibold text-[var(--gray-70)]">
-                {formatCount(profile?.follower || 0)}
+              <div className="text-center">
+                <div className="text-lg font-semibold text-[var(--gray-70)]">
+                  {formatCount(profile?.follower || 0)}
+                </div>
+                <div className="text-sm text-[var(--gray-50)]">팔로잉</div>
               </div>
-              <div className="text-sm text-[var(--gray-50)]">팔로잉</div>
             </div>
           </div>
-        </div>
 
-        {/* Profile Info: 사용자 이름, 전공, 학번, 자기소개 */}
-        <div className="mb-4 ml-2">
-          <p className="text-xl font-bold text-[var(--gray-90)]">
-            {userInfo?.name || "사용자 이름"}
-          </p>
-          <div className="mb-1 flex flex-wrap gap-1">
-            <span className="text-sm text-[var(--gray-40)]">
-              {userInfo?.dept || "전공"}
-            </span>
-            <span className="text-sm text-[var(--gray-40)]">
-              {userInfo?.studentId ? `${userInfo.studentId}학번` : "학번"}
-            </span>
-          </div>
-          <div className="relative">
-            <p
-              ref={textRef}
-              className={`text-sm text-[var(--gray-70)] ${
-                !isExpanded && isOverflowing ? "line-clamp-2" : ""
-              }`}
-            >
-              {userInfo?.introduce || "자기소개가 없습니다."}
+          {/* Profile Info: 사용자 이름, 전공, 학번, 자기소개 */}
+          <div className="mb-4 ml-2">
+            <p className="text-xl font-bold text-[var(--gray-90)]">
+              {userInfo?.name || "사용자 이름"}
             </p>
-            {isOverflowing && (
-              <button
-                className="mt-1 text-sm text-[var(--gray-40)] hover:text-[var(--gray-70)]"
-                onClick={() => setIsExpanded(!isExpanded)}
+            <div className="mb-1 flex flex-wrap gap-1">
+              <span className="text-sm text-[var(--gray-40)]">
+                {userInfo?.dept || "전공"}
+              </span>
+              <span className="text-sm text-[var(--gray-40)]">
+                {userInfo?.studentId ? `${userInfo.studentId}학번` : "학번"}
+              </span>
+            </div>
+            <div className="relative">
+              <p
+                ref={textRef}
+                className={`text-sm text-[var(--gray-70)] ${
+                  !isExpanded && isOverflowing ? "line-clamp-2" : ""
+                }`}
               >
-                {isExpanded ? "접기" : "더보기"}
-              </button>
-            )}
+                {userInfo?.introduce || "자기소개가 없습니다."}
+              </p>
+              {isOverflowing && (
+                <button
+                  className="mt-1 text-sm text-[var(--gray-40)] hover:text-[var(--gray-70)]"
+                  onClick={() => setIsExpanded(!isExpanded)}
+                >
+                  {isExpanded ? "접기" : "더보기"}
+                </button>
+              )}
+            </div>
           </div>
+
+          {/* Profile Buttons: 마이페이지와 다른 사용자 페이지에서 다른 버튼 표시 */}
+          {isMyProfile ? (
+            // 마이페이지: 프로필 수정 버튼
+            <button
+              className="text-md mb-3.5 w-full rounded-lg bg-[var(--gray-60)] py-3 text-white"
+              onClick={() => navigate("/mypage/myprofile/modify")}
+            >
+              프로필 수정
+            </button>
+          ) : (
+            // 다른 사용자 페이지: 팔로우/팔로잉, 채팅하기 버튼
+            <div className="mb-3.5 flex w-full gap-x-2">
+              <button
+                className={`text-md w-full rounded-lg py-3 text-white ${isFollowing ? "bg-[var(--orange-500)]" : "bg-[var(--gray-60)]"}`}
+                onClick={() => {
+                  followMutation.mutate(userInfo?.userId || 0);
+                }}
+                disabled={
+                  followMutation.isPending ||
+                  !userInfo?.userId ||
+                  userInfo?.userId === 0
+                }
+              >
+                {followMutation.isPending
+                  ? "처리중..."
+                  : isFollowing
+                    ? "팔로잉"
+                    : "팔로우"}
+              </button>
+              <button
+                className={`text-md w-full rounded-lg border border-[var(--gray-30)] bg-white py-3 text-[var(--gray-50)]`}
+                disabled={
+                  coffeeChatButtonDisabled ||
+                  userInfo?.userId === undefined ||
+                  isChatStarting
+                }
+                onClick={() => {
+                  if (coffeeChatButtonText === "채팅하기") {
+                    chatStart(userInfo?.userId || 0);
+                  } else if (coffeeChatButtonText === "제안하기") {
+                    handleClick();
+                  }
+                }}
+              >
+                {isChatStarting && coffeeChatButtonText === "채팅하기"
+                  ? "연결 중..."
+                  : coffeeChatButtonText}
+              </button>
+              {isSuggestOpen && (
+                <CoffeeSuggestModal
+                  onSubmit={submitSuggest}
+                  onCancel={closeSuggest}
+                />
+              )}
+              {isCompleteOpen && (
+                <CoffeeSuggestCompleteModal onClose={handleCloseComplete} />
+              )}
+            </div>
+          )}
         </div>
 
-        {/* Profile Buttons: 마이페이지와 다른 사용자 페이지에서 다른 버튼 표시 */}
-        {isMyProfile ? (
-          // 마이페이지: 프로필 수정 버튼
+        {/* 탭 구분선 */}
+        <div className="min-h-2 w-full bg-[var(--gray-5)]"></div>
+
+        {/* Tab Navigation: 피드/상세 소개 탭 전환 */}
+        <div className="mt-3 flex">
           <button
-            className="text-md mb-3.5 w-full rounded-lg bg-[var(--gray-60)] py-3 text-white"
-            onClick={() => navigate("/mypage/myprofile/modify")}
+            className={`flex-1 border-b-2 border-[var(--gray-10)] py-3 text-center text-lg ${
+              activeTab === "피드"
+                ? "border-b-2 border-[var(--gray-90)] font-semibold text-black"
+                : "font-medium text-[var(--gray-50)]"
+            }`}
+            onClick={() => setActiveTab("피드")}
           >
-            프로필 수정
+            피드
           </button>
-        ) : (
-          // 다른 사용자 페이지: 팔로우/팔로잉, 채팅하기 버튼
-          <div className="mb-3.5 flex w-full gap-x-2">
-            <button
-              className={`text-md w-full rounded-lg py-3 text-white ${isFollowing ? "bg-[var(--orange-500)]" : "bg-[var(--gray-60)]"}`}
-              onClick={() => {
-                followMutation.mutate(userInfo?.userId || 0);
-              }}
-              disabled={
-                followMutation.isPending ||
-                !userInfo?.userId ||
-                userInfo?.userId === 0
-              }
-            >
-              {followMutation.isPending
-                ? "처리중..."
-                : isFollowing
-                  ? "팔로잉"
-                  : "팔로우"}
-            </button>
-            <button
-              className={`text-md w-full rounded-lg border border-[var(--gray-30)] bg-white py-3 text-[var(--gray-50)]`}
-              disabled={
-                coffeeChatButtonDisabled ||
-                userInfo?.userId === undefined ||
-                isChatStarting
-              }
-              onClick={() => {
-                if (coffeeChatButtonText === "채팅하기") {
-                  chatStart(userInfo?.userId || 0);
-                } else if (coffeeChatButtonText === "제안하기") {
-                  handleClick();
-                }
-              }}
-            >
-              {isChatStarting && coffeeChatButtonText === "채팅하기"
-                ? "연결 중..."
-                : coffeeChatButtonText}
-            </button>
-            {isSuggestOpen && (
-              <CoffeeSuggestModal
-                onSubmit={submitSuggest}
-                onCancel={closeSuggest}
+          <button
+            className={`flex-1 border-b-2 border-[var(--gray-10)] py-3 text-center text-lg ${
+              activeTab === "상세 소개"
+                ? "border-b-2 border-[var(--gray-90)] font-semibold text-black"
+                : "font-medium text-[var(--gray-50)]"
+            }`}
+            onClick={() => setActiveTab("상세 소개")}
+          >
+            상세 소개
+          </button>
+        </div>
+
+        {/* Content Area: 탭에 따라 내용 분기 */}
+        <div className="flex flex-1 flex-col py-5">
+          {/* 피드 탭이 활성화된 경우 피드 내용 출력 */}
+          {activeTab === "피드" &&
+            (profileThreadPosts.length === 0 ? (
+              <div className="flex flex-1 flex-col items-center justify-center">
+                <span className="text-md mb-3 text-[var(--gray-50)]">
+                  아직 작성한 글이 없어요!
+                </span>
+                <img src={emptyFeedImg} className="h-10 w-10 opacity-40" />
+              </div>
+            ) : (
+              <>
+                {profileThreadPosts.map((post) => (
+                  <FeedItem
+                    key={post.threadId}
+                    post={post}
+                    showFollowButton={false}
+                    showBookmarkButton={true}
+                  />
+                ))}
+              </>
+            ))}
+
+          {/* 상세 소개 탭이 활성화된 경우 상세 소개 컴포넌트 출력 */}
+          {activeTab === "상세 소개" && (
+            <div className="flex w-full flex-col justify-center px-4">
+              {/* 관심 키워드 컴포넌트 */}
+              <DetailIntroKeyword
+                interest={profile?.interest}
+                isReadOnly={!isMyProfile}
               />
-            )}
-            {isCompleteOpen && (
-              <CoffeeSuggestCompleteModal onClose={handleCloseComplete} />
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* 탭 구분선 */}
-      <div className="min-h-2 w-full bg-[var(--gray-5)]"></div>
-
-      {/* Tab Navigation: 피드/상세 소개 탭 전환 */}
-      <div className="mt-3 flex">
-        <button
-          className={`flex-1 border-b-2 border-[var(--gray-10)] py-3 text-center text-lg ${
-            activeTab === "피드"
-              ? "border-b-2 border-[var(--gray-90)] font-semibold text-black"
-              : "font-medium text-[var(--gray-50)]"
-          }`}
-          onClick={() => setActiveTab("피드")}
-        >
-          피드
-        </button>
-        <button
-          className={`flex-1 border-b-2 border-[var(--gray-10)] py-3 text-center text-lg ${
-            activeTab === "상세 소개"
-              ? "border-b-2 border-[var(--gray-90)] font-semibold text-black"
-              : "font-medium text-[var(--gray-50)]"
-          }`}
-          onClick={() => setActiveTab("상세 소개")}
-        >
-          상세 소개
-        </button>
-      </div>
-
-      {/* Content Area: 탭에 따라 내용 분기 */}
-      <div className="flex flex-1 flex-col py-5">
-        {/* 피드 탭이 활성화된 경우 피드 내용 출력 */}
-        {activeTab === "피드" &&
-          (profileThreadPosts.length === 0 ? (
-            <div className="flex flex-1 flex-col items-center justify-center">
-              <span className="text-md mb-3 text-[var(--gray-50)]">
-                아직 작성한 글이 없어요!
-              </span>
-              <img src={emptyFeedImg} className="h-10 w-10 opacity-40" />
+              {/* 상세 프로필 컴포넌트 */}
+              <DetailIntroProfile
+                profileDetailData={profile?.specifyProfile?.info || []}
+                isReadOnly={!isMyProfile}
+              />
             </div>
-          ) : (
-            <>
-              {profileThreadPosts.map((post) => (
-                <FeedItem
-                  key={post.threadId}
-                  post={post}
-                  showFollowButton={false}
-                  showBookmarkButton={true}
-                />
-              ))}
-            </>
-          ))}
-
-        {/* 상세 소개 탭이 활성화된 경우 상세 소개 컴포넌트 출력 */}
-        {activeTab === "상세 소개" && (
-          <div className="flex w-full flex-col justify-center px-4">
-            {/* 관심 키워드 컴포넌트 */}
-            <DetailIntroKeyword
-              interest={profile?.interest}
-              isReadOnly={!isMyProfile}
-            />
-            {/* 상세 프로필 컴포넌트 */}
-            <DetailIntroProfile
-              profileDetailData={profile?.specifyProfile?.info || []}
-              isReadOnly={!isMyProfile}
-            />
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
