@@ -12,9 +12,14 @@ import type { Message } from "../../types/chat";
 interface Props {
   messages: Message[];
   getMessageMargin: (idx: number, messages: Message[]) => string;
+  opponentProfileImage?: string;
 }
 
-const ChatMessageList: React.FC<Props> = ({ messages, getMessageMargin }) => {
+const ChatMessageList: React.FC<Props> = ({
+  messages,
+  getMessageMargin,
+  opponentProfileImage,
+}) => {
   // 같은 시간대의 메시지 중 마지막 메시지에만 시간 표시
   const shouldShowTime = (idx: number): boolean => {
     const currentMsg = messages[idx];
@@ -51,6 +56,7 @@ const ChatMessageList: React.FC<Props> = ({ messages, getMessageMargin }) => {
                   mine={msg.mine}
                   imageUrl={msg.imageUrl}
                   showProfile={showProfile}
+                  profileImage={opponentProfileImage}
                 />
               ) : (
                 <MessageBubble
@@ -59,6 +65,7 @@ const ChatMessageList: React.FC<Props> = ({ messages, getMessageMargin }) => {
                   mine={msg.mine}
                   showProfile={showProfile}
                   showTime={shouldShowTime(idx)}
+                  profileImage={opponentProfileImage}
                 />
               )}
             </div>

@@ -13,9 +13,14 @@ import type { Message } from "../../types/chat";
 interface ChatMessageAreaProps {
   messages: Message[];
   username?: string;
+  opponentProfileImage?: string;
 }
 
-const ChatMessageArea = ({ messages, username }: ChatMessageAreaProps) => {
+const ChatMessageArea = ({
+  messages,
+  username,
+  opponentProfileImage,
+}: ChatMessageAreaProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   useAutoScroll(messagesEndRef, messages);
 
@@ -27,6 +32,7 @@ const ChatMessageArea = ({ messages, username }: ChatMessageAreaProps) => {
       <ChatMessageList
         messages={messages}
         getMessageMargin={getMessageMargin}
+        opponentProfileImage={opponentProfileImage}
       />
 
       {/* 스크롤 타겟 */}
