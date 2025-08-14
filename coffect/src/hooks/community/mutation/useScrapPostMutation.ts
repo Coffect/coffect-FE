@@ -13,14 +13,14 @@ export const useScrapPostMutation = () => {
     mutationFn: (threadId: string) => postScrap({ threadId }),
 
     onMutate: async (threadId) => {
-      await queryClient.cancelQueries({ queryKey: ["communityPosts"] });
+      await queryClient.cancelQueries({ queryKey: ["community", "posts"] });
 
       const previousData = queryClient.getQueryData<
         InfiniteData<PostThreadsFilterResponse>
-      >(["communityPosts"]);
+      >(["community", "posts"]);
 
       queryClient.setQueryData<InfiniteData<PostThreadsFilterResponse>>(
-        ["communityPosts"],
+        ["community", "posts"],
         (old) => {
           if (!old) return old;
 
@@ -49,12 +49,12 @@ export const useScrapPostMutation = () => {
 
     onError: (_err, _threadId, context) => {
       if (context?.previousData) {
-        queryClient.setQueryData(["communityPosts"], context.previousData);
+        queryClient.setQueryData(["community", "posts"], context.previousData);
       }
     },
 
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["communityPosts"] });
+      queryClient.invalidateQueries({ queryKey: ["community", "posts"] });
     },
   });
 };

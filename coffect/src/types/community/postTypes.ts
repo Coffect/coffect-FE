@@ -79,6 +79,7 @@ export interface ThreadSummary {
     studentId: number;
     profileImage: string;
     name: string;
+    id: string;
   };
   subjects?: string[];
   images?: string[];
@@ -158,6 +159,7 @@ export interface GetThreadLookUpResponse {
       studentId: number; // 작성자 학번 (예: 20230001)
       profileImage: string; // 작성자 프로필 이미지 URL
       name: string; // 작성자 이름 (예: "홍길동")
+      id: string;
     };
     subjects: string[];
     images: string[];

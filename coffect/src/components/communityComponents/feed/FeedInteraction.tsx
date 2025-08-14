@@ -5,8 +5,9 @@ description : 피드의 하단(좋아요 수, 댓글 수, 인용, 공유 수, �
 
 import { useNavigate } from "react-router-dom";
 import { Heart, MessageCircle, Bookmark } from "lucide-react";
-import { useLikePostMutation } from "@/hooks/community/mutation/useLikePostMutation";
+// import { useLikePostMutation } from "@/hooks/community/mutation/useLikePostMutation";
 import { useScrapPostMutation } from "@/hooks/community/mutation/useScrapPostMutation";
+import { useLikePostMutation } from "@/hooks/community/mutation/useLikePostMutation";
 
 // 공통 스타일 변수 정의
 const buttonStyle =

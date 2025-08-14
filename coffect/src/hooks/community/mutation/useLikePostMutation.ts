@@ -1,6 +1,10 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+// hooks/community/mutation/useLikePostMutation.ts
+import {
+  useMutation,
+  useQueryClient,
+  type InfiniteData,
+} from "@tanstack/react-query";
 import { postLike } from "@/api/community/interactionApi";
-import type { InfiniteData } from "@tanstack/react-query";
 import type { PostThreadsFilterResponse } from "@/types/community/postTypes";
 
 export const useLikePostMutation = () => {
@@ -8,22 +12,22 @@ export const useLikePostMutation = () => {
 
   return useMutation({
     mutationFn: (threadId: string) => postLike({ threadId }),
+
     onMutate: async (threadId) => {
-      await queryClient.cancelQueries({ queryKey: ["communityPosts"] });
+      await queryClient.cancelQueries({ queryKey: ["community", "posts"] });
 
       const previousData = queryClient.getQueryData<
         InfiniteData<PostThreadsFilterResponse>
-      >(["communityPosts"]);
+      >(["community", "posts"]);
 
       queryClient.setQueryData<InfiniteData<PostThreadsFilterResponse>>(
-        ["communityPosts"],
+        ["community", "posts"],
         (old) => {
           if (!old) return old;
-
           return {
             ...old,
             pages: old.pages.map((page) => {
-              if (!page.success) return page; // null 방어
+              if (!page.success) return page;
               return {
                 ...page,
                 success: {
@@ -48,13 +52,15 @@ export const useLikePostMutation = () => {
 
       return { previousData };
     },
+
     onError: (_err, _threadId, context) => {
       if (context?.previousData) {
-        queryClient.setQueryData(["communityPosts"], context.previousData);
+        queryClient.setQueryData(["community", "posts"], context.previousData);
       }
     },
+
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["communityPosts"] });
+      queryClient.invalidateQueries({ queryKey: ["community", "posts"] });
     },
   });
 };

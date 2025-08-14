@@ -28,7 +28,8 @@ const FeedItem = ({
   // 작성자 클릭 시 해당 작성자의 프로필 페이지로 이동하는 함수입니다
   const handleAuthorClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/userpage/${post.threadId}`);
+    console.log(`navigating to user page: /userpage/${post.user.id}`);
+    navigate(`/userpage/${post.user.id}`);
   };
 
   // 팔로우 버튼 클릭 핸들러

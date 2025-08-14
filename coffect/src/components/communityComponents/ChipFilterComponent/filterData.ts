@@ -16,11 +16,11 @@ export interface ChipOption {
  */
 export const postTypeOptions: ChipOption[] = [
   { id: 1, value: "아티클", label: "아티클 ✍🏻" },
-  { id: 2, value: "팀원 모집", label: "팀원 모집 👬" },
+  { id: 2, value: "팀원모집", label: "팀원 모집 👬" },
   { id: 3, value: "질문", label: "질문 👤" },
-  { id: 4, value: "도움 필요", label: "도움 필요 🤩" },
+  { id: 4, value: "도움필요", label: "도움 필요 🤩" },
   { id: 5, value: "후기글", label: "후기글 ☕" },
-  { id: 6, value: "팁 공유", label: "팁 공유 📌" },
+  { id: 6, value: "팁공유", label: "팁 공유 📌" },
 ];
 
 /**
