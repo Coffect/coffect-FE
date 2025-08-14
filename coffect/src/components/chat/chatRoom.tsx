@@ -101,7 +101,9 @@ const ChatRoom = () => {
   });
 
   const handleImageSend = async (file: File) => {
-    if (!file || !file.type.startsWith("image/")) return;
+    if (!file || !file.type.startsWith("image/")) {
+      return;
+    }
 
     if (!chatRoomId) {
       console.error("채팅방 ID가 없습니다");

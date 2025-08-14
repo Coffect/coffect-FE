@@ -120,18 +120,10 @@ export const sendPhoto = async (
   chatRoomId: string,
   imageFile: File,
 ): Promise<SendPhotoResponse> => {
-  console.log("sendPhoto API 호출 시작");
-  console.log("chatRoomId:", chatRoomId);
-  console.log("imageFile:", imageFile);
-  console.log("imageFile.name:", imageFile.name);
-  console.log("imageFile.type:", imageFile.type);
-  console.log("imageFile.size:", imageFile.size);
-
   const formData = new FormData();
   formData.append("image", imageFile);
 
   const url = `/chat/photo?chatRoomId=${encodeURIComponent(chatRoomId)}`;
-  console.log("sendPhoto API 호출 URL:", url);
 
   try {
     const response = await axiosInstance.post(url, formData, {
@@ -139,13 +131,15 @@ export const sendPhoto = async (
         "Content-Type": "multipart/form-data",
       },
     });
-    
+
     console.log("sendPhoto API 응답 성공:", response.data);
     return response.data;
   } catch (error) {
     console.error("sendPhoto API 호출 실패:", error);
     if (error && typeof error === "object" && "response" in error) {
-      const axiosError = error as { response?: { status?: number; data?: unknown } };
+      const axiosError = error as {
+        response?: { status?: number; data?: unknown };
+      };
       console.error("HTTP 상태 코드:", axiosError.response?.status);
       console.error("응답 데이터:", axiosError.response?.data);
     }
