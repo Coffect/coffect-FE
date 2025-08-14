@@ -120,7 +120,7 @@ const Community = () => {
       <main className="flex-1 overflow-y-auto bg-white pb-20">
         {isLoading ? (
           <FeedListSkeleton />
-        ) : (
+        ) : posts.length > 0 ? (
           <>
             <FeedList posts={posts} />
             <div ref={ref} style={{ height: "1px" }} />
@@ -130,6 +130,11 @@ const Community = () => {
               </div>
             )}
           </>
+        ) : (
+          <div className="flex h-full flex-col items-center justify-center text-center text-gray-500">
+            <p className="text-lg font-bold">아직 게시글이 없어요!</p>
+            <p className="mt-2 text-sm">다른 필터 조건을 선택해 보세요.</p>
+          </div>
         )}
       </main>
 
