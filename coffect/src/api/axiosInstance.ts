@@ -27,13 +27,18 @@ import { LOCAL_STORAGE_KEY } from "../constants/key";
 
 // 환경에 따른 baseURL 설정
 const getBaseURL = () => {
+  // 프로덕션(배포)에서는 항상 상대 경로(`/api`)를 사용하여
+  // vercel.json의 rewrites로 백엔드로 우회 → HTTPS 환경에서도 Mixed Content 회피
+  if (import.meta.env.PROD) {
+    return "/api";
+  }
+
   // 개발 환경에서는 직접 API 서버 환경변수로 등록해서 사용
   if (import.meta.env.VITE_SERVER_API_URL) {
     return import.meta.env.VITE_SERVER_API_URL;
   }
 
-  // vercel에서 mixed content 방지를 위해 빈 문자열 반환
-  // vercel.json을 통해 path 설정
+  // 기본값: 로컬 개발에서도 프록시를 통해 우회
   return "/api";
 };
 
