@@ -4,6 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { VitePWA } from "vite-plugin-pwa";
 
+// https://vite.dev/config/
 export default defineConfig(() => {
   const serverTarget =
     process.env.VITE_SERVER_API_URL || "http://13.124.169.70:3000";
