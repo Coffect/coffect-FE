@@ -19,6 +19,7 @@ import PostDetailHeader from "@/components/postDetailComponents/PostDetailHeader
 import CommentInput from "@/components/communityComponents/comment/CommentInput";
 import { useGetComments } from "@/hooks/community/query/useGetComments";
 import PostDetailComments from "@/components/postDetailComponents/PostDetailComments";
+import LoadingScreen from "@/components/shareComponents/LoadingScreen";
 
 const PostDetail = () => {
   // 1. 게시글 상세 정보 로딩: usePostDetail 훅을 호출합니다.
@@ -42,11 +43,7 @@ const PostDetail = () => {
 
   // 데이터 로딩 중일 때 표시할 UI (게시글 또는 댓글 중 하나라도 로딩 중일 때)
   if (isPostLoading || isCommentsLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-white">
-        게시글을 불러오는 중입니다...
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   // 에러 발생 시 표시할 UI (게시글 또는 댓글 에러 중 하나라도 발생했을 때)
