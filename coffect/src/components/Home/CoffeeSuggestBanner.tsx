@@ -18,8 +18,9 @@ import NoSuggestImage from "../../assets/icon/home/NoSuggest.png";
 // FCM 포그라운드 수신
 import { onMessageListener, type FcmPayload } from "@/utils/fcm";
 // 프로필 라우팅용: 숫자 기반 유저 ID → 문자열 ID 변환 API
-import { getUserStringId } from "@/api/home";
+import { acceptCoffeeChat, getUserStringId } from "@/api/home";
 import { createChatRoom } from "@/api/chat";
+import CoffeeSuggestResponseModal from "./CoffeeSuggestResponseModal";
 
 /* --------------------------------- 타입 --------------------------------- */
 
@@ -110,6 +111,12 @@ const CoffeeSuggestBanner: React.FC = () => {
   const [checkedMessage, setCheckedMessage] = useState<Suggestion | null>(null);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null); // cardId 보관
   const [isMessageHidden, setIsMessageHidden] = useState(false);
+  /** 수락 결과 알림 모달 상태 **/
+  const [acceptNotice, setAcceptNotice] = useState<{
+    open: boolean;
+    userName: string;
+    chatId?: number;
+  } | null>(null);
 
   /* ------------------------------ 함수 선언부 ------------------------------ */
 
@@ -211,6 +218,17 @@ const CoffeeSuggestBanner: React.FC = () => {
     if (!checkedMessage) return;
 
     try {
+      //  수락하여 채팅 목록에 띄울 수 있도록 해줌.
+      if (typeof checkedMessage.coffectId === "number") {
+        try {
+          await acceptCoffeeChat(checkedMessage.coffectId);
+        } catch (e) {
+          console.warn("acceptCoffeeChat 실패", e);
+        }
+      } else {
+        console.warn("coffectId 없음");
+      }
+
       const res = await createChatRoom(checkedMessage.userPageId as number);
 
       // 200(성공) 또는 서버가 FAIL로 돌려줘도 여기서 먼저 시도
@@ -238,7 +256,20 @@ const CoffeeSuggestBanner: React.FC = () => {
 
   // 1) FCM 포그라운드 메시지 수신
   useEffect(() => {
-    const unsub = onMessageListener((payload) => pushSuggestion(payload));
+    //수락 결과(요청 보낸 사람에게 가는 알림) 분기
+    const unsub = onMessageListener((payload) => {
+      const type = payload?.data?.type;
+      if (type === "ACCEPT_RESULT") {
+        const userName = (payload.data?.secondUserName as string) ?? "상대방";
+        const raw = payload.data?.chatId as string | number | undefined;
+        const chatId =
+          raw != null && !Number.isNaN(Number(raw)) ? Number(raw) : undefined;
+
+        setAcceptNotice({ open: true, userName, chatId });
+        return;
+      }
+      pushSuggestion(payload);
+    });
     return () => unsub?.();
   }, []);
 
@@ -247,6 +278,14 @@ const CoffeeSuggestBanner: React.FC = () => {
   //    - 초기 진입 시 SW에게 캐시된 payload flush 요청
   useEffect(() => {
     const onSwMessage = (ev: MessageEvent<SwPostMessage>) => {
+      if (isFcmPayload(ev.data) && ev.data?.data?.type === "ACCEPT_RESULT") {
+        const userName = (ev.data.data?.secondUserName as string) ?? "상대방";
+        const raw = ev.data.data?.chatId as string | number | undefined;
+        const chatId =
+          raw != null && !Number.isNaN(Number(raw)) ? Number(raw) : undefined;
+        setAcceptNotice({ open: true, userName, chatId });
+        return;
+      }
       if (isFcmPayload(ev.data)) {
         pushSuggestion(ev.data);
         return;
@@ -254,7 +293,20 @@ const CoffeeSuggestBanner: React.FC = () => {
       if (ev.data && typeof ev.data === "object") {
         const single = (ev.data as { payload?: FcmPayload }).payload;
         const many = (ev.data as { payloads?: FcmPayload[] }).payloads;
-        if (single) pushSuggestion(single);
+        if (single) {
+          if (single?.data?.type === "ACCEPT_RESULT") {
+            const userName =
+              (single.data?.secondUserName as string) ?? "상대방";
+            const raw = single.data?.chatId as string | number | undefined;
+            const chatId =
+              raw != null && !Number.isNaN(Number(raw))
+                ? Number(raw)
+                : undefined;
+            setAcceptNotice({ open: true, userName, chatId });
+            return;
+          }
+          pushSuggestion(single);
+        }
         if (Array.isArray(many)) many.forEach(pushSuggestion);
       }
     };
@@ -426,6 +478,18 @@ const CoffeeSuggestBanner: React.FC = () => {
           messageName={checkedMessage.name}
           onDelete={handleConfirmDelete}
           onCancel={handleCancelDelete}
+        />
+      )}
+
+      {acceptNotice?.open && (
+        <CoffeeSuggestResponseModal
+          userName={acceptNotice.userName}
+          onClose={() => setAcceptNotice(null)}
+          onChat={() => {
+            if (acceptNotice?.chatId) navigate(`/chat/${acceptNotice.chatId}`);
+            else navigate("/chat");
+            setAcceptNotice(null);
+          }}
         />
       )}
     </div>
