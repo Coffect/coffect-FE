@@ -3,7 +3,7 @@
  * description : 채팅방 내부 입력창
  */
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Plus, Send, X as XIcon } from "lucide-react";
 
 interface ChatInputBoxProps {
@@ -28,6 +28,27 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const [showImageOptions, setShowImageOptions] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // 외부 클릭 감지
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        setShowImageOptions(false);
+      }
+    };
+
+    if (showImageOptions) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showImageOptions]);
 
   const trySend = () => {
     if (imageFile) {
@@ -105,6 +126,7 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
             {/* 이미지 업로드 옵션 모달 */}
             {showImageOptions && (
               <div
+                ref={modalRef}
                 className="absolute bottom-11 -left-1 z-50 flex flex-col rounded-xl border border-[var(--gray-5)] bg-white shadow-lg"
                 onClick={(e) => {
                   if (e.target === e.currentTarget) setShowImageOptions(false);
