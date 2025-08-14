@@ -255,8 +255,6 @@ const ChatRoom = () => {
   useEffect(() => {
     if (!user?.id || !chatRoomId) return;
 
-    console.log("소켓 연결 시도:", { userId: user.id, chatRoomId });
-
     // 소켓 연결
     socketManager.connect();
 
@@ -281,7 +279,6 @@ const ChatRoom = () => {
 
       // 채팅방 퇴장 이벤트 전송
       socketManager.leaveRoom(chatRoomId, user.id);
-      console.log("채팅방 퇴장 이벤트 전송 완료");
     };
   }, [
     user?.id,

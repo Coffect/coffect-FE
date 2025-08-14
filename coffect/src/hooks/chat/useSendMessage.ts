@@ -21,8 +21,6 @@ export const useSendMessage = (
 
   const sendMessageHandler = useCallback(
     async (message: string) => {
-      console.log("sendMessageHandler 호출됨:", { chatRoomId, message });
-
       if (!chatRoomId || chatRoomId === "" || !message.trim()) {
         const errorMsg =
           !chatRoomId || chatRoomId === ""
