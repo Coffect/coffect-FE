@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getSpecifyCoffeeChat } from "@/api/home";
 import { type getSpecifyCoffeeChatType } from "@/types/mypage/ChatRecord";
+import LoadingScreen from "@/components/shareComponents/LoadingScreen";
 import backIcon from "@/assets/icon/mypage/back.png";
 
 const ChatCard = () => {
@@ -34,13 +35,7 @@ const ChatCard = () => {
 
   // 로딩 상태 처리
   if (isLoading) {
-    return (
-      <div className="flex h-full w-full flex-col items-center justify-center bg-white">
-        <div className="text-lg text-[var(--gray-50)]">
-          커피챗 상세 정보를 불러오는 중...
-        </div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   // 에러 상태 처리

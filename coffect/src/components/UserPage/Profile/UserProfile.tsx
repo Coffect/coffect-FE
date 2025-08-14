@@ -32,6 +32,7 @@ import { useCoffeeSuggest } from "@/hooks/useCoffeeSuggest";
 import { AxiosError } from "axios";
 import CoffeeSuggestModal from "@/components/shareComponents/CoffeeSuggestModal";
 import CoffeeSuggestCompleteModal from "@/components/shareComponents/CoffeeSuggestCompleteModal";
+import LoadingScreen from "@/components/shareComponents/LoadingScreen";
 
 type ProfileTab = "피드" | "상세 소개";
 
@@ -57,12 +58,13 @@ function Profile() {
   const { id = "" } = useParams<{ id: string }>();
 
   // API 호출 - 현재 로그인한 사용자 정보 가져오기
-  const { data: myProfileData } = useQuery<profileType>({
-    queryKey: ["profile"],
-    queryFn: getProfile,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-  });
+  const { data: myProfileData, isLoading: isMyProfileLoading } =
+    useQuery<profileType>({
+      queryKey: ["profile"],
+      queryFn: getProfile,
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+    });
 
   // 현재 로그인한 사용자 ID
   const currentUserId: string | unknown = myProfileData?.success?.userInfo?.id;
@@ -71,25 +73,27 @@ function Profile() {
   const isMyProfile: boolean = !id || id === currentUserId;
 
   // API 호출 - 메인 프로필 데이터 호출 (마이페이지면 getProfile, 아니면 getProfileSearch)
-  const { data: profileData, isLoading } = useQuery<profileType>({
-    queryKey: isMyProfile ? ["profile"] : ["profileSearch", id],
-    queryFn: isMyProfile ? getProfile : () => getProfileSearch(id!),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-    enabled: isMyProfile || !!id, // 마이페이지이거나 id가 있을 때만 실행
-  });
+  const { data: profileData, isLoading: isProfileLoading } =
+    useQuery<profileType>({
+      queryKey: isMyProfile ? ["profile"] : ["profileSearch", id],
+      queryFn: isMyProfile ? getProfile : () => getProfileSearch(id!),
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      enabled: isMyProfile || !!id, // 마이페이지이거나 id가 있을 때만 실행
+    });
   // 프로필 데이터
   const profile = profileData?.success;
   const userInfo = profile?.userInfo;
 
   // 팔로잉 상태 확인 API 호출 (다른 사용자 페이지에서만)
-  const { data: followData } = useQuery<getIsFollowType>({
-    queryKey: ["isFollow", id],
-    queryFn: () => getIsFollow(userInfo?.userId || 0),
-    enabled: !isMyProfile && userInfo?.userId !== undefined,
-    staleTime: 5 * 60 * 1000, // 5분
-    gcTime: 10 * 60 * 1000, // 10분
-  });
+  const { data: followData, isLoading: isFollowLoading } =
+    useQuery<getIsFollowType>({
+      queryKey: ["isFollow", id],
+      queryFn: () => getIsFollow(userInfo?.userId || 0),
+      enabled: !isMyProfile && userInfo?.userId !== undefined,
+      staleTime: 5 * 60 * 1000, // 5분
+      gcTime: 10 * 60 * 1000, // 10분
+    });
 
   // 팔로잉 상태 설정 (API 응답이 있을 때)
   useEffect(() => {
@@ -206,21 +210,30 @@ function Profile() {
     return num.toString();
   };
 
-  const { data: profileThreadData } = useQuery<getProfileThreadType>({
-    queryKey: isMyProfile ? ["profileThread"] : ["profileThreadSearch", id],
-    queryFn: isMyProfile ? getProfileThread : () => getProfileThreadSearch(id!),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-    enabled: isMyProfile || !!id, // 마이페이지이거나 id가 있을 때만 실행
-  });
+  const { data: profileThreadData, isLoading: isProfileThreadLoading } =
+    useQuery<getProfileThreadType>({
+      queryKey: isMyProfile ? ["profileThread"] : ["profileThreadSearch", id],
+      queryFn: isMyProfile
+        ? getProfileThread
+        : () => getProfileThreadSearch(id!),
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      enabled: isMyProfile || !!id, // 마이페이지이거나 id가 있을 때만 실행
+    });
   const profileThreadPosts = profileThreadData?.success || [];
   const sortedProfileThreadPosts = [...profileThreadPosts].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
   // 로딩 중일 때 처리
-  if (isLoading) {
-    return <div>Loading...</div>;
+  if (
+    isMyProfileLoading ||
+    isProfileLoading ||
+    isFollowLoading ||
+    isCoffeeChatLoading ||
+    isProfileThreadLoading
+  ) {
+    return <LoadingScreen />;
   }
 
   return (

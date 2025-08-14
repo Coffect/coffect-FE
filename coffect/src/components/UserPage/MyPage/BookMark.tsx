@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import FeedItem from "../../shareComponents/FeedItem";
 import { useQuery } from "@tanstack/react-query";
 import { getBookMark, getProfile } from "@/api/profile";
+import LoadingScreen from "@/components/shareComponents/LoadingScreen";
 
 import backIcon from "../../../assets/icon/mypage/back.png";
 import emptyFeedIcon from "../../../assets/icon/mypage/emptyFeed.png";
@@ -9,12 +10,12 @@ import emptyFeedIcon from "../../../assets/icon/mypage/emptyFeed.png";
 const BookMark = () => {
   const navigate = useNavigate();
 
-  const { data: profileData } = useQuery({
+  const { data: profileData, isLoading: isProfileLoading } = useQuery({
     queryKey: ["profile"],
     queryFn: () => getProfile(),
   });
 
-  const { data: bookMarkData } = useQuery({
+  const { data: bookMarkData, isLoading: isBookMarkLoading } = useQuery({
     queryKey: ["bookMark"],
     queryFn: () => getBookMark(),
   });
@@ -22,6 +23,10 @@ const BookMark = () => {
   const sortedBookMarkPosts = [...bookMarkPosts].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
+
+  if (isProfileLoading || isBookMarkLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="flex h-full w-full flex-col bg-white">

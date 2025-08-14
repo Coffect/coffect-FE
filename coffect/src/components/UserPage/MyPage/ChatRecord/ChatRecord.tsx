@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getPastCoffeeChat } from "@/api/home";
 import { type getPastCoffeeChatType } from "@/types/mypage/ChatRecord";
+import LoadingScreen from "@/components/shareComponents/LoadingScreen";
 import backIcon from "@/assets/icon/mypage/back.png";
 import coffeeIcon from "@/assets/icon/mypage/inCoffeeChatRecord.png";
 import emptyChatRecordImg from "@/assets/icon/mypage/emptyChatRecord.png";
@@ -32,13 +33,7 @@ const ChatRecord = () => {
 
   // 로딩 상태 처리
   if (isLoading) {
-    return (
-      <div className="flex h-full w-full flex-col items-center justify-center bg-white">
-        <div className="text-lg text-[var(--gray-50)]">
-          커피챗 기록을 불러오는 중...
-        </div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   // 에러 상태 처리
