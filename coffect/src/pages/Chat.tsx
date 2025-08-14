@@ -7,7 +7,7 @@
 import BottomNavbar from "../components/shareComponents/BottomNavbar";
 import { useNavigate } from "react-router-dom";
 import EmptyChatList from "../assets/icon/chat/EmptyChatList.png";
-import { getTimeAgo } from "../utils/dateUtils";
+import ChatRoomList from "../components/chat/ChatRoomList";
 
 import { useChatRooms } from "../hooks/chat";
 
@@ -70,7 +70,6 @@ const Chat = () => {
       </div>
       {/* Chat List */}
       <div className="flex-1 overflow-y-auto px-2 pb-20">
-        {/* 메시지 없을 때 */}
         {chatRooms.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center pt-24">
             <span className="mb-2 text-[20px] font-bold text-[var(--gray-90)]">
@@ -91,44 +90,13 @@ const Chat = () => {
             </div>
           </div>
         ) : (
-          chatRooms.map((chat, index) => (
-            <div
-              key={chat.chatroomId || `chat-${chat.userId}-${index}`}
-              className="mb-2 flex cursor-pointer items-start border-b border-[var(--gray-10)] px-3 py-4 hover:bg-[var(--gray-5)]"
-              onClick={() => {
-                navigate(`/chat/${chat.chatroomId}`);
-              }}
-            >
-              {/* 프로필 */}
-              <div className="relative flex h-13 w-13 items-center justify-center rounded-full bg-[var(--gray-20)]">
-                {(chat.hasUnreadMessages ||
-                  ("check" in chat && Boolean(chat.check))) && (
-                  <span className="absolute -top-0 -right-1 h-4 w-4 rounded-full border-2 border-[var(--white)] bg-[var(--noti)]"></span>
-                )}
-              </div>
-              {/* 채팅 정보 */}
-              <div className="ml-3 flex min-w-0 flex-1 flex-col">
-                <div className="flex min-w-0 items-center">
-                  <span className="mr-2 flex-shrink-0 text-lg font-bold whitespace-nowrap text-[var(--gray-90)]">
-                    {chat.userInfo?.name}
-                  </span>
-                  <span className="min-w-0 flex-1 truncate overflow-hidden text-sm font-medium text-ellipsis whitespace-nowrap text-[var(--gray-50)]">
-                    {chat.userInfo?.major}
-                  </span>
-                </div>
-                <div className="flex min-w-0 items-center justify-between">
-                  <span className="text-s min-w-0 flex-1 truncate overflow-hidden py-1 text-ellipsis whitespace-nowrap text-[var(--gray-70)]">
-                    {chat.lastMessage}
-                  </span>
-                  <span className="ml-2 flex-shrink-0 truncate overflow-hidden text-sm text-ellipsis whitespace-nowrap text-[var(--gray-40)]">
-                    {chat.lastMessageTime
-                      ? getTimeAgo(chat.lastMessageTime)
-                      : "지금"}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))
+          <ChatRoomList
+            chatRooms={chatRooms}
+            onChatRoomSelect={(chatRoom) => {
+              navigate(`/chat/${chatRoom.chatroomId}`);
+            }}
+            showEmptyState={false}
+          />
         )}
       </div>
       <BottomNavbar activeLabel="채팅" />
