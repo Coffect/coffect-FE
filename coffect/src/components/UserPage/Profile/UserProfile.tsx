@@ -5,6 +5,7 @@ description : 마이페이지와 다른 사용자 페이지를 모두 처리합�
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useInView } from "react-intersection-observer";
 import {
   getProfile,
   getProfileSearch,
@@ -33,6 +34,7 @@ import { AxiosError } from "axios";
 import CoffeeSuggestModal from "@/components/shareComponents/CoffeeSuggestModal";
 import CoffeeSuggestCompleteModal from "@/components/shareComponents/CoffeeSuggestCompleteModal";
 import LoadingScreen from "@/components/shareComponents/LoadingScreen";
+import FeedListSkeleton from "@/components/communityComponents/feed/FeedListSkeleton";
 
 type ProfileTab = "피드" | "상세 소개";
 
@@ -53,6 +55,14 @@ function Profile() {
   const textRef = useRef<HTMLParagraphElement>(null);
   // 팔로우 상태 (다른 사용자 페이지에서만 사용)
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
+  // 피드 무한 스크롤: 화면에 보여줄 게시글 개수
+  const PAGE_SIZE = 10;
+  const [visibleCount, setVisibleCount] = useState<number>(PAGE_SIZE);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const { ref: sentinelRef, inView } = useInView({
+    threshold: 0,
+    root: scrollContainerRef.current,
+  });
 
   // URL 파라미터에 따라 마이페이지인지 다른 사용자 페이지인지 판단
   const { id = "" } = useParams<{ id: string }>();
@@ -225,6 +235,20 @@ function Profile() {
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
+  // 프로필/사용자 변경 또는 데이터 갱신 시 최초 페이지 크기로 리셋
+  useEffect(() => {
+    setVisibleCount(Math.min(PAGE_SIZE, sortedProfileThreadPosts.length));
+  }, [id, isMyProfile, sortedProfileThreadPosts.length]);
+
+  // sentinel 이 보이면 다음 청크를 로드
+  useEffect(() => {
+    if (!inView) return;
+    if (visibleCount >= sortedProfileThreadPosts.length) return;
+    setVisibleCount((prev) =>
+      Math.min(prev + PAGE_SIZE, sortedProfileThreadPosts.length),
+    );
+  }, [inView, visibleCount, sortedProfileThreadPosts.length]);
+
   // 로딩 중일 때 처리
   if (
     isMyProfileLoading ||
@@ -255,7 +279,10 @@ function Profile() {
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col overflow-y-auto">
+      <div
+        className="flex flex-1 flex-col overflow-y-auto"
+        ref={scrollContainerRef}
+      >
         {/* Profile Section: 프로필 이미지와 통계 정보 */}
         <div className="px-4 py-2">
           <div className="mb-4 flex flex-row items-center justify-center">
@@ -422,7 +449,7 @@ function Profile() {
               </div>
             ) : (
               <>
-                {sortedProfileThreadPosts.map((post) => (
+                {sortedProfileThreadPosts.slice(0, visibleCount).map((post) => (
                   <FeedItem
                     key={post.threadId}
                     post={post}
@@ -430,6 +457,16 @@ function Profile() {
                     showBookmarkButton={true}
                   />
                 ))}
+                {visibleCount < sortedProfileThreadPosts.length && (
+                  <>
+                    <div
+                      ref={sentinelRef}
+                      className="flex h-1 justify-center py-4"
+                    >
+                      <FeedListSkeleton count={1} />
+                    </div>
+                  </>
+                )}
               </>
             ))}
 

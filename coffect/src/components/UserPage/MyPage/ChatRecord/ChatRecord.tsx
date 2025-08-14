@@ -4,10 +4,12 @@ description : 마이페이지에서 나의 커피챗 기록 카드 목록을 출
 */
 
 import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getPastCoffeeChat } from "@/api/home";
 import { type getPastCoffeeChatType } from "@/types/mypage/ChatRecord";
 import LoadingScreen from "@/components/shareComponents/LoadingScreen";
+import { useInView } from "react-intersection-observer";
 import backIcon from "@/assets/icon/mypage/back.png";
 import coffeeIcon from "@/assets/icon/mypage/inCoffeeChatRecord.png";
 import emptyChatRecordImg from "@/assets/icon/mypage/emptyChatRecord.png";
@@ -30,6 +32,34 @@ const ChatRecord = () => {
     staleTime: 5 * 60 * 1000, // 5분
     gcTime: 10 * 60 * 1000, // 10분
   });
+
+  // 전체 아이템 개수(로딩 중에는 0으로 간주)
+  const totalItems = pastCoffeeChatData?.success?.length ?? 0;
+
+  // 무한 스크롤 상태(반드시 early return 이전에 훅 선언)
+  const GROUP_SIZE = 3; // 기존 3개씩 묶어 카드 그리드 구성
+  const PAGE_GROUPS = 4; // 한 번에 4 그룹(= 12개)씩
+  const [visibleGroups, setVisibleGroups] = useState<number>(
+    Math.min(PAGE_GROUPS, Math.ceil(totalItems / GROUP_SIZE)),
+  );
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const { ref: sentinelRef, inView } = useInView({
+    threshold: 0,
+    root: scrollContainerRef.current,
+  });
+
+  // 데이터 변경 시 초기화
+  useEffect(() => {
+    setVisibleGroups(Math.min(PAGE_GROUPS, Math.ceil(totalItems / GROUP_SIZE)));
+  }, [totalItems, setVisibleGroups]);
+
+  // sentinel 관찰되면 추가 그룹 노출
+  useEffect(() => {
+    if (!inView) return;
+    const totalGroups = Math.ceil(totalItems / GROUP_SIZE);
+    if (visibleGroups >= totalGroups) return;
+    setVisibleGroups((prev) => Math.min(prev + PAGE_GROUPS, totalGroups));
+  }, [inView, visibleGroups, totalItems, setVisibleGroups]);
 
   // 로딩 상태 처리
   if (isLoading) {
@@ -58,7 +88,10 @@ const ChatRecord = () => {
   const hasRecords: boolean = chatRecordsData.length > 0;
 
   return (
-    <div className="flex h-full w-full flex-col overflow-y-auto bg-white px-4">
+    <div
+      className="flex h-full w-full flex-col overflow-y-auto bg-white px-4"
+      ref={scrollContainerRef}
+    >
       {/* 뒤로가기 버튼 */}
       <button
         className="py-4 text-left text-3xl"
@@ -92,65 +125,70 @@ const ChatRecord = () => {
       {/* 커피챗 기록이 있을 때 카드 목록, 없을 때 안내 메시지 */}
       {hasRecords ? (
         <div className="flex flex-col gap-3 py-4">
-          {Array.from({ length: Math.ceil(chatRecordsData.length / 3) }).map(
-            (_, groupIdx) => {
-              const start = groupIdx * 3;
-              const group = chatRecordsData.slice(start, start + 3);
-              const isEven = groupIdx % 2 === 0;
-              return (
-                <div key={groupIdx} className="flex w-full flex-row gap-3">
-                  {isEven ? (
-                    <>
-                      {/* 좌측: 정사각 2개 세로 */}
-                      <div className="flex min-w-0 flex-1 flex-col gap-3">
-                        <div className="aspect-square min-h-0 w-full min-w-0">
-                          {group[0] && (
-                            <Card record={group[0]} navigate={navigate} />
-                          )}
-                        </div>
-                        <div className="aspect-square min-h-0 w-full min-w-0">
-                          {group[2] && (
-                            <Card record={group[2]} navigate={navigate} />
-                          )}
-                        </div>
-                      </div>
-                      {/* 우측: 세로 긴 카드 */}
-                      <div className="flex min-w-0 flex-1 flex-col justify-between">
-                        {group[1] && (
-                          <div className="aspect-[1/2.06] h-full min-h-0 w-full min-w-0">
-                            <Card record={group[1]} navigate={navigate} />
-                          </div>
-                        )}
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      {/* 좌측: 세로 긴 카드 */}
-                      <div className="flex min-w-0 flex-1 flex-col justify-between">
+          {Array.from({ length: visibleGroups }).map((_, groupIdx) => {
+            const start = groupIdx * 3;
+            const group = chatRecordsData.slice(start, start + 3);
+            const isEven = groupIdx % 2 === 0;
+            return (
+              <div key={groupIdx} className="flex w-full flex-row gap-3">
+                {isEven ? (
+                  <>
+                    {/* 좌측: 정사각 2개 세로 */}
+                    <div className="flex min-w-0 flex-1 flex-col gap-3">
+                      <div className="aspect-square min-h-0 w-full min-w-0">
                         {group[0] && (
-                          <div className="aspect-[1/2.06] h-full min-h-0 w-full min-w-0">
-                            <Card record={group[0]} navigate={navigate} />
-                          </div>
+                          <Card record={group[0]} navigate={navigate} />
                         )}
                       </div>
-                      {/* 우측: 정사각 2개 세로 */}
-                      <div className="flex min-w-0 flex-1 flex-col gap-3">
-                        <div className="aspect-square min-h-0 w-full min-w-0">
-                          {group[1] && (
-                            <Card record={group[1]} navigate={navigate} />
-                          )}
-                        </div>
-                        <div className="aspect-square min-h-0 w-full min-w-0">
-                          {group[2] && (
-                            <Card record={group[2]} navigate={navigate} />
-                          )}
-                        </div>
+                      <div className="aspect-square min-h-0 w-full min-w-0">
+                        {group[2] && (
+                          <Card record={group[2]} navigate={navigate} />
+                        )}
                       </div>
-                    </>
-                  )}
-                </div>
-              );
-            },
+                    </div>
+                    {/* 우측: 세로 긴 카드 */}
+                    <div className="flex min-w-0 flex-1 flex-col justify-between">
+                      {group[1] && (
+                        <div className="aspect-[1/2.06] h-full min-h-0 w-full min-w-0">
+                          <Card record={group[1]} navigate={navigate} />
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* 좌측: 세로 긴 카드 */}
+                    <div className="flex min-w-0 flex-1 flex-col justify-between">
+                      {group[0] && (
+                        <div className="aspect-[1/2.06] h-full min-h-0 w-full min-w-0">
+                          <Card record={group[0]} navigate={navigate} />
+                        </div>
+                      )}
+                    </div>
+                    {/* 우측: 정사각 2개 세로 */}
+                    <div className="flex min-w-0 flex-1 flex-col gap-3">
+                      <div className="aspect-square min-h-0 w-full min-w-0">
+                        {group[1] && (
+                          <Card record={group[1]} navigate={navigate} />
+                        )}
+                      </div>
+                      <div className="aspect-square min-h-0 w-full min-w-0">
+                        {group[2] && (
+                          <Card record={group[2]} navigate={navigate} />
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            );
+          })}
+          {visibleGroups < Math.ceil(chatRecordsData.length / GROUP_SIZE) && (
+            <>
+              <div ref={sentinelRef} className="text-md h-1 text-center">
+                더 불러오는 중...
+              </div>
+            </>
           )}
         </div>
       ) : (
