@@ -21,16 +21,12 @@ export const getCoffectId = async (
   try {
     console.log("getCoffectId API 호출 - chatRoomId:", chatRoomId);
 
-    // 현재 저장된 토큰 확인
-    const token = localStorage.getItem("accessToken");
-    console.log("현재 토큰:", token ? "존재함" : "없음");
-
     const response = await axiosInstance.get(
       `/chat/getCoffectId?chatRoomId=${encodeURIComponent(chatRoomId)}`,
     );
     console.log("getCoffectId API 응답:", response.data);
     return response.data;
-  } catch (error: any) {
+  } catch {
     return {
       resultType: "FAIL",
       error: { reason: "커피챗 제안 아이디 조회에 실패했습니다" },
@@ -53,11 +49,9 @@ export const createChatRoom = async (
 export const getChatRoomList = async (): Promise<ChatRoomListResponse> => {
   try {
     const response = await axiosInstance.get("/chat/rooms");
-    console.log("채팅방 목록 응답:", response.data);
 
     // 응답 데이터가 없거나 success 필드가 없을 경우 에러로 처리
     if (!response.data || !response.data.success) {
-      console.error("채팅방 목록 조회 실패: 응답 데이터가 없습니다");
       return {
         resultType: "FAIL",
         error: { reason: "응답 데이터가 없습니다" },
@@ -126,17 +120,35 @@ export const sendPhoto = async (
   chatRoomId: string,
   imageFile: File,
 ): Promise<SendPhotoResponse> => {
+  console.log("sendPhoto API 호출 시작");
+  console.log("chatRoomId:", chatRoomId);
+  console.log("imageFile:", imageFile);
+  console.log("imageFile.name:", imageFile.name);
+  console.log("imageFile.type:", imageFile.type);
+  console.log("imageFile.size:", imageFile.size);
+
   const formData = new FormData();
   formData.append("image", imageFile);
 
-  const response = await axiosInstance.post(
-    `/chat/photo?chatRoomId=${encodeURIComponent(chatRoomId)}`,
-    formData,
-    {
+  const url = `/chat/photo?chatRoomId=${encodeURIComponent(chatRoomId)}`;
+  console.log("sendPhoto API 호출 URL:", url);
+
+  try {
+    const response = await axiosInstance.post(url, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
-    },
-  );
-  return response.data;
+    });
+    
+    console.log("sendPhoto API 응답 성공:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("sendPhoto API 호출 실패:", error);
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as { response?: { status?: number; data?: unknown } };
+      console.error("HTTP 상태 코드:", axiosError.response?.status);
+      console.error("응답 데이터:", axiosError.response?.data);
+    }
+    throw error;
+  }
 };

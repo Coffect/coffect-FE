@@ -7,7 +7,8 @@
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { axiosInstance } from "../../api/axiosInstance";
+import { getCoffectId as apiGetCoffectId } from "../../api/chat";
+import { getMessageShowUp as apiGetMessageShowUp } from "../../api/home";
 import { getCommonFreeTime } from "../../hooks/useTimeTable";
 
 interface RequestModalProps {
@@ -60,41 +61,6 @@ const RequestModal = ({
     return null;
   })();
 
-  // getCoffectId API 호출
-  const getCoffectId = async (chatRoomId: string) => {
-    try {
-      const response = await axiosInstance.get(
-        `/chat/getCoffectId?chatRoomId=${encodeURIComponent(chatRoomId)}`,
-      );
-
-      return response.data;
-    } catch {
-      return {
-        resultType: "FAIL",
-        error: { reason: "커피챗 제안 아이디 조회에 실패했습니다" },
-        success: null,
-      };
-    }
-  };
-
-  // messageShowUp API 호출
-  const getMessageShowUp = async (coffectId: number) => {
-    try {
-      const response = await axiosInstance.get(
-        `/home/messageShowUp?coffectId=${coffectId}`,
-      );
-      console.log("messageShowUp API 응답:", response.data);
-      return response.data as MessageShowUpResponse;
-    } catch (error: unknown) {
-      console.error("메시지 조회 실패:", error);
-      return {
-        resultType: "FAIL",
-        success: null,
-        error: { reason: "메시지 조회에 실패했습니다" },
-      };
-    }
-  };
-
   // 모달이 열릴 때 API 호출
   useEffect(() => {
     const fetchData = async () => {
@@ -105,7 +71,7 @@ const RequestModal = ({
 
         try {
           // 1. getCoffectId API 호출
-          const coffectIdResponse = await getCoffectId(currentChatRoomId);
+          const coffectIdResponse = await apiGetCoffectId(currentChatRoomId);
 
           if (
             coffectIdResponse.resultType !== "SUCCESS" ||
@@ -121,7 +87,9 @@ const RequestModal = ({
           console.log("coffectId:", coffectId);
 
           // 2. messageShowUp API 호출
-          const messageResponse = await getMessageShowUp(coffectId);
+          const messageResponse = (await apiGetMessageShowUp(
+            coffectId,
+          )) as MessageShowUpResponse;
 
           if (
             messageResponse.resultType === "SUCCESS" &&

@@ -79,9 +79,8 @@ const ChatRoom = () => {
   const createdObjectUrlsRef = useRef<string[]>([]);
 
   useEffect(() => {
-    const urls = createdObjectUrlsRef.current;
     return () => {
-      urls.forEach((url) => {
+      createdObjectUrlsRef.current.forEach((url) => {
         try {
           URL.revokeObjectURL(url);
         } catch {

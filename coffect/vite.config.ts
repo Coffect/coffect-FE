@@ -5,28 +5,6 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { VitePWA } from "vite-plugin-pwa";
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [react(), tailwindcss(), tsconfigPaths()],
-  build: {
-    outDir: "dist",
-  },
-  server: {
-    proxy: {
-      // API 프록시
-      "/api": {
-        target: "http://13.124.169.70:3000",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
-      },
-      // 소켓 프록시
-      "/socket.io": {
-        target: "http://13.124.169.70:3000",
-        changeOrigin: true,
-        ws: true, // WebSocket 지원
-      },
-    },
-  },
-
 export default defineConfig(() => {
   const serverTarget =
     process.env.VITE_SERVER_API_URL || "http://13.124.169.70:3000";

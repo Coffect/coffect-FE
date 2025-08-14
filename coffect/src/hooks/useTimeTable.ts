@@ -101,16 +101,9 @@ export const useTimeTableComparison = (
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const {
-    timeTable: myTimeTable,
-    loading: myLoading,
-    refetch: fetchMyTimeTable,
-  } = useTimeTable(myUserId);
-  const {
-    timeTable: opponentTimeTable,
-    loading: opponentLoading,
-    refetch: fetchOpponentTimeTable,
-  } = useTimeTable(opponentUserId);
+  const { timeTable: myTimeTable, loading: myLoading } = useTimeTable(myUserId);
+  const { timeTable: opponentTimeTable, loading: opponentLoading } =
+    useTimeTable(opponentUserId);
 
   const fetchAndCompareTimeTables = useCallback(async () => {
     try {
@@ -121,48 +114,62 @@ export const useTimeTableComparison = (
         opponentUserId,
       );
 
-      // 먼저 두 사용자의 시간표를 불러옴
-      const [myResult, opponentResult] = await Promise.allSettled([
-        fetchMyTimeTable(),
-        fetchOpponentTimeTable(),
-      ]);
-
-      // 로딩 결과 확인
-      if (myResult.status === "rejected") {
-        setCommonFreeTime("내 시간표를 불러올 수 없습니다");
-        return;
-      }
-      if (opponentResult.status === "rejected") {
-        console.log("상대 시간표 로딩 실패:", opponentResult.reason);
-        setCommonFreeTime("상대 시간표를 불러올 수 없습니다");
-        return;
-      }
-
-      // 시간표 비교 실행
-      if (!myTimeTable || !opponentTimeTable) {
-        setCommonFreeTime("겹치는 공강 시간 없음");
-        return;
-      }
-
       setLoading(true);
       setError(null);
 
+      // 직접 API에서 시간표를 가져와서 비교
       try {
-        // 두 시간표를 비교해서 겹치는 공강 시간 계산
-        const commonTime = getCommonFreeTime(myTimeTable, opponentTimeTable);
-        setCommonFreeTime(commonTime);
-      } catch {
-        setError("시간표 비교 중 오류가 발생했습니다.");
-        setCommonFreeTime("겹치는 공강 시간 없음");
+        const [myResponse, opponentResponse] = await Promise.all([
+          axiosInstance.get<GetTimeTableResponse>(
+            `/profile/getTimeLine?userId=${myUserId}`,
+          ),
+          axiosInstance.get<GetTimeTableResponse>(
+            `/profile/getTimeLine?userId=${opponentUserId}`,
+          ),
+        ]);
+
+        // 응답 데이터 확인
+        if (
+          myResponse.data.resultType === "SUCCESS" &&
+          myResponse.data.success &&
+          opponentResponse.data.resultType === "SUCCESS" &&
+          opponentResponse.data.success
+        ) {
+          const myTimeTableData = myResponse.data.success;
+          const opponentTimeTableData = opponentResponse.data.success;
+
+          if (
+            typeof myTimeTableData === "string" &&
+            typeof opponentTimeTableData === "string"
+          ) {
+            // 두 시간표를 비교해서 겹치는 공강 시간 계산
+            const commonTime = getCommonFreeTime(
+              myTimeTableData,
+              opponentTimeTableData,
+            );
+            setCommonFreeTime(commonTime);
+          } else {
+            setCommonFreeTime("시간표 데이터 형식이 올바르지 않습니다");
+          }
+        } else {
+          console.log("시간표 API 응답 실패:", {
+            my: myResponse.data,
+            opponent: opponentResponse.data,
+          });
+          setCommonFreeTime("시간표를 불러올 수 없습니다");
+        }
+      } catch (apiError) {
+        console.error("시간표 API 호출 실패:", apiError);
+        setCommonFreeTime("시간표를 불러올 수 없습니다");
       } finally {
         setLoading(false);
       }
     } catch (error) {
       console.error("시간표 비교 중 오류 발생:", error);
-      // 에러가 발생해도 기본값 설정
       setCommonFreeTime("시간 협의 가능");
+      setLoading(false);
     }
-  }, [fetchMyTimeTable, fetchOpponentTimeTable, myUserId, opponentUserId]);
+  }, [myUserId, opponentUserId]);
 
   return {
     commonFreeTime,
@@ -218,9 +225,6 @@ export const getCommonFreeTime = (
       // 시간표 데이터를 파싱 (selectedSlots 배열 형태)
       const mySlots = JSON.parse(myTimeTable) as string[];
       const opponentSlots = JSON.parse(opponentTimeTable) as string[];
-
-      console.log("파싱된 내 시간표:", mySlots);
-      console.log("파싱된 상대 시간표:", opponentSlots);
 
       if (!Array.isArray(mySlots) || !Array.isArray(opponentSlots)) {
         console.log("시간표가 배열 형태가 아닙니다");

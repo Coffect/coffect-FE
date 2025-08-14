@@ -7,7 +7,7 @@
 import BottomNavbar from "../components/shareComponents/BottomNavbar";
 import { useNavigate } from "react-router-dom";
 import EmptyChatList from "../assets/icon/chat/EmptyChatList.png";
-import { getRelativeTime } from "../utils/dateUtils";
+import { getTimeAgo } from "../utils/dateUtils";
 
 import { useChatRooms } from "../hooks/chat";
 
@@ -122,7 +122,7 @@ const Chat = () => {
                   </span>
                   <span className="ml-2 flex-shrink-0 truncate overflow-hidden text-sm text-ellipsis whitespace-nowrap text-[var(--gray-40)]">
                     {chat.lastMessageTime
-                      ? getRelativeTime(chat.lastMessageTime)
+                      ? getTimeAgo(chat.lastMessageTime)
                       : "지금"}
                   </span>
                 </div>

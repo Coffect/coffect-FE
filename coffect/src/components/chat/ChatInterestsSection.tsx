@@ -106,11 +106,10 @@ const ChatInterestsSection = ({
               <button
                 className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--gray-10)] py-2 text-sm font-medium text-[var(--gray-70)]"
                 onClick={() => {
-                  console.log("스케줄 버튼 클릭됨");
                   console.log("chatRoomId:", chatRoomId);
                   if (chatRoomId) {
                     const url = `/chat/${chatRoomId}/schedule`;
-                    console.log("이동할 URL:", url);
+
                     navigate(url);
                   } else {
                     console.log("chatRoomId가 없습니다!");

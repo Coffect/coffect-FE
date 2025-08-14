@@ -7,14 +7,10 @@ import Schedule from "../components/chat/Schedule";
 const ChatRouter: React.FC = () => {
   const location = useLocation();
 
-  console.log("ChatRouter - 현재 경로:", location.pathname);
-
   // schedule이 포함된 경로인지 확인
   const isSchedulePath = location.pathname.includes("/schedule");
-  console.log("ChatRouter - isSchedulePath:", isSchedulePath);
 
   if (isSchedulePath) {
-    console.log("ChatRouter - Schedule 컴포넌트를 렌더링합니다!");
     return <Schedule />;
   }
 
