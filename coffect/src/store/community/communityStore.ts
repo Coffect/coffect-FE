@@ -36,7 +36,7 @@ export const useCommunityStore = create<CommunityState & CommunityActions>(
       set((state) => ({
         filters: { ...state.filters, ...newFilters },
       })),
-    resetFilters: () => set({ filters: { type: null, subject: null } }),
+    resetFilters: () => set({ filters: { type: "아티클", subject: [1] } }),
     openFilterModal: () => set({ isFilterModalOpen: true }),
     closeFilterModal: () => set({ isFilterModalOpen: false }),
   }),
