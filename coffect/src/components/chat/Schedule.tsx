@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import ScheduleForm from "./ScheduleForm";
 import type { ScheduleFormValues } from "./ScheduleForm";
 import ScheduleCompleteModal from "./ScheduleCompleteModal";
@@ -18,15 +18,26 @@ import { useScheduleForm } from "./hooks/useScheduleForm";
 
 const Schedule: React.FC = () => {
   const location = useLocation();
-  const { chatRoomId } = useParams<{ chatRoomId: string }>();
   const { user: currentUser } = useChatUser();
   const { chatRooms } = useChatRooms();
 
   // 현재 채팅방 ID 가져오기 (URL에서 추출하거나 location state에서)
-  const currentChatRoomId = chatRoomId || location.state?.chatRoomId;
-  const currentChatRoom = chatRooms.find(
-    (room) => room.chatroomId === currentChatRoomId,
-  );
+  const currentChatRoomId = (() => {
+    // /chat/{chatRoomId}/schedule 형태에서 chatRoomId 추출
+    const pathParts = location.pathname.split("/");
+    if (
+      pathParts.length >= 4 &&
+      pathParts[1] === "chat" &&
+      pathParts[pathParts.length - 1] === "schedule"
+    ) {
+      // 전체 chatRoomId를 추출 (슬래시가 포함된 경우도 처리)
+      return pathParts.slice(2, -1).join("/");
+    }
+    return location.state?.chatRoomId;
+  })();
+  const currentChatRoom =
+    chatRooms.find((room) => room.chatroomId === currentChatRoomId) ||
+    chatRooms[0]; // 임시로 첫 번째 채팅방 사용
 
   const [form, setForm] = useState<ScheduleFormValues>(() => {
     // 기존 일정이 있는지 확인 (수정하기)
@@ -60,16 +71,6 @@ const Schedule: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const navigate = useNavigate();
   const isEdit = Boolean(location.state?.schedule);
-
-  // 폼 초기화 함수
-  const resetForm = () => {
-    setForm({
-      date: undefined,
-      time: "",
-      place: "",
-      alert: null,
-    });
-  };
 
   // 일정 삭제하기
   const handleDelete = () => {
@@ -109,21 +110,36 @@ const Schedule: React.FC = () => {
         return;
       }
 
-      const coffectId = parseInt(currentChatRoomId, 10);
-      if (isNaN(coffectId)) {
-        return;
-      }
-
       dateObj.setHours(hours, minutes, 0, 0);
 
       const scheduleData = {
         time: dateObj.toISOString(),
         location: form.place,
         coffeeDate: dateObj.toISOString(),
-        coffectId: coffectId,
       };
 
-      const response = await fixCoffeeChatSchedule(scheduleData);
+      // getCoffectId API 호출
+      const { getCoffectId } = await import("../../api/chat/chatRoomApi");
+      const coffectIdResponse = await getCoffectId(currentChatRoomId);
+
+      if (
+        coffectIdResponse.resultType !== "SUCCESS" ||
+        !coffectIdResponse.success
+      ) {
+        throw new Error(
+          coffectIdResponse.error?.reason ||
+            "커피챗 제안 아이디를 찾을 수 없습니다.",
+        );
+      }
+
+      const coffectId = coffectIdResponse.success;
+      console.log("coffectId:", coffectId);
+
+      // fixCoffeeChatSchedule API 호출
+      const response = await fixCoffeeChatSchedule({
+        ...scheduleData,
+        coffectId,
+      });
 
       if (response.resultType === "SUCCESS") {
         console.log("일정 등록 성공:", response.success);
@@ -153,7 +169,7 @@ const Schedule: React.FC = () => {
           <X size={24} />
         </button>
         <div className="mb-7 text-[18px] font-semibold text-[var(--gray-90)]">
-          일정 등록
+          {isEdit ? "일정 수정" : "일정 등록"}
         </div>
         <div className="flex w-full items-center justify-start">
           <div className="z-10 -mr-2 h-9 w-9 overflow-hidden rounded-full border-2 border-[var(--white)] bg-[var(--gray-10)]">
@@ -207,7 +223,7 @@ const Schedule: React.FC = () => {
             time={form.time}
             onClose={() => {
               setShowComplete(false);
-              resetForm();
+              // 일정 등록 완료 후 해당 일정 정보를 유지하면서 채팅방으로 이동
               navigate(
                 currentChatRoomId ? `/chat/${currentChatRoomId}` : "/chat",
                 {

@@ -27,15 +27,16 @@ export const useChatRooms = (): UseChatRoomsReturn => {
 
   // 채팅방 목록 조회
   const loadChatRooms = useCallback(async () => {
+    if (isLoading) return; // 이미 로딩 중이면 중복 호출 방지
     try {
       setIsLoading(true);
       setError(null);
 
-      // 소켓 연결 (한 번만 시도)
+      // 소켓 연결
       try {
         socketManager.connect();
       } catch (error) {
-        console.warn("소켓 연결 실패 (무시됨):", error);
+        console.warn("소켓 연결 실패:", error);
       }
 
       const response = await getChatRoomList();
@@ -158,7 +159,7 @@ export const useChatRooms = (): UseChatRoomsReturn => {
     return () => {
       isMountedRef.current = false;
     };
-  }, [loadChatRooms]);
+  }, []); // loadChatRooms 의존성 제거
 
   // 채팅방 목록 정렬 (최근 메시지 순)
   const sortedChatRooms = useMemo(() => {

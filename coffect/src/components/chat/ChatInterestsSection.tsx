@@ -75,12 +75,13 @@ const ChatInterestsSection = ({
             {schedule && (
               <button
                 className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-[16px] font-medium whitespace-nowrap text-[var(--gray-90)] sm:text-sm"
-                onClick={() =>
-                  chatRoomId &&
-                  navigate(`/chat/${chatRoomId}/schedule`, {
-                    state: { schedule },
-                  })
-                }
+                onClick={() => {
+                  if (chatRoomId) {
+                    navigate(`/chat/${chatRoomId}/schedule`, {
+                      state: { schedule: schedule },
+                    });
+                  }
+                }}
               >
                 <Calendar size={18} className="text-[var(--gray-40)]" />
                 <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
@@ -104,9 +105,17 @@ const ChatInterestsSection = ({
             <div className="flex gap-2">
               <button
                 className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--gray-10)] py-2 text-sm font-medium text-[var(--gray-70)]"
-                onClick={() =>
-                  chatRoomId && navigate(`/chat/${chatRoomId}/schedule`)
-                }
+                onClick={() => {
+                  console.log("스케줄 버튼 클릭됨");
+                  console.log("chatRoomId:", chatRoomId);
+                  if (chatRoomId) {
+                    const url = `/chat/${chatRoomId}/schedule`;
+                    console.log("이동할 URL:", url);
+                    navigate(url);
+                  } else {
+                    console.log("chatRoomId가 없습니다!");
+                  }
+                }}
               >
                 <Calendar size={17} />
                 <span className="leading-none">커피챗 일정 등록</span>

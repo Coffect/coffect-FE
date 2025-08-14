@@ -5,7 +5,7 @@
  */
 
 import { useMemo, useState, useRef, useEffect, useCallback } from "react";
-import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import usePreventZoom from "./hooks/usePreventZoom";
 import useModal from "./hooks/useModal";
 import RequestModal from "./RequestModal";
@@ -19,7 +19,6 @@ import { useChatRooms } from "../../hooks/chat/useChatRooms";
 import useHandleSend from "./hooks/useHandleSend";
 import useCurrentTime from "./hooks/useCurrentTime";
 import { getChatMessages } from "../../api/chat";
-import { useCoffeeChatSuggestions } from "../../hooks/useCoffeeChatSuggestions";
 import { useTimeTableComparison } from "../../hooks/useTimeTable";
 import { axiosInstance } from "../../api/axiosInstance";
 import type { Schedule } from "./hooks/useSchedule";
@@ -29,7 +28,21 @@ const ChatRoom = () => {
   usePreventZoom();
   const location = useLocation();
   const navigate = useNavigate();
-  const { chatRoomId } = useParams<{ chatRoomId: string }>();
+
+  const chatRoomId = (() => {
+    // /chat/{chatRoomId} 형태에서 chatRoomId 추출
+    const pathParts = location.pathname.split("/");
+    if (pathParts.length >= 3 && pathParts[1] === "chat") {
+      // /schedule이 포함된 경우 제거
+      const chatRoomIdParts = pathParts.slice(2);
+      const scheduleIndex = chatRoomIdParts.indexOf("schedule");
+      if (scheduleIndex !== -1) {
+        return chatRoomIdParts.slice(0, scheduleIndex).join("/");
+      }
+      return chatRoomIdParts.join("/");
+    }
+    return "";
+  })();
   const [isProfileLoading, setIsProfileLoading] = useState(false);
 
   const {
@@ -184,9 +197,6 @@ const ChatRoom = () => {
 
   const { user, loading: userLoading } = useChatUser();
 
-  // 커피챗 제안 데이터 가져오기 (수동 호출)
-  const { suggestions, refetch: fetchSuggestions } = useCoffeeChatSuggestions();
-
   // 시간표 비교 훅 사용 (수동 호출)
   const { commonFreeTime, fetchAndCompare: fetchTimeTables } =
     useTimeTableComparison(user.id, currentChatRoom?.userId || 0);
@@ -194,8 +204,8 @@ const ChatRoom = () => {
   // 상대 요청 보기 모달 열기 함수
   const handleOpenRequestModal = async () => {
     try {
-      // 제안 요청과 시간표를 먼저 불러옴
-      await Promise.allSettled([fetchSuggestions(), fetchTimeTables()]);
+      // 시간표를 먼저 불러옴
+      await fetchTimeTables();
     } catch (error) {
       console.error("데이터 로딩 중 오류 발생:", error);
       // API 호출이 실패해도 모달은 열어줌
@@ -247,16 +257,6 @@ const ChatRoom = () => {
       abortController.abort();
     };
   }, [currentChatRoom?.userId]);
-
-  // 현재 채팅방의 커피챗 제안 찾기
-  const currentSuggestion = useMemo(() => {
-    if (!currentChatRoom?.userId) return null;
-    const found = suggestions.find(
-      (suggestion) => suggestion.otherUserid === currentChatRoom.userId,
-    );
-
-    return found;
-  }, [suggestions, currentChatRoom?.userId]);
 
   // 기존 메시지 로딩 함수
   const loadMessages = useCallback(async () => {
@@ -311,9 +311,11 @@ const ChatRoom = () => {
           });
 
         // createdAt 속성 제거하고 Message 타입으로 변환
-        const finalMessages: Message[] = sortedMessages.map(
-          ({ createdAt, ...message }) => message,
-        );
+        const finalMessages: Message[] = sortedMessages.map((msg) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { createdAt, ...message } = msg;
+          return message;
+        });
 
         setMessages(finalMessages);
       }
@@ -360,12 +362,8 @@ const ChatRoom = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         opponentName={currentChatRoom?.userInfo?.name}
-        requestMessage={
-          currentSuggestion?.suggestion || "커피챗 제안이 도착했습니다."
-        }
-        requestTime={
-          currentSuggestion?.requestTime || "요청 시간 정보가 없습니다."
-        }
+        requestMessage="커피챗 제안이 도착했습니다."
+        requestTime="요청 시간 정보가 없습니다."
         availableTime={commonFreeTime}
       />
 

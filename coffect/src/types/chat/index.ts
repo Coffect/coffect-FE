@@ -105,6 +105,13 @@ export interface SendPhotoResponse {
   success: ChatMessage;
 }
 
+// 커피챗 제안 아이디 조회 응답 타입
+export interface GetCoffectIdResponse {
+  resultType: string;
+  error: { reason: string } | null;
+  success: number | null;
+}
+
 // Socket.io 이벤트 타입들
 export interface SocketMessage {
   id: string;

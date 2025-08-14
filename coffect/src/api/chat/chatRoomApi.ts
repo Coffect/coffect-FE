@@ -11,7 +11,33 @@ import type {
   CreateChatRoomResponse,
   MarkAsReadResponse,
   SendPhotoResponse,
+  GetCoffectIdResponse,
 } from "../../types/chat";
+
+// 커피챗 제안 아이디 조회 API
+export const getCoffectId = async (
+  chatRoomId: string,
+): Promise<GetCoffectIdResponse> => {
+  try {
+    console.log("getCoffectId API 호출 - chatRoomId:", chatRoomId);
+
+    // 현재 저장된 토큰 확인
+    const token = localStorage.getItem("accessToken");
+    console.log("현재 토큰:", token ? "존재함" : "없음");
+
+    const response = await axiosInstance.get(
+      `/chat/getCoffectId?chatRoomId=${encodeURIComponent(chatRoomId)}`,
+    );
+    console.log("getCoffectId API 응답:", response.data);
+    return response.data;
+  } catch (error: any) {
+    return {
+      resultType: "FAIL",
+      error: { reason: "커피챗 제안 아이디 조회에 실패했습니다" },
+      success: null,
+    };
+  }
+};
 
 // 채팅방 생성 API
 export const createChatRoom = async (
@@ -27,6 +53,7 @@ export const createChatRoom = async (
 export const getChatRoomList = async (): Promise<ChatRoomListResponse> => {
   try {
     const response = await axiosInstance.get("/chat/rooms");
+    console.log("채팅방 목록 응답:", response.data);
 
     // 응답 데이터가 없거나 success 필드가 없을 경우 에러로 처리
     if (!response.data || !response.data.success) {
@@ -56,7 +83,10 @@ export const getChatMessages = async (
   chatRoomId: string,
 ): Promise<ChatMessageListResponse> => {
   try {
-    const response = await axiosInstance.get(`/chat?chatRoomId=${chatRoomId}`);
+    const response = await axiosInstance.get(
+      `/chat?chatRoomId=${encodeURIComponent(chatRoomId)}`,
+    );
+
     return response.data;
   } catch (error) {
     console.error("메시지 조회 실패:", error);
@@ -73,12 +103,11 @@ export const sendMessage = async (
   chatRoomId: string,
   message: string,
 ): Promise<SendMessageResponse> => {
-  const response = await axiosInstance.post(
-    `/chat/message?chatRoomId=${chatRoomId}`,
-    {
-      message,
-    },
-  );
+  const url = `/chat/message?chatRoomId=${encodeURIComponent(chatRoomId)}`;
+
+  const response = await axiosInstance.post(url, {
+    message,
+  });
   return response.data;
 };
 
@@ -87,7 +116,7 @@ export const markChatAsRead = async (
   chatRoomId: string,
 ): Promise<MarkAsReadResponse> => {
   const response = await axiosInstance.patch(
-    `/chat/read?chatRoomId=${chatRoomId}`,
+    `/chat/read?chatRoomId=${encodeURIComponent(chatRoomId)}`,
   );
   return response.data;
 };
@@ -101,7 +130,7 @@ export const sendPhoto = async (
   formData.append("image", imageFile);
 
   const response = await axiosInstance.post(
-    `/chat/photo?chatRoomId=${chatRoomId}`,
+    `/chat/photo?chatRoomId=${encodeURIComponent(chatRoomId)}`,
     formData,
     {
       headers: {
