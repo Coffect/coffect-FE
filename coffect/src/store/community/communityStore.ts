@@ -25,8 +25,8 @@ export const useCommunityStore = create<CommunityState & CommunityActions>(
     // 초기 상태 값
     sortOrder: "createdAt",
     filters: {
-      type: "아티클",
-      subject: [1],
+      type: "",
+      subject: [],
     },
     isFilterModalOpen: false,
 
@@ -36,7 +36,7 @@ export const useCommunityStore = create<CommunityState & CommunityActions>(
       set((state) => ({
         filters: { ...state.filters, ...newFilters },
       })),
-    resetFilters: () => set({ filters: { type: "아티클", subject: [1] } }),
+    resetFilters: () => set({ filters: { type: "", subject: [] } }),
     openFilterModal: () => set({ isFilterModalOpen: true }),
     closeFilterModal: () => set({ isFilterModalOpen: false }),
   }),
