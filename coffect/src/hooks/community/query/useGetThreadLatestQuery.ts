@@ -13,18 +13,20 @@ import type { GetThreadLatestResponse } from "@/types/community/postTypes";
  * @constant QUERY_KEY
  * @description react-query가 이 쿼리를 식별하고 캐시를 관리하기 위한 고유 키입니다.
  */
-const QUERY_KEY = ["community", "latestPosts"];
+const QUERY_KEY = ["community", "posts"];
 
 /**
  * @function useGetThreadLatestQuery
  * @description 최신순 게시글 목록 데이터를 무한 스크롤로 가져오는 커스텀 훅
  * @returns useInfiniteQuery의 결과 객체 ({ data, fetchNextPage, hasNextPage, ... })
  */
-export const useGetThreadLatestQuery = ({ enabled }: { enabled?: boolean } = {}) => {
+export const useGetThreadLatestQuery = ({
+  enabled,
+}: { enabled?: boolean } = {}) => {
   return useInfiniteQuery<GetThreadLatestResponse, Error>({
     queryKey: QUERY_KEY,
     queryFn: ({ pageParam }) =>
-      getThreadLatest({ cursor: pageParam as number | undefined }),
+      getThreadLatest({ dateCursor: pageParam as string | undefined }),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => {
       if (lastPage.success && lastPage.success.nextCursor !== -1) {
@@ -32,6 +34,6 @@ export const useGetThreadLatestQuery = ({ enabled }: { enabled?: boolean } = {})
       }
       return undefined;
     },
-    enabled, // enabled 속성을 직접 전달합니다.
+    enabled,
   });
 };
