@@ -37,7 +37,6 @@ const PostBody: React.FC<PostBodyProps> = ({
   showBookmarkButton,
 }) => {
   return (
-    // onContentClick 핸들러가 있으면 클릭 가능한 요소로 만듭니다.
     <div
       className={`px-4 pb-2 ${onContentClick ? "cursor-pointer" : ""}`}
       onClick={onContentClick}
@@ -54,6 +53,8 @@ const PostBody: React.FC<PostBodyProps> = ({
         comments={post.commentCount}
         isDetailView={isDetailView}
         showBookmarkButton={showBookmarkButton}
+        isLiked={post.isLiked}
+        isScraped={post.isScraped}
       />
     </div>
   );

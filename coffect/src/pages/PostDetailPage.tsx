@@ -83,11 +83,7 @@ const PostDetail = () => {
           }}
           timeAgo={timeAgo}
         />
-        <PostBody
-          post={post}
-          isDetailView={true}
-          showBookmarkButton={true}
-        />
+        <PostBody post={post} isDetailView={true} showBookmarkButton={true} />
 
         {comments && comments.length > 0 ? (
           <PostDetailComments commentList={comments} />
