@@ -8,6 +8,7 @@
  *          (nickname -> name, content -> commentBody, major 제거)
  */
 import type { Comment } from "@/types/community/commentTypes";
+import { useNavigate } from "react-router-dom";
 // import { formatTimeAgo } from "@/utils/dateUtils";
 
 /**
@@ -20,10 +21,18 @@ interface CommentItemProps {
 }
 
 const CommentItem = ({ comment }: CommentItemProps) => {
+  const navigate = useNavigate();
+  const handleCommentClick = () => {
+    navigate(`/userpage/${comment.user.id}`);
+  };
+
   return (
-    <div className="flex items-start gap-3 py-2.25">
+    <div
+      className="flex items-start gap-3 py-2.25"
+      onClick={handleCommentClick}
+    >
       <img
-        src={comment.user.profileImage || "https://via.placeholder.com/40"} // 임시 기본 이미지,,
+        src={comment.user.profileImage || "https://via.placeholder.com/40"}
         alt={comment.user.name}
         className="h-10 w-10 rounded-full object-cover"
       />
@@ -32,10 +41,14 @@ const CommentItem = ({ comment }: CommentItemProps) => {
           <span className="font-semibold text-[var(--gray-90)]">
             {comment.user.name}
           </span>
-          <span className="text-sm text-[var(--gray-40)]">
-            {/* API 응답에 major가 없으므로 학번만 표시 => major 추가 시 major로 변경 !*/}
-            {String(comment.user.studentId).substring(2, 4)}학번
-          </span>
+          <div>
+            <span className="pr-1 text-sm text-[var(--gray-40)]">
+              {comment.user.dept}
+            </span>
+            <span className="text-sm text-[var(--gray-40)]">
+              {String(comment.user.studentId).substring(2, 4)}학번
+            </span>
+          </div>
         </div>
         <p className="font-md break-words whitespace-pre-wrap text-[var(--gray-90)]">
           {comment.commentBody}
