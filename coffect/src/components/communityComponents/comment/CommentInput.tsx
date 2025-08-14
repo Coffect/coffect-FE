@@ -13,19 +13,21 @@ import { useState, useRef } from "react";
 import { useAddComment } from "@/hooks/community/mutation/useAddComment";
 import { Send } from "lucide-react";
 import useAutoResizeTextarea from "@/hooks/useAutoResizeTextarea";
-import { usePostDetail } from "@/hooks/community/query/usePostDetail";
 
 interface CommentInputProps {
   postId?: string;
+  currentUserProfileImage?: string;
 }
 
-const CommentInput = ({ postId }: CommentInputProps) => {
+const CommentInput = ({
+  postId,
+  currentUserProfileImage,
+}: CommentInputProps) => {
   const [commentBody, setCommentBody] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   useAutoResizeTextarea(textareaRef.current, commentBody);
 
   const { mutate: addComment, isPending } = useAddComment();
-  const { post } = usePostDetail();
 
   const handlePostComment = () => {
     if (!postId || commentBody.trim() === "" || isPending) return;
@@ -53,7 +55,7 @@ const CommentInput = ({ postId }: CommentInputProps) => {
   return (
     <div className="flex w-full flex-shrink-0 items-center gap-3 bg-white">
       <img
-        src={post?.user.profileImage}
+        src={currentUserProfileImage}
         alt="CurrentUser"
         className="h-10 w-10 rounded-full"
       />
@@ -65,7 +67,7 @@ const CommentInput = ({ postId }: CommentInputProps) => {
           value={commentBody}
           onChange={(e) => setCommentBody(e.target.value)}
           rows={1}
-          disabled={isPending} // 댓글 전송 중에는 입력 비활성화
+          disabled={isPending}
         />
         {commentBody.trim() && (
           <button

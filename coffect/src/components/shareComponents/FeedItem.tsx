@@ -3,6 +3,7 @@ import type { ThreadSummary } from "@/types/community/postTypes";
 import PostAuthorInfo from "./post/PostAuthorInfo";
 import PostBody from "./post/PostBody";
 import { getTimeAgo } from "@/utils/dateUtils";
+import { useFollowMutation } from "@/hooks/community/mutation/useFollowMutation";
 
 // FeedItem이 받을 props 타입을 정의합니다.
 interface FeedItemProps {
@@ -17,6 +18,7 @@ const FeedItem = ({
   showBookmarkButton = true,
 }: FeedItemProps) => {
   const navigate = useNavigate();
+  const { mutate: follow } = useFollowMutation();
 
   // 게시글 아이템 클릭 시 해당 게시글의 상세 페이지로 이동하는 함수입니다.
   const handlePostClick = () => {
@@ -24,8 +26,15 @@ const FeedItem = ({
   };
 
   // 작성자 클릭 시 해당 작성자의 프로필 페이지로 이동하는 함수입니다
-  const handleAuthorClick = () => {
-    navigate(`/userpage/${post.userId}`); // Use post.userId here
+  const handleAuthorClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/userpage/${post.user.id}`);
+  };
+
+  // 팔로우 버튼 클릭 핸들러
+  const handleFollowClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    follow(post.userId);
   };
 
   // 작성 시간을 "X일 전" 형식의 문자열로 변환합니다.
@@ -33,7 +42,7 @@ const FeedItem = ({
 
   return (
     // UI 하단에 회색 줄을 추가하여 각 피드 아이템을 구분합니다.
-    <div className="border-b border-gray-200 pb-2">
+    <div className="border-b border-gray-200 pb-2" onClick={handlePostClick}>
       <PostAuthorInfo
         user={{
           name: post.user.name,
@@ -45,8 +54,12 @@ const FeedItem = ({
         onAuthorClick={handleAuthorClick}
       >
         {showFollowButton && (
-          <button className="rounded-md bg-[var(--gray-60)] px-4 py-1.5 text-sm font-semibold text-white">
-            팔로우
+          <button
+            onClick={handleFollowClick}
+            // disabled={isFollowing}
+            className="rounded-md bg-[var(--gray-60)] px-4 py-1.5 text-sm font-semibold text-white disabled:bg-gray-300"
+          >
+            {post.isFollowing ? "팔로잉" : "팔로우"}
           </button>
         )}
       </PostAuthorInfo>

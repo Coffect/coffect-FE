@@ -5,7 +5,6 @@
  */
 
 import React from "react";
-import ExampleProfile from "../../assets/icon/chat/ExampleProfile.png";
 
 interface MessageBubbleProps {
   text: string;
@@ -13,6 +12,7 @@ interface MessageBubbleProps {
   mine: boolean;
   showProfile: boolean;
   showTime?: boolean;
+  profileImage?: string;
 }
 
 const bubbleBase =
@@ -27,6 +27,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   mine,
   showProfile,
   showTime = true,
+  profileImage,
 }) => {
   if (mine) {
     return (
@@ -46,11 +47,13 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
     <div className="flex flex-row items-start gap-2">
       {showProfile ? (
         <div className="h-8 w-8 flex-shrink-0 overflow-hidden rounded-full bg-[var(--gray-20)]">
-          <img
-            src={ExampleProfile}
-            alt="프로필"
-            className="h-full w-full object-cover"
-          />
+          {profileImage && (
+            <img
+              src={profileImage}
+              alt="프로필"
+              className="h-full w-full object-cover"
+            />
+          )}
         </div>
       ) : (
         <div className="h-8 w-8 flex-shrink-0" />

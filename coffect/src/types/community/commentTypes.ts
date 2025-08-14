@@ -20,6 +20,8 @@ export interface Comment {
     studentId: number; // 학생 ID
     profileImage: string; // 프로필 이미지 URL
     name: string; // 작성자 이름
+    dept: string; // 학과
+    id: string; // 작성자 페이지로 가기 위함.
   };
 }
 

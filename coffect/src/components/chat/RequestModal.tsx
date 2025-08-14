@@ -5,14 +5,168 @@
  */
 
 import { X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { getCoffectId as apiGetCoffectId } from "../../api/chat";
+import { getMessageShowUp as apiGetMessageShowUp } from "../../api/home";
+import { getCommonFreeTime } from "../../hooks/useTimeTable";
+
 interface RequestModalProps {
   isOpen: boolean;
   onClose: () => void;
-  username: string;
+  opponentName?: string; // 상대방 이름
+  requestMessage?: string; // 상대방의 요청 메시지
+  requestTime?: string; // 요청 시간
+  availableTime?: string; // 상대방의 가능한 시간
 }
 
-const RequestModal = ({ isOpen, onClose, username }: RequestModalProps) => {
+interface MessageShowUpResponse {
+  resultType: string;
+  success: {
+    coffectId: number;
+    firstUserId: number;
+    firstUserName: string;
+    message: string;
+    createdAt: string;
+  } | null;
+  error: { reason?: string } | null;
+}
+
+const RequestModal = ({
+  isOpen,
+  onClose,
+  opponentName = "상대방",
+  requestMessage = "상대방의 요청 메시지가 없습니다.",
+  requestTime = "요청 시간 정보가 없습니다.",
+  availableTime = "가능한 시간 정보가 없습니다.",
+}: RequestModalProps) => {
+  const location = useLocation();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [suggestion, setSuggestion] = useState<{
+    message: string;
+    requestTime: string;
+  } | null>(null);
+
+  // 현재 채팅방 ID 가져오기
+  const currentChatRoomId = (() => {
+    const pathParts = location.pathname.split("/");
+    if (
+      pathParts.length >= 3 &&
+      pathParts[1] === "chat" &&
+      pathParts[pathParts.length - 1] !== "schedule"
+    ) {
+      return pathParts.slice(2).join("/");
+    }
+    return null;
+  })();
+
+  // 모달이 열릴 때 API 호출
+  useEffect(() => {
+    const fetchData = async () => {
+      if (isOpen && currentChatRoomId) {
+        setLoading(true);
+        setError(null);
+        setSuggestion(null);
+
+        try {
+          // 1. getCoffectId API 호출
+          const coffectIdResponse = await apiGetCoffectId(currentChatRoomId);
+
+          if (
+            coffectIdResponse.resultType !== "SUCCESS" ||
+            !coffectIdResponse.success
+          ) {
+            throw new Error(
+              coffectIdResponse.error?.reason ||
+                "커피챗 제안 아이디를 찾을 수 없습니다.",
+            );
+          }
+
+          const coffectId = coffectIdResponse.success;
+          console.log("coffectId:", coffectId);
+
+          // 2. messageShowUp API 호출
+          const messageResponse = (await apiGetMessageShowUp(
+            coffectId,
+          )) as MessageShowUpResponse;
+
+          if (
+            messageResponse.resultType === "SUCCESS" &&
+            messageResponse.success
+          ) {
+            const suggestionData = {
+              message: messageResponse.success.message,
+              requestTime: new Date(
+                messageResponse.success.createdAt,
+              ).toLocaleString("ko-KR"),
+            };
+            setSuggestion(suggestionData);
+          } else {
+            throw new Error(
+              messageResponse.error?.reason ||
+                "해당 coffectId에 대한 메시지를 찾을 수 없습니다.",
+            );
+          }
+        } catch (err) {
+          console.error("데이터 조회 실패:", err);
+          if (err && typeof err === "object" && "response" in err) {
+            const axiosError = err as { response?: { status?: number } };
+            if (axiosError.response?.status === 500) {
+              setError("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+            } else {
+              setError(
+                err instanceof Error
+                  ? err.message
+                  : "데이터를 불러올 수 없습니다.",
+              );
+            }
+          } else {
+            setError(
+              err instanceof Error
+                ? err.message
+                : "데이터를 불러올 수 없습니다.",
+            );
+          }
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+  }, [isOpen, currentChatRoomId]);
+
+  // 시간표 데이터를 파싱해서 공강시간만 표시하는 함수
+  const formatAvailableTime = (timeData: string): string => {
+    try {
+      // 시간표 데이터가 JSON 문자열인지 확인
+      if (timeData && timeData.startsWith("[") && timeData.endsWith("]")) {
+        const timeSlots = JSON.parse(timeData) as string[];
+        console.log("파싱된 시간대:", timeSlots);
+
+        if (Array.isArray(timeSlots) && timeSlots.length > 0) {
+          // getCommonFreeTime 함수를 사용하여 시간대를 포맷팅
+          // 단일 시간표를 처리하기 위해 빈 문자열과 비교
+          const result = getCommonFreeTime(
+            JSON.stringify(timeSlots),
+            JSON.stringify(timeSlots),
+          );
+
+          return result;
+        }
+      }
+
+      // 파싱할 수 없거나 빈 데이터인 경우 기본값 반환
+
+      return timeData || "겹치는 공강 시간 없음";
+    } catch {
+      return timeData || "겹치는 공강 시간 없음";
+    }
+  };
+
   if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="relative mx-auto w-[90%] max-w-[340px] min-w-[200px] rounded-2xl bg-[var(--white)] px-6 py-7 shadow-lg max-[320px]:px-3 max-[320px]:py-4">
@@ -23,26 +177,26 @@ const RequestModal = ({ isOpen, onClose, username }: RequestModalProps) => {
           <X size={24} className="max-[340px]:h-4 max-[340px]:w-4" />
         </button>
         <div className="mb-4 text-sm font-medium text-[var(--gray-30)] max-[340px]:text-xs">
-          2025. 7. 3. 오후 2:39
+          {loading ? "로딩 중..." : suggestion?.requestTime || requestTime}
         </div>
         <div className="flex items-center gap-2 text-base font-semibold max-[340px]:text-xs">
           <span className="text-[20px] max-[340px]:text-[16px]">✉️</span>
-          {username}님의 메시지
+          {opponentName}님의 메시지
         </div>
         <div className="mb-4 border-b border-[var(--gray-10)] py-3 text-[14px] font-medium text-[var(--gray-70)] max-[340px]:py-3 max-[340px]:text-xs">
-          안녕하세요! 사람과 이야기를 나누는 것을 좋아하고, 새로운 것을 찾는
-          배우는 데 늘 열려 있는 김라떼라고 합니다. 즐겁고 의미 있는 경험을 함께
-          만들고 싶어요! 즐겁고 의미있는 경험 즐겁고 의미있는 경험 즐겁고
-          의미있는 경험 즐겁고 의미있는 경험 즐겁고 의미있는 경험 즐겁고
-          의미있는 경험
+          {loading
+            ? "로딩 중..."
+            : error
+              ? error
+              : suggestion?.message || requestMessage}
         </div>
         <div className="mt-4 mb-2 flex items-center gap-2 text-base font-semibold max-[340px]:text-xs">
           <span className="text-[16px] max-[340px]:text-[16px]">⏰</span>
           나와 겹치는 공강시간
         </div>
         <div className="flex justify-center">
-          <div className="mt-2 flex h-12 w-full items-center justify-start rounded-xl bg-[var(--gray-5)] px-4 text-sm font-medium max-[340px]:h-10 max-[340px]:px-2 max-[340px]:text-xs">
-            목요일 14:00
+          <div className="mt-2 flex min-h-[60px] w-full flex-wrap items-start justify-start rounded-xl bg-[var(--gray-5)] px-4 py-3 text-sm font-medium max-[340px]:min-h-[50px] max-[340px]:px-2 max-[340px]:text-xs">
+            {formatAvailableTime(availableTime)}
           </div>
         </div>
       </div>

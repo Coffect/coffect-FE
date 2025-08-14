@@ -1,6 +1,6 @@
 export default function LoadingScreen() {
   return (
-    <div className="w-ful flex h-full flex-col items-center justify-center bg-white">
+    <div className="flex h-full w-full flex-col items-center justify-center bg-white">
       {/* 메인 텍스트 */}
       <p className="w-[177px] text-[22px] font-semibold text-[var(--gray-90)]">
         잠시만 기다려주세요
