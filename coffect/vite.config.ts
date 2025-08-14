@@ -17,9 +17,9 @@ export default defineConfig(() => {
       VitePWA({
         strategies: "injectManifest", // Workbox가 src/sw.ts를 빌드에 포함
         srcDir: "src",
-        filename: "sw.js", // 최종 서비스워커 파일명
+        filename: "sw.ts", // 최종 서비스워커 파일명
         injectRegister: null, // index.html 자동 등록 비활성화
-        devOptions: { enabled: false },
+        devOptions: { enabled: true },
       }),
     ],
     server: {
