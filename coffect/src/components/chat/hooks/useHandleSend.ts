@@ -1,35 +1,86 @@
-// author : 앨리스/박은지
-// description : 메시지 전송 핸들러
-// 메시지 전송 시 현재 시간 및 메시지 내용 추가
-
-import type { Dispatch, SetStateAction } from "react";
+/*
+ * author : 앨리스/박은지
+ * description : 메시지 전송 핸들러
+ * 메시지 전송 시 API 호출 및 로컬 상태 업데이트
+ */
+import { useCallback } from "react";
+import { useSendMessage } from "../../../hooks/chat";
 import type { Message } from "../../../types/chat";
 
-type UseHandleSend = (
-  messages: Message[],
-  setMessages: Dispatch<SetStateAction<Message[]>>,
-  setInputValue: Dispatch<SetStateAction<string>>,
-  getCurrentTime: () => string,
-) => (msg: string) => void;
+interface UseHandleSendProps {
+  chatRoomId: string;
+  setMessages: (messages: Message[] | ((prev: Message[]) => Message[])) => void;
+  setInputValue: (value: string) => void;
+  getCurrentTime: () => string;
+  onError?: (error: string) => void;
+  onSuccess?: () => void; // 메시지 전송 성공 시 콜백
+}
 
-const useHandleSend: UseHandleSend = (
-  messages,
+const useHandleSend = ({
+  chatRoomId,
   setMessages,
   setInputValue,
   getCurrentTime,
-) => {
-  return (msg: string) => {
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: messages.length + 1,
+  onError,
+  onSuccess,
+}: UseHandleSendProps) => {
+  const { sendMessage, sending, error } = useSendMessage(chatRoomId, {
+    onSuccess: undefined, // handleSend 내부에서 처리
+    onError: (errorMessage: string) => {
+      onError?.(errorMessage);
+    },
+  });
+
+  const handleSend = useCallback(
+    async (msg: string) => {
+      if (!msg.trim() || !chatRoomId || chatRoomId === "") {
+        if (import.meta.env.MODE === "development") {
+          console.error("유효하지 않은 chatRoomId:", chatRoomId);
+        }
+        return;
+      }
+
+      const tempId = Date.now();
+      // 먼저 로컬에 메시지 추가 (낙관적 업데이트)
+      const tempMessage: Message = {
+        id: tempId, // 임시 ID
         type: "text",
         text: msg,
         time: getCurrentTime(),
         mine: true,
-      },
-    ]);
-    setInputValue("");
+      };
+
+      setMessages((prevMessages: Message[]) => [...prevMessages, tempMessage]);
+      setInputValue("");
+
+      // API로 메시지 전송
+      const success = await sendMessage(msg);
+
+      if (success) {
+        // 성공 시 콜백 실행
+        onSuccess?.();
+      } else {
+        // 실패 시 로컬 메시지 제거
+        setMessages((prevMessages: Message[]) =>
+          prevMessages.filter((m: Message) => m.id !== tempId),
+        );
+        setInputValue(msg); // 입력값 복원
+      }
+    },
+    [
+      setMessages,
+      setInputValue,
+      getCurrentTime,
+      sendMessage,
+      onSuccess,
+      chatRoomId,
+    ],
+  );
+
+  return {
+    handleSend,
+    sending,
+    error,
   };
 };
 

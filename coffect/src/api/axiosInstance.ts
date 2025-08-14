@@ -25,9 +25,26 @@ import type {
 } from "axios";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
 
+// 환경에 따른 baseURL 설정
+const getBaseURL = () => {
+  // 프로덕션(배포)에서는 항상 상대 경로(`/api`)를 사용하여
+  // vercel.json의 rewrites로 백엔드로 우회 → HTTPS 환경에서도 Mixed Content 회피
+  if (import.meta.env.PROD) {
+    return "/api";
+  }
+
+  // 개발 환경에서는 직접 API 서버 환경변수로 등록해서 사용
+  if (import.meta.env.VITE_SERVER_API_URL) {
+    return import.meta.env.VITE_SERVER_API_URL;
+  }
+
+  // 기본값: 로컬 개발에서도 프록시를 통해 우회
+  return "/api";
+};
+
 // Axios 인스턴스 생성
 export const axiosInstance: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_SERVER_API_URL,
+  baseURL: getBaseURL(),
 });
 
 // 요청 시 accessToken이 있다면 Authorization 헤더에 추가
@@ -35,7 +52,8 @@ axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem(LOCAL_STORAGE_KEY.accessToken);
   if (token) {
     config.headers = config.headers || {};
-    config.headers.Authorization = `Bearer ${token}`;
+    // config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = `${token}`;
   }
   return config;
 });
@@ -74,7 +92,7 @@ axiosInstance.interceptors.response.use(
         refreshPromise = axiosInstance
           .get("/user/refresh", {
             headers: {
-              Authorization: `Bearer ${refreshToken}`,
+              Authorization: `${refreshToken}`,
             },
           })
           .then((res) => {
@@ -99,7 +117,7 @@ axiosInstance.interceptors.response.use(
       try {
         const newToken = await refreshPromise;
         originalRequest.headers = originalRequest.headers || {};
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        originalRequest.headers.Authorization = `${newToken}`;
         return axiosInstance(originalRequest); // 재요청
       } catch (refreshError) {
         // 토큰 재발급 실패 시 → 로컬스토리지 정리 후 홈으로 이동

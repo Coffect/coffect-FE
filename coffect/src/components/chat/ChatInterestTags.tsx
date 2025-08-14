@@ -1,5 +1,7 @@
-// author : 앨리스/박은지
-// description : 채팅방 내부 관심 주제 태그
+/*
+ * author : 앨리스/박은지
+ * description : 채팅방 내부 관심 주제 태그
+ */
 
 import React from "react";
 
@@ -15,7 +17,7 @@ const ChatInterestTags: React.FC<{ interests: string[] }> = ({ interests }) => (
     {interests.map((tag, i) => (
       <span
         key={tag}
-        className={`rounded-md px-3 py-1 text-xs font-medium ${TAG_COLORS[i % TAG_COLORS.length]}`}
+        className={`rounded-[7px] px-3 py-1 text-[14px] font-medium ${TAG_COLORS[i % TAG_COLORS.length]}`}
       >
         {tag}
       </span>

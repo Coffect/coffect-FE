@@ -8,7 +8,7 @@
  */
 
 import React from "react";
-import type { Post } from "../../../types/community";
+import type { ThreadSummary } from "@/types/community/postTypes";
 
 // 원자(Atom) 컴포넌트들을 가져옵니다.
 import PostTitle from "./PostTitle";
@@ -19,44 +19,42 @@ import FeedInteraction from "../../communityComponents/feed/FeedInteraction";
 
 /** 컴포넌트가 받을 props 타입을 정의합니다.
  * @interface PostBodyProps
- * @property {Post} post - 표시할 게시글의 모든 데이터를 담고 있습니다.
+ * @property {PostSummary} post - 표시할 게시글의 모든 데이터를 담고 있습니다.
  * @property {boolean} [isDetailView=false] - isDetailView가 false이면(피드 등) 요약된 뷰를, true이면(상세 페이지) 전체 뷰를 표시합니다.
  * @property {() => void} [onContentClick] -  컨텐츠 영역 클릭 시 호출될 함수입니다. (피드에서 상세 페이지 이동 등)
  */
 interface PostBodyProps {
-  post: Post;
+  post: ThreadSummary;
   isDetailView?: boolean;
   onContentClick?: () => void;
+  showBookmarkButton?: boolean; // 북마크 버튼 표시 여부를 결정하는 prop
 }
 
 const PostBody: React.FC<PostBodyProps> = ({
   post,
   isDetailView = false,
   onContentClick,
+  showBookmarkButton,
 }) => {
   return (
-    // onContentClick 핸들러가 있으면 클릭 가능한 요소로 만듭니다.
     <div
       className={`px-4 pb-2 ${onContentClick ? "cursor-pointer" : ""}`}
       onClick={onContentClick}
     >
-      {/* 1. 게시글 제목 (항상 표시) */}
-      <PostTitle title={post.title} />
+      <PostTitle title={post.threadTitle} />
+      <PostContent content={post.threadBody} isDetailView={isDetailView} />
+      <PostImage src={post.images?.[0] || null} />
 
-      {/* 2. 게시글 본문 (요약 또는 전체) */}
-      <PostContent content={post.content} isDetailView={isDetailView} />
+      {isDetailView && <PostTags type={post.type} topic={post.subjects} />}
 
-      {/* 3. 게시글 종류 및 주제 태그 (상세 페이지에서만 표시) */}
-      {isDetailView && <PostTags type={post.type} topic={post.topic} />}
-
-      {/* 4. 게시글 이미지 (이미지가 있을 경우에만 표시) */}
-      <PostImage src={post.image} />
-
-      {/* 5. 좋아요 및 댓글 수 (항상 표시) */}
       <FeedInteraction
-        postId={post.id}
-        likes={post.likes}
-        comments={post.comments}
+        threadId={post.threadId}
+        likes={post.likeCount}
+        comments={post.commentCount}
+        isDetailView={isDetailView}
+        showBookmarkButton={showBookmarkButton}
+        isLiked={post.isLiked}
+        isScraped={post.isScraped}
       />
     </div>
   );

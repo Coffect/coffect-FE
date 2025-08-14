@@ -1,5 +1,7 @@
-// author : 앨리스/박은지
-// description : 채팅방 내부 입력창
+/*
+ * author : 앨리스/박은지
+ * description : 채팅방 내부 입력창
+ */
 
 import React, { useRef, useState } from "react";
 import { Plus, Send, X as XIcon } from "lucide-react";
@@ -9,6 +11,7 @@ interface ChatInputBoxProps {
   setInputValue: (v: string) => void;
   handleSend: (msg: string) => void;
   onImageSend?: (file: File) => void;
+  disabled?: boolean;
 }
 
 const ChatInputBox: React.FC<ChatInputBoxProps> = ({
@@ -16,6 +19,7 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
   setInputValue,
   handleSend,
   onImageSend,
+  disabled = false,
 }) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -84,12 +88,17 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
             </button>
           </div>
         )}
-        <div className="flex w-full items-center rounded-full bg-[rgba(245,245,245,1)] px-2 py-2">
+        <div className="flex w-full items-center rounded-full bg-[rgba(245,245,245,1)] px-[14px] py-2">
           <div className="relative">
             <button
-              className="mr-2 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-[rgba(74,74,74,1)] text-white"
-              onClick={handlePlusClick}
+              className={`mr-2 flex h-8 w-8 items-center justify-center rounded-full ${
+                disabled
+                  ? "cursor-not-allowed bg-[rgba(200,200,200,1)]"
+                  : "cursor-pointer bg-[rgba(74,74,74,1)]"
+              } text-white`}
+              onClick={disabled ? undefined : handlePlusClick}
               type="button"
+              disabled={disabled}
             >
               <Plus size={22} />
             </button>
@@ -137,19 +146,30 @@ const ChatInputBox: React.FC<ChatInputBoxProps> = ({
           />
           <textarea
             ref={inputRef}
-            className="flex-1 resize-none rounded-full px-3 py-2 text-base outline-none placeholder:text-[var(--gray-40)]"
-            placeholder="메시지를 입력해주세요"
+            className={`flex-1 resize-none rounded-full px-3 py-2 text-[16px] outline-none ${
+              disabled ? "cursor-not-allowed bg-gray-100" : ""
+            } placeholder:text-[var(--gray-30)]`}
+            placeholder={
+              disabled ? "채팅방을 로딩 중입니다..." : "메시지를 입력해주세요"
+            }
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={(e) => {
-              // Enter로 전송, Shift+Enter로 줄바꿈
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                trySend();
-              }
-            }}
+            onChange={
+              disabled ? undefined : (e) => setInputValue(e.target.value)
+            }
+            onKeyDown={
+              disabled
+                ? undefined
+                : (e) => {
+                    // Enter로 전송, Shift+Enter로 줄바꿈
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      trySend();
+                    }
+                  }
+            }
             style={{ fontSize: "16px", minHeight: "40px", maxHeight: "120px" }}
             rows={1}
+            disabled={disabled}
           />
           {inputValue.trim().length > 0 && (
             <button

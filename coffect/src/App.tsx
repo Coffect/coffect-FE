@@ -4,7 +4,6 @@ import RootLayout from "@/components/layout/RootLayout";
 import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Community from "./pages/Community";
-import Chat from "./pages/Chat";
 import ChatRouter from "./routes/ChatRouter";
 import userPageRoutes from "./routes/userPageRoutes";
 import homePageRoutes from "./routes/homePageRoutes";
@@ -21,10 +20,7 @@ const router = createBrowserRouter([
         index: true,
         element: <Navigate to="signup" />,
       },
-      {
-        path: "chat",
-        element: <Chat />,
-      },
+      // chat 경로 제거 - ChatRouter에서 처리
       {
         path: "signup",
         element: <Signup />,

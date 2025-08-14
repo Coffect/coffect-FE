@@ -4,6 +4,9 @@ description : 회원 탈퇴 시 확인 모달을 출력하는 컴포넌트입니
 */
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteUser } from "@/api/profile";
 
 interface LeaveModalProps {
   open: boolean;
@@ -15,6 +18,25 @@ interface LeaveModalProps {
 */
 const LeaveModal: React.FC<LeaveModalProps> = ({ open, onClose }) => {
   // 모달이 열려있지 않으면 null 반환
+
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const { mutate: deleteUserMutate, isPending: isDeleting } = useMutation({
+    mutationFn: deleteUser,
+    onSuccess: () => {
+      // 인증 토큰 및 캐시 완전 정리
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      queryClient.clear();
+      onClose();
+      navigate("/signup", { replace: true });
+    },
+    onError: (error) => {
+      console.error("회원탈퇴 실패:", error);
+    },
+  });
+
   if (!open) return null;
 
   return (
@@ -46,13 +68,17 @@ const LeaveModal: React.FC<LeaveModalProps> = ({ open, onClose }) => {
         {/* 탈퇴/취소 버튼 */}
         <div className="flex w-full text-center">
           <button
-            className="flex-1 rounded-bl-2xl bg-white py-4 text-[var(--gray-40)] transition"
+            className="flex-1 rounded-bl-2xl border-t-[1px] border-[var(--gray-5)] bg-white py-4 text-[var(--gray-40)] transition"
             onClick={onClose}
           >
             더 써볼래요
           </button>
-          <button className="flex-1 rounded-br-2xl bg-[var(--gray-80)] py-4 font-semibold text-white transition">
-            떠날래요
+          <button
+            className="flex-1 rounded-br-2xl bg-[var(--gray-80)] py-4 font-semibold text-white transition"
+            onClick={() => deleteUserMutate()}
+            disabled={isDeleting}
+          >
+            {isDeleting ? "처리중..." : "떠날래요"}
           </button>
         </div>
       </div>

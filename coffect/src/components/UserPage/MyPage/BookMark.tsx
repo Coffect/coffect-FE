@@ -1,107 +1,112 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import FeedItem from "../../shareComponents/FeedItem";
-import type { Post } from "../../../types/community";
-import profileImg from "../../../assets/icon/mypage/profile.png";
+import { useQuery } from "@tanstack/react-query";
+import { getBookMark, getProfile } from "@/api/profile";
+import LoadingScreen from "@/components/shareComponents/LoadingScreen";
+import { useInView } from "react-intersection-observer";
+
 import backIcon from "../../../assets/icon/mypage/back.png";
 import emptyFeedIcon from "../../../assets/icon/mypage/emptyFeed.png";
-
-const myDummyPosts: Post[] = [
-  {
-    id: 1,
-    user: {
-      profileImage: profileImg,
-      nickname: "재하",
-      major: "컴퓨터컴퓨터과학전공",
-      studentId: "19학번",
-    },
-    image: "https://picsum.photos/400/300?random=1",
-    title: "창밖 풍경과 커피 한 잔",
-    content:
-      "창밖에는 맑은 하늘과 부드러운 바람이 어우러져 평온한 풍경을 만든다. 커피 한 잔을 손에 들고 창가에 앉아 있으면, 시간도 잠시 멈춘 듯 느껴진다. 바쁜 일상...",
-    likes: 2,
-    comments: 2,
-    type: "일상",
-    topic: "일상",
-    postedDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2일 전
-    daysAgo: 2,
-  },
-  {
-    id: 2,
-    user: {
-      profileImage: profileImg,
-      nickname: "재하",
-      major: "컴퓨터컴퓨터과학전공",
-      studentId: "19학번",
-    },
-    image: "https://picsum.photos/400/300?random=2",
-    title: "디자인 프로젝트 회의",
-    content:
-      "오늘은 팀원들과 디자인 프로젝트 회의를 했다. 다양한 아이디어가 오가며 유익한 시간이었고, 앞으로의 방향성에 대해 많은 고민을 하게 되었다.",
-    likes: 5,
-    comments: 1,
-    type: "프로젝트",
-    topic: "디자인",
-    postedDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5일 전
-    daysAgo: 5,
-  },
-  {
-    id: 3,
-    user: {
-      profileImage: profileImg,
-      nickname: "재하",
-      major: "컴퓨터컴퓨터과학전공",
-      studentId: "19학번",
-    },
-    image: "https://picsum.photos/400/300?random=3",
-    title: "새로운 영감",
-    content:
-      "최근에 본 전시회에서 많은 영감을 받았다. 다양한 색감과 형태를 보며 나만의 디자인을 구상해보고 싶어졌다.",
-    likes: 8,
-    comments: 3,
-    type: "영감",
-    topic: "아트",
-    postedDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10일 전
-    daysAgo: 10,
-  },
-];
+import FeedListSkeleton from "@/components/communityComponents/feed/FeedListSkeleton";
 
 const BookMark = () => {
   const navigate = useNavigate();
 
+  const { data: profileData, isLoading: isProfileLoading } = useQuery({
+    queryKey: ["profile"],
+    queryFn: () => getProfile(),
+  });
+
+  const { data: bookMarkData, isLoading: isBookMarkLoading } = useQuery({
+    queryKey: ["bookMark"],
+    queryFn: () => getBookMark(),
+  });
+  const bookMarkPosts = bookMarkData?.success || [];
+  const sortedBookMarkPosts = [...bookMarkPosts].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
+
+  // 무한 스크롤 상태
+  const PAGE_SIZE = 10;
+  const [visibleCount, setVisibleCount] = useState<number>(
+    Math.min(PAGE_SIZE, sortedBookMarkPosts.length),
+  );
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const { ref: sentinelRef, inView } = useInView({
+    threshold: 0,
+    root: scrollContainerRef.current,
+  });
+
+  // 데이터가 바뀌면 초기화
+  useEffect(() => {
+    setVisibleCount(Math.min(PAGE_SIZE, sortedBookMarkPosts.length));
+  }, [sortedBookMarkPosts.length]);
+
+  // sentinel 관찰되면 다음 청크 표시
+  useEffect(() => {
+    if (!inView) return;
+    if (visibleCount >= sortedBookMarkPosts.length) return;
+    setVisibleCount((prev) =>
+      Math.min(prev + PAGE_SIZE, sortedBookMarkPosts.length),
+    );
+  }, [inView, visibleCount, sortedBookMarkPosts.length]);
+
+  if (isProfileLoading || isBookMarkLoading) {
+    return <LoadingScreen />;
+  }
+
   return (
-    <>
-      <div className="flex h-full w-full flex-col bg-white px-4">
-        {/* 상단 헤더 */}
-        <div className="flex items-center justify-between py-3">
-          <button
-            className="pr-9 text-left text-3xl"
-            onClick={() => navigate("/mypage")}
-          >
-            <img src={backIcon} className="h-6 w-6" />
-          </button>
-          <div className="flex-1 items-center justify-center pr-15 text-center">
-            <span className="text-lg font-semibold">저장한 콘텐츠</span>
-          </div>
-        </div>
-        <div className="flex flex-1 flex-col overflow-y-auto py-5">
-          {/* 내 피드 탭이 활성화된 경우 피드 내용 출력 */}
-          {myDummyPosts.length === 0 ? (
-            <div className="flex flex-1 flex-col items-center justify-center">
-              <span className="text-md mb-3 text-[var(--gray-50)]">
-                아직 작성한 글이 없어요!
-              </span>
-              <img src={emptyFeedIcon} className="h-10 w-10 opacity-40" />
-            </div>
-          ) : (
-            <>
-              {myDummyPosts.map((post) => (
-                <FeedItem key={post.id} post={post} />
-              ))}
-            </>
-          )}
+    <div className="flex h-full w-full flex-col bg-white">
+      {/* 상단 헤더 */}
+      <div className="flex items-center justify-between px-4 py-3">
+        <button
+          className="pr-9 text-left text-3xl"
+          onClick={() => navigate("/mypage")}
+        >
+          <img src={backIcon} className="h-6 w-6" />
+        </button>
+        <div className="flex-1 items-center justify-center pr-15 text-center">
+          <span className="text-lg font-semibold">저장한 콘텐츠</span>
         </div>
       </div>
-    </>
+      {/* 저장된 콘텐츠 출력 */}
+      <div
+        className="flex flex-1 flex-col overflow-y-auto"
+        ref={scrollContainerRef}
+      >
+        {sortedBookMarkPosts.length === 0 ? (
+          <div className="flex flex-1 flex-col items-center justify-center px-4">
+            <span className="text-md mb-3 text-[var(--gray-50)]">
+              아직 저장한 글이 없어요!
+            </span>
+            <img src={emptyFeedIcon} className="h-10 w-10 opacity-40" />
+          </div>
+        ) : (
+          <>
+            {sortedBookMarkPosts.slice(0, visibleCount).map((post) => (
+              <FeedItem
+                key={post.threadId}
+                post={post}
+                showFollowButton={
+                  profileData?.success?.userInfo.id === post.user.id
+                    ? false
+                    : true
+                }
+                showBookmarkButton={true}
+              />
+            ))}
+            {visibleCount < sortedBookMarkPosts.length && (
+              <>
+                <div ref={sentinelRef} className="flex h-1 justify-center py-4">
+                  <FeedListSkeleton count={1} />
+                </div>
+              </>
+            )}
+          </>
+        )}
+      </div>
+    </div>
   );
 };
 
