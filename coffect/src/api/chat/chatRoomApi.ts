@@ -7,7 +7,6 @@ import { axiosInstance } from "../axiosInstance";
 import type {
   ChatRoomListResponse,
   ChatMessageListResponse,
-  SendMessageResponse,
   CreateChatRoomResponse,
   MarkAsReadResponse,
   SendPhotoResponse,
@@ -92,17 +91,21 @@ export const getChatMessages = async (
   }
 };
 
-// 메시지 전송 API
-export const sendMessage = async (
-  chatRoomId: string,
-  message: string,
-): Promise<SendMessageResponse> => {
-  const url = `/chat/message?chatRoomId=${encodeURIComponent(chatRoomId)}`;
-
-  const response = await axiosInstance.post(url, {
-    message,
+// 소켓을 통한 메시지 전송 (API 대신 소켓 이벤트 사용)
+export const sendMessage = (chatRoomId: string, message: string): void => {
+  // socketManager를 import하여 사용
+  import("./socketInstance").then(({ socketManager }) => {
+    socketManager.sendMessage(chatRoomId, message);
   });
-  return response.data;
+};
+
+// 소켓을 통한 메시지 수신 리스너
+export const receiveMessage = (
+  callback: (...args: unknown[]) => void,
+): void => {
+  import("./socketInstance").then(({ socketManager }) => {
+    socketManager.onReceiveMessage(callback);
+  });
 };
 
 // 채팅방 메시지 읽음 처리 API
