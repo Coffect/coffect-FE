@@ -16,10 +16,8 @@ class SocketManager {
       return;
     }
 
-    const socketUrl = import.meta.env.DEV
-      ? "ws://localhost:3000" // 로컬 개발용
-      : import.meta.env.VITE_SERVER_API_URL?.replace(/^http/, "ws") ||
-        "wss://coffect.kro.kr";
+    const socketUrl =
+      import.meta.env.VITE_SERVER_API_URL || "https://coffect.kro.kr";
 
     this.socket = io(socketUrl, {
       auth: {
