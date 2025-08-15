@@ -62,9 +62,10 @@ const getTagColor = (tag: string) => {
 };
 
 const CardDetailView = () => {
-  const navigate = useNavigate(); // 페이지 이동 함수
-  const location = useLocation(); // 전달받은 props(state)를 읽기 위함
+  const navigate = useNavigate();
+  const location = useLocation();
   const [myName, setMyName] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -73,17 +74,27 @@ const CardDetailView = () => {
         setMyName(me.success?.userInfo.name || "");
       } catch (e) {
         console.error(e);
-        setMyName(""); // 폴백
+        setMyName("");
+      } finally {
+        setLoading(false);
       }
     })();
   }, []);
 
-  // 전달받은 상태에서 profile, onSkip, onSuggest 추출
   const { profile } =
     (location.state as {
       profile: UserProfile;
     }) || {};
-  //프로필 정보가 없을 때
+
+  if (loading) {
+    // 로딩 화면
+    return (
+      <div className="flex h-screen items-center justify-center text-lg font-medium text-[var(--gray-70)]">
+        로딩 중...
+      </div>
+    );
+  }
+
   if (!profile) {
     return (
       <div className="flex h-screen items-center justify-center text-[var(--gray-90)]">
@@ -92,28 +103,26 @@ const CardDetailView = () => {
     );
   }
 
-  // 뒤로 가기
   const handleBack = () => navigate(-1);
 
   return (
     <div className="flex h-screen flex-col">
-      {/* 상단 네비게이션 (뒤로가기 + 타이틀) */}
+      {/* 상단 네비게이션 */}
       <div className="relative z-10 flex flex-none items-center bg-[var(--gray-0)] px-4 py-3 shadow-md">
         <button onClick={handleBack} className="absolute left-4">
           <ChevronLeft className="h-6 w-6 text-[var(--gray-90)]" />
         </button>
         <h1 className="mx-auto text-lg font-semibold">상세 정보</h1>
       </div>
-      {/* 중간 콘텐츠 (스크롤) */}
+
+      {/* 중간 콘텐츠 */}
       <div className="flex-1 overflow-y-auto bg-[var(--gray-0)]">
-        {/* 프로필 이미지 */}
         <div className="relative h-[40%] w-full overflow-hidden">
           <img
             src={profile.image}
             alt="프로필 이미지"
             className="h-full w-full object-cover"
           />
-          {/******나중에 api 생기면 인하 부분 유저의 이름 불러올것!(프로필 카드 이름 아님 기억하기) *******/}
           <div className="absolute bottom-1/10 left-1/2 z-20 -translate-x-1/2 transform rounded-xl bg-black/60 px-3 py-1 text-sm font-medium whitespace-nowrap">
             <span className="text-[var(--gray-0)]">{myName}</span>
             <span className="text-[var(--gray-20)]">
@@ -122,9 +131,7 @@ const CardDetailView = () => {
           </div>
         </div>
 
-        {/* 상세 정보, 구분선 */}
         <div className="relative z-10 -mt-[5%] divide-y-2 divide-[var(--gray-5)] rounded-t-3xl bg-[var(--gray-0)] px-5 pt-5">
-          {/* 이름 및 학과/학번 */}
           <div className="pb-4 pl-1">
             <h2 className="text-[22px] font-bold text-[var(--gray-80)]">
               {profile.name}
@@ -133,7 +140,7 @@ const CardDetailView = () => {
               </span>
             </h2>
           </div>
-          {/* 관심 키워드 */}
+
           <div className="pt-4 pb-4">
             <h3 className="mb-4 flex items-center gap-1 text-lg font-semibold">
               <span>💡</span> 관심 키워드
@@ -142,16 +149,14 @@ const CardDetailView = () => {
               {profile.tags.map((tag, i) => (
                 <span
                   key={i}
-                  className={`rounded-[7px] px-2.5 py-1 text-sm font-medium ${getTagColor(
-                    tag,
-                  )}`}
+                  className={`rounded-[7px] px-2.5 py-1 text-sm font-medium ${getTagColor(tag)}`}
                 >
                   {tag}
                 </span>
               ))}
             </div>
           </div>
-          {/* 자기소개 */}
+
           <div className="pt-4 pb-4">
             <h3 className="mb-4 flex items-center gap-1 text-lg font-semibold text-[var(--gray-90)]">
               👋 자기소개
@@ -160,7 +165,7 @@ const CardDetailView = () => {
               {profile.intro}
             </p>
           </div>
-          {/* QnA */}
+
           <div className="pt-4 pb-4">
             {profile.answers.map((qa, idx) => (
               <div key={idx} className={idx > 0 ? "mt-6" : ""}>

@@ -112,3 +112,27 @@ export function formatAmPmTo24Hour(timeString: string): string {
   const hh = hour.toString().padStart(2, "0");
   return `${hh}:${minute}`;
 }
+
+// author: 썬더/이희선
+// 날짜 포맷 변환 (ISO → YYYY.MM.DD)
+export const formatDate = (isoDate: string) => {
+  const dateObj = new Date(isoDate);
+  return dateObj
+    .toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+    .replace(/\./g, "")
+    .replace(/ /g, ".");
+};
+
+// 약속 시간 HH:MM
+export const formatTime = (isoDate: string) => {
+  const dateObj = new Date(isoDate);
+  return dateObj.toLocaleTimeString("ko-KR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+};

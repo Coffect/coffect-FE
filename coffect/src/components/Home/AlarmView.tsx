@@ -8,6 +8,7 @@ import TopNavbar from "./TopNavbar";
 import NoAlarm from "./NoAlarm";
 import { getNotifications, markAsRead } from "@/api/alert";
 import { getTimeAgo } from "@/utils/dateUtils";
+import LoadingScreen from "@/components/shareComponents/LoadingScreen";
 
 interface ApiNotification {
   notificationId: number;
@@ -124,6 +125,9 @@ const AlarmView = () => {
     }
   };
 
+  // 로딩 중에는 전체 화면 로딩만 표시 (상단바/본문 렌더 안 함)
+  if (loading) return <LoadingScreen />;
+
   return (
     <div className="relative flex h-screen w-full flex-col bg-[var(--gray-0)]">
       {/* 상단바 */}
@@ -133,11 +137,7 @@ const AlarmView = () => {
 
       {/* 본문 */}
       <div className="flex-1 overflow-y-auto">
-        {loading ? (
-          <div className="flex h-full items-center justify-center text-[var(--gray-50)]">
-            불러오는 중...
-          </div>
-        ) : alarms.length === 0 ? (
+        {alarms.length === 0 ? (
           <NoAlarm />
         ) : (
           alarms.map((alarm) => (
