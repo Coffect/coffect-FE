@@ -156,3 +156,6 @@ export const getMessageShowUp = async (coffectId: number) => {
     throw new Error("메시지를 불러오지 못했습니다.");
   }
 };
+
+export const acceptCoffeeChat = (coffectId: number) =>
+  axiosInstance.patch("/home/acceptCoffeeChat", { coffectId });

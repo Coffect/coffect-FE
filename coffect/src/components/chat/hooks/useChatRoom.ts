@@ -147,9 +147,7 @@ export const useChatRoom = () => {
 
   const handleSend = useHandleSend({
     chatRoomId: chatRoomId || "",
-    setMessages,
     setInputValue,
-    getCurrentTime,
     onError: (error) => {
       console.error("메시지 전송 오류:", error);
     },
