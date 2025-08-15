@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import RootLayout from "@/components/layout/RootLayout";
 import Home from "./pages/Home";
 import Signup from "./pages/Signup";
@@ -10,6 +10,7 @@ import homePageRoutes from "./routes/homePageRoutes";
 import signupRoutes from "./routes/signupRoutes";
 import CommunityRoutes from "./routes/CommunityRoutes";
 import { Navigate } from "react-router-dom";
+import ProtectedRoute from "./components/Signup/ProtectedRoute";
 
 const router = createBrowserRouter([
   {
@@ -20,27 +21,24 @@ const router = createBrowserRouter([
         index: true,
         element: <Navigate to="signup" />,
       },
-      // chat 경로 제거 - ChatRouter에서 처리
-      {
-        path: "signup",
-        element: <Signup />,
-      },
-      {
-        path: "home",
-        element: <Home />,
-      },
-      {
-        path: "/community",
-        element: <Community />,
-      },
-      {
-        path: "/chat/*",
-        element: <ChatRouter />,
-      },
-      ...userPageRoutes,
-      ...homePageRoutes,
+      { path: "signup", element: <Signup /> },
       ...signupRoutes,
-      ...CommunityRoutes,
+
+      {
+        element: (
+          <ProtectedRoute>
+            <Outlet />
+          </ProtectedRoute>
+        ),
+        children: [
+          { path: "home", element: <Home /> },
+          { path: "community", element: <Community /> },
+          { path: "chat/*", element: <ChatRouter /> },
+          ...userPageRoutes,
+          ...homePageRoutes,
+          ...CommunityRoutes,
+        ],
+      },
     ],
   },
 ]);
