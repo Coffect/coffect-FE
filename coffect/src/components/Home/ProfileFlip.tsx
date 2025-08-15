@@ -103,7 +103,11 @@ const fetchEnrichedCard = async (): Promise<UserProfile | null> => {
   }
 };
 
-const ProfileFlip: React.FC = () => {
+interface ProfileFlipProps {
+  onLoadingChange?: (loading: boolean) => void; // 로딩 상태 변경 콜백
+}
+
+const ProfileFlip: React.FC<ProfileFlipProps> = ({ onLoadingChange }) => {
   // 토스트 표시, 숨김
   const { showToast, hideToast } = useToastStore();
   const navigate = useNavigate();
@@ -133,7 +137,7 @@ const ProfileFlip: React.FC = () => {
   const [isFollowing, setIsFollowing] = useState(false);
 
   // 서버에서 프로필 카드 데이터 불러오기
-  const { data: currentCard } = useQuery<UserProfile | null>({
+  const { data: currentCard, isLoading } = useQuery<UserProfile | null>({
     queryKey: ["recommendedCard"],
     queryFn: async () => {
       const hasVisited = localStorage.getItem("cardViewVisited");
@@ -147,6 +151,11 @@ const ProfileFlip: React.FC = () => {
     refetchOnWindowFocus: false,
     retry: 0,
   });
+
+  // 로딩 상태 변경 시 부모로 전달
+  useEffect(() => {
+    onLoadingChange?.(isLoading);
+  }, [isLoading, onLoadingChange]);
 
   useEffect(() => {
     setIsFollowing(!!currentCard?.isFollow);

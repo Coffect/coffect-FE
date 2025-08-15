@@ -13,13 +13,21 @@ import Toast from "./Toast";
 
 const CardsView = () => {
   const [showModal, setShowModal] = useState(false); // 프로필 작성 유도 모달 여부
+  const [loading, setLoading] = useState(false); // 로딩 상태
 
   return (
     <div className="relative mx-auto flex h-full w-full flex-col overflow-x-hidden overflow-y-auto bg-[var(--gray-5)]">
+      {/* 로딩 화면 */}
+      {loading && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 text-white">
+          로딩 중...
+        </div>
+      )}
+
       {/* 프로필 작성 유도 모달 */}
       <ProfileModal isOpen={showModal} onClose={() => setShowModal(false)} />
 
-      {/* 상단 네비게이션  */}
+      {/* 상단 네비게이션 */}
       <div className="flex">
         <TopNavbar pageType="home" />
       </div>
@@ -28,11 +36,11 @@ const CardsView = () => {
       <main className="flex-1 items-center overflow-auto px-[1rem] pb-20">
         {/* 추천 배너 슬라이드 */}
         <CoffeeBanner />
-        {/*추천 프로필 카드들 */}
-        <ProfileFlip />
+        {/* 추천 프로필 카드들 */}
+        <ProfileFlip onLoadingChange={setLoading} />
       </main>
 
-      {/* 하단 네비게이션 (고정 위치) */}
+      {/* 하단 네비게이션 */}
       <div className="flex w-full">
         <BottomNavbar activeLabel="홈" />
       </div>
