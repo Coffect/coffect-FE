@@ -16,14 +16,8 @@ class SocketManager {
       return;
     }
 
-    const socketUrl = import.meta.env.DEV
-      ? "http://localhost:5173"
-      : import.meta.env.VITE_SERVER_API_URL || "http://13.124.169.70:3000";
-
-    if (!socketUrl) {
-      console.error("VITE_SERVER_API_URL 환경 변수가 설정되지 않았습니다");
-      throw new Error("Socket URL이 구성되지 않았습니다");
-    }
+    const socketUrl =
+      import.meta.env.VITE_SERVER_API_URL || "https://coffect.kro.kr";
 
     this.socket = io(socketUrl, {
       auth: {
