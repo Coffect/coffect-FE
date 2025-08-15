@@ -11,6 +11,9 @@ import {
   getUserStringId,
 } from "@/api/home";
 import { useQuery } from "@tanstack/react-query";
+import LoadingScreen from "@/components/shareComponents/LoadingScreen"; // 로딩 화면
+import { formatDate, formatTime, getTimeUntil } from "@/utils/dateUtils";
+import { getProfile } from "@/api/profile"; // 내 프로필 이름 조회용
 
 // API 응답 타입 정의
 interface ScheduleItem {
@@ -22,11 +25,21 @@ interface ScheduleItem {
   opponentName?: string;
 }
 
-/**
- * 일정 뷰 컴포넌트
- */
 const CalendarView: React.FC = () => {
-  const { data: schedules = [] } = useQuery<ScheduleItem[], Error>({
+  //  내 이름 조회 (스케줄 로딩과는 독립적으로 처리)
+  const { data: myName = "" } = useQuery<string>({
+    queryKey: ["myProfileName"],
+    queryFn: async (): Promise<string> => {
+      const me = await getProfile();
+      // 백엔드 응답 형태를 그대로 사용 (없는 경우 빈 문자열)
+      return me.success?.userInfo.name ?? "";
+    },
+    staleTime: 5 * 60 * 1000, // 5분 동안 캐시
+    retry: false,
+  });
+
+  // 일정 + 이름 보강해서 가져오기
+  const { data: schedules = [], isLoading } = useQuery<ScheduleItem[], Error>({
     queryKey: ["coffeeChatSchedule"],
     queryFn: async (): Promise<ScheduleItem[]> => {
       const raw = await getCoffeeChatSchedule();
@@ -47,36 +60,8 @@ const CalendarView: React.FC = () => {
     refetchOnWindowFocus: false,
   });
 
-  //  날짜 포맷 변환 (ISO → YYYY.MM.DD)
-  const formatDate = (isoDate: string) => {
-    const dateObj = new Date(isoDate);
-    return dateObj
-      .toLocaleDateString("ko-KR", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      })
-      .replace(/\./g, "")
-      .replace(/ /g, ".");
-  };
-  // 약속 시간 HH:MM
-  const formatTime = (isoDate: string) => {
-    const dateObj = new Date(isoDate);
-    return dateObj.toLocaleTimeString("ko-KR", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
-  };
-  //약속 일자까지 남은 일 수 계산
-  const calculateDaysAway = (isoDate: string) => {
-    const today = new Date();
-    const target = new Date(isoDate);
-    const diff = Math.ceil(
-      (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
-    );
-    return diff;
-  };
+  // 로딩 중에는 전체 화면 로딩만 표시 (상단바/본문 렌더 X)
+  if (isLoading) return <LoadingScreen />;
 
   return (
     <div className="relative flex h-screen w-full flex-col overflow-hidden bg-[var(--gray-0)]">
@@ -88,14 +73,14 @@ const CalendarView: React.FC = () => {
       {/* 메인: 일정 리스트 */}
       <main className="flex-1 overflow-y-auto bg-[var(--gray-5)]">
         {schedules.length === 0 ? (
-          // 일정이 없을 경우: NoSchedule 컴포넌트 렌더링
           <NoSchedule />
         ) : (
-          // 일정이 있을 경우: 리스트 렌더링
           <div>
             <div className="flex flex-col px-[1rem]">
+              {/* 내 프로필 이름 */}
               <h1 className="mt-[1.2rem] mb-[1rem] ml-[1vw] text-left text-xl font-bold">
-                <span className="text-orange-500">이인하</span>님의 커피챗 일정
+                <span className="text-orange-500">{myName || "사용자"}</span>
+                님의 커피챗 일정
               </h1>
             </div>
             <div className="flex flex-col items-center py-4">
@@ -111,7 +96,7 @@ const CalendarView: React.FC = () => {
                           {formatDate(item.coffeeDate)}
                         </span>
                         <span className="ml-1 rounded-[14px] bg-orange-500 px-2 py-1 text-sm font-semibold text-[var(--gray-0)]">
-                          {calculateDaysAway(item.coffeeDate)}일 뒤
+                          {getTimeUntil(item.coffeeDate)}
                         </span>
                       </div>
                       <div className="flex items-center text-sm font-medium text-[var(--gray-50)]">
@@ -119,6 +104,7 @@ const CalendarView: React.FC = () => {
                         {formatTime(item.coffeeDate)}
                       </div>
                     </div>
+
                     <div className="flex items-center">
                       <div className="mr-2 flex -space-x-2">
                         <img
@@ -136,6 +122,7 @@ const CalendarView: React.FC = () => {
                         </div>
                       </div>
                     </div>
+
                     <div className="my-1 text-sm font-medium text-[var(--gray-60)]">
                       @{item.location}
                     </div>
