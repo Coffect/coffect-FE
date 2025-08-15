@@ -5,42 +5,6 @@
  *              - 타입 이름은 '기능 + 목적' (예: GetPostsRequest) 또는 '데이터 모델' (예: Post)으로 명명합니다.
  */
 
-// /**
-//  * @interface Post
-//  * @description 단일 게시글의 상세 정보를 나타내는 기본 데이터 모델입니다.
-//  *              API 응답 등 다양한 곳에서 재사용됩니다.
-//  */
-// export interface Post {
-//   resultType: string; // 결과 타입 (예: "success", "error")
-//   error: null | {
-//     errorCode: string; // 에러 코드 (예: "THR-04")
-//     reason: string; // 에러 사유 (예: "게시글 ID가 없습니다.")
-//     data: null; // 추가 데이터 (없을 경우 null)
-//   };
-//   success: null | {
-//     result: {
-//       threadId: string; // 게시글 고유 ID
-//       threadTitle: string; // 게시글 제목
-//       threadBody: string; // 게시글 본문 내용
-//       threadShare: number; // 공유 수 (예: 0)
-//       createdAt: string; // 게시글 작성일 (ISO 8601 형식)
-//       type: string; // 게시글 종류 (예: "아티클", "질문")
-//       user: {
-//         profileImage: string; // 작성자 프로필 이미지 URL
-//         name: string; // 작성자 이름
-//         userId: number; // 작성자 고유 ID
-//       };
-//       subjectMatch: Array<{
-//         threadSubject: {
-//           subjectName: string; // 게시글 주제 이름
-//           subjectId: number; // 게시글 주제 고유 ID
-//         };
-//       }>;
-//     };
-//     likes: number; // 좋아요 수
-//   };
-// }
-
 /**
  * @interface ThreadSummary
  * @description 게시글 목록에 사용되는 각 게시글의 요약 정보 모델입니다.
@@ -95,7 +59,7 @@ export interface ThreadSummary {
 /************************ 최신순 게시글 조회 API ************************/
 
 export interface GetThreadLatestRequest {
-  cursor?: number;
+  dateCursor?: string;
 }
 
 export interface GetThreadLatestResponse {

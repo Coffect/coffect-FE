@@ -8,6 +8,7 @@ import { isFiveDigitCode } from "../../utils/validation"; // 공통 유틸 함�
 import SignupPageLayout from "./shared/SignupLayout";
 import type { SignupData, StepProps } from "../../types/signup";
 import { sendMailCode, verifyEmailCode } from "@/api/univ";
+import LoadingScreen from "@/components/shareComponents/LoadingScreen"; //로딩 화면 컴포넌트
 
 //학교 이름 입력으로 넣어주기 위해 추가
 interface Props extends StepProps {
@@ -25,6 +26,8 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, form }) => {
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
   // 연결했을 때 문자열이 5자리 숫자인지 확인
   const isComplete = isFiveDigitCode(code.join(""));
+  // ★ 로딩 상태 추가
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     //인증 메일이 이미 발송된 경우 중복 전송 방지
@@ -33,12 +36,15 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, form }) => {
       //인증 메일 전송
       const send = async () => {
         try {
-          sendMailCode(email, schoolName);
+          setIsLoading(true); // ★ 로딩 시작
+          await sendMailCode(email, schoolName);
           sessionStorage.setItem("mailSent", "true");
         } catch {
           alert(
             "메일 발송에 실패했습니다. 이메일 주소를 확인하고 다시 시도해주세요.",
           );
+        } finally {
+          setIsLoading(false); // ★ 로딩 종료
         }
       };
       send();
@@ -75,6 +81,7 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, form }) => {
   const handleNext = async () => {
     const joined = code.join("");
     try {
+      setIsLoading(true); // ★ 로딩 시작
       const res = await verifyEmailCode(email, Number(joined)); // 인증 코드 검증 서버 응답 확인
       if (res?.resultType === "SUCCESS") {
         onNext?.();
@@ -84,6 +91,8 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, form }) => {
       }
     } catch {
       alert("인증 요청 중 오류가 발생했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsLoading(false); // ★ 로딩 종료
     }
   };
 
@@ -96,7 +105,9 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, form }) => {
     };
   }, []);
 
-  return (
+  return isLoading ? (
+    <LoadingScreen />
+  ) : (
     <SignupPageLayout
       bottomButton={
         <button

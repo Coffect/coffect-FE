@@ -4,7 +4,7 @@
  */
 
 import { useNavigate } from "react-router-dom";
-import { Calendar, Mail, ChevronUp, ChevronDown } from "lucide-react";
+import { Calendar, Mail, ChevronUp } from "lucide-react";
 import ChatInterestTags from "./ChatInterestTags";
 
 interface Schedule {
@@ -129,19 +129,7 @@ const ChatInterestsSection = ({
             </div>
           )}
         </div>
-      ) : (
-        <div className="flex justify-end bg-[var(--gray-5)] px-4 py-3">
-          <button
-            type="button"
-            onClick={onToggleInterests}
-            aria-label="관심사 섹션 펼치기"
-            aria-expanded={false}
-            className="cursor-pointer rounded-full bg-[var(--white)] p-1 text-[var(--gray-50)] shadow-[0_0_12px_0_rgba(0,0,0,0.15)]"
-          >
-            <ChevronDown size={24} aria-hidden="true" />
-          </button>
-        </div>
-      )}
+      ) : null}
     </>
   );
 };
