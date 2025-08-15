@@ -1,3 +1,4 @@
+// Home.tsx
 /*
   author      : 이희선
   description : 홈 메인 페이지(메시지 베너 + 추천 카테고리)입니다.
@@ -10,6 +11,17 @@ import CoffeeCategoryGrid from "../components/Home/CoffeeCategoryGrid";
 import ProfileModal from "../components/Home/ProfileModal";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+// [ADD] iOS PWA 알림 버튼
+import PushEnableButton from "@/components/Home/PushEnableButton";
+
+// [ADD] 실행 환경 감지
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+const nav = navigator as Navigator & { standalone?: boolean };
+const isPWA =
+  window.matchMedia?.("(display-mode: standalone)")?.matches === true ||
+  nav.standalone === true;
+const hasSW =
+  "serviceWorker" in navigator && !!navigator.serviceWorker.controller;
 
 const Home = () => {
   const navigate = useNavigate();
@@ -19,10 +31,8 @@ const Home = () => {
   const isExpired = (timeStr: string) => {
     const now = new Date();
     const saved = new Date(timeStr);
-
     const resetTime = new Date();
     resetTime.setHours(9, 0, 0, 0);
-
     return now > resetTime && saved < resetTime;
   };
 
@@ -32,15 +42,13 @@ const Home = () => {
     const expire = localStorage.getItem("coffeeCategoryExpire");
 
     if (selected && expire && !isExpired(expire)) {
-      // 선택했고 아직 유효하면 추천 카드로 바로 이동
       navigate("/home/cards");
       return;
     }
 
-    // 만료됐거나 없으면 초기화
     localStorage.removeItem("coffeeCategorySelected");
     localStorage.removeItem("coffeeCategoryExpire");
-    // 최초 접속 시 localStorage 체크 →프로필 작성 유도 모달 한 번만 보여줌
+
     const hasSeen = localStorage.getItem("hasSeenProfileModal");
     if (!hasSeen) {
       setShowModal(true);
@@ -50,16 +58,20 @@ const Home = () => {
 
   return (
     <div className="relative mx-auto flex h-full w-full flex-col overflow-x-hidden overflow-y-auto bg-[var(--gray-5)]">
-      {/* 프로필 작성 유도 모달 */}
       <ProfileModal isOpen={showModal} onClose={() => setShowModal(false)} />
 
-      {/* 상단 네비게이션  */}
       <div className="flex">
         <TopNavbar pageType="home" />
       </div>
 
-      {/* 메인 콘텐츠 영역 */}
       <main className="flex-1 items-center overflow-auto px-[1rem] pb-20">
+        {/* [ADD] iOS PWA + SW 제어권 + 아직 권한 미허용일 때만 노출 */}
+        {isIOS && isPWA && hasSW && Notification.permission !== "granted" && (
+          <div className="mx-[5%] my-[3%]">
+            <PushEnableButton />
+          </div>
+        )}
+
         {/* 추천 배너 슬라이드 */}
         <CoffeeBanner />
 
@@ -67,7 +79,6 @@ const Home = () => {
         <CoffeeCategoryGrid />
       </main>
 
-      {/* 하단 네비게이션 (고정 위치) */}
       <div className="flex w-full">
         <BottomNavbar activeLabel="홈" />
       </div>
