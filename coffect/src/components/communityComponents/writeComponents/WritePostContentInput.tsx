@@ -82,12 +82,13 @@ const WritePostContentInput: React.FC<WritePostContentInputProps> = ({
       />
       <div className="relative my-2 flex items-center">
         <button
+          type="button"
           className="rounded pr-2.25 text-sm"
           onClick={() => setShowModal((prev) => !prev)}
         >
           <img src={Photo} alt="Photo Icon" className="h-6 w-6" />
         </button>
-        <button className="rounded text-sm">
+        <button type="button" className="rounded text-sm">
           <img src={Link} alt="Link Icon" className="h-6 w-6" />
         </button>
         <ImageAttachmentModal
