@@ -3,7 +3,7 @@
  * description : 채팅방 목록 조회, 소켓 연결 관리
  */
 
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { getChatRoomList } from "../../api/chat/chatRoomApi";
 import { getProfile, getProfileSearch } from "../../api/profile";
 import { getUserStringId } from "../../api/home";
@@ -149,6 +149,7 @@ export const useChatRooms = (): UseChatRoomsReturn => {
     } finally {
       setIsLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 초기 로드
@@ -159,20 +160,11 @@ export const useChatRooms = (): UseChatRoomsReturn => {
     return () => {
       isMountedRef.current = false;
     };
-  }, []); // loadChatRooms 의존성 제거
-
-  // 채팅방 목록 정렬 (최근 메시지 순)
-  const sortedChatRooms = useMemo(() => {
-    return [...chatRooms].sort((a, b) => {
-      // 시간순 정렬 (최신 메시지가 위로)
-      const timeA = new Date(a.lastMessageTime ?? 0).getTime();
-      const timeB = new Date(b.lastMessageTime ?? 0).getTime();
-      return timeB - timeA;
-    });
-  }, [chatRooms]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
-    chatRooms: sortedChatRooms,
+    chatRooms,
     isLoading,
     error,
     loadChatRooms,
