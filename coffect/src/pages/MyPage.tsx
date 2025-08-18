@@ -136,7 +136,7 @@ const MyPage = () => {
                   </div>
                   <div className="flex flex-col items-center">
                     <span className="text-lg font-semibold text-[var(--gray-70)]">
-                      {formatCount(profile?.follower || 0)}
+                      {formatCount(profile?.following || 0)}
                     </span>
                     <span className="text-sm text-[var(--gray-50)]">
                       팔로워
@@ -144,7 +144,7 @@ const MyPage = () => {
                   </div>
                   <div className="flex flex-col items-center">
                     <span className="text-lg font-semibold text-[var(--gray-70)]">
-                      {formatCount(profile?.following || 0)}
+                      {formatCount(profile?.follower || 0)}
                     </span>
                     <span className="text-sm text-[var(--gray-50)]">
                       팔로잉
