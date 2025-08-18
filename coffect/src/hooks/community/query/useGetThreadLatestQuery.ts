@@ -8,12 +8,12 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getThreadLatest } from "@/api/community/postApi";
 import type { GetThreadLatestResponse } from "@/types/community/postTypes";
+import { QUERY_KEYS } from "@/constants/queryKey";
 
 /**
  * @constant QUERY_KEY
  * @description react-query가 이 쿼리를 식별하고 캐시를 관리하기 위한 고유 키입니다.
  */
-const QUERY_KEY = ["community", "posts"];
 
 /**
  * @function useGetThreadLatestQuery
@@ -24,7 +24,7 @@ export const useGetThreadLatestQuery = ({
   enabled,
 }: { enabled?: boolean } = {}) => {
   return useInfiniteQuery<GetThreadLatestResponse, Error>({
-    queryKey: QUERY_KEY,
+    queryKey: QUERY_KEYS.COMMUNITY.POSTS,
     queryFn: ({ pageParam }) =>
       getThreadLatest({ dateCursor: pageParam as string | undefined }),
     initialPageParam: undefined,
