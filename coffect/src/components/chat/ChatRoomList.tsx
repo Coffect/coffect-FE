@@ -5,7 +5,6 @@
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { getTimeAgo } from "../../utils/dateUtils";
 import type { ChatRoomWithUser } from "../../types/chat";
 
 interface ChatRoomItemProps {
@@ -20,12 +19,12 @@ const ChatRoomItem: React.FC<ChatRoomItemProps> = ({ chatRoom, onClick }) => {
       onClick={() => onClick(chatRoom)}
     >
       {/* 프로필 */}
-      <div className="relative flex h-13 w-13 items-center justify-center overflow-hidden rounded-full bg-[var(--gray-20)]">
+      <div className="relative flex h-13 w-13 items-center justify-center rounded-full bg-[var(--gray-20)]">
         {chatRoom.userInfo?.profileImage ? (
           <img
             src={chatRoom.userInfo.profileImage}
             alt={`${chatRoom.userInfo.name} 프로필`}
-            className="h-full w-full object-cover"
+            className="h-full w-full rounded-full object-cover"
             onError={(e) => {
               // 이미지 로드 실패 시 기본 배경색 유지
               e.currentTarget.style.display = "none";
@@ -36,8 +35,7 @@ const ChatRoomItem: React.FC<ChatRoomItemProps> = ({ chatRoom, onClick }) => {
             {chatRoom.userInfo?.name?.charAt(0) || "?"}
           </div>
         )}
-        {(chatRoom.hasUnreadMessages ||
-          ("check" in chatRoom && Boolean(chatRoom.check))) && (
+        {!chatRoom.check && (
           <span className="absolute -top-0 -right-1 h-4 w-4 rounded-full border-2 border-[var(--white)] bg-[var(--noti)]"></span>
         )}
       </div>
@@ -56,9 +54,7 @@ const ChatRoomItem: React.FC<ChatRoomItemProps> = ({ chatRoom, onClick }) => {
             {chatRoom.lastMessage}
           </span>
           <span className="ml-2 flex-shrink-0 truncate overflow-hidden text-sm text-ellipsis whitespace-nowrap text-[var(--gray-40)]">
-            {chatRoom.lastMessageTime
-              ? getTimeAgo(chatRoom.lastMessageTime)
-              : "방금 전"}
+            방금 전
           </span>
         </div>
       </div>
