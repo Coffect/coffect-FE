@@ -4,14 +4,16 @@ description : 피드의 하단(좋아요 수, 댓글 수, 인용, 공유 수, �
 */
 
 import { useNavigate } from "react-router-dom";
-import { Heart, MessageCircle, Bookmark } from "lucide-react";
 // import { useLikePostMutation } from "@/hooks/community/mutation/useLikePostMutation";
 import { useScrapPostMutation } from "@/hooks/community/mutation/useScrapPostMutation";
 import { useLikePostMutation } from "@/hooks/community/mutation/useLikePostMutation";
+import comment from "@/assets/icon/community/commentIcon.png";
+import HeartIcon from "@/assets/icon/community/heart.svg?react";
+import BookmarkIcon from "@/assets/icon/community/bookmark.svg?react";
 
 // 공통 스타일 변수 정의
 const buttonStyle =
-  "text-sm text-gray-600 hover:text-blue-500 flex items-center gap-1";
+  "text-sm text-[var(--gray-30)] hover:text-blue-500 flex items-center gap-1";
 
 interface FeedInteractionProps {
   threadId: string;
@@ -58,22 +60,26 @@ const FeedInteraction = ({
       <div className="mt-2.5 flex h-8 items-center justify-between">
         <div className="flex items-center gap-4">
           <button className={buttonStyle} onClick={handleLikeClick}>
-            <Heart
-              size={20}
+            <HeartIcon
+              width={24}
+              height={24}
               fill={isLiked ? "red" : "none"}
               color={isLiked ? "red" : "currentColor"}
+              // order={isLiked ? "none" : "1px solid currentColor"}
             />
             <span>{likes}</span>
           </button>
           <button className={buttonStyle} onClick={handleCommentClick}>
-            <MessageCircle size={20} />
+            <img src={comment} alt="Comment Icon" className="h-6 w-6" />
+
             <span>{comments}</span>
           </button>
         </div>
         {showBookmarkButton && (
           <button className={buttonStyle} onClick={handleBookmarkClick}>
-            <Bookmark
-              size={20}
+            <BookmarkIcon
+              width={24}
+              height={24}
               fill={isScraped ? "black" : "none"}
               color={isScraped ? "black" : "currentColor"}
             />

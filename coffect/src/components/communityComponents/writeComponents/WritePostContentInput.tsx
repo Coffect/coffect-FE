@@ -6,8 +6,10 @@
  */
 
 import React, { useRef } from "react";
-import { Image, Link, X } from "lucide-react";
+import { X } from "lucide-react";
 import ImageAttachmentModal from "../../shareComponents/ImageAttachmentModal";
+import Link from "@/assets/icon/community/linkIcon.png";
+import Photo from "@/assets/icon/community/photoIcon.png";
 
 /**
  * @interface WritePostContentInputProps
@@ -78,15 +80,15 @@ const WritePostContentInput: React.FC<WritePostContentInputProps> = ({
         value={content}
         onChange={(e) => setContent(e.target.value)}
       />
-      <div className="relative my-2 flex items-center space-x-4">
+      <div className="relative my-2 flex items-center">
         <button
-          className="rounded px-1 text-sm"
+          className="rounded pr-2.25 text-sm"
           onClick={() => setShowModal((prev) => !prev)}
         >
-          <Image />
+          <img src={Photo} alt="Photo Icon" className="h-6 w-6" />
         </button>
-        <button className="rounded px-1 text-sm">
-          <Link />
+        <button className="rounded text-sm">
+          <img src={Link} alt="Link Icon" className="h-6 w-6" />
         </button>
         <ImageAttachmentModal
           show={showModal}
