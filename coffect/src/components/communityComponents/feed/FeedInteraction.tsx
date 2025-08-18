@@ -59,13 +59,12 @@ const FeedInteraction = ({
     <>
       <div className="mt-2.5 flex h-8 items-center justify-between">
         <div className="flex items-center gap-4">
-          <button className={buttonStyle} onClick={handleLikeClick}>
+          <button className={`${buttonStyle}`} onClick={handleLikeClick}>
             <HeartIcon
               width={24}
               height={24}
               fill={isLiked ? "red" : "none"}
               color={isLiked ? "red" : "currentColor"}
-              // order={isLiked ? "none" : "1px solid currentColor"}
             />
             <span>{likes}</span>
           </button>
