@@ -29,7 +29,6 @@ export const useFollowMutation = () => {
       const previousData = queryClient.getQueriesData<
         InfiniteData<PostThreadsFilterResponse>
       >({
-        // queryKey: ["community", "posts"]
         queryKey: QUERY_KEYS.COMMUNITY.POSTS,
       });
 
