@@ -15,8 +15,8 @@ import DeleteSuggestModal from "./DeleteSuggestModal";
 import { useNavigate } from "react-router-dom";
 import NoSuggestImage from "../../assets/icon/home/NoSuggest.png";
 
-// FCM 포그라운드 수신
-import { onMessageListener, type FcmPayload } from "@/utils/fcm";
+// FCM payload 타입
+import type { FcmPayload } from "@/utils/fcm";
 // 프로필 라우팅용: 숫자 기반 유저 ID → 문자열 ID 변환 API
 import { acceptCoffeeChat, getUserStringId } from "@/api/home";
 import { createChatRoom } from "@/api/chat";
@@ -152,7 +152,7 @@ const CoffeeSuggestBanner: React.FC = () => {
         prev.filter((s) => s.cardId !== pendingDeleteId),
       );
 
-      // ★ SW 저장분 삭제 요청
+      // SW 저장분 삭제 요청
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.ready.then((reg) => {
           reg.active?.postMessage({
@@ -252,30 +252,7 @@ const CoffeeSuggestBanner: React.FC = () => {
     }
   };
 
-  /* ------------------------------ 사이드이펙트 ------------------------------ */
-
-  // 1) FCM 포그라운드 메시지 수신
-  useEffect(() => {
-    //수락 결과(요청 보낸 사람에게 가는 알림) 분기
-    const unsub = onMessageListener((payload) => {
-      const type = payload?.data?.type;
-      if (type === "ACCEPT_RESULT") {
-        const userName = (payload.data?.secondUserName as string) ?? "상대방";
-        const raw = payload.data?.chatId as string | number | undefined;
-        const chatId =
-          raw != null && !Number.isNaN(Number(raw)) ? Number(raw) : undefined;
-
-        setAcceptNotice({ open: true, userName, chatId });
-        return;
-      }
-      pushSuggestion(payload);
-    });
-    return () => unsub?.();
-  }, []);
-
-  // 2) 서비스워커 → 페이지 postMessage 수신
-  //    - 단건/배열 모두 처리
-  //    - 초기 진입 시 SW에게 캐시된 payload flush 요청
+  // 1) SW → 페이지 postMessage + 초기 flush
   useEffect(() => {
     const onSwMessage = (ev: MessageEvent<SwPostMessage>) => {
       if (isFcmPayload(ev.data) && ev.data?.data?.type === "ACCEPT_RESULT") {
@@ -335,6 +312,24 @@ const CoffeeSuggestBanner: React.FC = () => {
     };
   }, []);
 
+  // 2) 전역 브릿지(포그라운드 즉시 반영)
+  useEffect(() => {
+    const onFg = (e: Event) => {
+      const payload = (e as CustomEvent).detail as FcmPayload;
+      if (payload?.data?.type === "ACCEPT_RESULT") {
+        const userName = (payload.data?.secondUserName as string) ?? "상대방";
+        const raw = payload.data?.chatId as string | number | undefined;
+        const chatId =
+          raw != null && !Number.isNaN(Number(raw)) ? Number(raw) : undefined;
+        setAcceptNotice({ open: true, userName, chatId });
+        return;
+      }
+      pushSuggestion(payload);
+    };
+    window.addEventListener("coffect:fcm", onFg as EventListener);
+    return () =>
+      window.removeEventListener("coffect:fcm", onFg as EventListener);
+  }, []);
   // 3) SW 제어권 획득 타이밍 보강
   //    - controller가 없던 상태에서 생기는 시점(controllerchange)에 맞춰 flush 재요청
   useEffect(() => {

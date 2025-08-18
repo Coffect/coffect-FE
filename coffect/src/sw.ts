@@ -35,7 +35,7 @@ initializeApp(firebaseConfig);
 const messaging = getMessaging();
 
 /* ------------------------------- Debug ---------------------------------- */
-const DEBUG = true; // 운영에서 끄고 싶으면 import.meta.env.DEV 로 변경
+const DEBUG = true;
 function debug(label: string, data?: unknown) {
   if (!DEBUG) return;
   try {
