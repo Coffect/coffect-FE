@@ -41,7 +41,9 @@ const WritePostTopicSelector: React.FC<WritePostTopicSelectorProps> = ({
     <div>
       <div className="px-4 pt-4">
         <div className="mb-4">
-          <h3 className="mb-5 text-base font-semibold">글 종류</h3>
+          <h3 className="mb-5 text-lg font-medium text-[var(--gray-90)]">
+            글 종류
+          </h3>
           <ChipGroup
             options={postTypeOptions}
             selectedOption={postType}
@@ -49,7 +51,9 @@ const WritePostTopicSelector: React.FC<WritePostTopicSelectorProps> = ({
           />
         </div>
         <div className="pt-4">
-          <h3 className="mb-5 text-base font-semibold">글 주제</h3>
+          <h3 className="mb-5 text-lg font-medium text-[var(--gray-90)]">
+            글 주제
+          </h3>
           <ChipGroup
             options={postSubjectOptions}
             selectedOption={[Number(subject)]}

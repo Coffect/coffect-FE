@@ -100,10 +100,10 @@ const FilterModal = ({
         <div className="w-full flex-shrink-0 p-4">
           <div className="flex justify-center gap-2">
             <button
-              className={`flex-1 rounded-md px-12 py-4 ${
+              className={`flex-1 rounded-md px-12 py-4 font-semibold ${
                 !isApplyDisabled
-                  ? "bg-[#3a3a3a] text-white"
-                  : "cursor-not-allowed bg-gray-200"
+                  ? "bg-[var(--gray-70)] text-white"
+                  : "cursor-not-allowed bg-[var(--gray-10)] text-[var(--gray-50)]"
               }`}
               disabled={isApplyDisabled}
               onClick={handleApplyClick}
@@ -111,7 +111,7 @@ const FilterModal = ({
               필터 적용하기
             </button>
             <button
-              className="flex-1 rounded-md border border-[var(--gray-30)] px-4 py-2 text-[var(--gray-50)]"
+              className="flex-1 rounded-md border border-[var(--gray-30)] px-4 py-2 font-semibold text-[var(--gray-50)]"
               onClick={onReset}
             >
               초기화
