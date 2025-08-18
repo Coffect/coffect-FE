@@ -14,4 +14,9 @@ export const QUERY_KEYS = {
     BOOKMARKS: ["user", "bookmarks"], // 사용자의 북마크 목록을 가져오는 쿼리 키
     PROFILE_THREADS: (userId: number) => ["user", "profileThreads", userId], // 특정 사용자가 작성한 게시글 목록을 가져오는 쿼리 키
   },
+
+  COMMENT: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    COMMENTS: (threadId: any) => ["comments", threadId],
+  },
 };
