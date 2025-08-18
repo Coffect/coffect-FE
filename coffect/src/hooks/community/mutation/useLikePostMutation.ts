@@ -11,14 +11,15 @@ import type {
 } from "@/types/community/postTypes";
 import { QUERY_KEYS } from "@/constants/queryKey";
 
+type PostsInfiniteData = InfiniteData<PostThreadsFilterResponse>;
+
 export const useLikePostMutation = () => {
   const queryClient = useQueryClient();
 
   const isInfiniteData = (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data: any,
-  ): data is InfiniteData<PostThreadsFilterResponse> => {
-    return data && typeof data === "object" && "pages" in data;
+    data: PostsInfiniteData | undefined,
+  ): data is PostsInfiniteData => {
+    return data !== undefined && "pages" in data;
   };
 
   return useMutation({
@@ -104,11 +105,9 @@ export const useLikePostMutation = () => {
       }
     },
 
-    onSettled: (_data, _error, threadId) => {
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.COMMUNITY.POSTS });
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.COMMUNITY.POST_DETAIL(threadId),
-      });
+
       queryClient.invalidateQueries({ queryKey: ["bookMark"] });
       queryClient.invalidateQueries({ queryKey: ["profileThread"] });
       queryClient.invalidateQueries({ queryKey: ["profileThreadSearch"] });
