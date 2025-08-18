@@ -42,9 +42,7 @@ export interface ChatRoom {
   chatroomId: string;
   userId: number;
   lastMessage: string;
-  hasUnreadMessages: boolean;
-  lastReadMessageId?: string; // 마지막으로 읽은 메시지 ID
-  lastMessageTime?: string; // 마지막 메시지 시간 (시간순 정렬용)
+  check: boolean;
 }
 
 // 사용자 정보가 포함된 채팅방 타입
