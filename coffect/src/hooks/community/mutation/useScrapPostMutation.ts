@@ -4,7 +4,11 @@ import {
   type InfiniteData,
 } from "@tanstack/react-query";
 import { postScrap } from "@/api/community/interactionApi";
-import type { PostThreadsFilterResponse } from "@/types/community/postTypes";
+import type {
+  GetThreadLookUpResponse,
+  PostThreadsFilterResponse,
+} from "@/types/community/postTypes";
+import { QUERY_KEYS } from "@/constants/queryKey";
 
 export const useScrapPostMutation = () => {
   const queryClient = useQueryClient();
@@ -13,16 +17,26 @@ export const useScrapPostMutation = () => {
     mutationFn: (threadId: string) => postScrap({ threadId }),
 
     onMutate: async (threadId) => {
-      await queryClient.cancelQueries({ queryKey: ["community", "posts"] });
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.COMMUNITY.POSTS });
+      await queryClient.cancelQueries({
+        queryKey: QUERY_KEYS.COMMUNITY.POST_DETAIL(threadId),
+      });
 
-      const previousData = queryClient.getQueryData<
+      const previousListData = queryClient.getQueriesData<
         InfiniteData<PostThreadsFilterResponse>
-      >(["community", "posts"]);
+      >({
+        queryKey: QUERY_KEYS.COMMUNITY.POSTS,
+      });
 
-      queryClient.setQueryData<InfiniteData<PostThreadsFilterResponse>>(
-        ["community", "posts"],
+      const previousDetailData =
+        queryClient.getQueryData<GetThreadLookUpResponse>(
+          QUERY_KEYS.COMMUNITY.POST_DETAIL(threadId),
+        );
+
+      queryClient.setQueriesData<InfiniteData<PostThreadsFilterResponse>>(
+        { queryKey: QUERY_KEYS.COMMUNITY.POSTS },
         (old) => {
-          if (!old) return old;
+          if (!old || !("pages" in old)) return old;
 
           return {
             ...old,
@@ -44,17 +58,45 @@ export const useScrapPostMutation = () => {
         },
       );
 
-      return { previousData };
+      // 2. 게시글 상세 페이지 캐시 낙관적 업데이트
+      queryClient.setQueryData<GetThreadLookUpResponse>(
+        QUERY_KEYS.COMMUNITY.POST_DETAIL(threadId),
+        (old) => {
+          if (!old || !old.success) return old;
+          return {
+            ...old,
+            success: {
+              ...old.success,
+              isScraped: !old.success.isScraped,
+            },
+          };
+        },
+      );
+
+      // 롤백을 위해 이전 데이터 반환
+      return { previousListData, previousDetailData };
     },
 
-    onError: (_err, _threadId, context) => {
-      if (context?.previousData) {
-        queryClient.setQueryData(["community", "posts"], context.previousData);
+    onError: (_err, threadId, context) => {
+      // 오류 발생 시 이전 데이터로 롤백
+      if (context?.previousListData) {
+        context.previousListData.forEach(([key, data]) => {
+          queryClient.setQueryData(key, data);
+        });
+      }
+      if (context?.previousDetailData) {
+        queryClient.setQueryData(
+          QUERY_KEYS.COMMUNITY.POST_DETAIL(threadId),
+          context.previousDetailData,
+        );
       }
     },
 
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["community", "posts"] });
+    onSettled: (_data, _error, threadId) => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.COMMUNITY.POSTS });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.COMMUNITY.POST_DETAIL(threadId),
+      });
       queryClient.invalidateQueries({ queryKey: ["bookMark"] });
       queryClient.invalidateQueries({ queryKey: ["profileThread"] });
       queryClient.invalidateQueries({ queryKey: ["profileThreadSearch"] });

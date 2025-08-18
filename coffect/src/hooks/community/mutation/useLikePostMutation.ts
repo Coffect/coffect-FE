@@ -5,25 +5,46 @@ import {
   type InfiniteData,
 } from "@tanstack/react-query";
 import { postLike } from "@/api/community/interactionApi";
-import type { PostThreadsFilterResponse } from "@/types/community/postTypes";
+import type {
+  GetThreadLookUpResponse,
+  PostThreadsFilterResponse,
+} from "@/types/community/postTypes";
+import { QUERY_KEYS } from "@/constants/queryKey";
 
 export const useLikePostMutation = () => {
   const queryClient = useQueryClient();
+
+  const isInfiniteData = (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data: any,
+  ): data is InfiniteData<PostThreadsFilterResponse> => {
+    return data && typeof data === "object" && "pages" in data;
+  };
 
   return useMutation({
     mutationFn: (threadId: string) => postLike({ threadId }),
 
     onMutate: async (threadId) => {
-      await queryClient.cancelQueries({ queryKey: ["community", "posts"] });
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.COMMUNITY.POSTS });
+      await queryClient.cancelQueries({
+        queryKey: QUERY_KEYS.COMMUNITY.POST_DETAIL(threadId),
+      });
 
-      const previousData = queryClient.getQueryData<
+      const previousData = queryClient.getQueriesData<
         InfiniteData<PostThreadsFilterResponse>
-      >(["community", "posts"]);
+      >({
+        queryKey: QUERY_KEYS.COMMUNITY.POSTS,
+      });
 
-      queryClient.setQueryData<InfiniteData<PostThreadsFilterResponse>>(
-        ["community", "posts"],
+      const previousDetailData =
+        queryClient.getQueryData<GetThreadLookUpResponse>(
+          QUERY_KEYS.COMMUNITY.POST_DETAIL(threadId),
+        );
+
+      queryClient.setQueriesData<InfiniteData<PostThreadsFilterResponse>>(
+        { queryKey: QUERY_KEYS.COMMUNITY.POSTS },
         (old) => {
-          if (!old) return old;
+          if (!isInfiniteData(old)) return old;
           return {
             ...old,
             pages: old.pages.map((page) => {
@@ -49,18 +70,45 @@ export const useLikePostMutation = () => {
           };
         },
       );
+      queryClient.setQueryData<GetThreadLookUpResponse>(
+        QUERY_KEYS.COMMUNITY.POST_DETAIL(threadId),
+        (old) => {
+          if (!old || !old.success) return old;
+          return {
+            ...old,
+            success: {
+              ...old.success,
+              isLiked: !old.success.isLiked,
+              likeCount: old.success.isLiked
+                ? old.success.likeCount - 1
+                : old.success.likeCount + 1,
+            },
+          };
+        },
+      );
 
-      return { previousData };
+      return { previousData, previousDetailData };
     },
 
     onError: (_err, _threadId, context) => {
       if (context?.previousData) {
-        queryClient.setQueryData(["community", "posts"], context.previousData);
+        context.previousData.forEach(([key, data]) => {
+          queryClient.setQueryData(key, data);
+        });
+      }
+      if (context?.previousDetailData) {
+        queryClient.setQueryData(
+          QUERY_KEYS.COMMUNITY.POST_DETAIL(_threadId),
+          context.previousDetailData,
+        );
       }
     },
 
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["community", "posts"] });
+    onSettled: (_data, _error, threadId) => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.COMMUNITY.POSTS });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.COMMUNITY.POST_DETAIL(threadId),
+      });
       queryClient.invalidateQueries({ queryKey: ["bookMark"] });
       queryClient.invalidateQueries({ queryKey: ["profileThread"] });
       queryClient.invalidateQueries({ queryKey: ["profileThreadSearch"] });

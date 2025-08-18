@@ -91,13 +91,13 @@ const Community = () => {
     subject: number[] | null;
   }) => {
     setFilters(newFilters);
-    setActiveQuery("filtered"); // 필터 적용 시 쿼리 변경
+    setActiveQuery("filtered");
     closeFilterModal();
   };
 
   const handleReset = () => {
-    setActiveQuery("latest"); // 초기화 시 쿼리 변경
     resetStoreFilters();
+    setActiveQuery("latest");
     closeFilterModal();
   };
 
