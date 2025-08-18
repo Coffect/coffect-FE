@@ -57,6 +57,8 @@ const ChatMessageList: React.FC<Props> = ({
                   imageUrl={msg.imageUrl}
                   showProfile={showProfile}
                   profileImage={opponentProfileImage}
+                  time={msg.time}
+                  showTime={shouldShowTime(idx)}
                 />
               ) : (
                 <MessageBubble
