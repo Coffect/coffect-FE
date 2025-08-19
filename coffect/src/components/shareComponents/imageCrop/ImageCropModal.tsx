@@ -39,7 +39,7 @@ export default function ImageCropModal({
         {/* relative h-72 w-full overflow-hidden rounded-lg bg-[var(--gray-30)] */}
         <div
           className="relative w-full overflow-hidden rounded-lg bg-[var(--gray-30)]"
-          style={{ height: "70vh", maxHeight: "500px" }}
+          style={{ height: "50vh", maxHeight: "600px" }}
         >
           <Cropper
             image={imageSrc}
