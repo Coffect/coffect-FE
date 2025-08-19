@@ -47,7 +47,7 @@ const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
     onNext?.();
   };
   // 버튼 비활성화 조건(이름x 또는 프로필사진 x)
-  const isButtonDisabled = isValidUserName(name) || !avatarUrl || !avatarFile;
+  const isButtonDisabled = !isValidUserName(name) || !avatarUrl || !avatarFile;
   // 이름 2자 이상 입력 안하면 에러 메시지
   useEffect(() => {
     if (name.trim() === "") return;
