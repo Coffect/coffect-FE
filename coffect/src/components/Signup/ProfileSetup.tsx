@@ -32,7 +32,13 @@ const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   const handleNameChange = (value: string) => {
     setName(value);
     // 이름이 2자 이상이면 에러 해제
-    if (value.trim().length >= 2 && nameError) setNameError(false);
+    if (
+      value.trim().length >= 2 &&
+      value.trim().length <= 7 &&
+      /^[가-힣a-zA-Z\s]*$/.test(value.trim()) &&
+      nameError
+    )
+      setNameError(false);
   };
 
   // 다음 단계
