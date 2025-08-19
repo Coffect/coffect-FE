@@ -62,7 +62,7 @@ const WritePostContentInput: React.FC<WritePostContentInputProps> = ({
               <img
                 src={image}
                 alt={`preview ${index}`}
-                className="h-24 w-full rounded-md object-cover"
+                className="mx-auto h-auto w-full rounded-md object-contain"
               />
               <button
                 onClick={() => handleImageRemove(index)}

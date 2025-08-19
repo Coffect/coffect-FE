@@ -1,33 +1,27 @@
 /**
  * @author 흥부/강신욱
  * @description
- * 1. src/types/community/writePostType에 타입을 정의함.
- * 2. src/api/community/writeApi.ts에 API 함수를 정의함.
- * 3. src/hooks/community/mutation/useUploadPostMutation.ts와
- *    src/hooks/community/mutation/useUploadPostImageMutation.ts에 React Query ( museMutation )를 사용한 API 호출 로직을 정의함.
- * 4. src/hooks/community/writePost/useWritePost.ts에 글 작성 페이지의 상태와 로직을 관리하는 커스텀 훅을 정의함.
- * 5. src/pages/WritePostPage.tsx에 글 작성 페이지 컴포넌트를 정의함.
- * @version 1.0.0
- * - 1.0.0 : 초기 작성 ( 글 작성 페이지 컴포넌트 정의 )
- * @date 2023-08-05
+ * 글 작성 페이지 컴포넌트 (한 장 이미지 업로드 + Crop 지원 + 메모리 누수 방지)
+ * @version 1.1.0
+ * - Crop 모달 URL 관리 및 Object URL 해제 적용
+ * - 한 장만 업로드 가능
+ * @date 2025-08-20
  */
 
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAddPostMutation } from "@/hooks/community/mutation/useAddPostMutation";
-// import type { postUploadRequest } from "@/types/community/writePostTypes";
 import WritePostHeader from "@/components/communityComponents/writeComponents/WritePostHeader";
 import WritePostTitleInput from "@/components/communityComponents/writeComponents/WritePostTitleInput";
 import WritePostContentInput from "@/components/communityComponents/writeComponents/WritePostContentInput";
 import WritePostTopicSelector from "@/components/communityComponents/writeComponents/WritePostTopicSelector";
-import {
-  // postSubjectOptions,
-  type ChipOption,
-} from "@/components/communityComponents/ChipFilterComponent/filterData";
+import { type ChipOption } from "@/components/communityComponents/ChipFilterComponent/filterData";
+import ImageCropModal from "@/components/shareComponents/imageCrop/ImageCropModal";
 
 const WritePostPage: React.FC = () => {
   const navigate = useNavigate();
 
+  // --- 상태 ---
   const [threadTitle, setThreadTitle] = useState<string>("");
   const [threadBody, setThreadBody] = useState<string>("");
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -35,28 +29,58 @@ const WritePostPage: React.FC = () => {
   const [type, setType] = useState<string>("");
   const [threadSubject, setThreadSubject] = useState<string>("");
 
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [cropTargetUrl, setCropTargetUrl] = useState<string | null>(null);
+
   const { mutate: addPost } = useAddPostMutation();
 
+  // --- Object URL 해제 ---
+  const revokePreviewUrls = useCallback(() => {
+    previewUrls.forEach((url) => URL.revokeObjectURL(url));
+    setPreviewUrls([]);
+  }, [previewUrls]);
+
+  // --- Crop 완료 핸들러 ---
+  const handleCropComplete = useCallback(
+    (croppedFile: File) => {
+      // 이전 preview URL 해제
+      revokePreviewUrls();
+
+      // 이전 cropTarget URL 해제
+      if (cropTargetUrl) URL.revokeObjectURL(cropTargetUrl);
+
+      // 새 파일과 URL 저장
+      const croppedUrl = URL.createObjectURL(croppedFile);
+      setImageFiles([croppedFile]);
+      setPreviewUrls([croppedUrl]);
+
+      // Crop 모달 닫기
+      setCropModalOpen(false);
+      setCropTargetUrl(null);
+    },
+    [cropTargetUrl, revokePreviewUrls],
+  );
+
+  // --- 이미지 선택 핸들러 ---
   const handleImageChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files.length > 0) {
-        const files = Array.from(e.target.files);
-        setImageFiles((prev) => [...prev, ...files]);
-        const lastFile = files[files.length - 1];
-        const lastFileUrl = URL.createObjectURL(lastFile);
-        setPreviewUrls([lastFileUrl]);
-        // const urls = files.map((file) => URL.createObjectURL(file));
-        // setPreviewUrls((prev) => [...prev, ...urls]);
+        const file = e.target.files[0];
+        const fileUrl = URL.createObjectURL(file);
+        setCropTargetUrl(fileUrl);
+        setCropModalOpen(true);
       }
     },
     [],
   );
 
-  const handleImageRemove = useCallback((indexToRemove: number) => {
-    setImageFiles((prev) => prev.filter((_, i) => i !== indexToRemove));
-    setPreviewUrls((prev) => prev.filter((_, i) => i !== indexToRemove));
-  }, []);
+  // --- 이미지 삭제 ---
+  const handleImageRemove = useCallback(() => {
+    revokePreviewUrls();
+    setImageFiles([]);
+  }, [revokePreviewUrls]);
 
+  // --- 타입/주제 선택 ---
   const handleTypeSelect = useCallback((option: ChipOption) => {
     setType(option.value as string);
   }, []);
@@ -71,14 +95,12 @@ const WritePostPage: React.FC = () => {
     type.length > 0 &&
     threadSubject !== "";
 
-  // const selectedTopicValue =
-  //   postSubjectOptions.find((option) => String(option.id) === threadSubject)
-  //     ?.value || "";
-
+  // --- 뒤로가기 ---
   const handleBackClick = useCallback(() => {
     navigate("/community");
   }, [navigate]);
 
+  // --- 업로드 ---
   const handleUpload = () => {
     if (!isFormValid) {
       alert("모든 필수 필드를 채워주세요.");
@@ -91,19 +113,14 @@ const WritePostPage: React.FC = () => {
     formData.append("threadSubject", threadSubject);
 
     if (imageFiles.length > 0) {
-      formData.append("images", imageFiles[imageFiles.length - 1]);
+      formData.append("images", imageFiles[0]); // 한 장만 업로드
     }
 
-    // imageFiles.forEach((file) => {
-    //   formData.append("images", file);
-    // });
-
     addPost(formData, {
-      // uploadPost에서 multipart/form-data 처리
       onSuccess: (response) => {
         if (response.success) {
           navigate("/community", {
-            state: { showSuccessModal: true, newPost: response.success }, // 모달 표시 플래그
+            state: { showSuccessModal: true, newPost: response.success },
           });
         } else {
           alert(
@@ -126,6 +143,7 @@ const WritePostPage: React.FC = () => {
       />
       <main className="flex-grow overflow-y-auto">
         <WritePostTitleInput title={threadTitle} setTitle={setThreadTitle} />
+
         <div className="h-[0.8px] w-full bg-[var(--gray-5)]"></div>
 
         <WritePostContentInput
@@ -137,12 +155,26 @@ const WritePostPage: React.FC = () => {
         />
 
         <div className="mb-4 h-[0.8px] w-full bg-[var(--gray-5)]"></div>
+
         <WritePostTopicSelector
           type={type}
           handleTypeSelect={handleTypeSelect}
           topic={threadSubject}
           handleThreadSubjectSelect={handleThreadSubjectSelect}
         />
+
+        {cropTargetUrl && (
+          <ImageCropModal
+            isOpen={cropModalOpen}
+            imageSrc={cropTargetUrl}
+            onClose={() => {
+              if (cropTargetUrl) URL.revokeObjectURL(cropTargetUrl);
+              setCropTargetUrl(null);
+              setCropModalOpen(false);
+            }}
+            onCropComplete={handleCropComplete}
+          />
+        )}
       </main>
     </div>
   );
