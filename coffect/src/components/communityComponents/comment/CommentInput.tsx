@@ -10,7 +10,7 @@
  * - 2.0.0: API 타입 정의(postCommentRequest)에 맞춰 mutate 함수 호출 로직 수정.
  */
 import { useState, useRef } from "react";
-import { useAddComment } from "@/hooks/community/mutation/useAddComment";
+import { useAddCommentMutation } from "@/hooks/community/mutation/useAddCommentMutation";
 import { Send } from "lucide-react";
 import useAutoResizeTextarea from "@/hooks/useAutoResizeTextarea";
 
@@ -27,7 +27,7 @@ const CommentInput = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   useAutoResizeTextarea(textareaRef.current, commentBody);
 
-  const { mutate: addComment, isPending } = useAddComment();
+  const { mutate: addComment, isPending } = useAddCommentMutation();
 
   const handlePostComment = () => {
     if (!postId || commentBody.trim() === "" || isPending) return;
@@ -76,7 +76,7 @@ const CommentInput = ({
             disabled={isPending} // 댓글 전송 중에는 버튼 비활성화
           >
             {/* isPending 상태에 따라 버튼 내용을 변경하여 사용자에게 시각적 피드백을 줍니다. */}
-            {isPending ? "..." : <Send className="h-5 w-5" />}
+            {isPending ? "전송중!" : <Send className="h-5 w-5" />}
           </button>
         )}
       </div>

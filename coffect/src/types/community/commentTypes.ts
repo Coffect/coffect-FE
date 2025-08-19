@@ -11,17 +11,17 @@
 
 export interface Comment {
   commentId: number; // 댓글 ID
-  userId: number; // 작성자 ID
+  userId?: number; // 작성자 ID
   threadId: string; // 게시글 ID
   commentBody: string; // 댓글 본문
   quote: number; // 인용 댓글 여부 (0: 일반 댓글, 1: 인용 댓글)
   createdAtD: string; // 댓글 생성 날짜 (ISO 8601 형식)
   user: {
-    studentId: number; // 학생 ID
-    profileImage: string; // 프로필 이미지 URL
+    studentId?: number; // 학생 ID
+    profileImage?: string; // 프로필 이미지 URL
     name: string; // 작성자 이름
     dept: string; // 학과
-    id: string; // 작성자 페이지로 가기 위함.
+    id?: string; // 작성자 페이지로 가기 위함.
   };
 }
 
