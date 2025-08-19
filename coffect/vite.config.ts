@@ -31,14 +31,14 @@ export default defineConfig(() => {
           theme_color: "#ffffff",
           icons: [
             {
-              src: "assets/icons/pwa-192.png",
+              src: "/icons/pwa-192.png",
               sizes: "192x192",
               type: "image/png",
               purpose: "any",
             },
             {
-              src: "assets/icons/pwa-512.png",
-              sizes: "512x512",
+              src: "/icons/pwa-522.png",
+              sizes: "522x522",
               type: "image/png",
               purpose: "any",
             },
