@@ -50,6 +50,7 @@ const WritePostPage: React.FC = () => {
         const fileUrl = URL.createObjectURL(file);
         setCropTargetUrl(fileUrl);
         setCropModalOpen(true); // 모달 오픈
+        e.target.value = "";
         // const files = Array.from(e.target.files);
         // setImageFiles((prev) => [...prev, ...files]);
         // const lastFile = files[files.length - 1];
