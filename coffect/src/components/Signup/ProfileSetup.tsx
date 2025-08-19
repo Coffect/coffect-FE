@@ -8,6 +8,7 @@ import profilePencilImage from "../../assets/icon/signup/profilePencil.png";
 import defaultAvatarImage from "../../assets/icon/signup/defaultAvatar.png";
 import SignupPageLayout from "./shared/SignupLayout";
 import type { StepProps } from "../../types/signup";
+import { isValidUserName } from "@/utils/validation";
 
 const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   // 상태 선언
@@ -32,26 +33,13 @@ const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   const handleNameChange = (value: string) => {
     setName(value);
     // 이름이 2자 이상이면 에러 해제
-    if (
-      value.trim().length >= 2 &&
-      value.trim().length <= 7 &&
-      /^[가-힣a-zA-Z\s]*$/.test(value.trim()) &&
-      nameError
-    )
-      setNameError(false);
+    if (isValidUserName(value) && nameError) setNameError(false);
   };
 
   // 다음 단계
   const handleNext = (): void => {
     const trimmed = name.trim();
-    if (
-      !(
-        trimmed.length >= 2 &&
-        trimmed.length <= 7 &&
-        /^[가-힣a-zA-Z\s]*$/.test(trimmed) &&
-        !/[ㄱ-ㅎㅏ-ㅣ]/.test(trimmed)
-      )
-    ) {
+    if (!(isValidUserName(trimmed) && !/[ㄱ-ㅎㅏ-ㅣ]/.test(trimmed))) {
       setNameError(true);
       return;
     }
@@ -59,19 +47,13 @@ const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
     onNext?.();
   };
   // 버튼 비활성화 조건(이름x 또는 프로필사진 x)
-  const isButtonDisabled = name.trim().length < 2 || !avatarUrl || !avatarFile;
+  const isButtonDisabled = isValidUserName(name) || !avatarUrl || !avatarFile;
   // 이름 2자 이상 입력 안하면 에러 메시지
   useEffect(() => {
     if (name.trim() === "") return;
 
     const timer = setTimeout(() => {
-      setNameError(
-        !(
-          name.trim().length >= 2 &&
-          name.trim().length <= 7 &&
-          /^[가-힣a-zA-Z\s]*$/.test(name.trim())
-        ),
-      );
+      setNameError(!isValidUserName(name));
     }, 500); // 500ms 동안 입력 멈추면 검사
 
     return () => clearTimeout(timer); // 입력 도중에는 이전 검사 취소

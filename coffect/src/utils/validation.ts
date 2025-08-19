@@ -29,3 +29,16 @@ export const isValidUserId = (userId: string): boolean => {
     /^[A-Za-z0-9_.]{5,}$/.test(userId)
   );
 };
+
+/*
+  사용자 ID 포맷 검사
+  영문 대소문자, 숫자, 언더바(_), 점(.)만 허용, 최소 5자 이상
+*/
+export const isValidUserName = (userName: string): boolean => {
+  userName = userName.trim();
+  return (
+    userName.length >= 2 &&
+    userName.length <= 7 &&
+    /^[가-힣a-zA-Z\s]*$/.test(userName)
+  );
+};
