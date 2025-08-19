@@ -7,15 +7,20 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getProfile, deleteLogout } from "../api/profile";
-import type { profileType } from "../types/mypage/profile";
+import {
+  type getUnreadCountType,
+  type profileType,
+} from "../types/mypage/profile";
 import BottomNavbar from "../components/shareComponents/BottomNavbar";
 import LeaveModal from "../components/UserPage/MyPage/LeaveModal";
 import nextIcon from "../assets/icon/mypage/next.png";
 import coffeeRecordIcon from "../assets/icon/mypage/coffeeRecord.png";
 import bookmarkIcon from "../assets/icon/mypage/bookmark.png";
-import alarmIcon from "../assets/icon/mypage/alarm.png";
+import offAlarmIcon from "../assets/icon/mypage/offAlarmIcon.png";
+import onAlarmIcon from "../assets/icon/mypage/onAlarmIcon.png";
 import profileImg from "../assets/icon/mypage/profile.png";
 import LoadingScreen from "../components/shareComponents/LoadingScreen";
+import { getUnreadCount } from "@/api/alert";
 
 /*
 마이페이지 메인 화면을 렌더링하는 함수형 컴포넌트입니다.
@@ -24,6 +29,14 @@ const MyPage = () => {
   const navigate = useNavigate();
   // 회원탈퇴 모달 오픈 상태
   const [showModal, setShowModal] = useState<boolean>(false);
+
+  const { data: alarmData } = useQuery<getUnreadCountType>({
+    queryKey: ["notifications", "unreadCount"],
+    queryFn: getUnreadCount,
+  });
+
+  const isAlarmExist: boolean =
+    alarmData?.success && alarmData?.success > 0 ? true : false;
 
   // getProfile API를 useQuery로 호출
   const {
@@ -94,7 +107,7 @@ const MyPage = () => {
               {userInfo?.id || "사용자 아이디"}
             </div>
             <img
-              src={alarmIcon}
+              src={isAlarmExist ? onAlarmIcon : offAlarmIcon}
               className="h-7 w-7 cursor-pointer"
               onClick={() => navigate("/alarm")}
             />

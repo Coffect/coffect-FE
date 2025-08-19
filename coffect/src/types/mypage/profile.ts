@@ -162,3 +162,13 @@ export type getProfileThreadSearchType = {
   };
   success: null | ThreadSummary[];
 };
+
+export type getUnreadCountType = {
+  resultType: string;
+  error: null | {
+    errorCode: string;
+    reason: string;
+    data: null;
+  };
+  success: null | number;
+};

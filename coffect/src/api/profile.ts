@@ -13,8 +13,10 @@ import type {
   getBookMarkType,
   getProfileThreadType,
   getProfileThreadSearchType,
+  getUnreadCount,
 } from "@/types/mypage/profile";
 import { AxiosError } from "axios";
+import { getUnreadCount } from "../types/mypage/profile";
 
 // 나의 프로필 정보 가져오기
 export const getProfile = async (): Promise<profileType> => {
