@@ -72,7 +72,6 @@ export const useAddCommentMutation = () => {
 
           // 임시 댓글 데이터 생성
           const tempNewComment: Comment = {
-            // commentId: `temp-${Date.now()}`,
             commentId: 0,
             userId: myProfile?.success?.userInfo.userId,
             threadId: newComment.threadId,
@@ -120,7 +119,10 @@ export const useAddCommentMutation = () => {
         console.log("댓글이 성공적으로 추가되었습니다.", response.success);
 
         queryClient.invalidateQueries({
-          queryKey: ["comments", variables.threadId],
+          queryKey: QUERY_KEYS.COMMENT.COMMENTS(variables.threadId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.COMMUNITY.POST_DETAIL(variables.threadId),
         });
       } else {
         console.error(
@@ -130,8 +132,28 @@ export const useAddCommentMutation = () => {
       }
     },
 
-    onError: (error) => {
+    onError: (error, variables, context) => {
       console.error("댓글 추가 중 에러가 발생했습니다:", error);
+      if (context?.previousComments) {
+        queryClient.setQueryData(
+          QUERY_KEYS.COMMENT.COMMENTS(variables.threadId),
+          context.previousComments,
+        );
+      }
+      if (context?.previousPostDetail) {
+        queryClient.setQueryData(
+          QUERY_KEYS.COMMUNITY.POST_DETAIL(variables.threadId),
+          context.previousPostDetail,
+        );
+      }
+    },
+    onSettled: (_data, _error, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.COMMENT.COMMENTS(variables.threadId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.COMMUNITY.POST_DETAIL(variables.threadId),
+      });
     },
   });
 };
