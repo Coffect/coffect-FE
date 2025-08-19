@@ -38,7 +38,14 @@ const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   // 다음 단계
   const handleNext = (): void => {
     const trimmed = name.trim();
-    if (trimmed.length < 2) {
+    if (
+      !(
+        trimmed.length >= 2 &&
+        trimmed.length <= 7 &&
+        /^[가-힣a-zA-Z\s]*$/.test(trimmed) &&
+        !/[ㄱ-ㅎㅏ-ㅣ]/.test(trimmed)
+      )
+    ) {
       setNameError(true);
       return;
     }
@@ -157,7 +164,7 @@ const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
           />
           {nameError && (
             <p className="mt-1 text-xs text-[var(--noti)]">
-              이름은 최소 2자 이상 입력해주세요.
+              영문/한글/공백 조합 2글자 이상 7자 이하
             </p>
           )}
         </div>
