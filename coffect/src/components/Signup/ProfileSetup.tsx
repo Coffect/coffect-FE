@@ -65,7 +65,13 @@ const ProfileSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
     if (name.trim() === "") return;
 
     const timer = setTimeout(() => {
-      setNameError(name.trim().length < 2);
+      setNameError(
+        !(
+          name.trim().length >= 2 &&
+          name.trim().length <= 7 &&
+          /^[가-힣a-zA-Z\s]*$/.test(name.trim())
+        ),
+      );
     }, 500); // 500ms 동안 입력 멈추면 검사
 
     return () => clearTimeout(timer); // 입력 도중에는 이전 검사 취소
