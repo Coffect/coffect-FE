@@ -53,6 +53,7 @@ type AcceptNotice = {
   open: boolean;
   userName: string;
   chatId?: number;
+  cardId: string; // [ADD] fcm-delete용 cardId 보관
 };
 
 /* ------------------------------- 타입 가드 ------------------------------- */
@@ -70,6 +71,36 @@ const isAcceptType = (
 ): t is "accept_coffee_chat" | "ACCEPT_RESULT" | "accept_result" =>
   t === "accept_coffee_chat" || t === "ACCEPT_RESULT" || t === "accept_result";
 
+/* --------------------------- 공통 유틸리티 --------------------------- */
+
+// [ADD] SW와 동일 기준으로 cardId 생성 (coffectId → coffeeChatId → coffeeid → Date.now)
+const buildCardIdFromPayload = (p?: FcmPayload) => {
+  const d = p?.data ?? {};
+  const raw =
+    (d.coffectId as string | number | undefined) ??
+    (d.coffeeChatId as string | number | undefined) ??
+    (d.coffeeid as string | number | undefined) ??
+    Date.now();
+  return String(raw);
+};
+
+// [ADD] SW에 fcm-delete 전송 (controller 우선, 없으면 active 사용)
+const sendFcmDelete = async (cardId: string) => {
+  if (!("serviceWorker" in navigator)) return;
+  try {
+    navigator.serviceWorker.controller?.postMessage({
+      type: "fcm-delete",
+      cardId,
+    });
+    const reg = await navigator.serviceWorker
+      .getRegistration()
+      .catch(() => null);
+    reg?.active?.postMessage({ type: "fcm-delete", cardId });
+  } catch (e) {
+    console.warn("fcm-delete 전송 실패:", e);
+  }
+};
+
 /** 수락 FCM payload → AcceptNotice 변환 */
 const acceptNoticeFrom = (p?: FcmPayload): AcceptNotice | null => {
   const t = p?.data?.type;
@@ -83,7 +114,10 @@ const acceptNoticeFrom = (p?: FcmPayload): AcceptNotice | null => {
   const chatId =
     raw != null && !Number.isNaN(Number(raw)) ? Number(raw) : undefined;
 
-  return { open: true, userName, chatId };
+  // [ADD] 수락 알림에도 해당 카드의 cardId를 담아둠
+  const cardId = buildCardIdFromPayload(p);
+
+  return { open: true, userName, chatId, cardId }; // [CHANGE]
 };
 
 /* --------------------------- 변환 유틸리티 함수 --------------------------- */
@@ -499,8 +533,13 @@ const CoffeeSuggestBanner: React.FC = () => {
       {acceptNotice?.open && (
         <CoffeeSuggestResponseModal
           userName={acceptNotice.userName}
-          onClose={() => setAcceptNotice(null)}
+          // 어떤 버튼을 눌러도 해당 FCM 데이터 삭제 후 처리
+          onClose={() => {
+            sendFcmDelete(acceptNotice.cardId);
+            setAcceptNotice(null);
+          }}
           onChat={() => {
+            sendFcmDelete(acceptNotice.cardId);
             if (acceptNotice?.chatId) navigate(`/chat/${acceptNotice.chatId}`);
             else navigate("/chat");
             setAcceptNotice(null);
