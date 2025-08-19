@@ -62,7 +62,7 @@ const BookMark = () => {
       <div className="flex items-center justify-between px-4 py-3">
         <button
           className="pr-9 text-left text-3xl"
-          onClick={() => navigate("/mypage")}
+          onClick={() => navigate(-1)}
         >
           <img src={backIcon} className="h-6 w-6" />
         </button>

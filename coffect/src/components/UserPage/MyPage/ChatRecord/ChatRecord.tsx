@@ -93,10 +93,7 @@ const ChatRecord = () => {
       ref={scrollContainerRef}
     >
       {/* 뒤로가기 버튼 */}
-      <button
-        className="py-4 text-left text-3xl"
-        onClick={() => navigate("/mypage")}
-      >
+      <button className="py-4 text-left text-3xl" onClick={() => navigate(-1)}>
         <img src={backIcon} className="h-6 w-6" />
       </button>
 
