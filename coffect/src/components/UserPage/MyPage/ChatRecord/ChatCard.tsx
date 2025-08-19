@@ -82,7 +82,7 @@ const ChatCard = () => {
     >
       {/* 상단 네비게이션 영역 */}
       <div className="flex min-h-14 items-center">
-        <button onClick={() => navigate("/mypage/chatrecord")}>
+        <button onClick={() => navigate(-1)}>
           <img src={backIcon} className="h-6 w-6" alt="back" />
         </button>
       </div>

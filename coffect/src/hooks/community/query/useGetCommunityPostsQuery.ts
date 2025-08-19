@@ -9,15 +9,14 @@ import type {
   PostThreadsFilterResponse,
   PostThreadsFilterRequest,
 } from "@/types/community/postTypes";
-
-const QUERY_KEY = ["community", "posts"];
+import { QUERY_KEYS } from "@/constants/queryKey";
 
 export const useGetCommunityPostsQuery = (
   params: PostThreadsFilterRequest,
   { enabled }: { enabled?: boolean } = {},
 ) => {
   return useInfiniteQuery<PostThreadsFilterResponse, Error>({
-    queryKey: [...QUERY_KEY, params],
+    queryKey: QUERY_KEYS.COMMUNITY.POSTS_FILTERED(params),
     queryFn: ({ pageParam }) =>
       postThreadsFilter({
         ...params,

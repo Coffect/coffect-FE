@@ -58,14 +58,14 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
       ) : (
         <div className="h-8 w-8 flex-shrink-0" />
       )}
-      <div className="flex min-w-0 flex-row items-end">
+      <div className="flex min-w-0 flex-row items-end gap-2">
         <div
           className={`${otherBubble} ${text === "안녕하세요!" ? "whitespace-nowrap" : "whitespace-pre-line"}`}
         >
           {text}
         </div>
         <span
-          className={`ml-2 flex-shrink-0 self-end ${timeText} ${!showTime ? "invisible" : ""}`}
+          className={`flex-shrink-0 self-end ${timeText} ${!showTime ? "invisible" : ""}`}
         >
           {showTime ? time : "\u00A0"}
         </span>

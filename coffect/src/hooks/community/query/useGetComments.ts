@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { getComments } from "@/api/community/commentApi";
 import type { getCommentResponse } from "@/types/community/commentTypes";
-import { QUERY_KEYS } from "@/constants/key";
 import { useParams } from "react-router-dom";
+import { QUERY_KEYS } from "@/constants/queryKey";
 
 /**
  * @function useGetComments
@@ -16,7 +16,7 @@ export const useGetComments = () => {
   const isPostIdValid = typeof postId === "string" && postId.length > 0;
 
   const { data, isLoading, error } = useQuery({
-    queryKey: [QUERY_KEYS.COMMENTS, postId],
+    queryKey: QUERY_KEYS.COMMENT.COMMENTS(postId),
     queryFn: () => getComments({ threadId: postId as string }),
     enabled: isPostIdValid,
 

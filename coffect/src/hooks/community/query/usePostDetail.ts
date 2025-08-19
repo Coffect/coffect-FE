@@ -14,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getPostDetail } from "@/api/community/postApi";
 import { getTimeAgo } from "@/utils/dateUtils";
 import type { GetThreadLookUpResponse } from "@/types/community/postTypes";
+import { QUERY_KEYS } from "@/constants/queryKey";
 
 export const usePostDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,7 +27,7 @@ export const usePostDetail = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["postDetail", postId],
+    queryKey: QUERY_KEYS.COMMUNITY.POST_DETAIL(postId),
     queryFn: () => getPostDetail({ threadId: postId as string }),
     enabled: isPostIdValid,
 
