@@ -120,7 +120,7 @@ const MyPage = () => {
                     </span>
                     <span className="text-xs text-[var(--gray-50)]">
                       {userInfo?.studentId
-                        ? `${userInfo.studentId}학번`
+                        ? `${userInfo.studentId % 100}학번`
                         : "학번"}
                     </span>
                   </div>
