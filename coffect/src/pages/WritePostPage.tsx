@@ -24,10 +24,12 @@ import {
   // postSubjectOptions,
   type ChipOption,
 } from "@/components/communityComponents/ChipFilterComponent/filterData";
+import ImageCropModal from "@/components/shareComponents/imageCrop/ImageCropModal";
 
 const WritePostPage: React.FC = () => {
   const navigate = useNavigate();
 
+  // 전송되는 상태 변수들
   const [threadTitle, setThreadTitle] = useState<string>("");
   const [threadBody, setThreadBody] = useState<string>("");
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -35,26 +37,49 @@ const WritePostPage: React.FC = () => {
   const [type, setType] = useState<string>("");
   const [threadSubject, setThreadSubject] = useState<string>("");
 
+  // 이미지 크롭 모달 상태 변수들
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [cropTargetUrl, setCropTargetUrl] = useState<string | null>(null);
+
   const { mutate: addPost } = useAddPostMutation();
 
   const handleImageChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files.length > 0) {
-        const files = Array.from(e.target.files);
-        setImageFiles((prev) => [...prev, ...files]);
-        const lastFile = files[files.length - 1];
-        const lastFileUrl = URL.createObjectURL(lastFile);
-        setPreviewUrls([lastFileUrl]);
-        // const urls = files.map((file) => URL.createObjectURL(file));
-        // setPreviewUrls((prev) => [...prev, ...urls]);
+        const file = e.target.files[0];
+        const fileUrl = URL.createObjectURL(file);
+        setCropTargetUrl(fileUrl);
+        setCropModalOpen(true); // 모달 오픈
+        // const files = Array.from(e.target.files);
+        // setImageFiles((prev) => [...prev, ...files]);
+        // const lastFile = files[files.length - 1];
+        // const lastFileUrl = URL.createObjectURL(lastFile);
+        // setPreviewUrls([lastFileUrl]);
       }
     },
     [],
   );
 
-  const handleImageRemove = useCallback((indexToRemove: number) => {
-    setImageFiles((prev) => prev.filter((_, i) => i !== indexToRemove));
-    setPreviewUrls((prev) => prev.filter((_, i) => i !== indexToRemove));
+  // const handleCropComplete = useCallback((croppedFile: File) => {
+  //   setImageFiles((prev) => [...prev, croppedFile]);
+  //   setPreviewUrls((prev) => [...prev, URL.createObjectURL(croppedFile)]);
+  //   setCropModalOpen(false);
+  //   setCropTargetUrl(null);
+  // }, []);
+
+  const handleCropComplete = useCallback((croppedFile: File) => {
+    const croppedUrl = URL.createObjectURL(croppedFile);
+    setImageFiles([croppedFile]);
+    setPreviewUrls([croppedUrl]);
+    setCropModalOpen(false);
+    setCropTargetUrl(null);
+  }, []);
+
+  const handleImageRemove = useCallback(() => {
+    // setImageFiles((prev) => prev.filter((_, i) => i !== indexToRemove));
+    setImageFiles([]);
+    setPreviewUrls([]);
+    // setPreviewUrls((prev) => prev.filter((_, i) => i !== indexToRemove));
   }, []);
 
   const handleTypeSelect = useCallback((option: ChipOption) => {
@@ -143,6 +168,15 @@ const WritePostPage: React.FC = () => {
           topic={threadSubject}
           handleThreadSubjectSelect={handleThreadSubjectSelect}
         />
+
+        {cropTargetUrl && (
+          <ImageCropModal
+            isOpen={cropModalOpen}
+            imageSrc={cropTargetUrl}
+            onClose={() => setCropModalOpen(false)}
+            onCropComplete={handleCropComplete}
+          />
+        )}
       </main>
     </div>
   );
