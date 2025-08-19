@@ -8,7 +8,7 @@
 import React, { useRef } from "react";
 import { X } from "lucide-react";
 import ImageAttachmentModal from "../../shareComponents/ImageAttachmentModal";
-import Link from "@/assets/icon/community/linkIcon.png";
+// import Link from "@/assets/icon/community/linkIcon.png";
 import Photo from "@/assets/icon/community/photoIcon.png";
 
 /**
@@ -88,9 +88,9 @@ const WritePostContentInput: React.FC<WritePostContentInputProps> = ({
         >
           <img src={Photo} alt="Photo Icon" className="h-6 w-6" />
         </button>
-        <button type="button" className="rounded text-sm">
+        {/* <button type="button" className="rounded text-sm">
           <img src={Link} alt="Link Icon" className="h-6 w-6" />
-        </button>
+        </button> */}
         <ImageAttachmentModal
           show={showModal}
           onClose={() => setShowModal(false)}
