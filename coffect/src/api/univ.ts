@@ -91,12 +91,12 @@ export const signUpRequest = async ({
   return response.data;
 };
 
-// 특정 이메일의 대학교 도메인 유효성 검증
-export const checkUnivDomain = async (email: string) => {
+// 특정 이메일이 해당 대학교인지 도메인 유효성 검증
+export const checkUnivDomain = async (email: string, univ: string) => {
   try {
     const res = await axiosInstance.post(
       "/univ/domain",
-      { email },
+      { email, univ },
       {
         headers: { "X-Skip-Auth-Redirect": "true" }, // 이 요청만 401 리다이렉트 예외
       },

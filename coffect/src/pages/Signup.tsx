@@ -145,6 +145,7 @@ const Signup: React.FC = () => {
         {/* 5. 이메일 인증 화면 */}
         {step === 5 && (
           <EmailVerification
+            form={form}
             onNext={goNext}
             onUpdate={(fields) => update(fields)}
           />
