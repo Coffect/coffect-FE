@@ -39,7 +39,8 @@ export const useFollowingListQuery = (
       getListUpFollower({ ...params, idCursor: pageParam }),
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (lastPage) => {
-      const lastItem = lastPage.success?.[lastPage.success.length - 1];
+      const items = lastPage.success ?? [];
+      const lastItem = items[items.length - 1];
       return lastItem ? lastItem.idCursor : undefined;
     },
   });
@@ -60,7 +61,8 @@ export const useFollowerListQuery = (
       getListUpFollowing({ ...params, idCursor: pageParam }),
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (lastPage) => {
-      const lastItem = lastPage.success?.[lastPage.success.length - 1];
+      const items = lastPage.success ?? [];
+      const lastItem = items[items.length - 1];
       return lastItem ? lastItem.idCursor : undefined;
     },
   });
