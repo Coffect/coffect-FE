@@ -3,18 +3,22 @@ import {
   useQuery,
   type InfiniteData,
 } from "@tanstack/react-query";
+
 import {
   getCountFollow,
   getListUpFollower,
   getListUpFollowing,
 } from "@/api/follow";
+
 import { QUERY_KEYS } from "@/constants/queryKey";
+
 import type {
   ListUpFollowerRequest,
   ListUpFollowerResponse,
   ListUpFollowingRequest,
   ListUpFollowingResponse,
 } from "@/types/follow/listUpFollow";
+
 import type {
   CountFollowRequest,
   CountFollowResponse,
