@@ -7,7 +7,7 @@ import FeedItem from "../../shareComponents/FeedItem";
 import type { ThreadSummary } from "@/types/community/postTypes"; // PostSummary 타입 임포트
 
 interface FeedListProps {
-  posts: ThreadSummary[]; // Post[] 대신 PostSummary[] 사용
+  posts: ThreadSummary[];
 }
 
 const FeedList = ({ posts }: FeedListProps) => {

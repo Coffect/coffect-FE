@@ -299,15 +299,21 @@ function Profile() {
                 <div className="text-sm text-[var(--gray-50)]">포스트</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-semibold text-[var(--gray-70)]">
+                <button
+                  className="text-lg font-semibold text-[var(--gray-70)]"
+                  onClick={() => navigate(`/followerList/${userInfo?.userId}`)}
+                >
                   {formatCount(profile?.following || 0)}
-                </div>
+                </button>
                 <div className="text-sm text-[var(--gray-50)]">팔로워</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-semibold text-[var(--gray-70)]">
+                <button
+                  className="text-lg font-semibold text-[var(--gray-70)]"
+                  onClick={() => navigate(`/followingList/${userInfo?.userId}`)}
+                >
                   {formatCount(profile?.follower || 0)}
-                </div>
+                </button>
                 <div className="text-sm text-[var(--gray-50)]">팔로잉</div>
               </div>
             </div>
@@ -323,7 +329,9 @@ function Profile() {
                 {userInfo?.dept || "전공"}
               </span>
               <span className="text-sm text-[var(--gray-40)]">
-                {userInfo?.studentId ? `${userInfo.studentId}학번` : "학번"}
+                {userInfo?.studentId
+                  ? `${userInfo.studentId % 100}학번`
+                  : "학번"}
               </span>
             </div>
             <div className="relative">
