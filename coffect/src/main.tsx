@@ -1,4 +1,3 @@
-// src/main.tsx
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
@@ -25,7 +24,7 @@ root.render(
     const isDev = import.meta.env.DEV;
     const swUrl = isDev ? "/dev-sw.js?dev-sw" : "/sw.js";
 
-    // 반대편 SW 정리(선택)
+    // 반대편 SW 정리
     for (const r of await navigator.serviceWorker.getRegistrations()) {
       const url = r.active?.scriptURL || "";
       if (isDev ? url.includes("/sw.js") : url.includes("/dev-sw")) {
@@ -70,7 +69,7 @@ root.render(
 
       const token = await getToken(msg, {
         vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
-        serviceWorkerRegistration: reg, // ★ 이 탭의 SW와 바인딩
+        serviceWorkerRegistration: reg, // 이 탭의 SW와 바인딩
       });
       console.log("[FCM] token:", token);
     }
