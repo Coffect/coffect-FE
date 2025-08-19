@@ -36,8 +36,11 @@ export default function ImageCropModal({
         <h2 className="mb-3 text-center text-lg font-semibold text-[var(--gray-90)]">
           이미지 자르기
         </h2>
-
-        <div className="relative h-72 w-full overflow-hidden rounded-lg bg-[var(--gray-30)]">
+        {/* relative h-72 w-full overflow-hidden rounded-lg bg-[var(--gray-30)] */}
+        <div
+          className="relative w-full overflow-hidden rounded-lg bg-[var(--gray-30)]"
+          style={{ height: "70vh", maxHeight: "500px" }}
+        >
           <Cropper
             image={imageSrc}
             crop={crop}
@@ -48,9 +51,9 @@ export default function ImageCropModal({
             onCropComplete={onCropCompleteCallback}
             minZoom={1}
             maxZoom={1.5}
+            objectFit="vertical-cover"
           />
         </div>
-
         <div className="mt-5 flex justify-center gap-3">
           <button
             onClick={onClose}
