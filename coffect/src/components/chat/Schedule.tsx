@@ -15,11 +15,12 @@ import { useChatUser } from "./hooks/useChatUser";
 import { useChatRooms } from "../../hooks/chat/useChatRooms";
 import { formatAmPmTo24Hour } from "../../utils/dateUtils";
 import { useScheduleForm } from "./hooks/useScheduleForm";
+import { getCoffectId } from "../../api/chat/chatRoomApi";
 
 const Schedule: React.FC = () => {
   const location = useLocation();
   const { user: currentUser } = useChatUser();
-  const { chatRooms } = useChatRooms();
+  const { chatRooms, loadChatRooms, isLoading } = useChatRooms();
 
   // 현재 채팅방 ID 가져오기 (URL에서 추출하거나 location state에서)
   const currentChatRoomId = (() => {
@@ -39,8 +40,15 @@ const Schedule: React.FC = () => {
     chatRooms.find((room) => room.chatroomId === currentChatRoomId) ||
     chatRooms[0]; // 임시로 첫 번째 채팅방 사용
 
+  // 채팅방 정보가 없으면 로드
+  React.useEffect(() => {
+    if (!currentChatRoom && chatRooms.length === 0) {
+      loadChatRooms();
+    }
+  }, [currentChatRoom, chatRooms.length, loadChatRooms]);
+
   const [form, setForm] = useState<ScheduleFormValues>(() => {
-    // 기존 일정이 있는지 확인 (수정하기)
+    // 1. location.state에서 기존 일정 확인 (수정하기)
     const sch = location.state?.schedule;
     if (sch) {
       // 날짜가 string이면 Date 객체로 변환
@@ -56,6 +64,51 @@ const Schedule: React.FC = () => {
         alert: sch.alert || "5분 전",
       };
     }
+
+    // 2. localStorage에서 기존 일정 정보 조회
+    if (currentChatRoomId) {
+      const savedSchedule = localStorage.getItem(
+        `schedule_${currentChatRoomId}`,
+      );
+      console.log("localStorage에서 불러온 일정:", savedSchedule);
+
+      if (savedSchedule) {
+        try {
+          const parsed = JSON.parse(savedSchedule);
+          console.log("파싱된 일정 정보:", parsed);
+
+          // 날짜 형식 변환
+          let dateValue: Date | string | undefined = parsed.date;
+          if (typeof parsed.date === "string") {
+            console.log("날짜 문자열:", parsed.date);
+
+            // ISO 날짜 문자열인 경우 Date 객체로 변환
+            if (parsed.date.includes("-") || parsed.date.includes("T")) {
+              const dateObj = new Date(parsed.date);
+              console.log("변환된 Date 객체:", dateObj);
+              dateValue = isNaN(dateObj.getTime()) ? undefined : dateObj;
+            } else {
+              // "12월 25일" 형식인 경우 그대로 사용
+              dateValue = parsed.date;
+            }
+          }
+
+          const result = {
+            date: dateValue,
+            time: parsed.time || "",
+            place: parsed.place || "",
+            alert: parsed.alert || "5분 전",
+          };
+
+          console.log("최종 폼 데이터:", result);
+          return result;
+        } catch (error) {
+          console.error("저장된 일정 정보 파싱 실패:", error);
+        }
+      }
+    }
+
+    // 3. 기본값 반환
     return {
       date: undefined,
       time: "",
@@ -119,7 +172,6 @@ const Schedule: React.FC = () => {
       };
 
       // getCoffectId API 호출
-      const { getCoffectId } = await import("../../api/chat/chatRoomApi");
       const coffectIdResponse = await getCoffectId(currentChatRoomId);
 
       if (
@@ -143,6 +195,20 @@ const Schedule: React.FC = () => {
 
       if (response.resultType === "SUCCESS") {
         console.log("일정 등록 성공:", response.success);
+
+        // localStorage에 일정 정보 저장
+        const scheduleToSave = {
+          date: form.date,
+          time: form.time,
+          place: form.place,
+          alert: form.alert,
+        };
+
+        localStorage.setItem(
+          `schedule_${currentChatRoomId}`,
+          JSON.stringify(scheduleToSave),
+        );
+
         setShowComplete(true);
       } else {
         console.error("일정 등록 실패:", response.error);
@@ -173,25 +239,35 @@ const Schedule: React.FC = () => {
         </div>
         <div className="flex w-full items-center justify-start">
           <div className="z-10 -mr-2 h-9 w-9 overflow-hidden rounded-full border-2 border-[var(--white)] bg-[var(--gray-10)]">
-            {currentChatRoom?.userInfo?.profileImage && (
+            {currentChatRoom?.userInfo?.profileImage ? (
               <img
                 src={currentChatRoom.userInfo.profileImage}
                 alt="상대 프로필"
                 className="h-full w-full object-cover"
               />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-xs text-[var(--gray-40)]">
+                ?
+              </div>
             )}
           </div>
           <div className="z-0 h-9 w-9 overflow-hidden rounded-full border-2 border-[var(--white)] bg-[var(--gray-10)]">
-            {currentUser.profileImage && (
+            {currentUser.profileImage ? (
               <img
                 src={currentUser.profileImage}
                 alt="내 프로필"
                 className="h-full w-full object-cover"
               />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-xs text-[var(--gray-40)]">
+                ?
+              </div>
             )}
           </div>
           <span className="ml-2 text-[20px] font-bold tracking-tight text-[#FF8126]">
-            {currentChatRoom?.userInfo?.name || "상대방"}
+            {isLoading
+              ? "로딩 중..."
+              : currentChatRoom?.userInfo?.name || "상대방"}
           </span>
           <span className="text-[20px] font-bold tracking-tight text-[var(--gray-90)]">
             님과의 커피챗

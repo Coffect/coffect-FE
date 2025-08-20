@@ -17,6 +17,7 @@ interface ChatMessageAreaProps {
   opponentProfileImage?: string;
   showInterests?: boolean;
   onToggleInterests?: () => void;
+  isMyRequest?: boolean; // 내가 보낸 제안인지 여부
 }
 
 const ChatMessageArea = ({
@@ -25,6 +26,7 @@ const ChatMessageArea = ({
   opponentProfileImage,
   showInterests,
   onToggleInterests,
+  isMyRequest = false,
 }: ChatMessageAreaProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   useAutoScroll(messagesEndRef, messages);
@@ -48,7 +50,10 @@ const ChatMessageArea = ({
 
       {/* 시스템 메시지 */}
       <div className={showInterests ? "mt-2" : "-mt-6"}>
-        <ChatSystemMessage username={username || "상대방"} />
+        <ChatSystemMessage
+          username={username || "상대방"}
+          isMyRequest={isMyRequest}
+        />
       </div>
 
       <ChatMessageList

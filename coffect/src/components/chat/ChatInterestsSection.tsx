@@ -21,6 +21,7 @@ interface ChatInterestsSectionProps {
   showInterests: boolean;
   onToggleInterests: () => void;
   chatRoomId?: string;
+  isMyRequest?: boolean; // 내가 보낸 제안인지 여부
 }
 
 const ChatInterestsSection = ({
@@ -30,6 +31,7 @@ const ChatInterestsSection = ({
   showInterests,
   onToggleInterests,
   chatRoomId,
+  isMyRequest = false,
 }: ChatInterestsSectionProps) => {
   const navigate = useNavigate();
 
@@ -96,7 +98,7 @@ const ChatInterestsSection = ({
               >
                 <Mail size={16} className="text-[var(--gray-40)]" />
                 <span className="block overflow-hidden text-[16px] font-medium whitespace-nowrap">
-                  상대 요청 보기
+                  {isMyRequest ? "상대 요청 보기" : "나의 요청 보기"}
                 </span>
               </button>
             )}
@@ -124,7 +126,9 @@ const ChatInterestsSection = ({
                 onClick={onOpenModal}
               >
                 <Mail size={17} />
-                <span className="leading-none">상대 요청 보기</span>
+                <span className="leading-none">
+                  {isMyRequest ? "상대 요청 보기" : "나의 요청 보기"}
+                </span>
               </button>
             </div>
           )}

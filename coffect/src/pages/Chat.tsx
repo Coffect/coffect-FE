@@ -5,59 +5,26 @@
  */
 
 import BottomNavbar from "../components/shareComponents/BottomNavbar";
+import LoadingScreen from "../components/shareComponents/LoadingScreen";
 import { useNavigate } from "react-router-dom";
 import EmptyChatList from "../assets/icon/chat/EmptyChatList.png";
 import ChatRoomList from "../components/chat/ChatRoomList";
 
 import { useChatRooms } from "../hooks/chat";
+import { useEffect } from "react";
 
 const Chat = () => {
+  const { chatRooms, isLoading, loadChatRooms } = useChatRooms();
   const navigate = useNavigate();
-  const { chatRooms, isLoading, error } = useChatRooms();
+
+  useEffect(() => {
+    if (!isLoading && chatRooms.length === 0) {
+      loadChatRooms();
+    }
+  }, [isLoading, chatRooms.length, loadChatRooms]);
 
   if (isLoading) {
-    return (
-      <div className="flex h-full w-full flex-col bg-[var(--white)]">
-        <div className="flex items-center justify-between px-5 pt-8">
-          <span className="ml-2 text-2xl font-bold text-[var(--gray-90)]">
-            채팅
-          </span>
-        </div>
-        <div className="flex flex-1 items-center justify-center">
-          <span className="text-[var(--gray-50)]">
-            채팅방 목록을 불러오는 중...
-          </span>
-        </div>
-        <BottomNavbar activeLabel="채팅" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex h-full w-full flex-col bg-[var(--white)]">
-        <div className="flex items-center justify-between px-5 pt-8 pb-3">
-          <span className="ml-2 text-2xl font-bold text-[var(--gray-90)]">
-            채팅
-          </span>
-        </div>
-        <div className="flex flex-1 flex-col items-center justify-center px-4">
-          <span className="mb-2 text-center text-[20px] font-bold text-[var(--gray-90)]">
-            서버 연결 오류
-          </span>
-          <span className="mb-4 text-center text-[16px] text-[var(--gray-50)]">
-            {error}
-          </span>
-          <button
-            onClick={() => window.location.reload()}
-            className="rounded-md bg-[var(--primary)] px-4 py-2 text-white hover:bg-[var(--primary-dark)]"
-          >
-            다시 시도
-          </button>
-        </div>
-        <BottomNavbar activeLabel="채팅" />
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (

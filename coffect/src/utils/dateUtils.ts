@@ -127,12 +127,22 @@ export const formatDate = (isoDate: string) => {
     .replace(/ /g, ".");
 };
 
-// 약속 시간 HH:MM
+// 약속 시간 HH:MM (24시간 형식)
 export const formatTime = (isoDate: string) => {
   const dateObj = new Date(isoDate);
   return dateObj.toLocaleTimeString("ko-KR", {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
+  });
+};
+
+// 채팅 메시지 시간 (12시간 형식 - 오전/오후)
+export const formatChatTime = (isoDate: string) => {
+  const dateObj = new Date(isoDate);
+  return dateObj.toLocaleTimeString("ko-KR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
   });
 };

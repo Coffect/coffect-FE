@@ -26,21 +26,23 @@ const ImageMessageBubble: React.FC<ImageMessageBubbleProps> = ({
 }) => {
   if (mine) {
     return (
-      <div className="flex items-end justify-end gap-2">
+      <div className="flex max-w-[80%] items-end justify-end gap-2">
         <span className={`${timeText} ${!showTime ? "invisible" : ""}`}>
           {showTime ? time : "\u00A0"}
         </span>
-        <img
-          src={imageUrl}
-          alt="전송된 이미지"
-          className="max-h-[160px] max-w-[160px] rounded-lg border border-[var(--gray-10)] object-cover"
-        />
+        <div className="h-[160px] w-[160px] flex-shrink-0 overflow-hidden rounded-lg border border-[var(--gray-10)]">
+          <img
+            src={imageUrl}
+            alt="전송된 이미지"
+            className="h-full w-full object-cover"
+          />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-row items-start gap-2">
+    <div className="flex max-w-[80%] flex-row items-start gap-2">
       {showProfile ? (
         <div className="h-8 w-8 flex-shrink-0 overflow-hidden rounded-full bg-[var(--gray-20)]">
           {profileImage ? (
@@ -57,11 +59,13 @@ const ImageMessageBubble: React.FC<ImageMessageBubbleProps> = ({
         <div className="h-8 w-8 flex-shrink-0" />
       )}
       <div className="flex min-w-0 flex-row items-end gap-2">
-        <img
-          src={imageUrl}
-          alt="전송된 이미지"
-          className="max-h-[160px] max-w-[160px] rounded-lg border border-[var(--gray-10)] object-cover"
-        />
+        <div className="h-[160px] w-[160px] flex-shrink-0 overflow-hidden rounded-lg border border-[var(--gray-10)]">
+          <img
+            src={imageUrl}
+            alt="전송된 이미지"
+            className="h-full w-full object-cover"
+          />
+        </div>
         <span
           className={`flex-shrink-0 self-end ${timeText} ${!showTime ? "invisible" : ""}`}
         >

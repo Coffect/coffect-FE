@@ -55,7 +55,13 @@ const DatePickerSection: React.FC<DatePickerSectionProps> = ({
         >
           <div className="relative">
             <DatePicker
-              selected={values.date instanceof Date ? values.date : undefined}
+              selected={
+                values.date instanceof Date
+                  ? values.date
+                  : typeof values.date === "string"
+                    ? new Date(values.date)
+                    : undefined
+              }
               onChange={(date) => {
                 onChange({ ...values, date: date || undefined });
                 setShowCalendarPicker(false);
@@ -64,11 +70,18 @@ const DatePickerSection: React.FC<DatePickerSectionProps> = ({
               minDate={new Date()}
               calendarClassName="iphone-calendar"
               dayClassName={(date) => {
+                const selectedDate =
+                  values.date instanceof Date
+                    ? values.date
+                    : typeof values.date === "string"
+                      ? new Date(values.date)
+                      : null;
+
                 const selected =
-                  values.date instanceof Date &&
-                  date.getDate() === values.date.getDate() &&
-                  date.getMonth() === values.date.getMonth() &&
-                  date.getFullYear() === values.date.getFullYear();
+                  selectedDate &&
+                  date.getDate() === selectedDate.getDate() &&
+                  date.getMonth() === selectedDate.getMonth() &&
+                  date.getFullYear() === selectedDate.getFullYear();
                 if (selected) {
                   return "custom-selected-day";
                 }

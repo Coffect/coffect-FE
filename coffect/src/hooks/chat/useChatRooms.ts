@@ -27,16 +27,17 @@ export const useChatRooms = (): UseChatRoomsReturn => {
 
   // 채팅방 목록 조회
   const loadChatRooms = useCallback(async () => {
-    if (isLoading) return; // 이미 로딩 중이면 중복 호출 방지
+    if (isLoading) {
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError(null);
 
-      // 소켓 연결
-      try {
+      // Socket 연결 (한 번만 수행)
+      if (!socketManager.isSocketConnected()) {
         socketManager.connect();
-      } catch (error) {
-        console.warn("소켓 연결 실패:", error);
       }
 
       const response = await getChatRoomList();
@@ -149,18 +150,13 @@ export const useChatRooms = (): UseChatRoomsReturn => {
     } finally {
       setIsLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isLoading]); // isLoading을 의존성에 추가
 
-  // 초기 로드
+  // 언마운트 시 가드 설정
   useEffect(() => {
-    loadChatRooms();
-
-    // 언마운트 시 가드 설정
     return () => {
       isMountedRef.current = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
