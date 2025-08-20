@@ -24,6 +24,8 @@ declare const self: ServiceWorkerGlobalScope & {
 import { precacheAndRoute } from "workbox-precaching";
 import { initializeApp } from "firebase/app";
 import { getMessaging, onBackgroundMessage } from "firebase/messaging/sw";
+import { registerRoute } from "workbox-routing";
+import { StaleWhileRevalidate } from "workbox-strategies";
 
 // ===== Workbox =====
 precacheAndRoute(self.__WB_MANIFEST);
@@ -365,3 +367,14 @@ self.addEventListener("notificationclick", (event: NotificationEvent) => {
     })(),
   );
 });
+
+registerRoute(({ request, url }) => {
+  if (url.pathname.endsWith(".ts") || url.pathname.endsWith(".tsx")) {
+    return false;
+  }
+  return (
+    request.destination === "script" ||
+    request.destination === "style" ||
+    request.destination === "document"
+  );
+}, new StaleWhileRevalidate());

@@ -21,7 +21,7 @@ export default defineConfig(() => {
         srcDir: "src",
         filename: "sw.js", // 최종 서비스워커 파일명
         injectRegister: null, // index.html 자동 등록 비활성화
-        devOptions: { enabled: false }, // 개발 모드에서는 PWA 기능 비활성화
+        devOptions: { enabled: false }, // 개발 모드에서는 PWA 기능 비활성화 (fcm 배너 개발 시에만 true로 설정할 것)
         manifest: {
           name: "Coffect",
           short_name: "Coffect",
