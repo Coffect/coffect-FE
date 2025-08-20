@@ -13,7 +13,7 @@ interface PostDetailCommentsProps {
 const PostDetailComments = ({ commentList }: PostDetailCommentsProps) => {
   return (
     <section>
-      <div className="h-[7.3%] min-h-[6px] w-full bg-[var(--gray-5)]"></div>
+      {/* <div className="h-[7.3%] min-h-[6px] w-full bg-[var(--gray-5)]"></div> */}
       <div className="pt-4 pr-4 pl-4">
         <CommentList commentList={commentList} />
       </div>
