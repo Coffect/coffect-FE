@@ -64,7 +64,7 @@ const FeedInteraction = ({
               width={24}
               height={24}
               fill={isLiked ? "red" : "none"}
-              color={isLiked ? "red" : "currentColor"}
+              color={isLiked ? "red" : "#ACACAC"}
             />
             <span>{likes}</span>
           </button>

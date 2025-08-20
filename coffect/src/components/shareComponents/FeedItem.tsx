@@ -62,7 +62,11 @@ const FeedItem = ({
           <button
             onClick={handleFollowClick}
             // disabled={isFollowing}
-            className="rounded-md bg-[var(--gray-60)] px-4 py-1.5 text-sm font-semibold text-white disabled:bg-gray-300"
+            className={`rounded-md px-4 py-1.5 text-sm font-semibold text-white ${
+              post.isFollowing
+                ? "bg-[var(--orange-500)]"
+                : "bg-[var(--gray-60)]"
+            }`}
           >
             {post.isFollowing ? "팔로잉" : "팔로우"}
           </button>
