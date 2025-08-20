@@ -10,6 +10,7 @@ import { X } from "lucide-react";
 import ImageAttachmentModal from "../../shareComponents/ImageAttachmentModal";
 // import Link from "@/assets/icon/community/linkIcon.png";
 import Photo from "@/assets/icon/community/photoIcon.png";
+import imageCut from "@/assets/icon/community/ImageCut.png";
 
 /**
  * @interface WritePostContentInputProps
@@ -20,6 +21,7 @@ import Photo from "@/assets/icon/community/photoIcon.png";
  * @property selectedImageFiles - 사용자가 선택한 이미지 파일 배열 (추가됨)
  * @property handleImageChange - 이미지 파일 선택 시 호출되는 핸들러 (추가됨)
  * @property handleImageRemove - 이미지 파일 삭제 시 호출되는 핸들러 (추가됨)
+ * @property onCropClick - 이미지 자르기 버튼 클릭 시 호출되는 핸들러 (추가됨)
  */
 interface WritePostContentInputProps {
   content: string;
@@ -27,6 +29,8 @@ interface WritePostContentInputProps {
   images: string[];
   handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleImageRemove: (indexToRemove: number) => void;
+  onCropClick?: (index: number) => void; //
+  isCropped?: boolean; //
 }
 
 const WritePostContentInput: React.FC<WritePostContentInputProps> = ({
@@ -35,6 +39,8 @@ const WritePostContentInput: React.FC<WritePostContentInputProps> = ({
   images: selectedImageFiles,
   handleImageChange,
   handleImageRemove,
+  onCropClick,
+  isCropped,
 }) => {
   const [showModal, setShowModal] = React.useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -64,12 +70,25 @@ const WritePostContentInput: React.FC<WritePostContentInputProps> = ({
                 alt={`preview ${index}`}
                 className="mx-auto h-auto w-full rounded-md object-contain"
               />
+
               <button
                 onClick={() => handleImageRemove(index)}
-                className="bg-opacity-50 absolute top-1 right-1 rounded-full bg-black p-0.5 text-white"
+                className="bg-opacity-50 absolute top-1 right-1 rounded-full bg-black p-1 text-white"
               >
                 <X size={16} />
               </button>
+              {onCropClick && !isCropped && onCropClick && (
+                <button
+                  onClick={() => onCropClick(index)}
+                  className="absolute bottom-1 left-1 rounded-full bg-[var(--gray-80)] p-1 text-xs text-white"
+                >
+                  <img
+                    src={imageCut}
+                    alt="Crop Icon"
+                    className="inline-block h-5 w-5"
+                  />
+                </button>
+              )}
             </div>
           ))}
         </div>
