@@ -64,7 +64,7 @@ const AlarmItemView = ({
       {/* 텍스트 내용 */}
       <div className="flex flex-col">
         <p className="text-base font-medium text-[var(--gray-90)]">
-          <span>{username}님이</span>
+          <span>{username}님의</span>
           {message}
         </p>
         <p className="mt-[0.3rem] text-sm font-medium text-[var(--gray-40)]">
@@ -88,7 +88,6 @@ const AlarmView = () => {
           (n: ApiNotification) => ({
             id: n.notificationId,
             username: n?.data?.firstUserName ?? "알 수 없음",
-            // 예: "김더미님의 커피챗 제안이 도착했어요!" → 앞의 이름 제거
             message:
               " " +
               (n?.body
