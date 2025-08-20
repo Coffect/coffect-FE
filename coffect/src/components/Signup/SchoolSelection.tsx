@@ -377,19 +377,27 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
                 }
                 onClick={() => setShowYearDropdown((prev) => !prev)}
                 onKeyDown={handleYearKey}
-                className="flex h-[48px] w-full items-center justify-between rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-3 text-base font-medium text-[var(--gray-90)] focus:border-2 focus:border-gray-900 focus:ring-0"
+                className="flex h-[48px] w-[33%] items-center justify-between rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-4 text-base font-medium text-[var(--gray-90)] focus:border-2 focus:border-gray-900 focus:ring-0"
               >
-                {studentId ? `${studentId}년` : "입학년도"}
+                <span
+                  className={
+                    studentId
+                      ? "text-[var(--gray-90)]"
+                      : "text-[var(--gray-40)]"
+                  }
+                >
+                  {studentId ? `${studentId}년` : "입학년도"}
+                </span>
                 {showYearDropdown ? (
-                  <ChevronUp className="h-5 w-5 text-[var(--gray-50)]" />
+                  <ChevronUp className="h-6 w-6 text-[var(--gray-30)]" />
                 ) : (
-                  <ChevronDown className="h-5 w-5 text-[var(--gray-50)]" />
+                  <ChevronDown className="h-6 w-6 text-[var(--gray-30)]" />
                 )}{" "}
               </button>
 
               {/* 드롭다운  */}
               {showYearDropdown && (
-                <ul className="absolute z-10 mt-2 w-full">
+                <ul className="absolute z-10 mt-2 max-h-[150px] w-[33%] overflow-y-auto bg-white">
                   {yearOptions.map((year, i) => (
                     <li
                       key={year}
