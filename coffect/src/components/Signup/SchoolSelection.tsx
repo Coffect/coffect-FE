@@ -240,7 +240,7 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
             : "어느 학교 학생이신가요?"}
         </p>
         <p className="mt-1 text-base text-[var(--gray-40)]">
-          학교/학과를 입력 후, 반드시 목록에서 선택해야 해요
+          학교/학과를 입력 후 목록에서 선택해주세요
         </p>
 
         {/* 학교 검색 입력창 */}
@@ -377,7 +377,7 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
                 }
                 onClick={() => setShowYearDropdown((prev) => !prev)}
                 onKeyDown={handleYearKey}
-                className="flex h-[48px] w-[33%] items-center justify-between rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-4 text-base font-medium text-[var(--gray-90)] focus:border-2 focus:border-gray-900 focus:ring-0"
+                className="flex h-[48px] w-[33%] items-center justify-between rounded-[8px] border-[1.5px] border-[var(--gray-10)] px-2 pl-3 text-base font-medium text-[var(--gray-90)] focus:border-2 focus:border-gray-900 focus:ring-0"
               >
                 <span
                   className={
