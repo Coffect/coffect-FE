@@ -3,7 +3,7 @@ import Cropper, { type Area } from "react-easy-crop";
 
 type Props = {
   isOpen: boolean;
-  imageSrc: string | null;
+  imageSrc: string;
   onCropComplete: (file: File) => void;
   onClose: () => void;
 };
@@ -28,7 +28,7 @@ export default function ImageCropModal({
     onCropComplete(croppedFile);
   };
 
-  if (!isOpen || !imageSrc) return null;
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4 backdrop-brightness-50">
@@ -36,7 +36,7 @@ export default function ImageCropModal({
         <h2 className="mb-3 text-center text-lg font-semibold text-[var(--gray-90)]">
           이미지 자르기
         </h2>
-        {/* relative h-72 w-full overflow-hidden rounded-lg bg-[var(--gray-30)] */}
+
         <div
           className="relative w-full overflow-hidden rounded-lg bg-[var(--gray-30)]"
           style={{ height: "50vh", maxHeight: "600px" }}
@@ -45,7 +45,7 @@ export default function ImageCropModal({
             image={imageSrc}
             crop={crop}
             zoom={zoom}
-            aspect={3 / 2}
+            aspect={1 / 1}
             onCropChange={setCrop}
             onZoomChange={setZoom}
             onCropComplete={onCropCompleteCallback}
@@ -54,6 +54,7 @@ export default function ImageCropModal({
             objectFit="vertical-cover"
           />
         </div>
+
         <div className="mt-5 flex justify-center gap-3">
           <button
             onClick={onClose}
@@ -63,7 +64,7 @@ export default function ImageCropModal({
           </button>
           <button
             onClick={handleCrop}
-            className="rounded-lg bg-[var(--orange-500)] px-5 py-2 text-white shadow-sm"
+            className="rounded-lg bg-[var(--orange-500)] stroke-0 px-5 py-2 text-white shadow-sm"
           >
             확인
           </button>
