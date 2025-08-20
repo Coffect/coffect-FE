@@ -8,6 +8,7 @@ import FollowList from "@/components/follow/FollowList";
 import FollowHeader from "@/components/follow/followHeader";
 import FollowingListSkeleton from "@/components/follow/skeleton/FollowingListSkeleton";
 import FollowItemSkeleton from "@/components/follow/skeleton/FollowItemSkeleton";
+import followZero from "@/assets/icon/shareComponents/followZero.png";
 
 const FollowerPage = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -37,10 +38,15 @@ const FollowerPage = () => {
 
   if (users.length === 0) {
     return (
-      <div>
+      <div className="flex min-h-screen flex-col">
         <FollowHeader follow="Follower" count={followerCount} />
-        <div className="flex h-100 items-center justify-center">
-          <p className="text-[var(--gray-50)]">팔로워가 아직 없어요 !</p>
+        <div className="flex flex-1 flex-col items-center justify-center gap-3.5">
+          <div className="text-xl font-bold text-[var(--gray-90)]">
+            아직 팔로워가 없어요
+          </div>
+          <div>
+            <img src={followZero} alt="팔로잉 없음" className="h-11 w-11" />
+          </div>
         </div>
       </div>
     );

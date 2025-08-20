@@ -30,6 +30,8 @@ const FollowItem = ({ user }: FollowItemProps) => {
     queryFn: () => getIsFollow(user.userId),
   });
 
+  const isFollowing = isFollow?.success === true;
+
   return (
     <div
       onClick={handleUserClick}
@@ -53,7 +55,7 @@ const FollowItem = ({ user }: FollowItemProps) => {
 
       <button
         onClick={handleFollowClick}
-        className={`rounded-md px-4 py-1.5 text-sm font-semibold ${isFollow ? "bg-[var(--gray-10)] text-[var(--gray-70)]" : "bg-[var(--gray-60)] text-white"}`}
+        className={`rounded-md px-4 py-1.5 text-sm font-semibold ${isFollowing ? "bg-[var(--gray-10)] text-[var(--gray-70)]" : "bg-[var(--gray-60)] text-white"}`}
       >
         {isFollow ? "팔로잉" : "팔로우"}
       </button>
