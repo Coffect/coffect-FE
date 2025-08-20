@@ -5,12 +5,14 @@ description : 이메일 인증 코드 발송 화면
 
 import { useState, useEffect } from "react";
 import SignupPageLayout from "./shared/SignupLayout";
-import type { StepProps } from "../../types/signup";
+import type { SignupData, StepProps } from "../../types/signup";
 import { useToastStore } from "@/hooks/useToastStore";
 import { checkUnivDomain } from "@/api/univ";
 import axios from "axios";
 
-const EmailVerification: React.FC<StepProps> = ({ onNext, onUpdate }) => {
+type Props = StepProps & { form?: Partial<SignupData> };
+
+const EmailVerification: React.FC<Props> = ({ form, onNext, onUpdate }) => {
   // 이메일 입력값 상태 관리
   const [email, setEmail] = useState<string>("");
 
@@ -29,20 +31,40 @@ const EmailVerification: React.FC<StepProps> = ({ onNext, onUpdate }) => {
   // 입력된 이메일이 유효한지 여부 판단
   const handleValidate = async () => {
     try {
-      const res = await checkUnivDomain(email);
+      const univName = form?.selectedSchoolName as string;
+      const res = await checkUnivDomain(email, univName);
+
       if (res?.resultType === "FAIL") {
         showToast(
-          res?.error?.reason || "올바른 학교 이메일이 아니에요!",
+          res?.error?.reason || "본인의 학교 이메일이 맞는지 확인해주세요!",
           "error",
         );
         return;
       }
+
       handleSend();
     } catch (e: unknown) {
-      if (axios.isAxiosError(e) && e.response?.status === 401) {
-        showToast("올바른 학교 이메일이 아니에요!", "error");
-        return;
+      if (axios.isAxiosError(e)) {
+        const errorData = e.response?.data as {
+          resultType?: string;
+          error?: { reason?: string };
+        };
+
+        if (e.response?.status === 401) {
+          // 서버에서 주는 reason 표시
+          showToast(
+            errorData?.error?.reason || "올바른 학교 이메일이 아니에요!",
+            "error",
+          );
+          return;
+        }
+
+        if (e.response?.status === 500) {
+          showToast("이메일 확인 중 오류가 발생했어요.", "error");
+          return;
+        }
       }
+
       console.error("[EmailVerification] domain check failed:", e);
       showToast("이메일 확인 중 오류가 발생했어요.", "error");
     }
