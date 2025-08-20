@@ -79,11 +79,11 @@ export const useAddCommentMutation = () => {
             commentBody: newComment.commentBody,
             user: {
               id: myProfile?.success?.userInfo.id,
-              name: myProfile?.success?.userInfo.name || "익명",
+              name: myProfile?.success?.userInfo.name || "이스터에그",
               profileImage:
                 myProfile?.success?.userInfo.profileImage || defaultImage,
               studentId: myProfile?.success?.userInfo.studentId || 99,
-              dept: myProfile?.success?.userInfo.dept || "무화",
+              dept: myProfile?.success?.userInfo.dept || "커펙트 화이팅 !!!",
             },
             createdAtD: new Date().toISOString(),
             quote: newComment.quote,
