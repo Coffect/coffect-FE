@@ -75,10 +75,14 @@ const WritePostPage: React.FC = () => {
   );
 
   // --- 이미지 삭제 ---
-  const handleImageRemove = useCallback(() => {
-    revokePreviewUrls();
-    setImageFiles([]);
-  }, [revokePreviewUrls]);
+  const handleImageRemove = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    (_: number) => {
+      revokePreviewUrls();
+      setImageFiles([]);
+    },
+    [revokePreviewUrls],
+  );
 
   // --- 타입/주제 선택 ---
   const handleTypeSelect = useCallback((option: ChipOption) => {
