@@ -42,7 +42,7 @@ initializeApp(firebaseConfig);
 const messaging = getMessaging();
 
 /* ------------------------------- Debug ---------------------------------- */
-const DEBUG = true;
+const DEBUG = false;
 function debug(label: string, data?: unknown) {
   if (!DEBUG) return;
   try {
