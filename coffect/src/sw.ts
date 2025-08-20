@@ -17,6 +17,8 @@ declare const self: ServiceWorkerGlobalScope & {
 import { precacheAndRoute } from "workbox-precaching";
 import { initializeApp } from "firebase/app";
 import { getMessaging, onBackgroundMessage } from "firebase/messaging/sw";
+import { registerRoute } from "workbox-routing";
+import { StaleWhileRevalidate } from "workbox-strategies";
 
 // ===== Workbox =====
 precacheAndRoute(self.__WB_MANIFEST);
@@ -35,7 +37,7 @@ initializeApp(firebaseConfig);
 const messaging = getMessaging();
 
 /* ------------------------------- Debug ---------------------------------- */
-const DEBUG = false; // FCM 개발 시에만 true로 설정
+const DEBUG = true;
 function debug(label: string, data?: unknown) {
   if (!DEBUG) return;
   try {
@@ -358,3 +360,14 @@ self.addEventListener("notificationclick", (event: NotificationEvent) => {
     })(),
   );
 });
+
+registerRoute(({ request, url }) => {
+  if (url.pathname.endsWith(".ts") || url.pathname.endsWith(".tsx")) {
+    return false;
+  }
+  return (
+    request.destination === "script" ||
+    request.destination === "style" ||
+    request.destination === "document"
+  );
+}, new StaleWhileRevalidate());
