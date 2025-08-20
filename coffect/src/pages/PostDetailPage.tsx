@@ -23,6 +23,7 @@ import LoadingScreen from "@/components/shareComponents/LoadingScreen";
 import { useQuery } from "@tanstack/react-query";
 import { getProfile } from "@/api/profile";
 import type { profileType } from "@/types/mypage/profile";
+import commentImage from "@/assets/icon/community/commentImage.png";
 
 const PostDetail = () => {
   const {
@@ -83,13 +84,21 @@ const PostDetail = () => {
           timeAgo={timeAgo}
         />
         <PostBody post={post} isDetailView={true} showBookmarkButton={true} />
+        <div className="h-[7.3%] max-h-[6px] w-full bg-[var(--gray-5)]"></div>
 
         {comments && comments.length > 0 ? (
           <PostDetailComments commentList={comments} />
         ) : (
-          <div className="py-10 text-center text-[var(--gray-50)]">
-            <p>현재 작성된 댓글이 없습니다!</p>
-            <p>첫 댓글을 작성해보세요 !</p>
+          <div className="flex flex-col items-center justify-center gap-2 pt-10 pb-5 text-center">
+            <img src={commentImage} alt="댓글 아이콘" className="h-8 w-11.25" />
+            <div>
+              <p className="font-normal text-ellipsis text-[var(--gray-90)]">
+                아직 댓글이 없어요
+              </p>
+              <p className="text-sm font-medium text-ellipsis text-[var(--gray-50)]">
+                이 글의 첫번째 댓글이 되어주세요!
+              </p>
+            </div>
           </div>
         )}
       </main>

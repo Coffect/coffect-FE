@@ -27,6 +27,9 @@ import UploadSuccessModal from "@/components/communityComponents/writeComponents
 import { useGetCommunityPostsQuery } from "@/hooks/community/query/useGetCommunityPostsQuery";
 import { useGetThreadLatestQuery } from "@/hooks/community/query/useGetThreadLatestQuery";
 import { useCommunityStore } from "@/store/community/communityStore";
+import { useQuery } from "@tanstack/react-query";
+import { getProfile } from "@/api/profile";
+import type { profileType } from "@/types/mypage/profile";
 
 const Community = () => {
   const [activeQuery, setActiveQuery] = useState<"latest" | "filtered">(
@@ -41,6 +44,13 @@ const Community = () => {
     closeFilterModal,
     setFilters,
   } = useCommunityStore();
+
+  // --- 내 프로필 정보 가져오기 ---
+  const { data: myProfile } = useQuery<profileType>({
+    queryKey: ["myProfile"],
+    queryFn: getProfile,
+  });
+  const myUserId = myProfile?.success?.userInfo.userId;
 
   // --- 데이터 페칭 ---
   const latestQuery = useGetThreadLatestQuery({
@@ -127,7 +137,7 @@ const Community = () => {
           <FeedListSkeleton />
         ) : posts.length > 0 ? (
           <>
-            <FeedList posts={posts} />
+            <FeedList posts={posts} myUserId={myUserId} />
             <div ref={ref} style={{ height: "1px" }} />
             {isFetchingNextPage && (
               <div className="flex justify-center py-4">
