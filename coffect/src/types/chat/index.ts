@@ -42,7 +42,7 @@ export interface ChatRoom {
   chatroomId: string;
   userId: number;
   lastMessage: string;
-  lastMeesageTime?: string; // 마지막 메시지 시간 (ISO 문자열)
+  lastMessageTime?: string; // 마지막 메시지 시간 (ISO 문자열)
   check: boolean;
 }
 

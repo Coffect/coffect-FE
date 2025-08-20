@@ -36,18 +36,33 @@ const ChatInterestsSection = ({
   const navigate = useNavigate();
 
   const formatScheduleDate = (date: string | Date) => {
+    let dateObj: Date;
+
     if (typeof date === "string") {
-      return date.replace(/ /g, "\u00A0");
+      // ISO 문자열인 경우 Date 객체로 변환
+      if (date.includes("-") || date.includes("T")) {
+        dateObj = new Date(date);
+        if (isNaN(dateObj.getTime())) {
+          // 유효하지 않은 ISO 문자열인 경우 그대로 반환
+          return date.replace(/ /g, "\u00A0");
+        }
+      } else {
+        // "x월 x일" 형식인 경우 그대로 반환
+        return date.replace(/ /g, "\u00A0");
+      }
+    } else if (date instanceof Date) {
+      dateObj = date;
+    } else {
+      return "";
     }
-    if (date instanceof Date) {
-      return date
-        .toLocaleDateString("ko-KR", {
-          month: "long",
-          day: "numeric",
-        })
-        .replace(/ /g, "\u00A0");
-    }
-    return "";
+
+    // 모든 Date 객체를 일관된 형식으로 변환
+    return dateObj
+      .toLocaleDateString("ko-KR", {
+        month: "long",
+        day: "numeric",
+      })
+      .replace(/ /g, "\u00A0");
   };
 
   return (

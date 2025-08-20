@@ -15,7 +15,6 @@ class SocketManager {
   // Socket 연결
   connect(token?: string) {
     if (this.socket?.connected || this.isConnected) {
-      console.log("Socket이 이미 연결되어 있습니다.");
       return;
     }
 
@@ -136,25 +135,16 @@ class SocketManager {
   }
 
   // 이미지 전송
-  sendImage(chatRoomId: string, imageUrl: string) {
+  sendImage(chatRoomId: string, message: string) {
     if (!this.socket?.connected) {
       console.error("Socket is not connected");
       return;
     }
 
-    console.log("sendImage 이벤트 발송:", { chatRoomId, imageUrl });
     this.socket.emit(SOCKET_EVENTS.sendImage, {
       chatRoomId,
-      imageUrl,
+      message,
     });
-  }
-
-  // 사진 전송 (더 이상 사용하지 않음 - sendMessage로 대체)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  sendPhoto(_chatRoomId: string, _file: File) {
-    console.warn(
-      "sendPhoto는 더 이상 사용하지 않습니다. sendMessage를 사용하세요.",
-    );
   }
 
   // 메시지 수신 리스너

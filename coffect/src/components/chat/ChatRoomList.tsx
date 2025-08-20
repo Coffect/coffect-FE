@@ -66,8 +66,8 @@ const ChatRoomItem: React.FC<ChatRoomItemProps> = ({ chatRoom, onClick }) => {
             })()}
           </span>
           <span className="ml-2 flex-shrink-0 truncate overflow-hidden text-sm text-ellipsis whitespace-nowrap text-[var(--gray-40)]">
-            {chatRoom.lastMeesageTime
-              ? getTimeAgo(chatRoom.lastMeesageTime)
+            {chatRoom.lastMessageTime
+              ? getTimeAgo(chatRoom.lastMessageTime)
               : "방금 전"}
           </span>
         </div>

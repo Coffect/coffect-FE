@@ -13,7 +13,7 @@ import DeleteScheduleModal from "./DeleteScheduleModal";
 import { X } from "lucide-react";
 import { useChatUser } from "./hooks/useChatUser";
 import { useChatRooms } from "../../hooks/chat/useChatRooms";
-import { formatAmPmTo24Hour } from "../../utils/dateUtils";
+import { formatTimeTo24Hour } from "../../utils/dateUtils";
 import { useScheduleForm } from "./hooks/useScheduleForm";
 import { getCoffectId } from "../../api/chat/chatRoomApi";
 
@@ -65,50 +65,7 @@ const Schedule: React.FC = () => {
       };
     }
 
-    // 2. localStorage에서 기존 일정 정보 조회
-    if (currentChatRoomId) {
-      const savedSchedule = localStorage.getItem(
-        `schedule_${currentChatRoomId}`,
-      );
-      console.log("localStorage에서 불러온 일정:", savedSchedule);
-
-      if (savedSchedule) {
-        try {
-          const parsed = JSON.parse(savedSchedule);
-          console.log("파싱된 일정 정보:", parsed);
-
-          // 날짜 형식 변환
-          let dateValue: Date | string | undefined = parsed.date;
-          if (typeof parsed.date === "string") {
-            console.log("날짜 문자열:", parsed.date);
-
-            // ISO 날짜 문자열인 경우 Date 객체로 변환
-            if (parsed.date.includes("-") || parsed.date.includes("T")) {
-              const dateObj = new Date(parsed.date);
-              console.log("변환된 Date 객체:", dateObj);
-              dateValue = isNaN(dateObj.getTime()) ? undefined : dateObj;
-            } else {
-              // "12월 25일" 형식인 경우 그대로 사용
-              dateValue = parsed.date;
-            }
-          }
-
-          const result = {
-            date: dateValue,
-            time: parsed.time || "",
-            place: parsed.place || "",
-            alert: parsed.alert || "5분 전",
-          };
-
-          console.log("최종 폼 데이터:", result);
-          return result;
-        } catch (error) {
-          console.error("저장된 일정 정보 파싱 실패:", error);
-        }
-      }
-    }
-
-    // 3. 기본값 반환
+    // 2. 기본값 반환
     return {
       date: undefined,
       time: "",
@@ -147,8 +104,9 @@ const Schedule: React.FC = () => {
         return;
       }
 
-      // AM/PM 형식을 24시간 형식으로 변환
-      const time24Hour = formatAmPmTo24Hour(form.time);
+      // 시간을 24시간 형식으로 변환
+      const time24Hour = formatTimeTo24Hour(form.time);
+
       const [hours, minutes] = time24Hour.split(":").map(Number);
 
       // 시간 유효성 검사
@@ -185,7 +143,6 @@ const Schedule: React.FC = () => {
       }
 
       const coffectId = coffectIdResponse.success;
-      console.log("coffectId:", coffectId);
 
       // fixCoffeeChatSchedule API 호출
       const response = await fixCoffeeChatSchedule({
@@ -194,21 +151,6 @@ const Schedule: React.FC = () => {
       });
 
       if (response.resultType === "SUCCESS") {
-        console.log("일정 등록 성공:", response.success);
-
-        // localStorage에 일정 정보 저장
-        const scheduleToSave = {
-          date: form.date,
-          time: form.time,
-          place: form.place,
-          alert: form.alert,
-        };
-
-        localStorage.setItem(
-          `schedule_${currentChatRoomId}`,
-          JSON.stringify(scheduleToSave),
-        );
-
         setShowComplete(true);
       } else {
         console.error("일정 등록 실패:", response.error);
@@ -296,7 +238,7 @@ const Schedule: React.FC = () => {
                     })
                 : ""
             }
-            time={form.time}
+            time={formatTimeTo24Hour(form.time)}
             onClose={() => {
               setShowComplete(false);
               // 일정 등록 완료 후 해당 일정 정보를 유지하면서 채팅방으로 이동
@@ -306,7 +248,7 @@ const Schedule: React.FC = () => {
                   state: {
                     schedule: {
                       date: form.date,
-                      time: form.time,
+                      time: formatTimeTo24Hour(form.time),
                       place: form.place,
                       alert: form.alert,
                     },

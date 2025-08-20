@@ -14,6 +14,8 @@ import type {
 } from "../../types/chat";
 import axios from "axios";
 import { socketManager } from "./socketInstance";
+import { getCoffeeChatSchedule } from "../home";
+import { getProfile } from "../profile";
 export const getCoffectId = async (
   chatRoomId: string,
 ): Promise<GetCoffectIdResponse> => {
@@ -148,9 +150,9 @@ export const sendPhoto = async (
       headers: {
         "Content-Type": "multipart/form-data",
       },
-      maxContentLength: 2 * 1024 * 1024, // 2MB로 더 줄임
-      maxBodyLength: 2 * 1024 * 1024, // 2MB로 더 줄임
-      timeout: 60000, // 60초로 늘림
+      maxContentLength: 2 * 1024 * 1024,
+      maxBodyLength: 2 * 1024 * 1024,
+      timeout: 60000,
     });
 
     console.log("sendPhoto API 응답 성공:", response.data);
@@ -165,5 +167,125 @@ export const sendPhoto = async (
       console.error("응답 데이터:", axiosError.response?.data);
     }
     throw error;
+  }
+};
+
+// 채팅방별 일정 조회 (getCoffeeChatSchedule API 활용)
+export const getChatRoomSchedule = async (
+  chatRoomId: string,
+): Promise<{
+  resultType: "SUCCESS" | "FAIL";
+  success: {
+    date: string;
+    time: string;
+    place: string;
+    alert: string | null;
+  } | null;
+  error: { reason: string } | null;
+}> => {
+  try {
+    // 1. 먼저 채팅방 정보를 가져와서 상대방의 userId를 찾기
+    const chatRoomResponse = await getChatRoomList();
+    if (chatRoomResponse.resultType !== "SUCCESS") {
+      return {
+        resultType: "FAIL",
+        success: null,
+        error: { reason: "채팅방 정보를 가져올 수 없습니다" },
+      };
+    }
+
+    const currentChatRoom = chatRoomResponse.success.find(
+      (room) => room.chatroomId === chatRoomId,
+    );
+
+    if (!currentChatRoom) {
+      return {
+        resultType: "FAIL",
+        success: null,
+        error: { reason: "해당 채팅방을 찾을 수 없습니다" },
+      };
+    }
+
+    // 2. 현재 사용자의 userId 가져오기
+    const profileResponse = await getProfile();
+    if (profileResponse.resultType !== "SUCCESS" || !profileResponse.success) {
+      return {
+        resultType: "FAIL",
+        success: null,
+        error: { reason: "사용자 정보를 가져올 수 없습니다" },
+      };
+    }
+
+    const currentUserId = profileResponse.success.userInfo.userId;
+
+    // 3. 상대방의 userId 찾기 (채팅방의 userId가 현재 사용자가 아닌 경우)
+    const opponentUserId =
+      currentChatRoom.userId === currentUserId
+        ? null // 자기 자신과의 채팅방인 경우 (이상한 상황)
+        : currentChatRoom.userId;
+
+    if (!opponentUserId) {
+      return {
+        resultType: "FAIL",
+        success: null,
+        error: { reason: "상대방 정보를 찾을 수 없습니다" },
+      };
+    }
+
+    // 전체 일정 목록 가져오기
+    const allSchedules = await getCoffeeChatSchedule();
+
+    // 채팅방 ID로 필터링하여 해당 채팅방의 일정 찾기
+    // opponentId가 숫자인지 문자열인지 확인하고 비교
+    const chatRoomSchedule = allSchedules.find(
+      (schedule: {
+        opponentId: string | number;
+        coffeeDate: string;
+        location: string;
+      }) => {
+        const opponentIdStr = String(schedule.opponentId);
+        const chatRoomOpponentIdStr = String(opponentUserId);
+        return opponentIdStr === chatRoomOpponentIdStr;
+      },
+    );
+
+    if (!chatRoomSchedule) {
+      return {
+        resultType: "FAIL",
+        success: null,
+        error: { reason: "해당 채팅방의 일정을 찾을 수 없습니다" },
+      };
+    }
+
+    // 일정 정보를 Schedule 형식으로 변환
+    const coffeeDate = new Date(chatRoomSchedule.coffeeDate);
+
+    const dateStr = coffeeDate.toLocaleDateString("ko-KR", {
+      month: "long",
+      day: "numeric",
+    });
+    const timeStr = coffeeDate.toLocaleTimeString("ko-KR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false, // 24시간제 사용
+    });
+
+    return {
+      resultType: "SUCCESS",
+      success: {
+        date: dateStr,
+        time: timeStr,
+        place: chatRoomSchedule.location,
+        alert: "5분 전", // 기본값
+      },
+      error: null,
+    };
+  } catch (error) {
+    console.error("채팅방 일정 조회 실패:", error);
+    return {
+      resultType: "FAIL",
+      success: null,
+      error: { reason: "채팅방 일정 조회에 실패했습니다" },
+    };
   }
 };

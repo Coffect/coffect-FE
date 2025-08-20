@@ -6,7 +6,7 @@
 
 import React from "react";
 import ScheduleCompleteImg from "../../assets/icon/chat/ScheduleComplete.png";
-import { formatKoreanDate, formatAmPmTo24Hour } from "../../utils/dateUtils";
+import { formatKoreanDate, formatTimeTo24Hour } from "../../utils/dateUtils";
 
 interface ScheduleCompleteModalProps {
   date: string;
@@ -24,7 +24,7 @@ const ScheduleCompleteModal: React.FC<ScheduleCompleteModalProps> = ({
       <div className="mx-auto flex w-[80%] max-w-[340px] min-w-[200px] flex-col items-center">
         <div className="flex w-full flex-col items-center rounded-[20px] rounded-b-none bg-[var(--white)] px-6 pt-10 pb-3">
           <div className="mb-1.5 text-center text-[16px] leading-tight font-semibold text-[var(--gray-90)]">
-            {formatKoreanDate(date)} {formatAmPmTo24Hour(time)}
+            {formatKoreanDate(date)} {formatTimeTo24Hour(time)}
           </div>
           <div className="mb-1.5 text-center text-[16px] leading-tight font-semibold text-[var(--gray-90)]">
             커피챗 일정이 만들어졌어요!
