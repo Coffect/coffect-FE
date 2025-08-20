@@ -10,6 +10,13 @@
 /// <reference lib="webworker" />
 export {};
 
+self.addEventListener("install", () => {
+  self.skipWaiting(); // 새 SW 즉시 활성화
+});
+self.addEventListener("activate", (e) => {
+  e.waitUntil(self.clients.claim()); // 곧바로 모든 클라이언트 제어
+});
+
 declare const self: ServiceWorkerGlobalScope & {
   __WB_MANIFEST: readonly string[];
 };
