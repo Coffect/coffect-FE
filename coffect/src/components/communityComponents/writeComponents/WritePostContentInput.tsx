@@ -56,7 +56,7 @@ const WritePostContentInput: React.FC<WritePostContentInputProps> = ({
   return (
     <div className="p-4">
       {selectedImageFiles.length > 0 && (
-        <div className="mb-2 grid grid-cols-3 gap-2">
+        <div className="mb-2 grid grid-cols-2 gap-2">
           {selectedImageFiles.map((image, index) => (
             <div key={index} className="relative">
               <img
