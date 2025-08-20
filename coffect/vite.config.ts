@@ -21,7 +21,7 @@ export default defineConfig(() => {
         srcDir: "src",
         filename: "sw.js", // 최종 서비스워커 파일명
         injectRegister: null, // index.html 자동 등록 비활성화
-        devOptions: { enabled: true },
+        devOptions: { enabled: false }, // 개발 모드에서는 PWA 기능 비활성화
         manifest: {
           name: "Coffect",
           short_name: "Coffect",
@@ -41,10 +41,10 @@ export default defineConfig(() => {
               purpose: "any",
             },
             {
-              src: "/icons/pwa-522.png",
-              sizes: "522x522",
+              src: "/icons/pwa-512.png",
+              sizes: "512x512",
               type: "image/png",
-              purpose: "any",
+              purpose: "any maskable",
             },
           ],
         },
