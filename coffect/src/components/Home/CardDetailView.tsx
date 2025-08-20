@@ -125,9 +125,7 @@ const CardDetailView = () => {
           />
           <div className="absolute bottom-1/10 left-1/2 z-20 -translate-x-1/2 transform rounded-xl bg-black/60 px-3 py-1 text-sm font-medium whitespace-nowrap">
             <span className="text-[var(--gray-0)]">{myName}</span>
-            <span className="text-[var(--gray-20)]">
-              님과 비슷한 관심사를 가졌어요!
-            </span>
+            <span className="text-[var(--gray-20)]">님과 대화하기 좋아요!</span>
           </div>
         </div>
 
