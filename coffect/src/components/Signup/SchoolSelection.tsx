@@ -239,6 +239,9 @@ const SchoolSelection: React.FC<StepProps> = ({ onNext, onUpdate }) => {
             ? "전공과 학번을 알려주세요!"
             : "어느 학교 학생이신가요?"}
         </p>
+        <p className="mt-1 text-base text-[var(--gray-40)]">
+          학교/학과를 입력 후, 반드시 목록에서 선택해야 해요
+        </p>
 
         {/* 학교 검색 입력창 */}
         <div className="relative mt-[10%]">
