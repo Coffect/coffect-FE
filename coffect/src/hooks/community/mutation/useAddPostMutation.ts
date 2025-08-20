@@ -1,4 +1,5 @@
 import { uploadPost } from "@/api/community/writeApi";
+import { QUERY_KEYS } from "@/constants/queryKey";
 import type {
   // postUploadRequest,
   postUploadResponse,
@@ -15,7 +16,7 @@ export const useAddPostMutation = () => {
         console.log("포스트가가 성공적으로 추가되었습니다.", response.success);
 
         queryClient.invalidateQueries({
-          queryKey: ["comments"],
+          queryKey: QUERY_KEYS.COMMUNITY.POSTS,
         });
       } else {
         console.error(
