@@ -194,7 +194,7 @@ const AccountSetup: React.FC<StepProps> = ({ onNext, onUpdate }) => {
         </div>
         {useridError && (
           <p className="font-normalR mt-1 text-sm text-[var(--noti)]">
-            영문/숫자/언더바 조합 5글자 이상
+            영문/숫자/언더바 조합 5글자 이상 15자 이하
           </p>
         )}
       </div>

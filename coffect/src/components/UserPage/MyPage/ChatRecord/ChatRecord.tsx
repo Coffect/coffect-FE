@@ -193,9 +193,7 @@ const ChatRecord = () => {
           <p className="mb-3 text-xl font-bold text-[var(--gray-90)]">
             아직 커피챗 기록이 없어요!
           </p>
-          <p className="mb-2 text-[var(--gray-50)]">
-            지금 바로 추천 카드를 통해
-          </p>
+          <p className="text-[var(--gray-50)]">지금 바로 추천 카드를 통해</p>
           <p className="mb-3 text-[var(--gray-50)]">커피챗을 제안해보세요!</p>
           <img
             src={emptyChatRecordImg}

@@ -35,7 +35,7 @@ initializeApp(firebaseConfig);
 const messaging = getMessaging();
 
 /* ------------------------------- Debug ---------------------------------- */
-const DEBUG = true;
+const DEBUG = false; // FCM 개발 시에만 true로 설정
 function debug(label: string, data?: unknown) {
   if (!DEBUG) return;
   try {

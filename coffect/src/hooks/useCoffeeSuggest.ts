@@ -6,7 +6,7 @@
 */
 
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { postSuggestCoffeeChat } from "@/api/home";
 import { useToastStore } from "@/hooks/useToastStore";
 
@@ -31,6 +31,7 @@ export const useCoffeeSuggest = (): UseCoffeeSuggestReturn => {
   const [selectedProfileId, setSelectedProfileId] = useState<number | null>(
     null,
   );
+  const queryClient = useQueryClient();
 
   // ===== 제안 전송 뮤테이션 =====
   const { mutate: sendSuggest } = useMutation({
@@ -39,6 +40,8 @@ export const useCoffeeSuggest = (): UseCoffeeSuggestReturn => {
     onSuccess: () => {
       setIsSuggestOpen(false);
       setIsCompleteOpen(true);
+      // 제안 성공 시 과거 커피챗 목록 갱신
+      queryClient.invalidateQueries({ queryKey: ["pastCoffeeChat"] });
     },
     onError: () => {
       showToast("한 글자 이상 입력해주세요!", "error");
