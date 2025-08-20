@@ -43,9 +43,8 @@ const CoffeeSuggestModal: React.FC<CoffeeSuggestModalProps> = ({
           </h3>
           <img
             src={SuggestPencilImage}
-            alt="캘린더 보기"
+            alt="제안하기 아이콘"
             className="mb-[1.5px] ml-[0.5px] h-auto w-[20px] cursor-pointer object-contain select-none"
-            title="캘린더로 이동"
           />
         </div>
 
