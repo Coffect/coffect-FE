@@ -21,6 +21,7 @@ import type {
 import { QUERY_KEYS } from "@/constants/queryKey";
 import type { GetThreadLookUpResponse } from "@/types/community/postTypes";
 import type { profileType } from "@/types/mypage/profile";
+import defaultImage from "@/assets/icon/community/defaultImage.png";
 
 interface ContextType {
   previousComments?: getCommentResponse;
@@ -79,18 +80,18 @@ export const useAddCommentMutation = () => {
             user: {
               id: myProfile?.success?.userInfo.id,
               name: myProfile?.success?.userInfo.name || "익명",
-              profileImage: myProfile?.success?.userInfo.profileImage,
-              studentId: myProfile?.success?.userInfo.studentId,
-              dept: myProfile?.success?.userInfo.dept || "",
+              profileImage:
+                myProfile?.success?.userInfo.profileImage || defaultImage,
+              studentId: myProfile?.success?.userInfo.studentId || 99,
+              dept: myProfile?.success?.userInfo.dept || "무화",
             },
             createdAtD: new Date().toISOString(),
-            // isMine: true,
             quote: newComment.quote,
           };
 
           return {
             ...old,
-            success: [tempNewComment, ...old.success], // <- old.success가 배열이므로 바로 접근
+            success: [tempNewComment, ...old.success],
           };
         },
       );
