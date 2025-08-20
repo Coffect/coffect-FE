@@ -1,11 +1,10 @@
 /**
- * @author 흥부/강신욱
  * @description
- * 글 작성 페이지 컴포넌트 (한 장 이미지 업로드 + Crop 지원 + 메모리 누수 방지)
- * @version 1.1.0
- * - Crop 모달 URL 관리 및 Object URL 해제 적용
- * - 한 장만 업로드 가능
- * @date 2025-08-20
+ * 글 작성 페이지 (한 장 이미지 업로드 + Crop 선택 지원 + 메모리 누수 방지)
+ * @version 1.2.0
+ * - 원본 업로드 후 즉시 미리보기 가능
+ * - "자르기" 버튼으로 Crop 모달 실행
+ * - 잘린 이미지는 원본을 대체
  */
 
 import React, { useState, useCallback } from "react";
@@ -22,63 +21,61 @@ const WritePostPage: React.FC = () => {
   const navigate = useNavigate();
 
   // --- 상태 ---
-  const [threadTitle, setThreadTitle] = useState<string>("");
-  const [threadBody, setThreadBody] = useState<string>("");
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
-  const [type, setType] = useState<string>("");
-  const [threadSubject, setThreadSubject] = useState<string>("");
+  const [threadTitle, setThreadTitle] = useState("");
+  const [threadBody, setThreadBody] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isCropped, setIsCropped] = useState(false);
+
+  const [type, setType] = useState("");
+  const [threadSubject, setThreadSubject] = useState("");
 
   const [cropModalOpen, setCropModalOpen] = useState(false);
-  const [cropTargetUrl, setCropTargetUrl] = useState<string | null>(null);
 
   const { mutate: addPost } = useAddPostMutation();
 
   // --- Object URL 해제 ---
-  const revokePreviewUrls = useCallback(() => {
-    previewUrls.forEach((url) => URL.revokeObjectURL(url));
-    setPreviewUrls([]);
-  }, [previewUrls]);
-
-  // --- Crop 완료 핸들러 ---
-  const handleCropComplete = useCallback(
-    (croppedFile: File) => {
-      // 이전 preview URL 해제
-      revokePreviewUrls();
-
-      // 이전 cropTarget URL 해제
-      if (cropTargetUrl) URL.revokeObjectURL(cropTargetUrl);
-
-      // 새 파일과 URL 저장
-      const croppedUrl = URL.createObjectURL(croppedFile);
-      setImageFiles([croppedFile]);
-      setPreviewUrls([croppedUrl]);
-
-      // Crop 모달 닫기
-      setCropModalOpen(false);
-      setCropTargetUrl(null);
-    },
-    [cropTargetUrl, revokePreviewUrls],
-  );
+  const revokePreviewUrl = useCallback(() => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
+  }, [previewUrl]);
 
   // --- 이미지 선택 핸들러 ---
   const handleImageChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files && e.target.files.length > 0) {
-        const file = e.target.files[0];
-        const fileUrl = URL.createObjectURL(file);
-        setCropTargetUrl(fileUrl);
-        setCropModalOpen(true);
-      }
+      if (!e.target.files || e.target.files.length === 0) return;
+
+      const file = e.target.files[0];
+
+      revokePreviewUrl(); // 기존 URL 해제
+      setImageFile(file);
+
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+      setIsCropped(false);
     },
-    [],
+    [revokePreviewUrl],
+  );
+
+  // --- 크롭 완료 핸들러 ---
+  const handleCropComplete = useCallback(
+    (croppedFile: File) => {
+      revokePreviewUrl();
+
+      setImageFile(croppedFile);
+      const url = URL.createObjectURL(croppedFile);
+      setPreviewUrl(url);
+      setIsCropped(true);
+      setCropModalOpen(false);
+    },
+    [revokePreviewUrl],
   );
 
   // --- 이미지 삭제 ---
   const handleImageRemove = useCallback(() => {
-    revokePreviewUrls();
-    setImageFiles([]);
-  }, [revokePreviewUrls]);
+    revokePreviewUrl();
+    setImageFile(null);
+  }, [revokePreviewUrl]);
 
   // --- 타입/주제 선택 ---
   const handleTypeSelect = useCallback((option: ChipOption) => {
@@ -106,14 +103,15 @@ const WritePostPage: React.FC = () => {
       alert("모든 필수 필드를 채워주세요.");
       return;
     }
+
     const formData = new FormData();
     formData.append("threadTitle", threadTitle);
     formData.append("threadBody", threadBody);
     formData.append("type", type);
     formData.append("threadSubject", threadSubject);
 
-    if (imageFiles.length > 0) {
-      formData.append("images", imageFiles[0]); // 한 장만 업로드
+    if (imageFile) {
+      formData.append("images", imageFile);
     }
 
     addPost(formData, {
@@ -149,9 +147,11 @@ const WritePostPage: React.FC = () => {
         <WritePostContentInput
           content={threadBody}
           setContent={setThreadBody}
-          images={previewUrls}
+          images={previewUrl ? [previewUrl] : []}
           handleImageChange={handleImageChange}
           handleImageRemove={handleImageRemove}
+          onCropClick={() => setCropModalOpen(true)}
+          isCropped={isCropped}
         />
 
         <div className="mb-4 h-[0.8px] w-full bg-[var(--gray-5)]"></div>
@@ -163,15 +163,11 @@ const WritePostPage: React.FC = () => {
           handleThreadSubjectSelect={handleThreadSubjectSelect}
         />
 
-        {cropTargetUrl && (
+        {cropModalOpen && previewUrl && (
           <ImageCropModal
             isOpen={cropModalOpen}
-            imageSrc={cropTargetUrl}
-            onClose={() => {
-              if (cropTargetUrl) URL.revokeObjectURL(cropTargetUrl);
-              setCropTargetUrl(null);
-              setCropModalOpen(false);
-            }}
+            imageSrc={previewUrl}
+            onClose={() => setCropModalOpen(false)}
             onCropComplete={handleCropComplete}
           />
         )}

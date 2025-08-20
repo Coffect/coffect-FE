@@ -57,13 +57,13 @@ const CommentInput = ({
       <img
         src={currentUserProfileImage}
         alt="CurrentUser"
-        className="h-10 w-10 rounded-full"
+        className="h-10.5 w-10.5 rounded-full"
       />
-      <div className="relative flex-grow justify-center">
+      <div className="flex flex-grow items-center rounded-2xl bg-[var(--gray-5)] pr-2.5 pl-4.25">
         <textarea
           ref={textareaRef}
           placeholder="댓글을 남겨보세요."
-          className="scrollbar-hide max-h-24 w-full resize-none overflow-hidden rounded-2xl bg-[var(--gray-5)] py-3 pr-17 pl-5 focus:outline-none"
+          className="scrollbar-hide max-h-24 w-full resize-none overflow-hidden bg-transparent py-3 text-sm focus:outline-none"
           value={commentBody}
           onChange={(e) => setCommentBody(e.target.value)}
           rows={1}
@@ -71,12 +71,11 @@ const CommentInput = ({
         />
         {commentBody.trim() && (
           <button
-            className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-[var(--design-text)] px-4.5 py-1.5 text-white disabled:bg-gray-300"
+            className="ml-2 flex h-8 w-12 items-center justify-center rounded-full bg-[var(--design-text)] text-white disabled:bg-gray-300"
             onClick={handlePostComment}
-            disabled={isPending} // 댓글 전송 중에는 버튼 비활성화
+            disabled={isPending}
           >
-            {/* isPending 상태에 따라 버튼 내용을 변경하여 사용자에게 시각적 피드백을 줍니다. */}
-            {isPending ? "전송중!" : <Send className="h-5 w-5" />}
+            {isPending ? "..." : <Send className="h-5 w-5" />}
           </button>
         )}
       </div>

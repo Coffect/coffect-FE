@@ -21,7 +21,7 @@ const FollowHeader = ({ follow, count }: FollowHeaderProps) => {
       <h1 className="flex-1 items-center justify-center pr-15 text-center text-lg font-semibold text-[var(--gray-90)]">
         {follow === "Follower"
           ? `나의 팔로워 (${count})`
-          : `나의 팔로우 (${count})`}
+          : `나의 팔로잉 (${count})`}
       </h1>
     </header>
   );
