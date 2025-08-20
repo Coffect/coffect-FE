@@ -10,7 +10,7 @@ import { X } from "lucide-react";
 import ImageAttachmentModal from "../../shareComponents/ImageAttachmentModal";
 // import Link from "@/assets/icon/community/linkIcon.png";
 import Photo from "@/assets/icon/community/photoIcon.png";
-import imageCut from "@/assets/icon/community/ImageCut.png";
+import imageCut from "@/assets/icon/community/imageCut.png";
 
 /**
  * @interface WritePostContentInputProps
