@@ -82,7 +82,7 @@ export const useAddCommentMutation = () => {
               name: myProfile?.success?.userInfo.name || "이스터에그",
               profileImage:
                 myProfile?.success?.userInfo.profileImage || defaultImage,
-              studentId: myProfile?.success?.userInfo.studentId || 99,
+              studentId: myProfile?.success?.userInfo.studentId || 9930,
               dept: myProfile?.success?.userInfo.dept || "커펙트 화이팅 !!!",
             },
             createdAtD: new Date().toISOString(),
