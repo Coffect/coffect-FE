@@ -8,17 +8,22 @@ import { useFollowMutation } from "@/hooks/community/mutation/useFollowMutation"
 // FeedItem이 받을 props 타입을 정의합니다.
 interface FeedItemProps {
   post: ThreadSummary;
+  myUserId?: number;
   showFollowButton?: boolean; // 팔로우 버튼 표시 여부를 결정하는 prop
   showBookmarkButton?: boolean; // 북마크 버튼 표시 여부를 결정하는 prop
 }
 
 const FeedItem = ({
   post,
+  myUserId,
   showFollowButton = true,
   showBookmarkButton = true,
 }: FeedItemProps) => {
   const navigate = useNavigate();
   const { mutate: follow } = useFollowMutation();
+
+  // 자신의 게시물인지 확인
+  const isMyPost = post.userId === myUserId;
 
   // 게시글 아이템 클릭 시 해당 게시글의 상세 페이지로 이동하는 함수입니다.
   const handlePostClick = () => {
@@ -53,7 +58,7 @@ const FeedItem = ({
         timeAgo={timeAgo}
         onAuthorClick={handleAuthorClick}
       >
-        {showFollowButton && (
+        {showFollowButton && !isMyPost && (
           <button
             onClick={handleFollowClick}
             // disabled={isFollowing}

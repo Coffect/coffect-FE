@@ -8,13 +8,14 @@ import type { ThreadSummary } from "@/types/community/postTypes"; // PostSummary
 
 interface FeedListProps {
   posts: ThreadSummary[];
+  myUserId?: number;
 }
 
-const FeedList = ({ posts }: FeedListProps) => {
+const FeedList = ({ posts, myUserId }: FeedListProps) => {
   return (
     <div className="w-full space-y-4 pt-3">
       {posts.map((post) => (
-        <FeedItem key={post.threadId} post={post} /> // key를 post.threadId로 변경
+        <FeedItem key={post.threadId} post={post} myUserId={myUserId} /> // key를 post.threadId로 변경
       ))}
     </div>
   );
