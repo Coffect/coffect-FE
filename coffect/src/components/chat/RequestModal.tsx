@@ -5,10 +5,6 @@
  */
 
 import { X } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { getCoffectId as apiGetCoffectId } from "../../api/chat";
-import { getMessageShowUp as apiGetMessageShowUp } from "../../api/home";
 import { getCommonFreeTime } from "../../hooks/useTimeTable";
 
 interface RequestModalProps {
@@ -16,20 +12,9 @@ interface RequestModalProps {
   onClose: () => void;
   opponentName?: string; // 상대방 이름
   requestMessage?: string; // 상대방의 요청 메시지
-  requestTime?: string; // 요청 시간
   availableTime?: string; // 상대방의 가능한 시간
-}
-
-interface MessageShowUpResponse {
-  resultType: string;
-  success: {
-    coffectId: number;
-    firstUserId: number;
-    firstUserName: string;
-    message: string;
-    createdAt: string;
-  } | null;
-  error: { reason?: string } | null;
+  isMyRequest?: boolean; // 내가 보낸 제안인지 여부
+  requestTime?: string; // 제안 보낸 시간
 }
 
 const RequestModal = ({
@@ -37,105 +22,11 @@ const RequestModal = ({
   onClose,
   opponentName = "상대방",
   requestMessage = "상대방의 요청 메시지가 없습니다.",
-  requestTime = "요청 시간 정보가 없습니다.",
   availableTime = "가능한 시간 정보가 없습니다.",
+  isMyRequest = false,
+  requestTime,
 }: RequestModalProps) => {
-  const location = useLocation();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [suggestion, setSuggestion] = useState<{
-    message: string;
-    requestTime: string;
-  } | null>(null);
-
-  // 현재 채팅방 ID 가져오기
-  const currentChatRoomId = (() => {
-    const pathParts = location.pathname.split("/");
-    if (
-      pathParts.length >= 3 &&
-      pathParts[1] === "chat" &&
-      pathParts[pathParts.length - 1] !== "schedule"
-    ) {
-      return pathParts.slice(2).join("/");
-    }
-    return null;
-  })();
-
-  // 모달이 열릴 때 API 호출
-  useEffect(() => {
-    const fetchData = async () => {
-      if (isOpen && currentChatRoomId) {
-        setLoading(true);
-        setError(null);
-        setSuggestion(null);
-
-        try {
-          // 1. getCoffectId API 호출
-          const coffectIdResponse = await apiGetCoffectId(currentChatRoomId);
-
-          if (
-            coffectIdResponse.resultType !== "SUCCESS" ||
-            !coffectIdResponse.success
-          ) {
-            throw new Error(
-              coffectIdResponse.error?.reason ||
-                "커피챗 제안 아이디를 찾을 수 없습니다.",
-            );
-          }
-
-          const coffectId = coffectIdResponse.success;
-          console.log("coffectId:", coffectId);
-
-          // 2. messageShowUp API 호출
-          const messageResponse = (await apiGetMessageShowUp(
-            coffectId,
-          )) as MessageShowUpResponse;
-
-          if (
-            messageResponse.resultType === "SUCCESS" &&
-            messageResponse.success
-          ) {
-            const suggestionData = {
-              message: messageResponse.success.message,
-              requestTime: new Date(
-                messageResponse.success.createdAt,
-              ).toLocaleString("ko-KR"),
-            };
-            setSuggestion(suggestionData);
-          } else {
-            throw new Error(
-              messageResponse.error?.reason ||
-                "해당 coffectId에 대한 메시지를 찾을 수 없습니다.",
-            );
-          }
-        } catch (err) {
-          console.error("데이터 조회 실패:", err);
-          if (err && typeof err === "object" && "response" in err) {
-            const axiosError = err as { response?: { status?: number } };
-            if (axiosError.response?.status === 500) {
-              setError("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-            } else {
-              setError(
-                err instanceof Error
-                  ? err.message
-                  : "데이터를 불러올 수 없습니다.",
-              );
-            }
-          } else {
-            setError(
-              err instanceof Error
-                ? err.message
-                : "데이터를 불러올 수 없습니다.",
-            );
-          }
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchData();
-  }, [isOpen, currentChatRoomId]);
+  if (!isOpen) return null;
 
   // 시간표 데이터를 파싱해서 공강시간만 표시하는 함수
   const formatAvailableTime = (timeData: string): string => {
@@ -143,7 +34,6 @@ const RequestModal = ({
       // 시간표 데이터가 JSON 문자열인지 확인
       if (timeData && timeData.startsWith("[") && timeData.endsWith("]")) {
         const timeSlots = JSON.parse(timeData) as string[];
-        console.log("파싱된 시간대:", timeSlots);
 
         if (Array.isArray(timeSlots) && timeSlots.length > 0) {
           // getCommonFreeTime 함수를 사용하여 시간대를 포맷팅
@@ -165,8 +55,6 @@ const RequestModal = ({
     }
   };
 
-  if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="relative mx-auto w-[90%] max-w-[340px] min-w-[200px] rounded-2xl bg-[var(--white)] px-6 py-7 shadow-lg max-[320px]:px-3 max-[320px]:py-4">
@@ -176,19 +64,15 @@ const RequestModal = ({
         >
           <X size={24} className="max-[340px]:h-4 max-[340px]:w-4" />
         </button>
-        <div className="mb-4 text-sm font-medium text-[var(--gray-30)] max-[340px]:text-xs">
-          {loading ? "로딩 중..." : suggestion?.requestTime || requestTime}
+        <div className="mb-4 text-sm font-medium text-[var(--gray-30)] max-[320px]:text-xs">
+          {requestTime}
         </div>
-        <div className="flex items-center gap-2 text-base font-semibold max-[340px]:text-xs">
-          <span className="text-[20px] max-[340px]:text-[16px]">✉️</span>
-          {opponentName}님의 메시지
+        <div className="flex items-center gap-2 text-base font-semibold max-[320px]:text-xs">
+          <span className="text-[20px] max-[320px]:text-[16px]">✉️</span>
+          {isMyRequest ? `나의 메시지` : `${opponentName}님의 메시지`}
         </div>
-        <div className="mb-4 border-b border-[var(--gray-10)] py-3 text-[14px] font-medium text-[var(--gray-70)] max-[340px]:py-3 max-[340px]:text-xs">
-          {loading
-            ? "로딩 중..."
-            : error
-              ? error
-              : suggestion?.message || requestMessage}
+        <div className="mb-4 border-b border-[var(--gray-10)] py-3 text-[14px] font-medium text-[var(--gray-70)] max-[320px]:py-3 max-[320px]:text-xs">
+          {requestMessage}
         </div>
         <div className="mt-4 mb-2 flex items-center gap-2 text-base font-semibold max-[340px]:text-xs">
           <span className="text-[16px] max-[340px]:text-[16px]">⏰</span>

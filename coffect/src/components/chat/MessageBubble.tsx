@@ -8,7 +8,7 @@ import React from "react";
 
 interface MessageBubbleProps {
   text: string;
-  time: string;
+  timestamp: string; // 서버에서 주는 timestamp
   mine: boolean;
   showProfile: boolean;
   showTime?: boolean;
@@ -23,20 +23,24 @@ const timeText = "mb-1 text-[11px] text-[var(--gray-40)] whitespace-nowrap";
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({
   text,
-  time,
+  timestamp,
   mine,
   showProfile,
   showTime = true,
   profileImage,
 }) => {
+  const time = timestamp; // 이미 포맷된 값이므로 그대로 사용
+
   if (mine) {
     return (
       <div className="flex items-end justify-end gap-2">
         <span className={`mr-1 ${timeText} ${!showTime ? "invisible" : ""}`}>
-          {showTime ? time : "\u00A0"}
+          {showTime ? time : ""}
         </span>
         <div
-          className={`${myBubble} ${text === "안녕하세요!" ? "whitespace-nowrap" : "whitespace-pre-line"}`}
+          className={`${myBubble} ${
+            text === "안녕하세요!" ? "whitespace-nowrap" : "whitespace-pre-line"
+          }`}
         >
           {text}
         </div>
@@ -60,14 +64,18 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
       )}
       <div className="flex min-w-0 flex-row items-end gap-2">
         <div
-          className={`${otherBubble} ${text === "안녕하세요!" ? "whitespace-nowrap" : "whitespace-pre-line"}`}
+          className={`${otherBubble} ${
+            text === "안녕하세요!" ? "whitespace-nowrap" : "whitespace-pre-line"
+          }`}
         >
           {text}
         </div>
         <span
-          className={`flex-shrink-0 self-end ${timeText} ${!showTime ? "invisible" : ""}`}
+          className={`flex-shrink-0 self-end ${timeText} ${
+            !showTime ? "invisible" : ""
+          }`}
         >
-          {showTime ? time : "\u00A0"}
+          {showTime ? time : ""}
         </span>
       </div>
     </div>

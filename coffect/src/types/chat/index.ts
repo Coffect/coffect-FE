@@ -42,6 +42,7 @@ export interface ChatRoom {
   chatroomId: string;
   userId: number;
   lastMessage: string;
+  lastMessageTime?: string; // 마지막 메시지 시간 (ISO 문자열)
   check: boolean;
 }
 
@@ -140,4 +141,15 @@ export const SOCKET_EVENTS = {
   userTyping: "userTyping",
   seen: "seen",
   messageSeen: "messageSeen",
+  sendImage: "sendImage",
 } as const;
+
+export interface CoffeeChatSchedule {
+  opponentId: string;
+  opponentName: string;
+  coffeeDate: string; // ISO date-time string
+  location: string;
+  restDate: number;
+  firstUserImage: string;
+  secondUserImage: string;
+}

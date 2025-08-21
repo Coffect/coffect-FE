@@ -51,8 +51,18 @@ export const postSuggestCoffeeChat = async (
 
 // 커피챗 일정 가져오기
 export const getCoffeeChatSchedule = async () => {
-  const { data } = await axiosInstance.get("/home/getCoffeeChatSchedule");
-  return data.success;
+  try {
+    const { data } = await axiosInstance.get("/home/getCoffeeChatSchedule", {
+      headers: {
+        "Cache-Control": "no-cache",
+        Pragma: "no-cache",
+      },
+    });
+
+    return data.success || [];
+  } catch {
+    return [];
+  }
 };
 // userid로 id 찾기
 export const getUserStringId = async (userId: number): Promise<string> => {

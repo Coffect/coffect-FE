@@ -49,7 +49,7 @@ const ChatMessageList: React.FC<Props> = ({
           return (
             <div
               key={`${msg.id}-${idx}`}
-              className={`w-full ${getMessageMargin(idx, messages)} ${msg.mine ? "justify-end" : "justify-start"} flex`}
+              className={`w-full ${getMessageMargin(idx, messages)} flex ${msg.mine ? "justify-end" : "justify-start"}`}
             >
               {msg.type === "image" ? (
                 <ImageMessageBubble
@@ -63,7 +63,7 @@ const ChatMessageList: React.FC<Props> = ({
               ) : (
                 <MessageBubble
                   text={msg.text}
-                  time={msg.time}
+                  timestamp={msg.time}
                   mine={msg.mine}
                   showProfile={showProfile}
                   showTime={shouldShowTime(idx)}

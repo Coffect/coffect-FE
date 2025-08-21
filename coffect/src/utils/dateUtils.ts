@@ -96,21 +96,42 @@ export function getTimeUntil(dateString: string): string {
 }
 
 /* author: 앨리스/박은지
- * description: 12시간제 시간을 24시간제로 변환
+ * description: 12시간제 시간을 24시간제로 변환 (영어 AM/PM 또는 한글 오전/오후)
  */
-export function formatAmPmTo24Hour(timeString: string): string {
-  const match = timeString.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-  if (!match) return timeString;
-  let hour = parseInt(match[1], 10);
-  const minute = match[2];
-  const period = match[3].toUpperCase();
-  if (period === "AM") {
-    if (hour === 12) hour = 0;
-  } else {
-    if (hour !== 12) hour += 12;
+export function formatTimeTo24Hour(timeString: string): string {
+  // 영어 AM/PM 형식 처리
+  const amPmMatch = timeString.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (amPmMatch) {
+    let hour = parseInt(amPmMatch[1], 10);
+    const minute = amPmMatch[2];
+    const period = amPmMatch[3].toUpperCase();
+    if (period === "AM") {
+      if (hour === 12) hour = 0;
+    } else {
+      if (hour !== 12) hour += 12;
+    }
+    const hh = hour.toString().padStart(2, "0");
+    return `${hh}:${minute}`;
   }
-  const hh = hour.toString().padStart(2, "0");
-  return `${hh}:${minute}`;
+
+  // 한글 오전/오후 형식 처리
+  const koreanMatch = timeString.match(/^(오전|오후)\s*(\d{1,2}):(\d{2})$/);
+  if (koreanMatch) {
+    let hour = parseInt(koreanMatch[2], 10);
+    const minute = koreanMatch[3];
+    const period = koreanMatch[1];
+
+    if (period === "오전") {
+      if (hour === 12) hour = 0;
+    } else {
+      if (hour !== 12) hour += 12;
+    }
+    const hh = hour.toString().padStart(2, "0");
+    return `${hh}:${minute}`;
+  }
+
+  // 이미 24시간제이거나 다른 형식인 경우 그대로 반환
+  return timeString;
 }
 
 // author: 썬더/이희선
@@ -127,12 +148,22 @@ export const formatDate = (isoDate: string) => {
     .replace(/ /g, ".");
 };
 
-// 약속 시간 HH:MM
+// 약속 시간 HH:MM (24시간 형식)
 export const formatTime = (isoDate: string) => {
   const dateObj = new Date(isoDate);
   return dateObj.toLocaleTimeString("ko-KR", {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
+  });
+};
+
+// 채팅 메시지 시간 (12시간 형식 - 오전/오후)
+export const formatChatTime = (isoDate: string) => {
+  const dateObj = new Date(isoDate);
+  return dateObj.toLocaleTimeString("ko-KR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
   });
 };

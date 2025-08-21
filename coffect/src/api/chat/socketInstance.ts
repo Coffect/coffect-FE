@@ -9,10 +9,12 @@ import { SOCKET_EVENTS, type SocketMessage } from "../../types/chat";
 class SocketManager {
   private socket: Socket | null = null;
   private isConnected = false;
+  private reconnectAttempts = 10;
+  private maxReconnectAttempts = 10; // 최대 재연결 시도 횟수
 
   // Socket 연결
   connect(token?: string) {
-    if (this.socket?.connected) {
+    if (this.socket?.connected || this.isConnected) {
       return;
     }
 
@@ -26,7 +28,7 @@ class SocketManager {
       transports: ["websocket"], // websocket만 사용
       autoConnect: false, // 자동 연결 비활성화
       reconnection: true, // 자동 재연결 활성화
-      reconnectionAttempts: 5, // 재연결 시도 횟수
+      reconnectionAttempts: 3, // 재연결 시도 횟수 제한
       reconnectionDelay: 1000, // 재연결 간격 (1초)
       reconnectionDelayMax: 5000, // 최대 재연결 간격 (5초)
       timeout: 20000, // 연결 타임아웃 20초로 증가
@@ -46,35 +48,71 @@ class SocketManager {
     this.socket.on("connect", () => {
       console.log("Socket 연결 성공");
       this.isConnected = true;
+      this.reconnectAttempts = 0; // 연결 성공 시 재연결 시도 횟수 초기화
     });
 
     this.socket.on("disconnect", (reason) => {
       console.log("Socket 연결 해제:", reason);
       this.isConnected = false;
+
+      // 연결 해제 시 자동 재연결 시도
+      if (
+        reason === "io server disconnect" ||
+        reason === "io client disconnect"
+      ) {
+        this.attemptReconnect();
+      }
     });
 
     this.socket.on("connect_error", (error) => {
       console.error("Socket 연결 실패:", error);
-
       this.isConnected = false;
-      // 연결 실패 시 즉시 연결 중단
-      if (this.socket) {
-        this.socket.disconnect();
-      }
+
+      // 연결 실패 시 재연결 시도
+      this.attemptReconnect();
     });
 
     this.socket.on("reconnect", (attemptNumber) => {
       console.log("Socket 재연결 성공:", attemptNumber);
       this.isConnected = true;
+      this.reconnectAttempts = 0; // 재연결 성공 시 시도 횟수 초기화
     });
 
     this.socket.on("reconnect_error", (error) => {
       console.error("Socket 재연결 실패:", error);
-      // 재연결 실패 시 즉시 연결 중단
-      if (this.socket) {
-        this.socket.disconnect();
+      this.reconnectAttempts++;
+
+      if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+        console.error("최대 재연결 시도 횟수 초과. 재연결을 중단합니다.");
+        this.isConnected = false;
       }
     });
+
+    this.socket.on("reconnect_failed", () => {
+      console.error("Socket 재연결 최종 실패");
+      this.isConnected = false;
+      this.reconnectAttempts = 0;
+    });
+  }
+
+  // 재연결 시도 메서드
+  private attemptReconnect() {
+    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+      console.error("최대 재연결 시도 횟수 초과. 재연결을 중단합니다.");
+      return;
+    }
+
+    this.reconnectAttempts++;
+    console.log(
+      `재연결 시도 ${this.reconnectAttempts}/${this.maxReconnectAttempts}`,
+    );
+
+    setTimeout(() => {
+      if (!this.socket?.connected) {
+        console.log("재연결을 시도합니다.");
+        this.socket?.connect();
+      }
+    }, 2000);
   }
 
   // 메시지 전송
@@ -85,6 +123,19 @@ class SocketManager {
     }
 
     this.socket.emit(SOCKET_EVENTS.send, {
+      chatRoomId,
+      message,
+    });
+  }
+
+  // 이미지 전송
+  sendImage(chatRoomId: string, message: string) {
+    if (!this.socket?.connected) {
+      console.error("Socket is not connected");
+      return;
+    }
+
+    this.socket.emit(SOCKET_EVENTS.sendImage, {
       chatRoomId,
       message,
     });
@@ -143,12 +194,32 @@ class SocketManager {
     return this.isConnected && this.socket?.connected;
   }
 
+  // 수동 재연결 (사용자가 직접 호출 가능)
+  manualReconnect() {
+    console.log("수동 재연결을 시도합니다.");
+    this.reconnectAttempts = 0; // 수동 재연결 시 시도 횟수 초기화
+    if (this.socket) {
+      this.socket.connect();
+    }
+  }
+
+  // 재연결 시도 횟수 확인
+  getReconnectAttempts() {
+    return this.reconnectAttempts;
+  }
+
+  // 최대 재연결 시도 횟수 확인
+  getMaxReconnectAttempts() {
+    return this.maxReconnectAttempts;
+  }
+
   // 채팅방 입장
   joinRoom(chatRoomId: string, userId: number) {
     if (!this.socket?.connected) {
       console.error("Socket is not connected");
       return;
     }
+
     this.socket.emit("join_room", { chatRoomId, userId });
   }
 
