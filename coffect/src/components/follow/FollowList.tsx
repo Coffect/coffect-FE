@@ -10,13 +10,14 @@ import type { ListUpFollow } from "@/types/follow/listUpFollow";
 
 interface FollowListProps {
   users: ListUpFollow[];
+  myUserId?: number;
 }
 
-const FeedList = ({ users }: FollowListProps) => {
+const FeedList = ({ users, myUserId }: FollowListProps) => {
   return (
     <div className="w-full">
       {users.map((user) => (
-        <FollowItem key={user.userId} user={user} />
+        <FollowItem key={user.userId} user={user} myUserId={myUserId} />
       ))}
     </div>
   );
