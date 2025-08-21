@@ -21,6 +21,7 @@ import {
   getChatMessages,
   getChatRoomSchedule,
   sendPhoto,
+  markChatAsRead,
 } from "../../api/chat";
 import { useTimeTableComparison } from "../../hooks/useTimeTable";
 import { axiosInstance } from "../../api/axiosInstance";
@@ -119,6 +120,25 @@ const ChatRoom = () => {
   useEffect(() => {
     loadSchedule();
   }, [loadSchedule]);
+
+  // 채팅방 입장 시 메시지 읽음 처리
+  useEffect(() => {
+    if (chatRoomId) {
+      markChatAsRead(chatRoomId)
+        .then((response) => {
+          console.log("메시지 읽음 처리 성공:", response);
+        })
+        .catch((error) => {
+          console.error("메시지 읽음 처리 실패:", error);
+          console.error("에러 상세 정보:", {
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            url: error.config?.url,
+            method: error.config?.method,
+          });
+        });
+    }
+  }, [chatRoomId]);
 
   // 채팅방 목록에서 현재 채팅방 정보 가져오기
   const {
