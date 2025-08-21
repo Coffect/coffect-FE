@@ -264,7 +264,7 @@ export const getChatRoomSchedule = async (
     }
 
     // getMessageShowUp으로 isMyRequest 판단
-    let isMyRequest: boolean | undefined;
+    let isMyRequest = false; // 기본값을 false로 설정
     let requestTime: string | undefined;
     let requestMessage: string | undefined;
 
@@ -309,12 +309,14 @@ export const getChatRoomSchedule = async (
           // API 실패 시에도 기본값 설정
           requestTime = "제안 시간 정보를 불러올 수 없습니다.";
           requestMessage = "제안 메시지를 불러올 수 없습니다.";
+          // isMyRequest는 기본값 false 유지
         }
       }
     } catch (error) {
       // 실패 시 기본값 설정
       requestTime = "제안 시간 정보를 불러올 수 없습니다.";
       requestMessage = "제안 메시지를 불러올 수 없습니다.";
+      // isMyRequest는 기본값 false 유지
     }
 
     // 서버에서 오는 coffeeDate를 날짜와 시간으로 분리
