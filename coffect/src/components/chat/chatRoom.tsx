@@ -72,10 +72,6 @@ const ChatRoom = () => {
   const loadSchedule = useCallback(async () => {
     if (!chatRoomId) return;
 
-    console.log("=== loadSchedule 디버깅 ===");
-    console.log("chatRoomId:", chatRoomId);
-    console.log("location.state?.schedule:", location.state?.schedule);
-
     // 1. location.state에서 전달받은 일정이 있으면 우선 사용 (일정 등록 직후)
     const s = location.state?.schedule;
     if (s) {
