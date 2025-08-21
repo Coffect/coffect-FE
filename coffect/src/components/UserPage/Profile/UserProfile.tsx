@@ -299,7 +299,7 @@ function Profile() {
                 <div className="text-sm text-[var(--gray-50)]">포스트</div>
               </div>
               <button
-                className="text-center"
+                className="flex flex-col items-center text-center"
                 onClick={() => navigate(`/followerList/${userInfo?.userId}`)}
               >
                 <span className="text-lg font-semibold text-[var(--gray-70)]">
@@ -308,7 +308,7 @@ function Profile() {
                 <span className="text-sm text-[var(--gray-50)]">팔로워</span>
               </button>
               <button
-                className="text-center"
+                className="flex flex-col items-center text-center"
                 onClick={() => navigate(`/followingList/${userInfo?.userId}`)}
               >
                 <span className="text-lg font-semibold text-[var(--gray-70)]">
