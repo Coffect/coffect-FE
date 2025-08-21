@@ -261,6 +261,12 @@ const CoffeeSuggestBanner: React.FC = () => {
   /** 채팅 시작: 채팅방 생성 → 이동 */
   const handleChat = async () => {
     if (!checkedMessage) return;
+    // 배너 삭제
+    const idToDelete = checkedMessage.cardId;
+    flushSync(() => {
+      setSuggestions((prev) => prev.filter((s) => s.cardId !== idToDelete));
+    });
+    await sendFcmDelete(idToDelete);
 
     try {
       // 1) 커피챗 수락 API

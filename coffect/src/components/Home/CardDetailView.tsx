@@ -9,7 +9,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getProfile } from "@/api/profile";
+import { getInterest } from "@/api/home";
 
 // 전달받은 프로필 타입 정의
 interface UserProfile {
@@ -60,31 +60,45 @@ const getTagColor = (tag: string) => {
       return "bg-black text-white";
   }
 };
+const mapInterestCodeToMessage = (code: number): string => {
+  switch (code) {
+    case 1:
+      return "나와 비슷한 관심사를 가졌어요!";
+    case 2:
+      return "승락율이 가장 높아요!";
+    case 3:
+      return "나와 같은 학번이에요!";
+    case 4:
+      return "최근 글을 많이 썼어요!";
+    default:
+      return "함께하기 좋아요!";
+  }
+};
 
 const CardDetailView = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [myName, setMyName] = useState("");
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const me = await getProfile();
-        setMyName(me.success?.userInfo.name || "");
-      } catch (e) {
-        console.error(e);
-        setMyName("");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
-
   const { profile } =
     (location.state as {
       profile: UserProfile;
     }) || {};
+  const [message, setMessage] = useState<string>("");
+
+  useEffect(() => {
+    (async () => {
+      if (!profile?.id) return;
+      try {
+        const code = await getInterest();
+        setMessage(mapInterestCodeToMessage(code));
+      } catch (e) {
+        console.error(e);
+        setMessage("함께하기 좋은 친구에요!");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [profile?.id]);
 
   if (loading) {
     // 로딩 화면
@@ -124,8 +138,7 @@ const CardDetailView = () => {
             className="h-full w-full object-cover"
           />
           <div className="absolute bottom-1/10 left-1/2 z-20 -translate-x-1/2 transform rounded-xl bg-black/60 px-3 py-1 text-sm font-medium whitespace-nowrap">
-            <span className="text-[var(--gray-0)]">{myName}</span>
-            <span className="text-[var(--gray-20)]">님과 대화하기 좋아요!</span>
+            <span className="text-[var(--gray-20)]">{message}</span>
           </div>
         </div>
 
