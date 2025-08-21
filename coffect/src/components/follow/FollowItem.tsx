@@ -61,7 +61,7 @@ const FollowItem = ({ user, myUserId }: FollowItemProps) => {
           onClick={handleFollowClick}
           className={`rounded-md px-4 py-1.5 text-sm font-semibold ${isFollowing ? "bg-[var(--gray-10)] text-[var(--gray-70)]" : "bg-[var(--gray-60)] text-white"}`}
         >
-          {isFollow ? "팔로잉" : "팔로우"}
+          {isFollowing ? "팔로잉" : "팔로우"}
         </button>
       )}
     </div>
