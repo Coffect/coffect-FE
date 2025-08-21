@@ -355,6 +355,7 @@ const ChatRoom = () => {
       // 일정이 없어도 제안 정보는 있을 수 있으므로 getCoffeeChatSchedule로 확인
       return false; // 기본값은 false, 실제로는 getChatRoomSchedule에서 계산됨
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [schedule, user?.id]);
 
   useEffect(() => {
