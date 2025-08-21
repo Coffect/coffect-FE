@@ -300,9 +300,12 @@ export const getChatRoomSchedule = async (
             if (messageResponse.success.firstUserId) {
               // firstUserId가 현재 사용자와 같으면 → 상대가 제안한 것 (내가 받은 것) → isMyRequest = false
               // firstUserId가 현재 사용자와 다르면 → 내가 제안한 것 → isMyRequest = true
-              isMyRequest =
-                String(messageResponse.success.firstUserId) !==
-                String(currentUserId);
+              const firstUserId = String(messageResponse.success.firstUserId);
+              const currentUserIdStr = String(currentUserId);
+
+              // firstUserId가 현재 사용자와 같으면 → 내가 제안한 것 → isMyRequest = true
+              // firstUserId가 현재 사용자와 다르면 → 상대가 제안한 것 (내가 받은 것) → isMyRequest = false
+              isMyRequest = firstUserId === currentUserIdStr;
             }
           }
         } catch (apiError) {
