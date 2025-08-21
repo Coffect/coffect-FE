@@ -16,6 +16,7 @@ import WritePostContentInput from "@/components/communityComponents/writeCompone
 import WritePostTopicSelector from "@/components/communityComponents/writeComponents/WritePostTopicSelector";
 import { type ChipOption } from "@/components/communityComponents/ChipFilterComponent/filterData";
 import ImageCropModal from "@/components/shareComponents/imageCrop/ImageCropModal";
+import LoadingScreen from "@/components/shareComponents/LoadingScreen";
 
 const WritePostPage: React.FC = () => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ const WritePostPage: React.FC = () => {
 
   const [cropModalOpen, setCropModalOpen] = useState(false);
 
-  const { mutate: addPost } = useAddPostMutation();
+  const { mutate: addPost, isPending } = useAddPostMutation();
 
   // --- Object URL 해제 ---
   const revokePreviewUrl = useCallback(() => {
@@ -131,6 +132,10 @@ const WritePostPage: React.FC = () => {
       },
     });
   };
+
+  if (isPending) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="flex h-screen flex-col bg-white">

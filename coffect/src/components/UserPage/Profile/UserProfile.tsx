@@ -298,24 +298,24 @@ function Profile() {
                 </div>
                 <div className="text-sm text-[var(--gray-50)]">포스트</div>
               </div>
-              <div className="text-center">
-                <button
-                  className="text-lg font-semibold text-[var(--gray-70)]"
-                  onClick={() => navigate(`/followerList/${userInfo?.userId}`)}
-                >
+              <button
+                className="flex flex-col items-center text-center"
+                onClick={() => navigate(`/followerList/${userInfo?.userId}`)}
+              >
+                <span className="text-lg font-semibold text-[var(--gray-70)]">
                   {formatCount(profile?.following || 0)}
-                </button>
-                <div className="text-sm text-[var(--gray-50)]">팔로워</div>
-              </div>
-              <div className="text-center">
-                <button
-                  className="text-lg font-semibold text-[var(--gray-70)]"
-                  onClick={() => navigate(`/followingList/${userInfo?.userId}`)}
-                >
+                </span>
+                <span className="text-sm text-[var(--gray-50)]">팔로워</span>
+              </button>
+              <button
+                className="flex flex-col items-center text-center"
+                onClick={() => navigate(`/followingList/${userInfo?.userId}`)}
+              >
+                <span className="text-lg font-semibold text-[var(--gray-70)]">
                   {formatCount(profile?.follower || 0)}
-                </button>
-                <div className="text-sm text-[var(--gray-50)]">팔로잉</div>
-              </div>
+                </span>
+                <span className="text-sm text-[var(--gray-50)]">팔로잉</span>
+              </button>
             </div>
           </div>
 

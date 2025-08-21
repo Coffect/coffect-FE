@@ -79,7 +79,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
           <div className="mt-[3%] text-left">
             {/* 제목 */}
             <h3 className="text-base font-semibold text-[var(--gray-90)]">
-              ✉️{fullMessage.name}님의 메시지
+              ✉️ {fullMessage.name}님의 메시지
             </h3>
             {/* 본문 */}
             <p className="my-[5%] text-sm leading-snug font-medium break-keep whitespace-pre-line text-[var(--gray-70)]">
