@@ -35,13 +35,17 @@ const Community = () => {
   const {
     sortOrder,
     filters,
-    isFilterModalOpen,
+
     resetFilters: resetStoreFilters,
-    closeFilterModal,
+
     setFilters,
-    activeQuery, // ✅ store에서 가져옴
+    activeQuery,
     setActiveQuery,
   } = useCommunityStore();
+
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
+  const openFilterModal = () => setIsFilterModalOpen(true);
+  const closeFilterModal = () => setIsFilterModalOpen(false);
 
   useEffect(() => {
     resetStoreFilters();
@@ -124,7 +128,11 @@ const Community = () => {
   if (error) {
     return (
       <div className="relative flex h-full flex-col bg-white">
-        <Header />
+        <Header
+          isFilterModalOpen={isFilterModalOpen}
+          openFilterModal={openFilterModal}
+          closeFilterModal={closeFilterModal}
+        />
         <div className="flex flex-1 items-center justify-center">
           게시글을 불러오는 중 오류가 발생했습니다: {error.message}
         </div>
@@ -135,7 +143,11 @@ const Community = () => {
 
   return (
     <div className="relative flex h-full flex-col bg-white">
-      <Header />
+      <Header
+        isFilterModalOpen={isFilterModalOpen}
+        openFilterModal={openFilterModal}
+        closeFilterModal={closeFilterModal}
+      />
 
       <main className="flex-1 overflow-y-auto bg-white pb-20">
         {isLoading ? (

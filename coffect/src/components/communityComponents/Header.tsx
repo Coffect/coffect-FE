@@ -7,15 +7,18 @@ const containerStyle = "flex items-center";
 const activeButtonStyle =
   "bg-[var(--gray-70)] text-white font-semibold border-none";
 
-const Header = () => {
-  const {
-    sortOrder,
-    isFilterModalOpen,
-    setSortOrder,
-    openFilterModal,
-    closeFilterModal,
-    setActiveQuery,
-  } = useCommunityStore();
+interface HeaderProps {
+  isFilterModalOpen: boolean;
+  openFilterModal: () => void;
+  closeFilterModal: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({
+  isFilterModalOpen,
+  openFilterModal,
+  closeFilterModal,
+}) => {
+  const { sortOrder, setSortOrder, setActiveQuery } = useCommunityStore();
 
   const handleFilterClick = () => {
     if (isFilterModalOpen) closeFilterModal();
@@ -24,12 +27,12 @@ const Header = () => {
 
   const handleLatestClick = () => {
     setSortOrder("createdAt");
-    setActiveQuery("latest"); // ✅ 최신순 쿼리 실행
+    setActiveQuery("latest");
   };
 
   const handlePopularClick = () => {
     setSortOrder("likeCount");
-    setActiveQuery("filtered"); // ✅ 인기순 쿼리 실행
+    setActiveQuery("filtered");
   };
 
   return (

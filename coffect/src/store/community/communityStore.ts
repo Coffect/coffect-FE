@@ -6,7 +6,6 @@ interface CommunityState {
     type: string | null;
     subject: number[] | null;
   };
-  isFilterModalOpen: boolean;
   activeQuery: "latest" | "filtered";
 }
 
@@ -14,8 +13,6 @@ interface CommunityActions {
   setSortOrder: (order: CommunityState["sortOrder"]) => void;
   setFilters: (newFilters: Partial<CommunityState["filters"]>) => void;
   resetFilters: () => void;
-  openFilterModal: () => void;
-  closeFilterModal: () => void;
   setActiveQuery: (query: CommunityState["activeQuery"]) => void;
 }
 
@@ -41,8 +38,6 @@ export const useCommunityStore = create<CommunityState & CommunityActions>(
         activeQuery: "latest",
       }),
 
-    openFilterModal: () => set({ isFilterModalOpen: true }),
-    closeFilterModal: () => set({ isFilterModalOpen: false }),
     setActiveQuery: (query) => set({ activeQuery: query }),
   }),
 );
