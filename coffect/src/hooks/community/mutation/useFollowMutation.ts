@@ -73,11 +73,29 @@ export const useFollowMutation = () => {
     },
 
     // 서버 데이터와 동기화를 위해 관련 쿼리를 무효화
-    onSettled: () => {
+    // onSettled: (_data, _error, userId) => {
+    onSettled: (_data, _error, userId) => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.COMMUNITY.POSTS });
       queryClient.invalidateQueries({ queryKey: ["bookMark"] });
-      queryClient.invalidateQueries({ queryKey: ["isFollow"] });
-      queryClient.invalidateQueries({ queryKey: ["profileThreadSearch"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      if (typeof userId === "number") {
+        queryClient.invalidateQueries({
+          queryKey: ["profileThreadSearch", userId],
+        });
+        queryClient.invalidateQueries({ queryKey: ["isFollow", userId] });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.USER.FOLLOWERS(userId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.USER.FOLLOWING(userId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.USER.FOLLOW_COUNT(userId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.USER.PROFILE_THREADS(userId),
+        });
+      }
     },
   });
 };
