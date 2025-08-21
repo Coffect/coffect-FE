@@ -7,7 +7,11 @@ interface FollowHeaderProps {
   myId?: string;
 }
 
-const FollowHeader = ({ follow, count, myId }: FollowHeaderProps) => {
+const FollowHeader = ({
+  follow,
+  count,
+  myId = "Coffect..",
+}: FollowHeaderProps) => {
   const navigate = useNavigate();
 
   console.log(myId);

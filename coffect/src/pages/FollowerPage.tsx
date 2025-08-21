@@ -30,7 +30,7 @@ const FollowerPage = () => {
     const fetchData = async () => {
       try {
         const userIdData = await getChangeId(Id);
-        console.log("userIdData", userIdData);
+
         if (userIdData.success) {
           const newUserName = await getUserNameById(userIdData.success.id);
           setUserName(newUserName);
@@ -42,6 +42,7 @@ const FollowerPage = () => {
       }
     };
     if (Id) {
+      setIsFetchingUserName(true);
       fetchData();
     }
   }, [Id]);

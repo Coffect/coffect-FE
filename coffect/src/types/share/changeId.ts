@@ -3,9 +3,9 @@ export interface getChangeIdResponse {
   error: null | {
     errorCode: string;
     reason: string;
-    data: string;
+    data: string | null;
   };
   success: {
     id: string;
-  };
+  } | null;
 }
