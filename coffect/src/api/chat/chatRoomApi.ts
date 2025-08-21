@@ -290,10 +290,6 @@ export const getChatRoomSchedule = async (
 
     // 일정이 없어도 제안 정보는 가져와보기
     if (!chatRoomSchedule) {
-      console.log(
-        "❌ 일정을 찾지 못했습니다. 하지만 제안 정보는 확인해보겠습니다.",
-      );
-
       // 제안 정보만이라도 가져와보기
       let isMyRequest = false;
       let requestTime: string | undefined;
@@ -309,12 +305,10 @@ export const getChatRoomSchedule = async (
           coffectIdResponse.success
         ) {
           const coffectId = coffectIdResponse.success;
-          console.log("✅ coffectId 조회 성공 (일정 없음):", coffectId);
 
           // getMessageShowUp API 호출
           try {
             const messageResponse = await getMessageShowUp(coffectId);
-            console.log("getMessageShowUp 응답 (일정 없음):", messageResponse);
 
             if (
               messageResponse.resultType === "SUCCESS" &&
@@ -335,13 +329,6 @@ export const getChatRoomSchedule = async (
                 isMyRequest =
                   String(messageResponse.success.firstUserId) !==
                   String(currentUserId);
-                console.log("=== isMyRequest 디버깅 (일정 없음) ===");
-                console.log(
-                  "firstUserId:",
-                  messageResponse.success.firstUserId,
-                );
-                console.log("currentUserId:", currentUserId);
-                console.log("isMyRequest:", isMyRequest);
               }
             }
           } catch (apiError) {
@@ -354,7 +341,6 @@ export const getChatRoomSchedule = async (
 
       // 일정은 없지만 제안 정보가 있으면 SUCCESS 반환
       if (requestMessage) {
-        console.log("✅ 일정은 없지만 제안 정보는 있습니다!");
         return {
           resultType: "SUCCESS",
           success: {
@@ -379,8 +365,6 @@ export const getChatRoomSchedule = async (
       };
     }
 
-    console.log("✅ 일정을 찾았습니다! 이제 isMyRequest 판단 시작");
-
     // getCoffeeChatSchedule 데이터로 isMyRequest 판단
     let isMyRequest = false;
     let requestTime: string | undefined;
@@ -401,7 +385,6 @@ export const getChatRoomSchedule = async (
         coffectIdResponse.success
       ) {
         const coffectId = coffectIdResponse.success;
-        console.log("✅ coffectId 조회 성공:", coffectId);
 
         // getMessageShowUp API 호출
         try {
@@ -432,18 +415,6 @@ export const getChatRoomSchedule = async (
               isMyRequest =
                 String(messageResponse.success.firstUserId) !==
                 String(currentUserId);
-
-              console.log("=== isMyRequest 디버깅 ===");
-              console.log(
-                "firstUserId (제안 보낸 상대의 숫자 ID):",
-                messageResponse.success.firstUserId,
-              );
-              console.log("currentUserId:", currentUserId);
-              console.log("isMyRequest:", isMyRequest);
-              console.log(
-                "해석:",
-                isMyRequest ? "내가 제안을 보냄" : "상대가 제안을 보냄",
-              );
             }
           }
         } catch (apiError) {

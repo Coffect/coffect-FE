@@ -159,9 +159,7 @@ const ChatInterestsSection = ({
                     const buttonText = isMyRequest
                       ? "나의 요청 보기"
                       : "상대 요청 보기";
-                    console.log("=== 일정 있을 때 버튼 텍스트 결정 ===");
-                    console.log("isMyRequest:", isMyRequest);
-                    console.log("버튼 텍스트:", buttonText);
+
                     return buttonText;
                   })()}
                 </span>

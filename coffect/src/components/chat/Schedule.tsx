@@ -180,18 +180,10 @@ const Schedule: React.FC = () => {
         try {
           const { getCoffeeChatSchedule } = await import("../../api/home");
           const schedules = await getCoffeeChatSchedule();
-          console.log("=== 일정 등록 후 getCoffeeChatSchedule 확인 ===");
-          console.log("등록된 일정들:", schedules);
-          console.log("일정 개수:", schedules.length);
 
           // 일정이 등록되었는지 확인
           if (schedules.length === 0) {
-            console.log(
-              "⚠️ 경고: 일정 등록 후에도 getCoffeeChatSchedule에서 빈 배열 반환!",
-            );
             console.log("일정 등록은 성공했지만 조회가 안 되는 상황");
-          } else {
-            console.log("✅ 일정 등록 후 조회 성공!");
           }
         } catch (error) {
           console.error("일정 등록 후 확인 실패:", error);
