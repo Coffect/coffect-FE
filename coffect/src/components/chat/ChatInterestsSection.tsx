@@ -119,25 +119,23 @@ const ChatInterestsSection = ({
             <ChatInterestTags interests={interests} />
           </div>
           {/* 일정 정보 표시 및 버튼 영역 */}
-          <div className="flex w-full items-center gap-2">
-            <button
-              className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-[16px] font-medium whitespace-nowrap text-[var(--gray-90)] sm:text-sm"
-              onClick={() => {
-                if (chatRoomId) {
-                  navigate(`/chat/${chatRoomId}/schedule`, {
-                    state: { schedule: schedule },
-                  });
-                }
-              }}
-            >
-              <Calendar size={18} className="text-[var(--gray-40)]" />
-              <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
-                {schedule && schedule.date && schedule.time
-                  ? `${formatScheduleDate(schedule.date)} ${formatScheduleTime(schedule.time)}`
-                  : "커피챗 일정 등록"}
-              </span>
-            </button>
-            {schedule && (
+          {schedule && schedule.date && schedule.time ? (
+            <div className="flex w-full items-center gap-2">
+              <button
+                className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-[16px] font-medium whitespace-nowrap text-[var(--gray-90)] sm:text-sm"
+                onClick={() => {
+                  if (chatRoomId) {
+                    navigate(`/chat/${chatRoomId}/schedule`, {
+                      state: { schedule: schedule },
+                    });
+                  }
+                }}
+              >
+                <Calendar size={18} className="text-[var(--gray-40)]" />
+                <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
+                  {`${formatScheduleDate(schedule.date)} ${formatScheduleTime(schedule.time)}`}
+                </span>
+              </button>
               <button
                 className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-xs font-medium text-ellipsis whitespace-nowrap text-[var(--gray-70)] sm:text-sm"
                 onClick={onOpenModal}
@@ -147,32 +145,30 @@ const ChatInterestsSection = ({
                   {isMyRequest ? "나의 요청 보기" : "상대 요청 보기"}
                 </span>
               </button>
-            )}
-          </div>
-          {(!schedule || schedule === null) && (
-            <div className="flex gap-2">
+            </div>
+          ) : (
+            <div className="flex w-full items-center gap-2">
               <button
-                className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--gray-10)] py-2 text-sm font-medium text-[var(--gray-70)]"
+                className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-[16px] font-medium whitespace-nowrap text-[var(--gray-70)] sm:text-sm"
                 onClick={() => {
-                  console.log("chatRoomId:", chatRoomId);
                   if (chatRoomId) {
-                    const url = `/chat/${chatRoomId}/schedule`;
-
-                    navigate(url);
-                  } else {
-                    console.log("chatRoomId가 없습니다!");
+                    navigate(`/chat/${chatRoomId}/schedule`);
                   }
                 }}
               >
-                <Calendar size={17} />
-                <span className="leading-none">커피챗 일정 등록</span>
+                <Calendar size={17} className="text-[var(--gray-40)]" />
+                <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
+                  {schedule && schedule.date && schedule.time
+                    ? `${formatScheduleDate(schedule.date)} ${formatScheduleTime(schedule.time)}`
+                    : "커피챗 일정 등록"}
+                </span>
               </button>
               <button
-                className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-sm font-medium text-[var(--gray-70)]"
+                className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-xs font-medium text-ellipsis whitespace-nowrap text-[var(--gray-70)] sm:text-sm"
                 onClick={onOpenModal}
               >
-                <Mail size={17} />
-                <span className="leading-none">
+                <Mail size={16} className="text-[var(--gray-40)]" />
+                <span className="block overflow-hidden text-[16px] font-medium whitespace-nowrap">
                   {isMyRequest ? "나의 요청 보기" : "상대 요청 보기"}
                 </span>
               </button>

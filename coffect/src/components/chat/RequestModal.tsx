@@ -28,20 +28,12 @@ const RequestModal = ({
 }: RequestModalProps) => {
   if (!isOpen) return null;
 
-  // 디버깅용 로그
-  console.log("=== RequestModal Props 디버깅 ===");
-  console.log("isMyRequest:", isMyRequest);
-  console.log("requestTime:", requestTime);
-  console.log("requestMessage:", requestMessage);
-  console.log("opponentName:", opponentName);
-
   // 시간표 데이터를 파싱해서 공강시간만 표시하는 함수
   const formatAvailableTime = (timeData: string): string => {
     try {
       // 시간표 데이터가 JSON 문자열인지 확인
       if (timeData && timeData.startsWith("[") && timeData.endsWith("]")) {
         const timeSlots = JSON.parse(timeData) as string[];
-        console.log("파싱된 시간대:", timeSlots);
 
         if (Array.isArray(timeSlots) && timeSlots.length > 0) {
           // getCommonFreeTime 함수를 사용하여 시간대를 포맷팅

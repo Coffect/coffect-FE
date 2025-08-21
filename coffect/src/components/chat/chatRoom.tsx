@@ -331,30 +331,11 @@ const ChatRoom = () => {
 
   // 내가 제안한 것인지 상대방이 제안한 것인지 판단
   const isMyRequest = useMemo(() => {
-    console.log("=== chatRoom.tsx isMyRequest 계산 ===");
-    console.log("schedule:", schedule);
-
     // schedule이 있으면 API에서 계산된 isMyRequest 값을 사용
     if (schedule) {
-      console.log(
-        "schedule.isMyRequest:",
-        schedule.isMyRequest,
-        "타입:",
-        typeof schedule.isMyRequest,
-      );
-      console.log(
-        "schedule.opponentId:",
-        schedule.opponentId,
-        "타입:",
-        typeof schedule.opponentId,
-      );
-      console.log("user.id:", user?.id, "타입:", typeof user?.id);
-
       const result = schedule.isMyRequest ?? false;
-      console.log("최종 isMyRequest:", result);
       return result;
     } else {
-      console.log("schedule이 null이므로 제안 정보만 확인");
       // 일정이 없어도 제안 정보는 있을 수 있으므로 getCoffeeChatSchedule로 확인
       return false; // 기본값은 false, 실제로는 getChatRoomSchedule에서 계산됨
     }

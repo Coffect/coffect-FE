@@ -25,7 +25,8 @@ export const getCoffectId = async (
     );
 
     return response.data;
-  } catch {
+  } catch (error) {
+    console.error("getCoffectId API 실패:", error);
     return {
       resultType: "FAIL",
       error: { reason: "커피챗 제안 아이디 조회에 실패했습니다" },
@@ -149,7 +150,6 @@ export const sendPhoto = async (
       timeout: 60000,
     });
 
-    console.log("sendPhoto API 응답 성공:", response.data);
     return response.data;
   } catch (error) {
     console.error("sendPhoto API 호출 실패:", error);
@@ -243,7 +243,6 @@ export const getChatRoomSchedule = async (
       const { getUserStringId } = await import("../home");
       opponentStringId = await getUserStringId(opponentUserId);
     } catch (error) {
-      console.error("상대방 string ID 조회 실패:", error);
       return {
         resultType: "FAIL",
         success: null,
@@ -253,31 +252,20 @@ export const getChatRoomSchedule = async (
 
     // 전체 일정 목록 가져오기
     const allSchedules = await getCoffeeChatSchedule();
-    console.log("=== getCoffeeChatSchedule 응답 디버깅 ===");
-    console.log("allSchedules:", allSchedules);
-    console.log("allSchedules 타입:", typeof allSchedules);
-    console.log(
-      "allSchedules 길이:",
-      Array.isArray(allSchedules) ? allSchedules.length : "배열 아님",
-    );
-    console.log("opponentStringId:", opponentStringId);
-    console.log("currentUserId:", currentUserId);
 
     // 채팅방 ID로 필터링하여 해당 채팅방의 일정 찾기
-    // opponentId는 string ID이므로 string ID로 비교
+    // opponentId는 숫자 ID이므로 숫자 ID로 비교
     const chatRoomSchedule = allSchedules.find(
       (schedule: {
         opponentId: string | number;
         coffeeDate: string;
         location: string;
       }) => {
-        const scheduleOpponentId = String(schedule.opponentId);
-        console.log("비교 중:", scheduleOpponentId, "vs", opponentStringId);
-        return scheduleOpponentId === opponentStringId;
+        const scheduleOpponentId = Number(schedule.opponentId);
+
+        return scheduleOpponentId === opponentUserId;
       },
     );
-
-    console.log("찾은 일정:", chatRoomSchedule);
 
     // 일정이 없어도 제안 정보는 가져와보기
     if (!chatRoomSchedule) {
@@ -322,11 +310,11 @@ export const getChatRoomSchedule = async (
               }
             }
           } catch (apiError) {
-            console.error("getMessageShowUp API 실패 (일정 없음):", apiError);
+            // API 실패 시 무시
           }
         }
       } catch (error) {
-        console.error("getCoffectId 실패 (일정 없음):", error);
+        // API 실패 시 무시
       }
 
       // 일정이 없으면 FAIL 반환 (제안 정보가 있어도 일정이 없으면 FAIL)
@@ -382,7 +370,6 @@ export const getChatRoomSchedule = async (
             }
           }
         } catch (apiError) {
-          console.error("getMessageShowUp API 실패:", apiError);
           // API 실패 시에도 기본값 설정
           requestTime = "제안 시간 정보를 불러올 수 없습니다.";
           requestMessage = "제안 메시지를 불러올 수 없습니다.";
@@ -394,30 +381,36 @@ export const getChatRoomSchedule = async (
       requestMessage = "제안 메시지를 불러올 수 없습니다.";
     }
 
-    // 서버 응답을 그대로 사용 (변환하지 않음)
-    let dateStr = chatRoomSchedule.coffeeDate;
+    // 서버에서 오는 coffeeDate를 날짜와 시간으로 분리
+    let dateStr = "";
     let timeStr = "";
 
-    // 만약 서버에서 날짜와 시간을 분리해서 보내주지 않는다면 변환
-    if (typeof chatRoomSchedule.coffeeDate === "string") {
+    if (
+      typeof chatRoomSchedule.coffeeDate === "string" &&
+      chatRoomSchedule.coffeeDate.includes("T")
+    ) {
       try {
-        const coffeeDate = new Date(chatRoomSchedule.coffeeDate);
+        // ISO 문자열을 직접 파싱해서 "2025-08-23 08:04" 형태로 변환
+        const formatted = chatRoomSchedule.coffeeDate
+          .replace("T", " ")
+          .slice(0, 16);
+        const [datePart, timePart] = formatted.split(" ");
 
-        if (!isNaN(coffeeDate.getTime())) {
-          dateStr = coffeeDate.toLocaleDateString("ko-KR", {
-            month: "long",
-            day: "numeric",
-          });
+        // 날짜를 "8월 23일" 형태로 변환
+        const [year, month, day] = datePart.split("-");
+        dateStr = `${Number(month)}월 ${Number(day)}일`;
 
-          timeStr = coffeeDate.toLocaleTimeString("ko-KR", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false, // 24시간제 사용
-          });
-        }
+        // 시간은 그대로 사용
+        timeStr = timePart;
       } catch (error) {
-        // 날짜 변환 실패 시 서버 응답 그대로 사용
+        // 변환 실패 시 원본 사용
+        dateStr = chatRoomSchedule.coffeeDate;
+        timeStr = "";
       }
+    } else {
+      // ISO 문자열이 아닌 경우 원본 사용
+      dateStr = chatRoomSchedule.coffeeDate;
+      timeStr = "";
     }
 
     return {
@@ -438,7 +431,6 @@ export const getChatRoomSchedule = async (
       error: null,
     };
   } catch (error) {
-    console.error("채팅방 일정 조회 실패:", error);
     return {
       resultType: "FAIL",
       success: null,
