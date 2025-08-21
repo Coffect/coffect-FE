@@ -51,7 +51,7 @@ const CoffeeCategoryGrid: React.FC = () => {
 
   const categories = [
     { label: "나와 관심사가\n비슷한", value: 1, image: choose1Image },
-    { label: "승락률이\n높은", value: 2, image: choose2Image },
+    { label: "승락율이\n높은", value: 2, image: choose2Image },
     { label: "나와\n 같은 학번", value: 3, image: choose3Image },
     { label: "요즘\n글을 많이 쓴", value: 4, image: choose4Image },
   ];
