@@ -61,7 +61,6 @@ export const getChatRoomList = async (): Promise<ChatRoomListResponse> => {
     }
 
     // success 배열이 비어있어도 SUCCESS로 반환 (채팅방이 없는 것은 정상적인 상황)
-    console.log("getChatRoomList 성공:", response.data);
     return response.data;
   } catch (error) {
     console.error("채팅방 목록 조회 실패:", error);
@@ -101,21 +100,6 @@ export const getChatMessages = async (
     const response = await axiosInstance.get(
       `/chat?chatRoomId=${encodeURIComponent(chatRoomId)}`,
     );
-
-    // createdAt 디버깅 로그 추가
-    if (response.data.success && response.data.success.length > 0) {
-      console.log("=== createdAt 디버깅 ===");
-      console.log("채팅방 ID:", chatRoomId);
-      response.data.success.forEach((message: any, index: number) => {
-        console.log(`메시지 ${index + 1}:`, {
-          id: message.id,
-          messageBody: message.messageBody,
-          createdAt: message.createdAt,
-          createdAtType: typeof message.createdAt,
-          createdAtRaw: JSON.stringify(message.createdAt),
-        });
-      });
-    }
 
     return response.data;
   } catch (error) {
@@ -238,6 +222,10 @@ export const getChatRoomSchedule = async (
     }
 
     const currentUserId = profileResponse.success.userInfo.userId;
+    console.log("=== currentUserId 확인 ===");
+    console.log("profileResponse:", profileResponse);
+    console.log("currentUserId:", currentUserId);
+    console.log("currentUserId 타입:", typeof currentUserId);
 
     // 3. 상대방의 userId 찾기 (채팅방의 userId가 현재 사용자가 아닌 경우)
     const opponentUserId =
@@ -253,70 +241,175 @@ export const getChatRoomSchedule = async (
       };
     }
 
+    // 4. 상대방의 string ID 가져오기 (getCoffeeChatSchedule의 opponentId와 비교하기 위해)
+    let opponentStringId: string | null = null;
+    try {
+      const { getUserStringId } = await import("../home");
+      opponentStringId = await getUserStringId(opponentUserId);
+      console.log("상대방 string ID:", opponentStringId);
+    } catch (error) {
+      console.error("상대방 string ID 조회 실패:", error);
+      return {
+        resultType: "FAIL",
+        success: null,
+        error: { reason: "상대방 정보를 가져올 수 없습니다" },
+      };
+    }
+
     // 전체 일정 목록 가져오기
+    console.log("=== getCoffeeChatSchedule API 호출 시작 ===");
     const allSchedules = await getCoffeeChatSchedule();
+    console.log("=== getCoffeeChatSchedule API 호출 완료 ===");
+
+    // 디버깅용 로그
+    console.log("=== getChatRoomSchedule 디버깅 ===");
+    console.log("chatRoomId:", chatRoomId);
+    console.log("currentUserId:", currentUserId);
+    console.log("opponentUserId:", opponentUserId);
+    console.log("opponentStringId:", opponentStringId);
+    console.log("allSchedules:", allSchedules);
+    console.log("allSchedules 타입:", typeof allSchedules);
+    console.log("allSchedules 길이:", allSchedules?.length);
+    console.log("getCoffeeChatSchedule 원본 응답:", allSchedules);
 
     // 채팅방 ID로 필터링하여 해당 채팅방의 일정 찾기
-    // opponentId가 숫자인지 문자열인지 확인하고 비교
+    // opponentId는 string ID이므로 string ID로 비교
     const chatRoomSchedule = allSchedules.find(
       (schedule: {
         opponentId: string | number;
         coffeeDate: string;
         location: string;
       }) => {
-        const opponentIdStr = String(schedule.opponentId);
-        const chatRoomOpponentIdStr = String(opponentUserId);
-        return opponentIdStr === chatRoomOpponentIdStr;
+        const scheduleOpponentId = String(schedule.opponentId);
+        console.log("비교:", scheduleOpponentId, "===", opponentStringId);
+        return scheduleOpponentId === opponentStringId;
       },
     );
 
+    console.log("찾은 일정:", chatRoomSchedule);
+
+    // 일정이 없어도 제안 정보는 가져와보기
     if (!chatRoomSchedule) {
+      console.log(
+        "❌ 일정을 찾지 못했습니다. 하지만 제안 정보는 확인해보겠습니다.",
+      );
+
+      // 제안 정보만이라도 가져와보기
+      let isMyRequest = false;
+      let requestTime: string | undefined;
+      let requestMessage: string | undefined;
+
+      try {
+        // 채팅방 ID로 coffectId 조회
+        const coffectIdResponse = await getCoffectId(chatRoomId);
+        console.log("getCoffectId 응답 (일정 없음):", coffectIdResponse);
+
+        if (
+          coffectIdResponse.resultType === "SUCCESS" &&
+          coffectIdResponse.success
+        ) {
+          const coffectId = coffectIdResponse.success;
+          console.log("✅ coffectId 조회 성공 (일정 없음):", coffectId);
+
+          // getMessageShowUp API 호출
+          try {
+            const messageResponse = await getMessageShowUp(coffectId);
+            console.log("getMessageShowUp 응답 (일정 없음):", messageResponse);
+
+            if (
+              messageResponse.resultType === "SUCCESS" &&
+              messageResponse.success
+            ) {
+              // 제안 메시지를 받은 시간을 requestTime에 설정
+              if (messageResponse.success.createdAt) {
+                requestTime = new Date(
+                  messageResponse.success.createdAt,
+                ).toLocaleString();
+              }
+
+              // 제안 메시지 설정
+              requestMessage = messageResponse.success.message;
+
+              // getMessageShowUp의 firstUserId로 isMyRequest 판단
+              if (messageResponse.success.firstUserId) {
+                isMyRequest =
+                  String(messageResponse.success.firstUserId) !==
+                  String(currentUserId);
+                console.log("=== isMyRequest 디버깅 (일정 없음) ===");
+                console.log(
+                  "firstUserId:",
+                  messageResponse.success.firstUserId,
+                );
+                console.log("currentUserId:", currentUserId);
+                console.log("isMyRequest:", isMyRequest);
+              }
+            }
+          } catch (apiError) {
+            console.error("getMessageShowUp API 실패 (일정 없음):", apiError);
+          }
+        }
+      } catch (error) {
+        console.error("getCoffectId 실패 (일정 없음):", error);
+      }
+
+      // 일정은 없지만 제안 정보가 있으면 SUCCESS 반환
+      if (requestMessage) {
+        console.log("✅ 일정은 없지만 제안 정보는 있습니다!");
+        return {
+          resultType: "SUCCESS",
+          success: {
+            date: "",
+            time: "",
+            place: "",
+            alert: null,
+            opponentId: null,
+            isMyRequest: isMyRequest,
+            requestTime: requestTime,
+            requestMessage: requestMessage,
+          },
+          error: null,
+        };
+      }
+
+      // 제안 정보도 없으면 FAIL 반환
       return {
         resultType: "FAIL",
         success: null,
-        error: { reason: "해당 채팅방의 일정을 찾을 수 없습니다" },
+        error: { reason: "해당 채팅방의 일정과 제안 정보를 찾을 수 없습니다" },
       };
     }
 
-    // 찾은 일정 정보 상세 로그
-    console.log("=== 찾은 일정 정보 상세 ===");
-    console.log("chatRoomSchedule:", chatRoomSchedule);
-    console.log("coffeeDate 원본값:", chatRoomSchedule.coffeeDate);
-    console.log("coffeeDate 타입:", typeof chatRoomSchedule.coffeeDate);
-    console.log(
-      "coffeeDate JSON:",
-      JSON.stringify(chatRoomSchedule.coffeeDate),
-    );
-
-    // Date 객체로 변환 시도
-    try {
-      const testDate = new Date(chatRoomSchedule.coffeeDate);
-      console.log("new Date(coffeeDate) 결과:", testDate);
-      console.log("Date 객체 유효성:", !isNaN(testDate.getTime()));
-      console.log("Date 객체 시간대:", testDate.toISOString());
-    } catch (error) {
-      console.log("Date 객체 변환 실패:", error);
-    }
+    console.log("✅ 일정을 찾았습니다! 이제 isMyRequest 판단 시작");
 
     // getCoffeeChatSchedule 데이터로 isMyRequest 판단
     let isMyRequest = false;
     let requestTime: string | undefined;
     let requestMessage: string | undefined;
 
-    // 제안 메시지 정보는 coffectId로 조회
+    // 제안 메시지 정보는 coffectId로 조회 (isMyRequest 판단 포함)
+    console.log("=== getCoffectId API 호출 시작 ===");
+    console.log("chatRoomId:", chatRoomId);
+    console.log("이 부분이 실행되는지 확인");
+
     try {
       // 채팅방 ID로 coffectId 조회
       const coffectIdResponse = await getCoffectId(chatRoomId);
+      console.log("getCoffectId 응답:", coffectIdResponse);
 
       if (
         coffectIdResponse.resultType === "SUCCESS" &&
         coffectIdResponse.success
       ) {
         const coffectId = coffectIdResponse.success;
+        console.log("✅ coffectId 조회 성공:", coffectId);
 
         // getMessageShowUp API 호출
         try {
+          console.log("=== getMessageShowUp API 호출 ===");
+          console.log("coffectId:", coffectId);
+
           const messageResponse = await getMessageShowUp(coffectId);
+          console.log("getMessageShowUp 응답:", messageResponse);
 
           if (
             messageResponse.resultType === "SUCCESS" &&
@@ -332,78 +425,38 @@ export const getChatRoomSchedule = async (
             // 제안 메시지 설정
             requestMessage = messageResponse.success.message;
 
-            // getMessageShowUp에서 제안자 정보를 가져와서 isMyRequest 판단
-            console.log("=== getMessageShowUp 응답 전체 ===");
-            console.log("messageResponse.success:", messageResponse.success);
-
+            // getMessageShowUp의 firstUserId로 isMyRequest 판단 (제안 보낸 상대의 숫자 ID)
             if (messageResponse.success.firstUserId) {
-              // firstUserId는 제안을 받은 사람의 ID
-              // firstUserId !== currentUserId이면 내가 제안한 것 (상대방이 받음)
+              // firstUserId가 현재 사용자와 같으면 상대가 제안한 것 (내가 받은 것)
+              // firstUserId가 현재 사용자와 다르면 내가 제안한 것
               isMyRequest =
                 String(messageResponse.success.firstUserId) !==
                 String(currentUserId);
 
-              console.log("=== getMessageShowUp으로 isMyRequest 판단 ===");
+              console.log("=== isMyRequest 디버깅 ===");
               console.log(
-                "firstUserId (제안받은 사람):",
-                messageResponse.success.firstUserId,
-                "타입:",
-                typeof messageResponse.success.firstUserId,
-              );
-              console.log(
-                "currentUserId:",
-                currentUserId,
-                "타입:",
-                typeof currentUserId,
-              );
-              console.log(
-                "String(firstUserId):",
-                String(messageResponse.success.firstUserId),
-              );
-              console.log("String(currentUserId):", String(currentUserId));
-              console.log(
-                "비교 결과 (firstUserId !== currentUserId):",
-                String(messageResponse.success.firstUserId) !==
-                  String(currentUserId),
-              );
-              console.log("최종 isMyRequest:", isMyRequest);
-              console.log(
-                "해석: firstUserId가 현재 사용자와 다르면 내가 제안한 것 (상대방이 받음)",
-              );
-            } else {
-              console.log("=== firstUserId가 없음 ===");
-              console.log(
-                "messageResponse.success.firstUserId:",
+                "firstUserId (제안 보낸 상대의 숫자 ID):",
                 messageResponse.success.firstUserId,
               );
-              console.log("firstUserId가 없어서 opponentId로 판단");
-
-              // firstUserId가 없으면 opponentId로 판단
-              isMyRequest =
-                String(chatRoomSchedule.opponentId) !== String(currentUserId);
-              console.log("opponentId로 판단한 isMyRequest:", isMyRequest);
+              console.log("currentUserId:", currentUserId);
+              console.log("isMyRequest:", isMyRequest);
+              console.log(
+                "해석:",
+                isMyRequest ? "내가 제안을 보냄" : "상대가 제안을 보냄",
+              );
             }
           }
         } catch (apiError) {
+          console.error("getMessageShowUp API 실패:", apiError);
           // API 실패 시에도 기본값 설정
           requestTime = "제안 시간 정보를 불러올 수 없습니다.";
           requestMessage = "제안 메시지를 불러올 수 없습니다.";
-
-          // getMessageShowUp 실패 시 opponentId로 판단
-          isMyRequest =
-            String(chatRoomSchedule.opponentId) !== String(currentUserId);
-          console.log("getMessageShowUp 실패, opponentId로 판단:", isMyRequest);
         }
       }
     } catch (error) {
       // 실패 시 기본값 설정
       requestTime = "제안 시간 정보를 불러올 수 없습니다.";
       requestMessage = "제안 메시지를 불러올 수 없습니다.";
-
-      // 모든 API 실패 시 opponentId로 판단
-      isMyRequest =
-        String(chatRoomSchedule.opponentId) !== String(currentUserId);
-      console.log("모든 API 실패, opponentId로 판단:", isMyRequest);
     }
 
     // 서버 응답을 그대로 사용 (변환하지 않음)
@@ -426,11 +479,9 @@ export const getChatRoomSchedule = async (
             minute: "2-digit",
             hour12: false, // 24시간제 사용
           });
-        } else {
-          console.log("유효하지 않은 날짜 형식, 서버 응답 그대로 사용");
         }
       } catch (error) {
-        console.log("날짜 변환 실패, 서버 응답 그대로 사용:", error);
+        // 날짜 변환 실패 시 서버 응답 그대로 사용
       }
     }
 

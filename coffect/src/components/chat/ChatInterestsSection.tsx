@@ -131,24 +131,23 @@ const ChatInterestsSection = ({
           </div>
           {/* 일정 정보 표시 및 버튼 영역 */}
           <div className="flex w-full items-center gap-2">
-            {schedule && (
-              <button
-                className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-[16px] font-medium whitespace-nowrap text-[var(--gray-90)] sm:text-sm"
-                onClick={() => {
-                  if (chatRoomId) {
-                    navigate(`/chat/${chatRoomId}/schedule`, {
-                      state: { schedule: schedule },
-                    });
-                  }
-                }}
-              >
-                <Calendar size={18} className="text-[var(--gray-40)]" />
-                <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
-                  {formatScheduleDate(schedule.date)}{" "}
-                  {formatScheduleTime(schedule.time)}
-                </span>
-              </button>
-            )}
+            <button
+              className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-[16px] font-medium whitespace-nowrap text-[var(--gray-90)] sm:text-sm"
+              onClick={() => {
+                if (chatRoomId) {
+                  navigate(`/chat/${chatRoomId}/schedule`, {
+                    state: { schedule: schedule },
+                  });
+                }
+              }}
+            >
+              <Calendar size={18} className="text-[var(--gray-40)]" />
+              <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
+                {schedule && schedule.date && schedule.time
+                  ? `${formatScheduleDate(schedule.date)} ${formatScheduleTime(schedule.time)}`
+                  : "커피챗 일정 등록"}
+              </span>
+            </button>
             {schedule && (
               <button
                 className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-xs font-medium text-ellipsis whitespace-nowrap text-[var(--gray-70)] sm:text-sm"
@@ -169,7 +168,7 @@ const ChatInterestsSection = ({
               </button>
             )}
           </div>
-          {!schedule && (
+          {(!schedule || schedule === null) && (
             <div className="flex gap-2">
               <button
                 className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--gray-10)] py-2 text-sm font-medium text-[var(--gray-70)]"
@@ -193,15 +192,7 @@ const ChatInterestsSection = ({
               >
                 <Mail size={17} />
                 <span className="leading-none">
-                  {(() => {
-                    // 일정이 없을 때는 항상 "나의 요청 보기" (내가 제안할 수 있음)
-                    const buttonText = "나의 요청 보기";
-                    console.log("=== 일정 없을 때 버튼 텍스트 결정 ===");
-                    console.log("isMyRequest:", isMyRequest);
-                    console.log("버튼 텍스트:", buttonText);
-                    console.log("해석: 일정이 없으므로 내가 제안할 수 있음");
-                    return buttonText;
-                  })()}
+                  {isMyRequest ? "나의 요청 보기" : "상대 요청 보기"}
                 </span>
               </button>
             </div>

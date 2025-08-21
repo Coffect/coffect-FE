@@ -130,10 +130,17 @@ const Schedule: React.FC = () => {
       console.log("최종 날짜 객체:", dateObj);
       console.log("ISO 문자열:", dateObj.toISOString());
 
+      // 한국 시간으로 ISO 문자열 생성 (UTC 시간이 아닌 로컬 시간)
+      const koreanTimeString =
+        dateObj
+          .toLocaleString("sv-SE", { timeZone: "Asia/Seoul" })
+          .replace(" ", "T") + ".000Z";
+      console.log("한국 시간 ISO 문자열:", koreanTimeString);
+
       const scheduleData = {
-        time: dateObj.toISOString(),
+        time: koreanTimeString,
         location: form.place,
-        coffeeDate: dateObj.toISOString(),
+        coffeeDate: koreanTimeString,
       };
 
       console.log("전송할 일정 데이터:", scheduleData);
@@ -158,6 +165,8 @@ const Schedule: React.FC = () => {
 
       // fixCoffeeChatSchedule API 호출
       console.log("fixCoffeeChatSchedule API 호출 시작");
+      console.log("전송할 데이터:", { ...scheduleData, coffectId });
+
       const response = await fixCoffeeChatSchedule({
         ...scheduleData,
         coffectId,
@@ -166,6 +175,28 @@ const Schedule: React.FC = () => {
 
       if (response.resultType === "SUCCESS") {
         console.log("일정 등록 성공!");
+
+        // 일정 등록 후 즉시 getCoffeeChatSchedule 호출하여 확인
+        try {
+          const { getCoffeeChatSchedule } = await import("../../api/home");
+          const schedules = await getCoffeeChatSchedule();
+          console.log("=== 일정 등록 후 getCoffeeChatSchedule 확인 ===");
+          console.log("등록된 일정들:", schedules);
+          console.log("일정 개수:", schedules.length);
+
+          // 일정이 등록되었는지 확인
+          if (schedules.length === 0) {
+            console.log(
+              "⚠️ 경고: 일정 등록 후에도 getCoffeeChatSchedule에서 빈 배열 반환!",
+            );
+            console.log("일정 등록은 성공했지만 조회가 안 되는 상황");
+          } else {
+            console.log("✅ 일정 등록 후 조회 성공!");
+          }
+        } catch (error) {
+          console.error("일정 등록 후 확인 실패:", error);
+        }
+
         setShowComplete(true);
       } else {
         console.error("일정 등록 실패:", response.error);

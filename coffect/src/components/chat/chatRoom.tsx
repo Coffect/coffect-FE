@@ -94,7 +94,7 @@ const ChatRoom = () => {
       return;
     }
 
-    // 2. 서버에서 일정 정보 조회
+    // 2. 서버에서 일정 정보 조회 (일정이 없어도 제안 정보는 확인)
     console.log("서버에서 일정 정보 조회 시작");
     try {
       const response = await getChatRoomSchedule(chatRoomId);
@@ -112,7 +112,7 @@ const ChatRoom = () => {
           requestTime: response.success.requestTime,
         });
       } else {
-        console.log("일정 정보 없음");
+        console.log("일정 정보 없음, 제안 정보도 없음");
         setSchedule(null);
       }
     } catch (error) {
@@ -340,29 +340,30 @@ const ChatRoom = () => {
     console.log("=== chatRoom.tsx isMyRequest 계산 ===");
     console.log("schedule:", schedule);
 
-    if (!schedule) {
-      console.log("schedule이 null이므로 isMyRequest: false");
-      return false;
+    // schedule이 있으면 API에서 계산된 isMyRequest 값을 사용
+    if (schedule) {
+      console.log(
+        "schedule.isMyRequest:",
+        schedule.isMyRequest,
+        "타입:",
+        typeof schedule.isMyRequest,
+      );
+      console.log(
+        "schedule.opponentId:",
+        schedule.opponentId,
+        "타입:",
+        typeof schedule.opponentId,
+      );
+      console.log("user.id:", user?.id, "타입:", typeof user?.id);
+
+      const result = schedule.isMyRequest ?? false;
+      console.log("최종 isMyRequest:", result);
+      return result;
+    } else {
+      console.log("schedule이 null이므로 제안 정보만 확인");
+      // 일정이 없어도 제안 정보는 있을 수 있으므로 getCoffeeChatSchedule로 확인
+      return false; // 기본값은 false, 실제로는 getChatRoomSchedule에서 계산됨
     }
-
-    // API에서 계산된 isMyRequest 값을 사용
-    console.log(
-      "schedule.isMyRequest:",
-      schedule.isMyRequest,
-      "타입:",
-      typeof schedule.isMyRequest,
-    );
-    console.log(
-      "schedule.opponentId:",
-      schedule.opponentId,
-      "타입:",
-      typeof schedule.opponentId,
-    );
-    console.log("user.id:", user?.id, "타입:", typeof user?.id);
-
-    const result = schedule.isMyRequest ?? false;
-    console.log("최종 isMyRequest:", result);
-    return result;
   }, [schedule, user?.id]);
 
   useEffect(() => {
