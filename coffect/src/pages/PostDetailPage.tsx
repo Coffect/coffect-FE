@@ -24,8 +24,10 @@ import { useQuery } from "@tanstack/react-query";
 import { getProfile } from "@/api/profile";
 import type { profileType } from "@/types/mypage/profile";
 import commentImage from "@/assets/icon/community/commentImage.png";
+import { useNavigate } from "react-router-dom";
 
 const PostDetail = () => {
+  const navigate = useNavigate();
   const {
     post,
     postId: postId,
@@ -33,6 +35,7 @@ const PostDetail = () => {
     isLoading: isPostLoading,
     error: postError,
   } = usePostDetail();
+  console.log(post);
 
   const {
     comments,
@@ -44,6 +47,13 @@ const PostDetail = () => {
     queryKey: ["myProfile"],
     queryFn: getProfile,
   });
+
+  const handleAuthorClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const userId = post?.user?.id;
+    if (!userId) return;
+    navigate(`/userpage/${userId}`);
+  };
 
   if (isPostLoading || isCommentsLoading) {
     return <LoadingScreen />;
@@ -82,6 +92,7 @@ const PostDetail = () => {
             studentId: post.user.studentId,
           }}
           timeAgo={timeAgo}
+          onAuthorClick={handleAuthorClick}
         />
         <PostBody post={post} isDetailView={true} showBookmarkButton={true} />
         <div className="h-[7.3%] max-h-[6px] w-full bg-[var(--gray-5)]"></div>
