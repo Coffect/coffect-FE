@@ -88,7 +88,7 @@ const CalendarView: React.FC = () => {
                 {schedules.map((item, idx) => (
                   <div
                     key={idx}
-                    className="rounded-xl bg-[var(--gray-0)] p-4 shadow"
+                    className="rounded-xl bg-[var(--gray-0)] p-4 shadow-[0_0_2px_rgba(0,0,0,0.05)]"
                   >
                     <div className="mb-3 flex items-center justify-between">
                       <div>
