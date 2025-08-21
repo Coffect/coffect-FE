@@ -68,7 +68,7 @@ const FilterModal = ({
         </div>
         <div className="flex-grow overflow-y-auto px-6">
           <div className="flex flex-col gap-4">
-            <div>
+            <div className="flex flex-col gap-3">
               <h3 className="flex items-end text-base font-semibold">
                 글 종류 선택
                 <span className="ml-2 text-[12px] font-normal text-gray-500">
@@ -82,7 +82,7 @@ const FilterModal = ({
                 onSelect={(option) => setTempSelectedType(option.value)}
               />
             </div>
-            <div>
+            <div className="flex flex-col gap-3">
               <h3 className="flex items-end text-base font-semibold">
                 글 주제 선택
                 <span className="ml-2 text-[12px] font-normal text-gray-500">
