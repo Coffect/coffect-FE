@@ -88,19 +88,19 @@ const CalendarView: React.FC = () => {
                 {schedules.map((item, idx) => (
                   <div
                     key={idx}
-                    className="rounded-xl bg-[var(--gray-0)] p-4 shadow"
+                    className="rounded-xl bg-[var(--gray-0)] p-4 shadow-[0_0_2px_rgba(0,0,0,0.05)]"
                   >
                     <div className="mb-3 flex items-center justify-between">
                       <div>
-                        <span className="rounded-[14px] bg-[var(--gray-60)] px-2 py-1 text-sm font-medium text-[var(--gray-0)]">
+                        <span className="rounded-[14px] bg-[var(--gray-60)] px-2 py-1 text-sm font-normal text-[var(--gray-0)]">
                           {formatDate(item.coffeeDate)}
                         </span>
-                        <span className="ml-1 rounded-[14px] bg-orange-500 px-2 py-1 text-sm font-semibold text-[var(--gray-0)]">
+                        <span className="ml-1 rounded-[14px] bg-orange-500 px-2 py-1 text-sm font-normal text-[var(--gray-0)]">
                           {getTimeUntil(item.coffeeDate)}
                         </span>
                       </div>
-                      <div className="flex items-center text-sm font-medium text-[var(--gray-50)]">
-                        <Clock className="mt-0.5 mr-1 h-3 w-3 text-[var(--gray-50)]" />
+                      <div className="flex items-center text-base font-medium text-[var(--gray-50)]">
+                        <Clock className="mr-1 h-4 w-4 text-[var(--gray-50)]" />
                         {formatTime(item.coffeeDate)}
                       </div>
                     </div>
@@ -123,8 +123,8 @@ const CalendarView: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="my-1 text-sm font-medium text-[var(--gray-60)]">
-                      @{item.location}
+                    <div className="mt-2 text-sm font-medium text-[var(--gray-60)]">
+                      @ {item.location}
                     </div>
                   </div>
                 ))}

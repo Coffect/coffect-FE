@@ -156,6 +156,11 @@ export const getMessageShowUp = async (coffectId: number) => {
     throw new Error("메시지를 불러오지 못했습니다.");
   }
 };
-
+// 커피챗 수락
 export const acceptCoffeeChat = (coffectId: number) =>
   axiosInstance.patch("/home/acceptCoffeeChat", { coffectId });
+// 내가 선택한 커피챗 카테고리 가져오기
+export const getInterest = async (): Promise<number> => {
+  const { data } = await axiosInstance.get("/home/getMyInterest");
+  return data.success as number;
+};
