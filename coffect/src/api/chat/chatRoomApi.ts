@@ -237,19 +237,6 @@ export const getChatRoomSchedule = async (
       };
     }
 
-    // 4. 상대방의 string ID 가져오기 (getCoffeeChatSchedule의 opponentId와 비교하기 위해)
-    let opponentStringId: string | null = null;
-    try {
-      const { getUserStringId } = await import("../home");
-      opponentStringId = await getUserStringId(opponentUserId);
-    } catch (error) {
-      return {
-        resultType: "FAIL",
-        success: null,
-        error: { reason: "상대방 정보를 가져올 수 없습니다" },
-      };
-    }
-
     // 전체 일정 목록 가져오기
     const allSchedules = await getCoffeeChatSchedule();
 
@@ -267,57 +254,8 @@ export const getChatRoomSchedule = async (
       },
     );
 
-    // 일정이 없어도 제안 정보는 가져와보기
+    // 일정이 없으면 FAIL 반환
     if (!chatRoomSchedule) {
-      // 제안 정보만이라도 가져와보기
-      let isMyRequest = false;
-      let requestTime: string | undefined;
-      let requestMessage: string | undefined;
-
-      try {
-        // 채팅방 ID로 coffectId 조회
-        const coffectIdResponse = await getCoffectId(chatRoomId);
-
-        if (
-          coffectIdResponse.resultType === "SUCCESS" &&
-          coffectIdResponse.success
-        ) {
-          const coffectId = coffectIdResponse.success;
-
-          // getMessageShowUp API 호출
-          try {
-            const messageResponse = await getMessageShowUp(coffectId);
-
-            if (
-              messageResponse.resultType === "SUCCESS" &&
-              messageResponse.success
-            ) {
-              // 제안 메시지를 받은 시간을 requestTime에 설정
-              if (messageResponse.success.createdAt) {
-                requestTime = new Date(
-                  messageResponse.success.createdAt,
-                ).toLocaleString();
-              }
-
-              // 제안 메시지 설정
-              requestMessage = messageResponse.success.message;
-
-              // getMessageShowUp의 firstUserId로 isMyRequest 판단
-              if (messageResponse.success.firstUserId) {
-                isMyRequest =
-                  String(messageResponse.success.firstUserId) !==
-                  String(currentUserId);
-              }
-            }
-          } catch (apiError) {
-            // API 실패 시 무시
-          }
-        }
-      } catch (error) {
-        // API 실패 시 무시
-      }
-
-      // 일정이 없으면 FAIL 반환 (제안 정보가 있어도 일정이 없으면 FAIL)
       return {
         resultType: "FAIL",
         success: null,
@@ -325,12 +263,10 @@ export const getChatRoomSchedule = async (
       };
     }
 
-    // getCoffeeChatSchedule 데이터로 isMyRequest 판단
-    let isMyRequest = false;
+    // getMessageShowUp으로 isMyRequest 판단
+    let isMyRequest: boolean | undefined;
     let requestTime: string | undefined;
     let requestMessage: string | undefined;
-
-    // 제안 메시지 정보는 coffectId로 조회 (isMyRequest 판단 포함)
 
     try {
       // 채팅방 ID로 coffectId 조회
@@ -360,10 +296,10 @@ export const getChatRoomSchedule = async (
             // 제안 메시지 설정
             requestMessage = messageResponse.success.message;
 
-            // getMessageShowUp의 firstUserId로 isMyRequest 판단 (제안 보낸 상대의 숫자 ID)
+            // getMessageShowUp의 firstUserId로 isMyRequest 판단 (firstUserId는 제안을 받은 사람)
             if (messageResponse.success.firstUserId) {
-              // firstUserId가 현재 사용자와 같으면 상대가 제안한 것 (내가 받은 것)
-              // firstUserId가 현재 사용자와 다르면 내가 제안한 것
+              // firstUserId가 현재 사용자와 같으면 → 상대가 제안한 것 (내가 받은 것) → isMyRequest = false
+              // firstUserId가 현재 사용자와 다르면 → 내가 제안한 것 → isMyRequest = true
               isMyRequest =
                 String(messageResponse.success.firstUserId) !==
                 String(currentUserId);
@@ -423,7 +359,7 @@ export const getChatRoomSchedule = async (
         // opponentId 정보 추가
         opponentId: chatRoomSchedule.opponentId || null, // 상대방 ID
         // coffectId와 getMessageShowUp API로 정확하게 계산된 값
-        isMyRequest: isMyRequest,
+        isMyRequest: isMyRequest ?? false,
         // 제안 보낸 시간과 메시지 추가 (getMessageShowUp에서 가져온 createdAt과 message 사용)
         requestTime: requestTime,
         requestMessage: requestMessage,
