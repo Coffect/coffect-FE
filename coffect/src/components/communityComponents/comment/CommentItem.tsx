@@ -31,7 +31,7 @@ const CommentItem = ({ comment }: CommentItemProps) => {
       <img
         src={comment.user.profileImage || "https://via.placeholder.com/40"}
         alt={comment.user.name}
-        className="mt-0.5 h-10 w-10 rounded-full object-cover"
+        className="h-10 w-10 flex-shrink-0 rounded-full object-cover"
       />
       <div className="flex min-w-0 flex-grow flex-col">
         <div className="flex items-center gap-1.5">
