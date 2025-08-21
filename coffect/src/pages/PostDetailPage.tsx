@@ -35,7 +35,6 @@ const PostDetail = () => {
     isLoading: isPostLoading,
     error: postError,
   } = usePostDetail();
-  console.log(post);
 
   const {
     comments,
