@@ -148,17 +148,27 @@ const MyPage = () => {
                     </span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <span className="text-lg font-semibold text-[var(--gray-70)]">
+                    <button
+                      className="text-lg font-semibold text-[var(--gray-70)]"
+                      onClick={() =>
+                        navigate(`/followerList/${userInfo?.userId}`)
+                      }
+                    >
                       {formatCount(profile?.following || 0)}
-                    </span>
+                    </button>
                     <span className="text-sm text-[var(--gray-50)]">
                       팔로워
                     </span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <span className="text-lg font-semibold text-[var(--gray-70)]">
+                    <button
+                      className="text-lg font-semibold text-[var(--gray-70)]"
+                      onClick={() =>
+                        navigate(`/followingList/${userInfo?.userId}`)
+                      }
+                    >
                       {formatCount(profile?.follower || 0)}
-                    </span>
+                    </button>
                     <span className="text-sm text-[var(--gray-50)]">
                       팔로잉
                     </span>
