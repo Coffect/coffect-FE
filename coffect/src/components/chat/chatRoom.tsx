@@ -65,37 +65,59 @@ const ChatRoom = () => {
     close: closeModal,
   } = useModal();
 
-  // 일정 정보 (서버에서만 조회)
+  // 일정 정보 (일정 등록 후에만 표시)
   const [schedule, setSchedule] = useState<Schedule | null>(null);
-  const [scheduleLoading, setScheduleLoading] = useState(false);
 
   // 일정 정보 로드 함수
   const loadSchedule = useCallback(async () => {
     if (!chatRoomId) return;
 
-    // 1. location.state에서 전달받은 일정이 있으면 우선 사용
+    console.log("=== loadSchedule 디버깅 ===");
+    console.log("chatRoomId:", chatRoomId);
+    console.log("location.state?.schedule:", location.state?.schedule);
+
+    // 1. location.state에서 전달받은 일정이 있으면 우선 사용 (일정 등록 직후)
     const s = location.state?.schedule;
     if (s) {
+      console.log("location.state에서 일정 정보 사용 (일정 등록 직후)");
       setSchedule({
         date: s.date,
         time: s.time,
         place: s.place ?? "",
         alert: s.alert ?? null,
+        opponentId: null,
+        isMyRequest: false,
       });
+
+      // location.state 사용 후 클리어
+      window.history.replaceState({}, document.title);
       return;
     }
 
-    setScheduleLoading(true);
+    // 2. 서버에서 일정 정보 조회
+    console.log("서버에서 일정 정보 조회 시작");
     try {
-      // 2. 서버에서 일정 정보 조회
       const response = await getChatRoomSchedule(chatRoomId);
+      console.log("getChatRoomSchedule 응답:", response);
       if (response.resultType === "SUCCESS" && response.success) {
-        setSchedule(response.success);
+        console.log("일정 정보 설정:", response.success);
+        setSchedule({
+          date: response.success.date,
+          time: response.success.time,
+          place: response.success.place,
+          alert: response.success.alert,
+          opponentId: response.success.opponentId,
+          isMyRequest: response.success.isMyRequest,
+          requestMessage: response.success.requestMessage,
+          requestTime: response.success.requestTime,
+        });
+      } else {
+        console.log("일정 정보 없음");
+        setSchedule(null);
       }
     } catch (error) {
-      console.warn("서버에서 일정 조회 실패:", error);
-    } finally {
-      setScheduleLoading(false);
+      console.error("일정 정보 조회 실패:", error);
+      setSchedule(null);
     }
   }, [chatRoomId, location.state?.schedule]);
 
@@ -166,8 +188,6 @@ const ChatRoom = () => {
       // 1. 먼저 sendPhoto API로 S3에 업로드하여 URL 받기
       const response = await sendPhoto(chatRoomId, file);
 
-      console.log("sendPhoto API 응답:", response);
-
       if (response.success) {
         // 2. S3 URL을 받은 후 소켓으로 전송
         const s3ImageUrl = response.success as unknown as string; // 안전한 타입 단언
@@ -217,8 +237,6 @@ const ChatRoom = () => {
     (...args: unknown[]) => {
       const socketMessage = args[0] as ServerMessage;
       console.log("소켓 메시지 수신:", socketMessage);
-      console.log("메시지 내용:", socketMessage.message);
-      console.log("isPhoto:", socketMessage.isPhoto);
 
       const time = new Date(socketMessage.timestamp).toLocaleTimeString(
         "ko-KR",
@@ -316,6 +334,36 @@ const ChatRoom = () => {
 
   // 상대방의 string ID 가져오기
   const [id, setId] = useState<string | null>(null);
+
+  // 내가 제안한 것인지 상대방이 제안한 것인지 판단
+  const isMyRequest = useMemo(() => {
+    console.log("=== chatRoom.tsx isMyRequest 계산 ===");
+    console.log("schedule:", schedule);
+
+    if (!schedule) {
+      console.log("schedule이 null이므로 isMyRequest: false");
+      return false;
+    }
+
+    // API에서 계산된 isMyRequest 값을 사용
+    console.log(
+      "schedule.isMyRequest:",
+      schedule.isMyRequest,
+      "타입:",
+      typeof schedule.isMyRequest,
+    );
+    console.log(
+      "schedule.opponentId:",
+      schedule.opponentId,
+      "타입:",
+      typeof schedule.opponentId,
+    );
+    console.log("user.id:", user?.id, "타입:", typeof user?.id);
+
+    const result = schedule.isMyRequest ?? false;
+    console.log("최종 isMyRequest:", result);
+    return result;
+  }, [schedule, user?.id]);
 
   useEffect(() => {
     // 채팅방 변경 시 이전 상대방 ID 초기화
@@ -429,9 +477,8 @@ const ChatRoom = () => {
     loadMessages();
   }, [chatRoomId, userLoading, loadMessages]);
 
-  // 전체 로딩 상태 (채팅방 목록 로딩 + 프로필 클릭 로딩 + 일정 로딩)
-  const overallLoading =
-    chatRoomsLoading || isProfileLoading || scheduleLoading;
+  // 전체 로딩 상태 (채팅방 목록 로딩 + 프로필 클릭 로딩)
+  const overallLoading = chatRoomsLoading || isProfileLoading;
 
   // chatRoomId가 없거나 로딩 중일 때 LoadingScreen 표시
   if (overallLoading || !chatRoomId) {
@@ -455,6 +502,7 @@ const ChatRoom = () => {
         showInterests={showInterests}
         onToggleInterests={handleToggleInterests}
         chatRoomId={chatRoomId}
+        isMyRequest={isMyRequest}
       />
 
       {/* 팝업 모달 */}
@@ -462,10 +510,24 @@ const ChatRoom = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         opponentName={currentChatRoom?.userInfo?.name}
-        requestMessage="커피챗 제안이 도착했습니다."
-        requestTime="요청 시간 정보가 없습니다."
+        requestMessage={
+          schedule?.requestMessage || "커피챗 제안이 도착했습니다."
+        }
         availableTime={commonFreeTime}
+        isMyRequest={isMyRequest}
+        requestTime={schedule?.requestTime}
       />
+
+      {/* 디버깅용 로그 */}
+      {isModalOpen &&
+        (() => {
+          console.log("=== RequestModal 디버깅 ===");
+          console.log("schedule:", schedule);
+          console.log("schedule?.requestTime:", schedule?.requestTime);
+          console.log("schedule?.requestMessage:", schedule?.requestMessage);
+          console.log("isMyRequest:", isMyRequest);
+          return null;
+        })()}
 
       {/* 메시지 영역 */}
       <ChatMessageArea
@@ -474,6 +536,7 @@ const ChatRoom = () => {
         opponentProfileImage={currentChatRoom?.userInfo?.profileImage}
         showInterests={showInterests}
         onToggleInterests={handleToggleInterests}
+        isMyRequest={isMyRequest}
       />
 
       {/* 입력창 */}

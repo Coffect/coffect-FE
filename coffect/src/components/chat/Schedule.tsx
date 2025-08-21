@@ -94,6 +94,10 @@ const Schedule: React.FC = () => {
   // 일정 등록/수정 API 호출
   const handleScheduleSubmit = async () => {
     try {
+      console.log("=== 일정 등록 시작 ===");
+      console.log("form:", form);
+      console.log("currentChatRoomId:", currentChatRoomId);
+
       // 날짜와 시간을 ISO 문자열로 변환
       const dateObj =
         typeof form.date === "string" ? new Date(form.date) : form.date!;
@@ -106,6 +110,7 @@ const Schedule: React.FC = () => {
 
       // 시간을 24시간 형식으로 변환
       const time24Hour = formatTimeTo24Hour(form.time);
+      console.log("변환된 시간:", time24Hour);
 
       const [hours, minutes] = time24Hour.split(":").map(Number);
 
@@ -122,6 +127,8 @@ const Schedule: React.FC = () => {
       }
 
       dateObj.setHours(hours, minutes, 0, 0);
+      console.log("최종 날짜 객체:", dateObj);
+      console.log("ISO 문자열:", dateObj.toISOString());
 
       const scheduleData = {
         time: dateObj.toISOString(),
@@ -129,8 +136,12 @@ const Schedule: React.FC = () => {
         coffeeDate: dateObj.toISOString(),
       };
 
+      console.log("전송할 일정 데이터:", scheduleData);
+
       // getCoffectId API 호출
+      console.log("getCoffectId API 호출 시작");
       const coffectIdResponse = await getCoffectId(currentChatRoomId);
+      console.log("getCoffectId 응답:", coffectIdResponse);
 
       if (
         coffectIdResponse.resultType !== "SUCCESS" ||
@@ -143,14 +154,18 @@ const Schedule: React.FC = () => {
       }
 
       const coffectId = coffectIdResponse.success;
+      console.log("coffectId:", coffectId);
 
       // fixCoffeeChatSchedule API 호출
+      console.log("fixCoffeeChatSchedule API 호출 시작");
       const response = await fixCoffeeChatSchedule({
         ...scheduleData,
         coffectId,
       });
+      console.log("fixCoffeeChatSchedule 응답:", response);
 
       if (response.resultType === "SUCCESS") {
+        console.log("일정 등록 성공!");
         setShowComplete(true);
       } else {
         console.error("일정 등록 실패:", response.error);

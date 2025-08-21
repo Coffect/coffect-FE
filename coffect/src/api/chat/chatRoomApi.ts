@@ -14,7 +14,7 @@ import type {
 } from "../../types/chat";
 import axios from "axios";
 import { socketManager } from "./socketInstance";
-import { getCoffeeChatSchedule } from "../home";
+import { getCoffeeChatSchedule, getMessageShowUp } from "../home";
 import { getProfile } from "../profile";
 export const getCoffectId = async (
   chatRoomId: string,
@@ -23,7 +23,7 @@ export const getCoffectId = async (
     const response = await axiosInstance.get(
       `/chat/getCoffectId?chatRoomId=${encodeURIComponent(chatRoomId)}`,
     );
-    console.log("getCoffectId API 응답:", response.data);
+
     return response.data;
   } catch {
     return {
@@ -102,6 +102,21 @@ export const getChatMessages = async (
       `/chat?chatRoomId=${encodeURIComponent(chatRoomId)}`,
     );
 
+    // createdAt 디버깅 로그 추가
+    if (response.data.success && response.data.success.length > 0) {
+      console.log("=== createdAt 디버깅 ===");
+      console.log("채팅방 ID:", chatRoomId);
+      response.data.success.forEach((message: any, index: number) => {
+        console.log(`메시지 ${index + 1}:`, {
+          id: message.id,
+          messageBody: message.messageBody,
+          createdAt: message.createdAt,
+          createdAtType: typeof message.createdAt,
+          createdAtRaw: JSON.stringify(message.createdAt),
+        });
+      });
+    }
+
     return response.data;
   } catch (error) {
     console.error("메시지 조회 실패:", error);
@@ -147,11 +162,6 @@ export const sendPhoto = async (
 
   try {
     const response = await axiosInstance.post(url, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      maxContentLength: 2 * 1024 * 1024,
-      maxBodyLength: 2 * 1024 * 1024,
       timeout: 60000,
     });
 
@@ -159,16 +169,12 @@ export const sendPhoto = async (
     return response.data;
   } catch (error) {
     console.error("sendPhoto API 호출 실패:", error);
-    if (error && typeof error === "object" && "response" in error) {
-      const axiosError = error as {
-        response?: { status?: number; data?: unknown };
-      };
-      console.error("HTTP 상태 코드:", axiosError.response?.status);
-      console.error("응답 데이터:", axiosError.response?.data);
-    }
     throw error;
   }
 };
+
+// 중복 실행 방지를 위한 Map (chatRoomId별로 실행 상태 추적)
+const runningRequests = new Map<string, boolean>();
 
 // 채팅방별 일정 조회 (getCoffeeChatSchedule API 활용)
 export const getChatRoomSchedule = async (
@@ -180,9 +186,24 @@ export const getChatRoomSchedule = async (
     time: string;
     place: string;
     alert: string | null;
+    opponentId: number | null;
+    isMyRequest: boolean;
+    requestTime?: string;
+    requestMessage?: string;
   } | null;
   error: { reason: string } | null;
 }> => {
+  // 중복 실행 방지: 같은 채팅방에 대해 이미 실행 중인 요청이 있으면 대기
+  if (runningRequests.get(chatRoomId)) {
+    return {
+      resultType: "FAIL",
+      success: null,
+      error: { reason: "이미 실행 중인 요청이 있습니다" },
+    };
+  }
+
+  runningRequests.set(chatRoomId, true);
+
   try {
     // 1. 먼저 채팅방 정보를 가져와서 상대방의 userId를 찾기
     const chatRoomResponse = await getChatRoomList();
@@ -257,18 +278,161 @@ export const getChatRoomSchedule = async (
       };
     }
 
-    // 일정 정보를 Schedule 형식으로 변환
-    const coffeeDate = new Date(chatRoomSchedule.coffeeDate);
+    // 찾은 일정 정보 상세 로그
+    console.log("=== 찾은 일정 정보 상세 ===");
+    console.log("chatRoomSchedule:", chatRoomSchedule);
+    console.log("coffeeDate 원본값:", chatRoomSchedule.coffeeDate);
+    console.log("coffeeDate 타입:", typeof chatRoomSchedule.coffeeDate);
+    console.log(
+      "coffeeDate JSON:",
+      JSON.stringify(chatRoomSchedule.coffeeDate),
+    );
 
-    const dateStr = coffeeDate.toLocaleDateString("ko-KR", {
-      month: "long",
-      day: "numeric",
-    });
-    const timeStr = coffeeDate.toLocaleTimeString("ko-KR", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false, // 24시간제 사용
-    });
+    // Date 객체로 변환 시도
+    try {
+      const testDate = new Date(chatRoomSchedule.coffeeDate);
+      console.log("new Date(coffeeDate) 결과:", testDate);
+      console.log("Date 객체 유효성:", !isNaN(testDate.getTime()));
+      console.log("Date 객체 시간대:", testDate.toISOString());
+    } catch (error) {
+      console.log("Date 객체 변환 실패:", error);
+    }
+
+    // getCoffeeChatSchedule 데이터로 isMyRequest 판단
+    let isMyRequest = false;
+    let requestTime: string | undefined;
+    let requestMessage: string | undefined;
+
+    // 제안 메시지 정보는 coffectId로 조회
+    try {
+      // 채팅방 ID로 coffectId 조회
+      const coffectIdResponse = await getCoffectId(chatRoomId);
+
+      if (
+        coffectIdResponse.resultType === "SUCCESS" &&
+        coffectIdResponse.success
+      ) {
+        const coffectId = coffectIdResponse.success;
+
+        // getMessageShowUp API 호출
+        try {
+          const messageResponse = await getMessageShowUp(coffectId);
+
+          if (
+            messageResponse.resultType === "SUCCESS" &&
+            messageResponse.success
+          ) {
+            // 제안 메시지를 받은 시간을 requestTime에 설정
+            if (messageResponse.success.createdAt) {
+              requestTime = new Date(
+                messageResponse.success.createdAt,
+              ).toLocaleString();
+            }
+
+            // 제안 메시지 설정
+            requestMessage = messageResponse.success.message;
+
+            // getMessageShowUp에서 제안자 정보를 가져와서 isMyRequest 판단
+            console.log("=== getMessageShowUp 응답 전체 ===");
+            console.log("messageResponse.success:", messageResponse.success);
+
+            if (messageResponse.success.firstUserId) {
+              // firstUserId는 제안을 받은 사람의 ID
+              // firstUserId !== currentUserId이면 내가 제안한 것 (상대방이 받음)
+              isMyRequest =
+                String(messageResponse.success.firstUserId) !==
+                String(currentUserId);
+
+              console.log("=== getMessageShowUp으로 isMyRequest 판단 ===");
+              console.log(
+                "firstUserId (제안받은 사람):",
+                messageResponse.success.firstUserId,
+                "타입:",
+                typeof messageResponse.success.firstUserId,
+              );
+              console.log(
+                "currentUserId:",
+                currentUserId,
+                "타입:",
+                typeof currentUserId,
+              );
+              console.log(
+                "String(firstUserId):",
+                String(messageResponse.success.firstUserId),
+              );
+              console.log("String(currentUserId):", String(currentUserId));
+              console.log(
+                "비교 결과 (firstUserId !== currentUserId):",
+                String(messageResponse.success.firstUserId) !==
+                  String(currentUserId),
+              );
+              console.log("최종 isMyRequest:", isMyRequest);
+              console.log(
+                "해석: firstUserId가 현재 사용자와 다르면 내가 제안한 것 (상대방이 받음)",
+              );
+            } else {
+              console.log("=== firstUserId가 없음 ===");
+              console.log(
+                "messageResponse.success.firstUserId:",
+                messageResponse.success.firstUserId,
+              );
+              console.log("firstUserId가 없어서 opponentId로 판단");
+
+              // firstUserId가 없으면 opponentId로 판단
+              isMyRequest =
+                String(chatRoomSchedule.opponentId) !== String(currentUserId);
+              console.log("opponentId로 판단한 isMyRequest:", isMyRequest);
+            }
+          }
+        } catch (apiError) {
+          // API 실패 시에도 기본값 설정
+          requestTime = "제안 시간 정보를 불러올 수 없습니다.";
+          requestMessage = "제안 메시지를 불러올 수 없습니다.";
+
+          // getMessageShowUp 실패 시 opponentId로 판단
+          isMyRequest =
+            String(chatRoomSchedule.opponentId) !== String(currentUserId);
+          console.log("getMessageShowUp 실패, opponentId로 판단:", isMyRequest);
+        }
+      }
+    } catch (error) {
+      // 실패 시 기본값 설정
+      requestTime = "제안 시간 정보를 불러올 수 없습니다.";
+      requestMessage = "제안 메시지를 불러올 수 없습니다.";
+
+      // 모든 API 실패 시 opponentId로 판단
+      isMyRequest =
+        String(chatRoomSchedule.opponentId) !== String(currentUserId);
+      console.log("모든 API 실패, opponentId로 판단:", isMyRequest);
+    }
+
+    // 서버 응답을 그대로 사용 (변환하지 않음)
+    let dateStr = chatRoomSchedule.coffeeDate;
+    let timeStr = "";
+
+    // 만약 서버에서 날짜와 시간을 분리해서 보내주지 않는다면 변환
+    if (typeof chatRoomSchedule.coffeeDate === "string") {
+      try {
+        const coffeeDate = new Date(chatRoomSchedule.coffeeDate);
+
+        if (!isNaN(coffeeDate.getTime())) {
+          dateStr = coffeeDate.toLocaleDateString("ko-KR", {
+            month: "long",
+            day: "numeric",
+          });
+
+          timeStr = coffeeDate.toLocaleTimeString("ko-KR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false, // 24시간제 사용
+          });
+        } else {
+          console.log("유효하지 않은 날짜 형식, 서버 응답 그대로 사용");
+        }
+      } catch (error) {
+        console.log("날짜 변환 실패, 서버 응답 그대로 사용:", error);
+      }
+    }
 
     return {
       resultType: "SUCCESS",
@@ -277,6 +441,13 @@ export const getChatRoomSchedule = async (
         time: timeStr,
         place: chatRoomSchedule.location,
         alert: "5분 전", // 기본값
+        // opponentId 정보 추가
+        opponentId: chatRoomSchedule.opponentId || null, // 상대방 ID
+        // coffectId와 getMessageShowUp API로 정확하게 계산된 값
+        isMyRequest: isMyRequest,
+        // 제안 보낸 시간과 메시지 추가 (getMessageShowUp에서 가져온 createdAt과 message 사용)
+        requestTime: requestTime,
+        requestMessage: requestMessage,
       },
       error: null,
     };
@@ -287,5 +458,8 @@ export const getChatRoomSchedule = async (
       success: null,
       error: { reason: "채팅방 일정 조회에 실패했습니다" },
     };
+  } finally {
+    // 실행 상태 해제
+    runningRequests.delete(chatRoomId);
   }
 };

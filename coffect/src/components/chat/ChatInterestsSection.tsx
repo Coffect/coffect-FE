@@ -12,6 +12,8 @@ interface Schedule {
   time: string;
   place?: string;
   alert?: string | null;
+  opponentId?: number | null; // 상대방 ID
+  isMyRequest?: boolean; // 내가 제안한 것인지 여부
 }
 
 interface ChatInterestsSectionProps {
@@ -21,7 +23,7 @@ interface ChatInterestsSectionProps {
   showInterests: boolean;
   onToggleInterests: () => void;
   chatRoomId?: string;
-  isMyRequest?: boolean; // 내가 보낸 제안인지 여부
+  isMyRequest: boolean; // 내가 보낸 제안인지 여부
 }
 
 const ChatInterestsSection = ({
@@ -31,9 +33,20 @@ const ChatInterestsSection = ({
   showInterests,
   onToggleInterests,
   chatRoomId,
-  isMyRequest = false,
+  isMyRequest,
 }: ChatInterestsSectionProps) => {
   const navigate = useNavigate();
+
+  // isMyRequest 디버깅 로그
+  console.log("=== ChatInterestsSection isMyRequest 디버깅 ===");
+  console.log("isMyRequest prop:", isMyRequest, "타입:", typeof isMyRequest);
+  console.log("schedule:", schedule);
+  console.log(
+    "schedule?.isMyRequest:",
+    schedule?.isMyRequest,
+    "타입:",
+    typeof schedule?.isMyRequest,
+  );
 
   const formatScheduleDate = (date: string | Date) => {
     let dateObj: Date;
@@ -63,6 +76,35 @@ const ChatInterestsSection = ({
         day: "numeric",
       })
       .replace(/ /g, "\u00A0");
+  };
+
+  // 시간 형식 개선
+  const formatScheduleTime = (time: string) => {
+    if (!time) return "";
+
+    // 이미 적절한 형식인 경우 그대로 반환
+    if (time.includes(":") && (time.includes("시") || time.includes("분"))) {
+      return time;
+    }
+
+    // ISO 시간 문자열인 경우 변환
+    if (time.includes("T") || time.includes(":")) {
+      try {
+        const timeObj = new Date(`2000-01-01T${time}`);
+        if (!isNaN(timeObj.getTime())) {
+          return timeObj.toLocaleTimeString("ko-KR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          });
+        }
+      } catch (error) {
+        console.log("시간 변환 실패:", error);
+      }
+    }
+
+    // 변환할 수 없는 경우 그대로 반환
+    return time;
   };
 
   return (
@@ -102,7 +144,8 @@ const ChatInterestsSection = ({
               >
                 <Calendar size={18} className="text-[var(--gray-40)]" />
                 <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
-                  {formatScheduleDate(schedule.date)} {schedule.time}
+                  {formatScheduleDate(schedule.date)}{" "}
+                  {formatScheduleTime(schedule.time)}
                 </span>
               </button>
             )}
@@ -113,7 +156,15 @@ const ChatInterestsSection = ({
               >
                 <Mail size={16} className="text-[var(--gray-40)]" />
                 <span className="block overflow-hidden text-[16px] font-medium whitespace-nowrap">
-                  {isMyRequest ? "상대 요청 보기" : "나의 요청 보기"}
+                  {(() => {
+                    const buttonText = isMyRequest
+                      ? "나의 요청 보기"
+                      : "상대 요청 보기";
+                    console.log("=== 일정 있을 때 버튼 텍스트 결정 ===");
+                    console.log("isMyRequest:", isMyRequest);
+                    console.log("버튼 텍스트:", buttonText);
+                    return buttonText;
+                  })()}
                 </span>
               </button>
             )}
@@ -142,7 +193,15 @@ const ChatInterestsSection = ({
               >
                 <Mail size={17} />
                 <span className="leading-none">
-                  {isMyRequest ? "상대 요청 보기" : "나의 요청 보기"}
+                  {(() => {
+                    // 일정이 없을 때는 항상 "나의 요청 보기" (내가 제안할 수 있음)
+                    const buttonText = "나의 요청 보기";
+                    console.log("=== 일정 없을 때 버튼 텍스트 결정 ===");
+                    console.log("isMyRequest:", isMyRequest);
+                    console.log("버튼 텍스트:", buttonText);
+                    console.log("해석: 일정이 없으므로 내가 제안할 수 있음");
+                    return buttonText;
+                  })()}
                 </span>
               </button>
             </div>

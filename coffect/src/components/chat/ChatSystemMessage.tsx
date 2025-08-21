@@ -13,8 +13,8 @@ export const ChatSystemMessage = ({
   isMyRequest = false,
 }: ChatSystemMessageProps) => {
   const message = isMyRequest
-    ? `${username}님의 제안을 수락했어요!`
-    : `${username}님이 제안을 수락했어요!`;
+    ? `${username}님이 제안을 수락했어요!`
+    : `${username}님의 제안을 수락했어요!`;
 
   return (
     <div className="flex justify-center" role="status" aria-live="polite">

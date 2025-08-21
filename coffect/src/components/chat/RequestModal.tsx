@@ -12,9 +12,9 @@ interface RequestModalProps {
   onClose: () => void;
   opponentName?: string; // 상대방 이름
   requestMessage?: string; // 상대방의 요청 메시지
-  requestTime?: string; // 요청 시간
   availableTime?: string; // 상대방의 가능한 시간
   isMyRequest?: boolean; // 내가 보낸 제안인지 여부
+  requestTime?: string; // 제안 보낸 시간
 }
 
 const RequestModal = ({
@@ -22,11 +22,18 @@ const RequestModal = ({
   onClose,
   opponentName = "상대방",
   requestMessage = "상대방의 요청 메시지가 없습니다.",
-  requestTime = "요청 시간 정보가 없습니다.",
   availableTime = "가능한 시간 정보가 없습니다.",
   isMyRequest = false,
+  requestTime,
 }: RequestModalProps) => {
   if (!isOpen) return null;
+
+  // 디버깅용 로그
+  console.log("=== RequestModal Props 디버깅 ===");
+  console.log("isMyRequest:", isMyRequest);
+  console.log("requestTime:", requestTime);
+  console.log("requestMessage:", requestMessage);
+  console.log("opponentName:", opponentName);
 
   // 시간표 데이터를 파싱해서 공강시간만 표시하는 함수
   const formatAvailableTime = (timeData: string): string => {
@@ -65,14 +72,14 @@ const RequestModal = ({
         >
           <X size={24} className="max-[340px]:h-4 max-[340px]:w-4" />
         </button>
-        <div className="mb-4 text-sm font-medium text-[var(--gray-30)] max-[340px]:text-xs">
+        <div className="mb-4 text-sm font-medium text-[var(--gray-30)] max-[320px]:text-xs">
           {requestTime}
         </div>
-        <div className="flex items-center gap-2 text-base font-semibold max-[340px]:text-xs">
-          <span className="text-[20px] max-[340px]:text-[16px]">✉️</span>
-          {isMyRequest ? `${opponentName}님의 메시지` : "나의 메시지"}
+        <div className="flex items-center gap-2 text-base font-semibold max-[320px]:text-xs">
+          <span className="text-[20px] max-[320px]:text-[16px]">✉️</span>
+          {isMyRequest ? `나의 메시지` : `${opponentName}님의 메시지`}
         </div>
-        <div className="mb-4 border-b border-[var(--gray-10)] py-3 text-[14px] font-medium text-[var(--gray-70)] max-[340px]:py-3 max-[340px]:text-xs">
+        <div className="mb-4 border-b border-[var(--gray-10)] py-3 text-[14px] font-medium text-[var(--gray-70)] max-[320px]:py-3 max-[320px]:text-xs">
           {requestMessage}
         </div>
         <div className="mt-4 mb-2 flex items-center gap-2 text-base font-semibold max-[340px]:text-xs">
