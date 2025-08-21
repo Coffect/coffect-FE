@@ -5,10 +5,12 @@ description : 상단 네비게이션 바 컴포넌트입니다.
 */
 
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { CalendarDays, Bell, ChevronLeft } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { ChevronLeft } from "lucide-react";
 import LogoImage from "../../assets/icon/home/Logo.png";
 import { getUnreadCount } from "@/api/alert";
+import AlarmImage from "../../assets/icon/home/alert.png";
+import CalenderImage from "../../assets/icon/home/calender.png";
 
 /*
   props.pageType : 'home' | 'calendar' | 'alarm' 형태로 받아 상황에 따라 상단바를 다르게 표시합니다.
@@ -64,19 +66,30 @@ const TopNavbar = ({ pageType }: TopNavbarProps) => {
           <img src={LogoImage} alt="로고" className="mt-1 h-5.5" />
 
           {/* 우측 아이콘: 캘린더, 알림 */}
-          <div className="flex items-center gap-[1rem]">
-            <CalendarDays
-              className={iconClass}
-              onClick={() => navigate("/calendar")}
-            />
+          <div className="flex items-center space-x-2">
+            <Link to="/calendar" className="inline-block">
+              <img
+                src={CalenderImage}
+                alt="캘린더 보기"
+                className="h-auto w-[28px] cursor-pointer object-contain select-none"
+                title="캘린더로 이동"
+              />
+            </Link>
 
             {/* 알림 아이콘 + 빨간 점 */}
-            <div className="relative">
-              <Bell className={iconClass} onClick={() => navigate("/alarm")} />
+            <div className="relative mt-2">
+              <Link to="/alarm" className="inline-block">
+                <img
+                  src={AlarmImage}
+                  alt="캘린더 보기"
+                  className="h-auto w-[28px] cursor-pointer object-contain select-none"
+                  title="캘린더로 이동"
+                />
+              </Link>
               {unread > 0 && (
                 <span
                   aria-label="읽지 않은 알림"
-                  className="absolute -top-1 -right-1 h-3 w-3 rounded-full border-2 border-[var(--gray-5)] bg-[var(--noti)]"
+                  className="absolute -top-[0.5px] -right-0 h-2 w-2 rounded-full border-2 border-[var(--gray-5)] bg-[var(--noti)]"
                 />
               )}
             </div>

@@ -50,8 +50,8 @@ const CoffeeCategoryGrid: React.FC = () => {
   });
 
   const categories = [
-    { label: "가까운\n거리 순", value: 1, image: choose1Image },
-    { label: "나와\n관심사가\n비슷한", value: 2, image: choose2Image },
+    { label: "나와 관심사가\n비슷한", value: 1, image: choose1Image },
+    { label: "승락률이\n높은", value: 2, image: choose2Image },
     { label: "나와\n 같은 학번", value: 3, image: choose3Image },
     { label: "요즘\n글을 많이 쓴", value: 4, image: choose4Image },
   ];
@@ -74,9 +74,10 @@ const CoffeeCategoryGrid: React.FC = () => {
       </div>
 
       {/* 2x2 그리드 버튼 */}
-      <div className="mt-[4%] grid grid-cols-2 gap-[12px] px-[2%]">
+      <div className="mt-[4%] grid grid-cols-2 gap-[12px] px-[3%]">
         {categories.map(({ label, value, image }, idx) => {
-          const imageWidth = ["w-[32%]", "w-[36%]", "w-[50%]", "w-[45%]"][idx];
+          const imageWidth = ["w-[32%]", "w-[40%]", "w-[55%]", "w-[50%]"][idx];
+          const imageMt = ["mt-[12%]", "mt-[12%]", "mt-[15%]", "mt-[8%]"][idx];
           return (
             <button
               key={value}
@@ -86,7 +87,7 @@ const CoffeeCategoryGrid: React.FC = () => {
               <img
                 src={image}
                 alt="카테고리 이미지"
-                className={`mx-auto mt-[5%] mb-[10%] h-auto ${imageWidth}`}
+                className={`mx-auto ${imageMt} h-auto ${imageWidth}`}
               />
               <span className="text-left whitespace-pre-line">{label}</span>
             </button>

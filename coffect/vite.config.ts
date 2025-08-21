@@ -19,16 +19,20 @@ export default defineConfig(() => {
       VitePWA({
         strategies: "injectManifest", // Workbox가 src/sw.ts를 빌드에 포함
         srcDir: "src",
-        filename: "sw.ts", // 최종 서비스워커 파일명
+        filename: "sw.js", // 최종 서비스워커 파일명
         injectRegister: null, // index.html 자동 등록 비활성화
         devOptions: { enabled: false }, // 개발 모드에서는 PWA 기능 비활성화 (fcm 배너 개발 시에만 true로 설정할 것)
         manifest: {
           name: "Coffect",
           short_name: "Coffect",
           start_url: "/",
+          scope: "/",
           display: "standalone",
           background_color: "#ffffff",
           theme_color: "#ffffff",
+          // @ts-expect-error: Android PWA FCM을 위한 비표준 필드
+          gcm_sender_id: "103953800507",
+
           icons: [
             {
               src: "/icons/pwa-192.png",
@@ -37,10 +41,10 @@ export default defineConfig(() => {
               purpose: "any",
             },
             {
-              src: "/icons/pwa-522.png",
-              sizes: "522x522",
+              src: "/icons/pwa-512.png",
+              sizes: "512x512",
               type: "image/png",
-              purpose: "any",
+              purpose: "any maskable",
             },
           ],
         },
