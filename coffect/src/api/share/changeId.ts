@@ -1,0 +1,16 @@
+import type { getChangeIdResponse } from "@/types/share/changeId";
+import { axiosInstance } from "../axiosInstance";
+
+export const getChangeId = async (
+  userId: number,
+): Promise<getChangeIdResponse> => {
+  try {
+    const res = await axiosInstance.post<getChangeIdResponse>("/profile/id", {
+      userId: userId,
+    });
+    return res.data;
+  } catch (error) {
+    console.error("API 호출 중 에러 발생:", error);
+    throw Error("팔로우 여부를 확인할 수 없습니다. 다시 시도해주세요.");
+  }
+};

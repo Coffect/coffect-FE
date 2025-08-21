@@ -12,14 +12,39 @@ import followZero from "@/assets/icon/shareComponents/followZero.png";
 import { useQuery } from "@tanstack/react-query";
 import type { profileType } from "@/types/mypage/profile";
 import { getProfile } from "@/api/profile";
+import { useEffect, useState } from "react";
+import { getChangeId } from "@/api/share/changeId";
+import { getUserNameById } from "@/api/home";
 
 const FollowerPage = () => {
   const { userId } = useParams<{ userId: string }>();
   const Id = Number(userId);
+  const [userName, setUserName] = useState("");
+  const [isFetchingUserName, setIsFetchingUserName] = useState(true);
 
   const { data, isPending, isFetchingNextPage } = useFollowerListQuery({
     oppentUserId: Id,
   });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userIdData = await getChangeId(Id);
+        console.log("userIdData", userIdData);
+        if (userIdData.success) {
+          const newUserName = await getUserNameById(userIdData.success.id);
+          setUserName(newUserName);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsFetchingUserName(false);
+      }
+    };
+    if (Id) {
+      fetchData();
+    }
+  }, [Id]);
 
   const { data: followCountData } = useFollowCountQuery({ userId: Id });
   const followerCount = followCountData?.success?.[1];
@@ -37,7 +62,7 @@ const FollowerPage = () => {
   if (isPending) {
     return (
       <div>
-        <FollowHeader follow="Follower" count={followerCount} />
+        <FollowHeader follow="Follower" count={0} myId="Coffect.." />
         <FollowingListSkeleton />
       </div>
     );
@@ -48,7 +73,11 @@ const FollowerPage = () => {
   if (users.length === 0) {
     return (
       <div className="flex min-h-screen flex-col">
-        <FollowHeader follow="Follower" count={followerCount} />
+        <FollowHeader
+          follow="Follower"
+          count={followerCount}
+          myId={isFetchingUserName ? "Coffect.." : userName}
+        />
         <div className="flex flex-1 flex-col items-center justify-center gap-3.5">
           <div className="text-xl font-bold text-[var(--gray-90)]">
             아직 팔로워가 없어요
@@ -63,7 +92,11 @@ const FollowerPage = () => {
 
   return (
     <div>
-      <FollowHeader follow="Follower" count={followerCount} />
+      <FollowHeader
+        follow="Follower"
+        count={followerCount}
+        myId={isFetchingUserName ? "Coffect.." : userName}
+      />
       <div className="flex flex-col items-center px-4">
         <FollowList users={users} myUserId={myUserId} />
         {isFetchingNextPage && <FollowItemSkeleton />}
