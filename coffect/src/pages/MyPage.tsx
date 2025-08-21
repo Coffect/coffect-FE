@@ -147,32 +147,32 @@ const MyPage = () => {
                       포스트
                     </span>
                   </div>
-                  <div className="flex flex-col items-center">
-                    <button
-                      className="text-lg font-semibold text-[var(--gray-70)]"
-                      onClick={() =>
-                        navigate(`/followerList/${userInfo?.userId}`)
-                      }
-                    >
+                  <button
+                    className="flex flex-col items-center"
+                    onClick={() =>
+                      navigate(`/followerList/${userInfo?.userId}`)
+                    }
+                  >
+                    <span className="text-lg font-semibold text-[var(--gray-70)]">
                       {formatCount(profile?.following || 0)}
-                    </button>
+                    </span>
                     <span className="text-sm text-[var(--gray-50)]">
                       팔로워
                     </span>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <button
-                      className="text-lg font-semibold text-[var(--gray-70)]"
-                      onClick={() =>
-                        navigate(`/followingList/${userInfo?.userId}`)
-                      }
-                    >
+                  </button>
+                  <button
+                    className="flex flex-col items-center"
+                    onClick={() =>
+                      navigate(`/followingList/${userInfo?.userId}`)
+                    }
+                  >
+                    <span className="text-lg font-semibold text-[var(--gray-70)]">
                       {formatCount(profile?.follower || 0)}
-                    </button>
+                    </span>
                     <span className="text-sm text-[var(--gray-50)]">
                       팔로잉
                     </span>
-                  </div>
+                  </button>
                 </div>
               </div>
             </div>
