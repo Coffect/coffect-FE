@@ -45,18 +45,9 @@ const ChatRoom = () => {
   const navigate = useNavigate();
 
   const chatRoomId = (() => {
-    // /chat/{chatRoomId} 형태에서 chatRoomId 추출
-    const pathParts = location.pathname.split("/");
-    if (pathParts.length >= 3 && pathParts[1] === "chat") {
-      // /schedule이 포함된 경우 제거
-      const chatRoomIdParts = pathParts.slice(2);
-      const scheduleIndex = chatRoomIdParts.indexOf("schedule");
-      if (scheduleIndex !== -1) {
-        return chatRoomIdParts.slice(0, scheduleIndex).join("/");
-      }
-      return chatRoomIdParts.join("/");
-    }
-    return "";
+    const path = window.location.pathname; // "/chat/38YXqE8iBZhfqwC5qcw4HzhfJaMl89TwWsWn9CqSOHQ="
+    const segments = path.split("/"); // ["", "chat", "38YXqE8iBZhfqwC5qcw4HzhfJaMl89TwWsWn9CqSOHQ="]
+    return segments[2] || ""; // segments[2]가 chatRoomId
   })();
   const [isProfileLoading, setIsProfileLoading] = useState(false);
 
@@ -116,6 +107,14 @@ const ChatRoom = () => {
     }
   }, [chatRoomId, location.state?.schedule]);
 
+  // 채팅방 목록에서 현재 채팅방 정보 가져오기
+  const {
+    chatRooms,
+    isLoading: chatRoomsLoading,
+    loadChatRooms,
+    markChatRoomAsRead,
+  } = useChatRooms();
+
   // 일정 정보 로드
   useEffect(() => {
     loadSchedule();
@@ -127,6 +126,10 @@ const ChatRoom = () => {
       markChatAsRead(chatRoomId)
         .then((response) => {
           console.log("메시지 읽음 처리 성공:", response);
+          // 읽음 처리 성공 시 채팅방 목록에서 빨간점 제거
+          if (response.resultType === "SUCCESS") {
+            markChatRoomAsRead(chatRoomId);
+          }
         })
         .catch((error) => {
           console.error("메시지 읽음 처리 실패:", error);
@@ -138,14 +141,7 @@ const ChatRoom = () => {
           });
         });
     }
-  }, [chatRoomId]);
-
-  // 채팅방 목록에서 현재 채팅방 정보 가져오기
-  const {
-    chatRooms,
-    isLoading: chatRoomsLoading,
-    loadChatRooms,
-  } = useChatRooms();
+  }, [chatRoomId, markChatRoomAsRead]);
   const currentChatRoom = useMemo(() => {
     const foundRoom = chatRooms.find((room) => room.chatroomId === chatRoomId);
     return foundRoom;

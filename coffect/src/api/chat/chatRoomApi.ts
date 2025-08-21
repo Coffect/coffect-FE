@@ -130,7 +130,8 @@ export const markChatAsRead = async (
   chatRoomId: string,
 ): Promise<MarkAsReadResponse> => {
   const response = await axiosInstance.patch(
-    `/chat/read?chatRoomId=${encodeURIComponent(chatRoomId)}`,
+    `/chat/read`,
+    { chatRoomId }, // body에 chatRoomId 전달
   );
   return response.data;
 };

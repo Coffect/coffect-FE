@@ -6,22 +6,50 @@
 
 import BottomNavbar from "../components/shareComponents/BottomNavbar";
 import LoadingScreen from "../components/shareComponents/LoadingScreen";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import EmptyChatList from "../assets/icon/chat/EmptyChatList.png";
 import ChatRoomList from "../components/chat/ChatRoomList";
 
 import { useChatRooms } from "../hooks/chat";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const Chat = () => {
-  const { chatRooms, isLoading, loadChatRooms } = useChatRooms();
+  const { chatRooms, isLoading, loadChatRooms, refreshChatRooms } =
+    useChatRooms();
   const navigate = useNavigate();
+  const location = useLocation();
+  const prevLocationRef = useRef(location.pathname);
 
   useEffect(() => {
     if (!isLoading && chatRooms.length === 0) {
       loadChatRooms();
     }
   }, [isLoading, chatRooms.length, loadChatRooms]);
+
+  // 라우트 변경 감지 (채팅방에서 뒤로가기 등)
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const prevPath = prevLocationRef.current;
+
+    // 채팅방에서 채팅 목록으로 돌아온 경우 (뒤로가기)
+    if (prevPath.startsWith("/chat/") && currentPath === "/chat") {
+      refreshChatRooms();
+    }
+
+    prevLocationRef.current = currentPath;
+  }, [location.pathname, refreshChatRooms]);
+
+  // 페이지가 포커스될 때 채팅방 목록 새로고침
+  useEffect(() => {
+    const handleFocus = () => {
+      refreshChatRooms();
+    };
+
+    window.addEventListener("focus", handleFocus);
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [refreshChatRooms]);
 
   if (isLoading) {
     return <LoadingScreen />;

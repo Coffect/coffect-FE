@@ -9,8 +9,8 @@ import { SOCKET_EVENTS, type SocketMessage } from "../../types/chat";
 class SocketManager {
   private socket: Socket | null = null;
   private isConnected = false;
-  private reconnectAttempts = 0;
-  private maxReconnectAttempts = 5; // 최대 재연결 시도 횟수
+  private reconnectAttempts = 10;
+  private maxReconnectAttempts = 10; // 최대 재연결 시도 횟수
 
   // Socket 연결
   connect(token?: string) {
@@ -60,12 +60,6 @@ class SocketManager {
         reason === "io server disconnect" ||
         reason === "io client disconnect"
       ) {
-        // 서버나 클라이언트에서 의도적으로 연결을 끊은 경우
-        console.log("의도적인 연결 해제로 재연결하지 않습니다.");
-        this.reconnectAttempts = 0; // 의도적 해제 시 재연결 시도 횟수 초기화
-      } else {
-        // 네트워크 오류 등으로 인한 연결 해제 시 재연결 시도
-        console.log("네트워크 오류로 인한 연결 해제, 재연결을 시도합니다.");
         this.attemptReconnect();
       }
     });

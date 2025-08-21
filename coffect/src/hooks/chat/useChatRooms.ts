@@ -14,6 +14,8 @@ interface UseChatRoomsReturn {
   chatRooms: ChatRoomWithUser[];
   isLoading: boolean;
   loadChatRooms: () => Promise<void>;
+  markChatRoomAsRead: (chatRoomId: string) => void;
+  refreshChatRooms: () => Promise<void>;
 }
 
 export const useChatRooms = (): UseChatRoomsReturn => {
@@ -100,6 +102,23 @@ export const useChatRooms = (): UseChatRoomsReturn => {
     }
   }, []);
 
+  // 채팅방 읽음 상태 업데이트
+  const markChatRoomAsRead = useCallback((chatRoomId: string) => {
+    setChatRooms((prevChatRooms) =>
+      prevChatRooms.map((chatRoom) =>
+        chatRoom.chatroomId === chatRoomId
+          ? { ...chatRoom, check: true }
+          : chatRoom,
+      ),
+    );
+  }, []);
+
+  // 채팅방 목록 새로고침 (서버에서 최신 상태 가져오기)
+  const refreshChatRooms = useCallback(async () => {
+    hasLoadedRef.current = false; // 다시 로드 가능하도록 플래그 리셋
+    await loadChatRooms();
+  }, [loadChatRooms]);
+
   // 언마운트 시 가드 설정
   useEffect(() => {
     return () => {
@@ -111,5 +130,7 @@ export const useChatRooms = (): UseChatRoomsReturn => {
     chatRooms,
     isLoading,
     loadChatRooms,
+    markChatRoomAsRead,
+    refreshChatRooms,
   };
 };
