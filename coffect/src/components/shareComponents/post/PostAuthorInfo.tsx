@@ -38,14 +38,14 @@ const PostAuthorInfo: React.FC<PostAuthorInfoProps> = ({
           className="mr-2 h-15 w-15 rounded-full object-cover"
         />
         <div className="flex flex-col">
-          <div className="mb-1">
+          <div className="">
             {/* user.nickname 대신 user.name을 사용합니다. */}
             <h3 className="text-[16px] font-semibold text-black">
               {user.name}
             </h3>
           </div>
           <div>
-            <div className="mb-1">
+            <div className="">
               <p className="text-[12px] text-gray-500">
                 {user.dept} {String(user.studentId).substring(2, 4)}학번
               </p>

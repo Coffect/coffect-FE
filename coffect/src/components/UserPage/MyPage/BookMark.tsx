@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import FeedItem from "../../shareComponents/FeedItem";
 import { useQuery } from "@tanstack/react-query";
-import { getBookMark, getProfile } from "@/api/profile";
+import { getBookMark } from "@/api/profile";
 import LoadingScreen from "@/components/shareComponents/LoadingScreen";
 import { useInView } from "react-intersection-observer";
 
@@ -12,11 +12,6 @@ import FeedListSkeleton from "@/components/communityComponents/feed/FeedListSkel
 
 const BookMark = () => {
   const navigate = useNavigate();
-
-  const { data: profileData, isLoading: isProfileLoading } = useQuery({
-    queryKey: ["profile"],
-    queryFn: () => getProfile(),
-  });
 
   const { data: bookMarkData, isLoading: isBookMarkLoading } = useQuery({
     queryKey: ["bookMark"],
@@ -52,7 +47,7 @@ const BookMark = () => {
     );
   }, [inView, visibleCount, sortedBookMarkPosts.length]);
 
-  if (isProfileLoading || isBookMarkLoading) {
+  if (isBookMarkLoading) {
     return <LoadingScreen />;
   }
 
@@ -88,11 +83,7 @@ const BookMark = () => {
               <FeedItem
                 key={post.threadId}
                 post={post}
-                showFollowButton={
-                  profileData?.success?.userInfo.id === post.user.id
-                    ? false
-                    : true
-                }
+                showFollowButton={false}
                 showBookmarkButton={true}
               />
             ))}

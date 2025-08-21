@@ -325,20 +325,18 @@ const ProfileFlip: React.FC<ProfileFlipProps> = ({ onLoadingChange }) => {
           </div>
         </div>
         {/* 하단 태그 + 소개 */}
-        <div className="flex flex-wrap px-[2%] pt-[3%] pb-[1%]">
+        <div className="flex flex-wrap gap-x-[2%] gap-y-[2%] px-[4%] pt-[3%] pb-[1%]">
           {currentCard.tags.map((tag, idx) => (
             <span
               key={idx}
-              className={`mr-[2%] mb-[2%] rounded-[7px] px-[3.5%] py-[1.5%] text-sm font-medium ${getTagColor(
-                tag,
-              )}`}
+              className={`inline-flex items-center rounded-[7px] px-[3.5%] py-[2%] text-sm leading-none font-medium break-keep whitespace-nowrap ${getTagColor(tag)}`}
             >
               {tag}
             </span>
           ))}
         </div>
-        <div className="flex flex-wrap px-[2%]">
-          <p className="mt-[0.2rem] ml-[2%] line-clamp-3 text-base leading-normal font-medium text-[var(--gray-70)]">
+        <div className="flex flex-wrap px-[3%]">
+          <p className="mt-[0.5rem] ml-[2%] line-clamp-3 text-base leading-normal font-medium text-[var(--gray-70)]">
             {currentCard.intro}
           </p>
         </div>
