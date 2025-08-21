@@ -86,10 +86,7 @@ const CalendarView: React.FC = () => {
             <div className="flex flex-col items-center py-4">
               <div className="w-[90%] max-w-md space-y-4">
                 {schedules.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="rounded-xl bg-[var(--gray-0)] p-4 shadow-[0_0_2px_rgba(0,0,0,0.05)]"
-                  >
+                  <div key={idx} className="rounded-2xl bg-[var(--gray-0)] p-4">
                     <div className="mb-3 flex items-center justify-between">
                       <div>
                         <span className="rounded-[14px] bg-[var(--gray-60)] px-2 py-1 text-sm font-normal text-[var(--gray-0)]">
