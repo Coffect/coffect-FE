@@ -6,6 +6,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import type { ChatRoomWithUser } from "../../types/chat";
+import { getTimeAgo } from "../../utils/dateUtils";
 
 interface ChatRoomItemProps {
   chatRoom: ChatRoomWithUser;
@@ -43,18 +44,31 @@ const ChatRoomItem: React.FC<ChatRoomItemProps> = ({ chatRoom, onClick }) => {
       <div className="ml-3 flex min-w-0 flex-1 flex-col">
         <div className="flex min-w-0 items-center">
           <span className="mr-2 flex-shrink-0 text-lg font-bold whitespace-nowrap text-[var(--gray-90)]">
-            {chatRoom.userInfo?.name}
+            {chatRoom.userInfo?.name || "상대방"}
           </span>
           <span className="min-w-0 flex-1 truncate overflow-hidden text-sm font-medium text-ellipsis whitespace-nowrap text-[var(--gray-50)]">
-            {chatRoom.userInfo?.major}
+            {chatRoom.userInfo?.major || "전공 정보 없음"}
           </span>
         </div>
         <div className="flex min-w-0 items-center justify-between">
           <span className="text-s min-w-0 flex-1 truncate overflow-hidden py-1 text-ellipsis whitespace-nowrap text-[var(--gray-70)]">
-            {chatRoom.lastMessage}
+            {(() => {
+              // S3 URL인지 확인 (이미지 URL 패턴 체크)
+              const isImageUrl =
+                (chatRoom.lastMessage?.match(/\.(jpg|jpeg|png|gif|webp)$/i) &&
+                  chatRoom.lastMessage.includes("amazonaws.com")) ||
+                chatRoom.lastMessage?.includes("s3");
+
+              if (isImageUrl) {
+                return "사진";
+              }
+              return chatRoom.lastMessage || "메시지가 없습니다";
+            })()}
           </span>
           <span className="ml-2 flex-shrink-0 truncate overflow-hidden text-sm text-ellipsis whitespace-nowrap text-[var(--gray-40)]">
-            방금 전
+            {chatRoom.lastMessageTime
+              ? getTimeAgo(chatRoom.lastMessageTime)
+              : "방금 전"}
           </span>
         </div>
       </div>
@@ -84,11 +98,11 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
 
   if (chatRooms.length === 0 && showEmptyState) {
     return (
-      <div className="flex h-full flex-col items-center justify-center pt-24">
+      <div className="flex h-full flex-col items-center justify-center pt-5">
         <span className="mb-2 text-[20px] font-bold text-[var(--gray-90)]">
           아직 시작된 대화가 없어요!
         </span>
-        <span className="mb-2 text-[16px] font-medium text-[var(--gray-50)]">
+        <span className="mb-2 text-center text-[16px] font-medium text-[var(--gray-50)]">
           지금 바로 추천 카드를 통해
           <br />
           커피챗을 제안해보세요!

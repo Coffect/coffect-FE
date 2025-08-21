@@ -11,6 +11,10 @@ export interface Schedule {
   time: string;
   place?: string;
   alert?: string | null;
+  opponentId?: number | null; // 상대방 ID
+  isMyRequest?: boolean; // 내가 제안한 것인지 여부
+  requestTime?: string; // 제안 보낸 시간
+  requestMessage?: string; // 제안 메시지
 }
 
 export const useSchedule = (): { schedule: Schedule | null } => {

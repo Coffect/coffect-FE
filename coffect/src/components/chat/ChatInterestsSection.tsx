@@ -12,6 +12,8 @@ interface Schedule {
   time: string;
   place?: string;
   alert?: string | null;
+  opponentId?: number | null; // 상대방 ID
+  isMyRequest?: boolean; // 내가 제안한 것인지 여부
 }
 
 interface ChatInterestsSectionProps {
@@ -21,6 +23,7 @@ interface ChatInterestsSectionProps {
   showInterests: boolean;
   onToggleInterests: () => void;
   chatRoomId?: string;
+  isMyRequest: boolean; // 내가 보낸 제안인지 여부
 }
 
 const ChatInterestsSection = ({
@@ -30,22 +33,67 @@ const ChatInterestsSection = ({
   showInterests,
   onToggleInterests,
   chatRoomId,
+  isMyRequest,
 }: ChatInterestsSectionProps) => {
   const navigate = useNavigate();
 
   const formatScheduleDate = (date: string | Date) => {
+    let dateObj: Date;
+
     if (typeof date === "string") {
-      return date.replace(/ /g, "\u00A0");
+      // ISO 문자열인 경우 Date 객체로 변환
+      if (date.includes("-") || date.includes("T")) {
+        dateObj = new Date(date);
+        if (isNaN(dateObj.getTime())) {
+          // 유효하지 않은 ISO 문자열인 경우 그대로 반환
+          return date.replace(/ /g, "\u00A0");
+        }
+      } else {
+        // "x월 x일" 형식인 경우 그대로 반환
+        return date.replace(/ /g, "\u00A0");
+      }
+    } else if (date instanceof Date) {
+      dateObj = date;
+    } else {
+      return "";
     }
-    if (date instanceof Date) {
-      return date
-        .toLocaleDateString("ko-KR", {
-          month: "long",
-          day: "numeric",
-        })
-        .replace(/ /g, "\u00A0");
+
+    // 모든 Date 객체를 일관된 형식으로 변환
+    return dateObj
+      .toLocaleDateString("ko-KR", {
+        month: "long",
+        day: "numeric",
+      })
+      .replace(/ /g, "\u00A0");
+  };
+
+  // 시간 형식 개선
+  const formatScheduleTime = (time: string) => {
+    if (!time) return "";
+
+    // 이미 적절한 형식인 경우 그대로 반환
+    if (time.includes(":") && (time.includes("시") || time.includes("분"))) {
+      return time;
     }
-    return "";
+
+    // ISO 시간 문자열인 경우 변환
+    if (time.includes("T") || time.includes(":")) {
+      try {
+        const timeObj = new Date(`2000-01-01T${time}`);
+        if (!isNaN(timeObj.getTime())) {
+          return timeObj.toLocaleTimeString("ko-KR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          });
+        }
+      } catch (error) {
+        console.log("시간 변환 실패:", error);
+      }
+    }
+
+    // 변환할 수 없는 경우 그대로 반환
+    return time;
   };
 
   return (
@@ -71,8 +119,8 @@ const ChatInterestsSection = ({
             <ChatInterestTags interests={interests} />
           </div>
           {/* 일정 정보 표시 및 버튼 영역 */}
-          <div className="flex w-full items-center gap-2">
-            {schedule && (
+          {schedule && schedule.date && schedule.time ? (
+            <div className="flex w-full items-center gap-2">
               <button
                 className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-[16px] font-medium whitespace-nowrap text-[var(--gray-90)] sm:text-sm"
                 onClick={() => {
@@ -85,46 +133,44 @@ const ChatInterestsSection = ({
               >
                 <Calendar size={18} className="text-[var(--gray-40)]" />
                 <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
-                  {formatScheduleDate(schedule.date)} {schedule.time}
+                  {`${formatScheduleDate(schedule.date)} ${formatScheduleTime(schedule.time)}`}
                 </span>
               </button>
-            )}
-            {schedule && (
               <button
                 className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-xs font-medium text-ellipsis whitespace-nowrap text-[var(--gray-70)] sm:text-sm"
                 onClick={onOpenModal}
               >
                 <Mail size={16} className="text-[var(--gray-40)]" />
                 <span className="block overflow-hidden text-[16px] font-medium whitespace-nowrap">
-                  상대 요청 보기
+                  {isMyRequest ? "나의 요청 보기" : "상대 요청 보기"}
                 </span>
               </button>
-            )}
-          </div>
-          {!schedule && (
-            <div className="flex gap-2">
+            </div>
+          ) : (
+            <div className="flex w-full items-center gap-2">
               <button
-                className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--gray-10)] py-2 text-sm font-medium text-[var(--gray-70)]"
+                className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-[16px] font-medium whitespace-nowrap text-[var(--gray-70)] sm:text-sm"
                 onClick={() => {
-                  console.log("chatRoomId:", chatRoomId);
                   if (chatRoomId) {
-                    const url = `/chat/${chatRoomId}/schedule`;
-
-                    navigate(url);
-                  } else {
-                    console.log("chatRoomId가 없습니다!");
+                    navigate(`/chat/${chatRoomId}/schedule`);
                   }
                 }}
               >
-                <Calendar size={17} />
-                <span className="leading-none">커피챗 일정 등록</span>
+                <Calendar size={17} className="text-[var(--gray-40)]" />
+                <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
+                  {schedule && schedule.date && schedule.time
+                    ? `${formatScheduleDate(schedule.date)} ${formatScheduleTime(schedule.time)}`
+                    : "커피챗 일정 등록"}
+                </span>
               </button>
               <button
-                className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-sm font-medium text-[var(--gray-70)]"
+                className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-[var(--gray-10)] bg-[var(--white)] py-2 text-xs font-medium text-ellipsis whitespace-nowrap text-[var(--gray-70)] sm:text-sm"
                 onClick={onOpenModal}
               >
-                <Mail size={17} />
-                <span className="leading-none">상대 요청 보기</span>
+                <Mail size={16} className="text-[var(--gray-40)]" />
+                <span className="block overflow-hidden text-[16px] font-medium whitespace-nowrap">
+                  {isMyRequest ? "나의 요청 보기" : "상대 요청 보기"}
+                </span>
               </button>
             </div>
           )}

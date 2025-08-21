@@ -17,8 +17,12 @@ import LoadingScreen from "../shareComponents/LoadingScreen";
 import { useChatUser } from "./hooks/useChatUser";
 import { useChatRooms } from "../../hooks/chat/useChatRooms";
 import useHandleSend from "./hooks/useHandleSend";
-import useCurrentTime from "./hooks/useCurrentTime";
-import { getChatMessages } from "../../api/chat";
+import {
+  getChatMessages,
+  getChatRoomSchedule,
+  sendPhoto,
+  markChatAsRead,
+} from "../../api/chat";
 import { useTimeTableComparison } from "../../hooks/useTimeTable";
 import { axiosInstance } from "../../api/axiosInstance";
 import { socketManager } from "../../api/chat/socketInstance";
@@ -31,6 +35,8 @@ interface ServerMessage {
   senderName: string;
   message: string;
   timestamp: string;
+
+  isPhoto?: boolean; // 이미지 여부 (서버에서 실제로 보내는 필드)
 }
 
 const ChatRoom = () => {
@@ -39,18 +45,9 @@ const ChatRoom = () => {
   const navigate = useNavigate();
 
   const chatRoomId = (() => {
-    // /chat/{chatRoomId} 형태에서 chatRoomId 추출
-    const pathParts = location.pathname.split("/");
-    if (pathParts.length >= 3 && pathParts[1] === "chat") {
-      // /schedule이 포함된 경우 제거
-      const chatRoomIdParts = pathParts.slice(2);
-      const scheduleIndex = chatRoomIdParts.indexOf("schedule");
-      if (scheduleIndex !== -1) {
-        return chatRoomIdParts.slice(0, scheduleIndex).join("/");
-      }
-      return chatRoomIdParts.join("/");
-    }
-    return "";
+    const path = window.location.pathname; // "/chat/38YXqE8iBZhfqwC5qcw4HzhfJaMl89TwWsWn9CqSOHQ="
+    const segments = path.split("/"); // ["", "chat", "38YXqE8iBZhfqwC5qcw4HzhfJaMl89TwWsWn9CqSOHQ="]
+    return segments[2] || ""; // segments[2]가 chatRoomId
   })();
   const [isProfileLoading, setIsProfileLoading] = useState(false);
 
@@ -60,36 +57,115 @@ const ChatRoom = () => {
     close: closeModal,
   } = useModal();
 
-  // 일정 정보 (전달받은 일정이 있으면 표시)
-  const schedule = useMemo<Schedule | null>(() => {
+  // 일정 정보 (일정 등록 후에만 표시)
+  const [schedule, setSchedule] = useState<Schedule | null>(null);
+
+  // 일정 정보 로드 함수
+  const loadSchedule = useCallback(async () => {
+    if (!chatRoomId) return;
+
+    // 1. location.state에서 전달받은 일정이 있으면 우선 사용 (일정 등록 직후)
     const s = location.state?.schedule;
-    if (!s) return null;
-    return {
-      date: s.date,
-      time: s.time,
-      place: s.place ?? "",
-      alert: s.alert ?? null,
-    };
-  }, [location.state?.schedule]);
+    if (s) {
+      console.log("location.state에서 일정 정보 사용 (일정 등록 직후)");
+      setSchedule({
+        date: s.date,
+        time: s.time,
+        place: s.place ?? "",
+        alert: s.alert ?? null,
+        opponentId: null,
+        isMyRequest: false,
+      });
+
+      // location.state 사용 후 클리어
+      window.history.replaceState({}, document.title);
+      return;
+    }
+
+    // 2. 서버에서 일정 정보 조회 (일정이 없어도 제안 정보는 확인)
+
+    try {
+      const response = await getChatRoomSchedule(chatRoomId);
+
+      if (response.resultType === "SUCCESS" && response.success) {
+        setSchedule({
+          date: response.success.date,
+          time: response.success.time,
+          place: response.success.place,
+          alert: response.success.alert,
+          opponentId: response.success.opponentId,
+          isMyRequest: response.success.isMyRequest,
+          requestMessage: response.success.requestMessage,
+          requestTime: response.success.requestTime,
+        });
+      } else {
+        setSchedule(null);
+      }
+    } catch (error) {
+      console.error("일정 정보 조회 실패:", error);
+      setSchedule(null);
+    }
+  }, [chatRoomId, location.state?.schedule]);
 
   // 채팅방 목록에서 현재 채팅방 정보 가져오기
-  const { chatRooms, isLoading: chatRoomsLoading } = useChatRooms();
+  const {
+    chatRooms,
+    isLoading: chatRoomsLoading,
+    loadChatRooms,
+    markChatRoomAsRead,
+  } = useChatRooms();
+
+  // 일정 정보 로드
+  useEffect(() => {
+    loadSchedule();
+  }, [loadSchedule]);
+
+  // 채팅방 입장 시 메시지 읽음 처리
+  useEffect(() => {
+    if (chatRoomId) {
+      markChatAsRead(chatRoomId)
+        .then((response) => {
+          console.log("메시지 읽음 처리 성공:", response);
+          // 읽음 처리 성공 시 채팅방 목록에서 빨간점 제거
+          if (response.resultType === "SUCCESS") {
+            markChatRoomAsRead(chatRoomId);
+          }
+        })
+        .catch((error) => {
+          console.error("메시지 읽음 처리 실패:", error);
+          console.error("에러 상세 정보:", {
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            url: error.config?.url,
+            method: error.config?.method,
+          });
+        });
+    }
+  }, [chatRoomId, markChatRoomAsRead]);
   const currentChatRoom = useMemo(() => {
     const foundRoom = chatRooms.find((room) => room.chatroomId === chatRoomId);
     return foundRoom;
   }, [chatRooms, chatRoomId]);
+
+  // 채팅방 목록 자동 로드 (컴포넌트 마운트 시 한 번만)
+  useEffect(() => {
+    if (chatRoomId) {
+      loadChatRooms();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chatRoomId]); // loadChatRooms를 의존성 배열에서 제거
 
   // 메시지 배열 (실제 소켓 통신용)
   const [messages, setMessages] = useState<Message[]>([]);
 
   const [inputValue, setInputValue] = useState("");
   const [showInterests, setShowInterests] = useState(true);
-  const getCurrentTime = useCurrentTime();
   const createdObjectUrlsRef = useRef<string[]>([]);
 
   useEffect(() => {
+    const urls = createdObjectUrlsRef.current;
     return () => {
-      createdObjectUrlsRef.current.forEach((url) => {
+      urls.forEach((url: string) => {
         try {
           URL.revokeObjectURL(url);
         } catch {
@@ -108,7 +184,8 @@ const ChatRoom = () => {
   });
 
   const handleImageSend = async (file: File) => {
-    if (!file || !file.type.startsWith("image/")) {
+    if (!file) {
+      console.error("파일이 없습니다");
       return;
     }
 
@@ -117,74 +194,19 @@ const ChatRoom = () => {
       return;
     }
 
-    const url = URL.createObjectURL(file);
-    createdObjectUrlsRef.current.push(url);
-
-    // 낙관적 업데이트
-    const tempId = Date.now();
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: tempId,
-        type: "image",
-        imageUrl: url,
-        mine: true,
-        time: getCurrentTime(),
-      },
-    ]);
-
     try {
-      // 서버로 이미지 전송
-      const { sendPhoto } = await import("../../api/chat");
+      // 1. 먼저 sendPhoto API로 S3에 업로드하여 URL 받기
       const response = await sendPhoto(chatRoomId, file);
 
-      // 성공 시 임시 메시지를 실제 서버 응답으로 교체
       if (response.success) {
-        const messageId =
-          typeof response.success.id === "string"
-            ? parseInt(response.success.id, 10)
-            : response.success.id;
-
-        if (isNaN(messageId)) {
-          console.error("Invalid message id:", response.success.id);
-          throw new Error("Invalid message id received from server");
-        }
-
-        const createdAt = new Date(response.success.createdAt);
-        if (isNaN(createdAt.getTime())) {
-          console.error("Invalid date:", response.success.createdAt);
-          throw new Error("Invalid date received from server");
-        }
-
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === tempId
-              ? {
-                  id: messageId,
-                  type: "image" as const,
-                  imageUrl: response.success.messageBody,
-                  mine: true,
-                  time: createdAt.toLocaleTimeString("ko-KR", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  }),
-                }
-              : msg,
-          ),
-        );
-
-        // 임시 객체 URL 정리 및 목록에서 제거
-        URL.revokeObjectURL(url);
-        createdObjectUrlsRef.current = createdObjectUrlsRef.current.filter(
-          (u) => u !== url,
-        );
+        // 2. S3 URL을 받은 후 소켓으로 전송
+        const s3ImageUrl = response.success as unknown as string; // 안전한 타입 단언
+        socketManager.sendImage(chatRoomId, s3ImageUrl);
+      } else {
+        throw new Error("이미지 업로드 실패");
       }
     } catch (error) {
       console.error("이미지 전송 실패:", error);
-      // 실패 시 낙관적 업데이트 롤백
-      setMessages((prev) => prev.filter((msg) => msg.id !== tempId));
-      URL.revokeObjectURL(url);
     }
   };
 
@@ -226,22 +248,39 @@ const ChatRoom = () => {
       const socketMessage = args[0] as ServerMessage;
       console.log("소켓 메시지 수신:", socketMessage);
 
-      const newMessage: Message = {
-        id: Date.now(),
-        type: "text",
-        text: socketMessage.message,
-        time: new Date(socketMessage.timestamp).toLocaleTimeString("ko-KR", {
+      const time = new Date(socketMessage.timestamp).toLocaleTimeString(
+        "ko-KR",
+        {
           hour: "2-digit",
           minute: "2-digit",
           hour12: true,
-        }),
-        mine: socketMessage.sender === user?.id,
-      };
+        },
+      );
+      const mine = socketMessage.sender === user?.id;
 
-      setMessages((prev) => {
-        const updatedMessages = [...prev, newMessage];
-        return updatedMessages;
-      });
+      if (socketMessage.isPhoto && socketMessage.message) {
+        // 서버에서 isPhoto: true로 보낸 경우
+
+        const newMessage: Message = {
+          id: Date.now(),
+          type: "image",
+          imageUrl: socketMessage.message,
+          mine,
+          time,
+        };
+        setMessages((prev) => [...prev, newMessage]);
+      } else {
+        // 텍스트 메시지
+
+        const newMessage: Message = {
+          id: Date.now(),
+          type: "text",
+          text: socketMessage.message,
+          mine,
+          time,
+        };
+        setMessages((prev) => [...prev, newMessage]);
+      }
     },
     [user?.id],
   );
@@ -305,6 +344,18 @@ const ChatRoom = () => {
 
   // 상대방의 string ID 가져오기
   const [id, setId] = useState<string | null>(null);
+
+  // 내가 제안한 것인지 상대방이 제안한 것인지 판단
+  const isMyRequest = useMemo(() => {
+    // schedule이 있으면 API에서 계산된 isMyRequest 값을 사용
+    if (schedule) {
+      const result = schedule.isMyRequest ?? false;
+      return result;
+    } else {
+      // 일정이 없어도 제안 정보는 있을 수 있으므로 getCoffeeChatSchedule로 확인
+      return false; // 기본값은 false, 실제로는 getChatRoomSchedule에서 계산됨
+    }
+  }, [schedule, user?.id]);
 
   useEffect(() => {
     // 채팅방 변경 시 이전 상대방 ID 초기화
@@ -443,6 +494,7 @@ const ChatRoom = () => {
         showInterests={showInterests}
         onToggleInterests={handleToggleInterests}
         chatRoomId={chatRoomId}
+        isMyRequest={isMyRequest}
       />
 
       {/* 팝업 모달 */}
@@ -450,10 +502,24 @@ const ChatRoom = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         opponentName={currentChatRoom?.userInfo?.name}
-        requestMessage="커피챗 제안이 도착했습니다."
-        requestTime="요청 시간 정보가 없습니다."
+        requestMessage={
+          schedule?.requestMessage || "커피챗 제안이 도착했습니다."
+        }
         availableTime={commonFreeTime}
+        isMyRequest={isMyRequest}
+        requestTime={schedule?.requestTime}
       />
+
+      {/* 디버깅용 로그 */}
+      {isModalOpen &&
+        (() => {
+          console.log("=== RequestModal 디버깅 ===");
+          console.log("schedule:", schedule);
+          console.log("schedule?.requestTime:", schedule?.requestTime);
+          console.log("schedule?.requestMessage:", schedule?.requestMessage);
+          console.log("isMyRequest:", isMyRequest);
+          return null;
+        })()}
 
       {/* 메시지 영역 */}
       <ChatMessageArea
@@ -462,6 +528,7 @@ const ChatRoom = () => {
         opponentProfileImage={currentChatRoom?.userInfo?.profileImage}
         showInterests={showInterests}
         onToggleInterests={handleToggleInterests}
+        isMyRequest={isMyRequest}
       />
 
       {/* 입력창 */}

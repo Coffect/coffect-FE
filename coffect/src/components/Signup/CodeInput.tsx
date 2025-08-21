@@ -130,6 +130,7 @@ const CodeInput: React.FC<Props> = ({ onNext, onBack, form }) => {
           <br /> 입력해주세요!
         </h2>
         <p className="mb-16 text-base text-[var(--gray-40)]">
+          메일은 최대 1~2분 늦게 도착할 수 있어요 <br />
           받지 못했다면 스팸함을 확인해주세요
         </p>
 

@@ -13,13 +13,14 @@ import DeleteScheduleModal from "./DeleteScheduleModal";
 import { X } from "lucide-react";
 import { useChatUser } from "./hooks/useChatUser";
 import { useChatRooms } from "../../hooks/chat/useChatRooms";
-import { formatAmPmTo24Hour } from "../../utils/dateUtils";
+import { formatTimeTo24Hour } from "../../utils/dateUtils";
 import { useScheduleForm } from "./hooks/useScheduleForm";
+import { getCoffectId } from "../../api/chat/chatRoomApi";
 
 const Schedule: React.FC = () => {
   const location = useLocation();
   const { user: currentUser } = useChatUser();
-  const { chatRooms } = useChatRooms();
+  const { chatRooms, loadChatRooms, isLoading } = useChatRooms();
 
   // 현재 채팅방 ID 가져오기 (URL에서 추출하거나 location state에서)
   const currentChatRoomId = (() => {
@@ -39,8 +40,15 @@ const Schedule: React.FC = () => {
     chatRooms.find((room) => room.chatroomId === currentChatRoomId) ||
     chatRooms[0]; // 임시로 첫 번째 채팅방 사용
 
+  // 채팅방 정보가 없으면 로드
+  React.useEffect(() => {
+    if (!currentChatRoom && chatRooms.length === 0) {
+      loadChatRooms();
+    }
+  }, [currentChatRoom, chatRooms.length, loadChatRooms]);
+
   const [form, setForm] = useState<ScheduleFormValues>(() => {
-    // 기존 일정이 있는지 확인 (수정하기)
+    // 1. location.state에서 기존 일정 확인 (수정하기)
     const sch = location.state?.schedule;
     if (sch) {
       // 날짜가 string이면 Date 객체로 변환
@@ -56,6 +64,8 @@ const Schedule: React.FC = () => {
         alert: sch.alert || "5분 전",
       };
     }
+
+    // 2. 기본값 반환
     return {
       date: undefined,
       time: "",
@@ -84,6 +94,10 @@ const Schedule: React.FC = () => {
   // 일정 등록/수정 API 호출
   const handleScheduleSubmit = async () => {
     try {
+      console.log("=== 일정 등록 시작 ===");
+      console.log("form:", form);
+      console.log("currentChatRoomId:", currentChatRoomId);
+
       // 날짜와 시간을 ISO 문자열로 변환
       const dateObj =
         typeof form.date === "string" ? new Date(form.date) : form.date!;
@@ -94,8 +108,10 @@ const Schedule: React.FC = () => {
         return;
       }
 
-      // AM/PM 형식을 24시간 형식으로 변환
-      const time24Hour = formatAmPmTo24Hour(form.time);
+      // 시간을 24시간 형식으로 변환
+      const time24Hour = formatTimeTo24Hour(form.time);
+      console.log("변환된 시간:", time24Hour);
+
       const [hours, minutes] = time24Hour.split(":").map(Number);
 
       // 시간 유효성 검사
@@ -111,16 +127,28 @@ const Schedule: React.FC = () => {
       }
 
       dateObj.setHours(hours, minutes, 0, 0);
+      console.log("최종 날짜 객체:", dateObj);
+      console.log("ISO 문자열:", dateObj.toISOString());
+
+      // 한국 시간으로 ISO 문자열 생성 (UTC 시간이 아닌 로컬 시간)
+      const koreanTimeString =
+        dateObj
+          .toLocaleString("sv-SE", { timeZone: "Asia/Seoul" })
+          .replace(" ", "T") + ".000Z";
+      console.log("한국 시간 ISO 문자열:", koreanTimeString);
 
       const scheduleData = {
-        time: dateObj.toISOString(),
+        time: koreanTimeString,
         location: form.place,
-        coffeeDate: dateObj.toISOString(),
+        coffeeDate: koreanTimeString,
       };
 
+      console.log("전송할 일정 데이터:", scheduleData);
+
       // getCoffectId API 호출
-      const { getCoffectId } = await import("../../api/chat/chatRoomApi");
+      console.log("getCoffectId API 호출 시작");
       const coffectIdResponse = await getCoffectId(currentChatRoomId);
+      console.log("getCoffectId 응답:", coffectIdResponse);
 
       if (
         coffectIdResponse.resultType !== "SUCCESS" ||
@@ -136,13 +164,31 @@ const Schedule: React.FC = () => {
       console.log("coffectId:", coffectId);
 
       // fixCoffeeChatSchedule API 호출
+      console.log("fixCoffeeChatSchedule API 호출 시작");
+      console.log("전송할 데이터:", { ...scheduleData, coffectId });
+
       const response = await fixCoffeeChatSchedule({
         ...scheduleData,
         coffectId,
       });
+      console.log("fixCoffeeChatSchedule 응답:", response);
 
       if (response.resultType === "SUCCESS") {
-        console.log("일정 등록 성공:", response.success);
+        console.log("일정 등록 성공!");
+
+        // 일정 등록 후 즉시 getCoffeeChatSchedule 호출하여 확인
+        try {
+          const { getCoffeeChatSchedule } = await import("../../api/home");
+          const schedules = await getCoffeeChatSchedule();
+
+          // 일정이 등록되었는지 확인
+          if (schedules.length === 0) {
+            console.log("일정 등록은 성공했지만 조회가 안 되는 상황");
+          }
+        } catch (error) {
+          console.error("일정 등록 후 확인 실패:", error);
+        }
+
         setShowComplete(true);
       } else {
         console.error("일정 등록 실패:", response.error);
@@ -173,25 +219,35 @@ const Schedule: React.FC = () => {
         </div>
         <div className="flex w-full items-center justify-start">
           <div className="z-10 -mr-2 h-9 w-9 overflow-hidden rounded-full border-2 border-[var(--white)] bg-[var(--gray-10)]">
-            {currentChatRoom?.userInfo?.profileImage && (
+            {currentChatRoom?.userInfo?.profileImage ? (
               <img
                 src={currentChatRoom.userInfo.profileImage}
                 alt="상대 프로필"
                 className="h-full w-full object-cover"
               />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-xs text-[var(--gray-40)]">
+                ?
+              </div>
             )}
           </div>
           <div className="z-0 h-9 w-9 overflow-hidden rounded-full border-2 border-[var(--white)] bg-[var(--gray-10)]">
-            {currentUser.profileImage && (
+            {currentUser.profileImage ? (
               <img
                 src={currentUser.profileImage}
                 alt="내 프로필"
                 className="h-full w-full object-cover"
               />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-xs text-[var(--gray-40)]">
+                ?
+              </div>
             )}
           </div>
           <span className="ml-2 text-[20px] font-bold tracking-tight text-[#FF8126]">
-            {currentChatRoom?.userInfo?.name || "상대방"}
+            {isLoading
+              ? "로딩 중..."
+              : currentChatRoom?.userInfo?.name || "상대방"}
           </span>
           <span className="text-[20px] font-bold tracking-tight text-[var(--gray-90)]">
             님과의 커피챗
@@ -220,7 +276,7 @@ const Schedule: React.FC = () => {
                     })
                 : ""
             }
-            time={form.time}
+            time={formatTimeTo24Hour(form.time)}
             onClose={() => {
               setShowComplete(false);
               // 일정 등록 완료 후 해당 일정 정보를 유지하면서 채팅방으로 이동
@@ -230,7 +286,7 @@ const Schedule: React.FC = () => {
                   state: {
                     schedule: {
                       date: form.date,
-                      time: form.time,
+                      time: formatTimeTo24Hour(form.time),
                       place: form.place,
                       alert: form.alert,
                     },

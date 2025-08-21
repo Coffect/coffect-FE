@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { formatAmPmTo24Hour } from "../../utils/dateUtils";
+import { formatTimeTo24Hour } from "../../utils/dateUtils";
 
 interface DeleteScheduleModalProps {
   scheduleText: string;
@@ -22,7 +22,7 @@ const DeleteScheduleModal: React.FC<DeleteScheduleModalProps> = ({
       <div className="mx-auto flex w-[80%] max-w-[340px] min-w-[200px] flex-col items-center rounded-[22px] bg-[var(--white)] px-0 pt-10 pb-0 shadow-xl">
         {/* 일정 정보 */}
         <div className="mb-2 w-full px-6 text-center text-[17px] font-extrabold text-[var(--gray-90)]">
-          {formatAmPmTo24Hour(scheduleText)}
+          {formatTimeTo24Hour(scheduleText)}
         </div>
         {/* 경고 메시지 */}
         <div className="mb-8 w-full px-6 text-center text-[14px] font-semibold text-[var(--noti)] max-[320px]:text-xs max-[320px]:leading-tight">

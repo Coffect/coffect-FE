@@ -4,11 +4,17 @@ import BackIcon from "@/assets/icon/mypage/back.png";
 interface FollowHeaderProps {
   follow: "Follower" | "Following";
   count?: number;
+  myId?: string;
 }
 
-const FollowHeader = ({ follow, count }: FollowHeaderProps) => {
+const FollowHeader = ({
+  follow,
+  count,
+  myId = "Coffect..",
+}: FollowHeaderProps) => {
   const navigate = useNavigate();
 
+  console.log(myId);
   return (
     <header className="flex items-center justify-between px-4 py-3.25">
       <button
@@ -20,8 +26,8 @@ const FollowHeader = ({ follow, count }: FollowHeaderProps) => {
 
       <h1 className="flex-1 items-center justify-center pr-15 text-center text-lg font-semibold text-[var(--gray-90)]">
         {follow === "Follower"
-          ? `나의 팔로워 (${count})`
-          : `나의 팔로잉 (${count})`}
+          ? `${myId}의 팔로워 (${count})`
+          : `${myId}의 팔로잉 (${count})`}
       </h1>
     </header>
   );
