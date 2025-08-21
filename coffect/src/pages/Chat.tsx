@@ -36,13 +36,13 @@ const Chat = () => {
         </span>
       </div>
       {/* Chat List */}
-      <div className="flex-1 overflow-y-auto px-2 pb-20">
+      <div className="flex-1 overflow-y-auto px-2 pb-15">
         {chatRooms.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center pt-24">
+          <div className="flex h-full flex-col items-center justify-center pt-5">
             <span className="mb-2 text-[20px] font-bold text-[var(--gray-90)]">
               아직 시작된 대화가 없어요!
             </span>
-            <span className="mb-2 text-[16px] font-medium text-[var(--gray-50)]">
+            <span className="mb-2 text-center text-[16px] font-medium text-[var(--gray-50)]">
               지금 바로 추천 카드를 통해
               <br />
               커피챗을 제안해보세요!

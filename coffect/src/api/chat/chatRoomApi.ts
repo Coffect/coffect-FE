@@ -253,6 +253,15 @@ export const getChatRoomSchedule = async (
 
     // 전체 일정 목록 가져오기
     const allSchedules = await getCoffeeChatSchedule();
+    console.log("=== getCoffeeChatSchedule 응답 디버깅 ===");
+    console.log("allSchedules:", allSchedules);
+    console.log("allSchedules 타입:", typeof allSchedules);
+    console.log(
+      "allSchedules 길이:",
+      Array.isArray(allSchedules) ? allSchedules.length : "배열 아님",
+    );
+    console.log("opponentStringId:", opponentStringId);
+    console.log("currentUserId:", currentUserId);
 
     // 채팅방 ID로 필터링하여 해당 채팅방의 일정 찾기
     // opponentId는 string ID이므로 string ID로 비교
@@ -263,9 +272,12 @@ export const getChatRoomSchedule = async (
         location: string;
       }) => {
         const scheduleOpponentId = String(schedule.opponentId);
+        console.log("비교 중:", scheduleOpponentId, "vs", opponentStringId);
         return scheduleOpponentId === opponentStringId;
       },
     );
+
+    console.log("찾은 일정:", chatRoomSchedule);
 
     // 일정이 없어도 제안 정보는 가져와보기
     if (!chatRoomSchedule) {
@@ -317,29 +329,11 @@ export const getChatRoomSchedule = async (
         console.error("getCoffectId 실패 (일정 없음):", error);
       }
 
-      // 일정은 없지만 제안 정보가 있으면 SUCCESS 반환
-      if (requestMessage) {
-        return {
-          resultType: "SUCCESS",
-          success: {
-            date: "",
-            time: "",
-            place: "",
-            alert: null,
-            opponentId: null,
-            isMyRequest: isMyRequest,
-            requestTime: requestTime,
-            requestMessage: requestMessage,
-          },
-          error: null,
-        };
-      }
-
-      // 제안 정보도 없으면 FAIL 반환
+      // 일정이 없으면 FAIL 반환 (제안 정보가 있어도 일정이 없으면 FAIL)
       return {
         resultType: "FAIL",
         success: null,
-        error: { reason: "해당 채팅방의 일정과 제안 정보를 찾을 수 없습니다" },
+        error: { reason: "해당 채팅방의 일정을 찾을 수 없습니다" },
       };
     }
 

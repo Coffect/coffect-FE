@@ -52,12 +52,21 @@ export const postSuggestCoffeeChat = async (
 // 커피챗 일정 가져오기
 export const getCoffeeChatSchedule = async () => {
   try {
+    console.log("=== getCoffeeChatSchedule API 호출 시작 ===");
     const { data } = await axiosInstance.get("/home/getCoffeeChatSchedule", {
       headers: {
         "Cache-Control": "no-cache",
         Pragma: "no-cache",
       },
     });
+    console.log("getCoffeeChatSchedule 원본 응답:", data);
+    console.log("data.success:", data.success);
+    console.log("data.success 타입:", typeof data.success);
+    console.log(
+      "data.success 길이:",
+      Array.isArray(data.success) ? data.success.length : "배열 아님",
+    );
+    console.log("=== getCoffeeChatSchedule API 호출 완료 ===");
     return data.success || [];
   } catch (error) {
     console.error("getCoffeeChatSchedule API 실패:", error);
