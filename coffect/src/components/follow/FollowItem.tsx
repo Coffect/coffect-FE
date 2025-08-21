@@ -10,11 +10,15 @@ import { getIsFollow } from "@/api/follow";
 
 interface FollowItemProps {
   user: ListUpFollow;
+  myUserId?: number;
 }
 
-const FollowItem = ({ user }: FollowItemProps) => {
+const FollowItem = ({ user, myUserId }: FollowItemProps) => {
   const navigate = useNavigate();
   const { mutate: follow } = useFollowMutation();
+
+  // 자신의 리스트인지 확인
+  const isMyList = user.userId === myUserId;
 
   const handleUserClick = () => {
     navigate(`/userpage/${user.id}`);
@@ -52,13 +56,14 @@ const FollowItem = ({ user }: FollowItemProps) => {
           </p>
         </div>
       </div>
-
-      <button
-        onClick={handleFollowClick}
-        className={`rounded-md px-4 py-1.5 text-sm font-semibold ${isFollowing ? "bg-[var(--gray-10)] text-[var(--gray-70)]" : "bg-[var(--gray-60)] text-white"}`}
-      >
-        {isFollow ? "팔로잉" : "팔로우"}
-      </button>
+      {!isMyList && (
+        <button
+          onClick={handleFollowClick}
+          className={`rounded-md px-4 py-1.5 text-sm font-semibold ${isFollowing ? "bg-[var(--gray-10)] text-[var(--gray-70)]" : "bg-[var(--gray-60)] text-white"}`}
+        >
+          {isFollow ? "팔로잉" : "팔로우"}
+        </button>
+      )}
     </div>
   );
 };

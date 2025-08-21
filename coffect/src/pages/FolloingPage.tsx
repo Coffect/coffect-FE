@@ -9,6 +9,9 @@ import FollowHeader from "@/components/follow/followHeader";
 import FollowingListSkeleton from "@/components/follow/skeleton/FollowingListSkeleton";
 import FollowItemSkeleton from "@/components/follow/skeleton/FollowItemSkeleton";
 import followZero from "@/assets/icon/shareComponents/followZero.png";
+import { useQuery } from "@tanstack/react-query";
+import type { profileType } from "@/types/mypage/profile";
+import { getProfile } from "@/api/profile";
 
 const FollowingPage = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -20,6 +23,12 @@ const FollowingPage = () => {
 
   const { data: followCountData } = useFollowCountQuery({ userId: Id });
   const followingCount = followCountData?.success?.[0];
+
+  const { data: myProfile } = useQuery<profileType>({
+    queryKey: ["myProfile"],
+    queryFn: getProfile,
+  });
+  const myUserId = myProfile?.success?.userInfo.userId;
 
   if (!userId) {
     return <div>User not found</div>;
@@ -56,7 +65,7 @@ const FollowingPage = () => {
     <div>
       <FollowHeader follow="Following" count={followingCount} />
       <div className="flex flex-col items-center px-4">
-        <FollowList users={users} />
+        <FollowList users={users} myUserId={myUserId} />
         {isFetchingNextPage && <FollowItemSkeleton />}
       </div>
     </div>
