@@ -50,7 +50,9 @@ const PostDetail = () => {
 
   const handleAuthorClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/userpage/${post?.user.id}`);
+    const userId = post?.user?.id;
+    if (!userId) return;
+    navigate(`/userpage/${userId}`);
   };
 
   if (isPostLoading || isCommentsLoading) {
