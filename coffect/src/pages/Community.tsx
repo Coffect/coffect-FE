@@ -32,10 +32,6 @@ import { getProfile } from "@/api/profile";
 import type { profileType } from "@/types/mypage/profile";
 
 const Community = () => {
-  const [activeQuery, setActiveQuery] = useState<"latest" | "filtered">(
-    "latest",
-  );
-  // --- Zustand 스토어에서 상태 및 액션 가져오기 ---
   const {
     sortOrder,
     filters,
@@ -43,25 +39,40 @@ const Community = () => {
     resetFilters: resetStoreFilters,
     closeFilterModal,
     setFilters,
+    activeQuery, // ✅ store에서 가져옴
+    setActiveQuery,
   } = useCommunityStore();
 
-  // --- 내 프로필 정보 가져오기 ---
+  useEffect(() => {
+    resetStoreFilters();
+    setActiveQuery("latest"); // ✅ 페이지 진입 시 최신순 기본
+  }, [resetStoreFilters, setActiveQuery]);
+
   const { data: myProfile } = useQuery<profileType>({
     queryKey: ["myProfile"],
     queryFn: getProfile,
   });
   const myUserId = myProfile?.success?.userInfo.userId;
 
-  // --- 데이터 페칭 ---
   const latestQuery = useGetThreadLatestQuery({
     enabled: activeQuery === "latest",
   });
 
+  const effectiveFilters = {
+    type:
+      sortOrder === "likeCount" &&
+      !filters.type &&
+      (!filters.subject || filters.subject.length === 0)
+        ? "아티클"
+        : filters.type || "",
+    subject: filters.subject || [],
+  };
+
   const filteredQuery = useGetCommunityPostsQuery(
     {
       orderBy: sortOrder,
-      type: filters.type || undefined,
-      threadSubject: filters.subject,
+      type: effectiveFilters.type,
+      threadSubject: effectiveFilters.subject,
     },
     { enabled: activeQuery === "filtered" },
   );
@@ -75,16 +86,13 @@ const Community = () => {
     isFetchingNextPage,
   } = activeQuery === "latest" ? latestQuery : filteredQuery;
 
-  // --- 무한 스크롤 로직 ---
   const { ref, inView } = useInView({ threshold: 0 });
-
   useEffect(() => {
     if (inView && hasNextPage) {
       fetchNextPage();
     }
   }, [inView, hasNextPage, fetchNextPage]);
 
-  // --- 글 작성 완료 모달 관련 로직 ---
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -111,15 +119,12 @@ const Community = () => {
     closeFilterModal();
   };
 
-  // --- 렌더링 데이터 준비 ---
   const posts = data?.pages.flatMap((page) => page.success?.thread || []) || [];
 
-  // --- 렌더링 ---
   if (error) {
     return (
       <div className="relative flex h-full flex-col bg-white">
-        <Header openModal={useCommunityStore.getState().openFilterModal} />{" "}
-        {/* 스토어 액션 직접 연결 */}
+        <Header />
         <div className="flex flex-1 items-center justify-center">
           게시글을 불러오는 중 오류가 발생했습니다: {error.message}
         </div>
@@ -130,7 +135,7 @@ const Community = () => {
 
   return (
     <div className="relative flex h-full flex-col bg-white">
-      <Header openModal={useCommunityStore.getState().openFilterModal} />
+      <Header />
 
       <main className="flex-1 overflow-y-auto bg-white pb-20">
         {isLoading ? (
