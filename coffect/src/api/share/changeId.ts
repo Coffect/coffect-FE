@@ -14,6 +14,6 @@ export const getChangeId = async (
     return data;
   } catch (error) {
     console.error("API 호출 중 에러 발생:", error);
-    throw Error("팔로우 여부를 확인할 수 없습니다. 다시 시도해주세요.");
+    throw Error("아이디를 조회할 수 없습니다. 다시 시도해주세요");
   }
 };
