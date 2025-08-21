@@ -8,8 +8,7 @@ export const QUERY_KEYS = {
     POSTS_FILTERED: (params: any) => ["community", "posts", "filtered", params],
   },
   USER: {
-    // PROFILE: ["user", "profile"],
-    PROFILE: () => ["user", "profile"],
+    PROFILE: ["user", "profile"],
 
     IS_FOLLOWING: (userId: number) => ["user", "isFollowing", userId], //  특정 사용자의 팔로우 상태를 확인하는 쿼리 키
     FOLLOWERS: (userId: number) => ["user", "followers", userId],

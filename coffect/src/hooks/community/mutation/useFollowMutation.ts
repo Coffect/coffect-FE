@@ -1,3 +1,4 @@
+// useFollowMutation.ts
 import {
   useMutation,
   useQueryClient,
@@ -18,15 +19,20 @@ export const useFollowMutation = () => {
     },
 
     onMutate: async (userId: number) => {
-      // --- 1) community/posts 낙관적 업데이트 ---
-      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.COMMUNITY.POSTS });
+      // await queryClient.cancelQueries({ queryKey: ["community", "posts"] });
+      //'community', 'posts' 키로 시작하는 모든 쿼리를 취소
+      await queryClient.cancelQueries({
+        queryKey: QUERY_KEYS.COMMUNITY.POSTS,
+      });
 
-      const previousPosts = queryClient.getQueriesData<
+      // 이전 데이터를 가져옴옴.
+      const previousData = queryClient.getQueriesData<
         InfiniteData<PostThreadsFilterResponse>
-      >({ queryKey: QUERY_KEYS.COMMUNITY.POSTS });
+      >({
+        queryKey: QUERY_KEYS.COMMUNITY.POSTS,
+      });
 
-      let isCurrentlyFollowing: boolean | undefined = undefined;
-
+      // 쿼리 데이터를 업데이트하여 팔로우 상태를 반전시킴 (낙관적 업뎃)
       queryClient.setQueriesData<InfiniteData<PostThreadsFilterResponse>>(
         { queryKey: QUERY_KEYS.COMMUNITY.POSTS },
         (oldData) => {
@@ -41,13 +47,11 @@ export const useFollowMutation = () => {
                 ...page,
                 success: {
                   ...page.success,
-                  thread: (page.success.thread ?? []).map((t) => {
-                    if (t.userId === userId) {
-                      isCurrentlyFollowing = t.isFollowing; // 현재 상태 저장
-                      return { ...t, isFollowing: !t.isFollowing };
-                    }
-                    return t;
-                  }),
+                  thread: (page.success.thread ?? []).map((t) =>
+                    t.userId === userId
+                      ? { ...t, isFollowing: !t.isFollowing }
+                      : t,
+                  ),
                 },
               };
             }),
@@ -55,63 +59,25 @@ export const useFollowMutation = () => {
         },
       );
 
-      // --- 2) followCount 낙관적 업데이트 ---
-      const prevFollowCount = queryClient.getQueryData<{
-        followers: number;
-        following: number;
-      }>(QUERY_KEYS.USER.FOLLOW_COUNT(userId));
-
-      queryClient.setQueryData<{ followers: number; following: number }>(
-        QUERY_KEYS.USER.FOLLOW_COUNT(userId),
-        (oldData) => {
-          if (!oldData) return oldData;
-          return {
-            ...oldData,
-            followers: isCurrentlyFollowing
-              ? oldData.followers - 1 // 언팔 → -1
-              : oldData.followers + 1, // 팔로우 → +1
-          };
-        },
-      );
-
-      return { previousPosts, prevFollowCount };
+      return { previousData };
     },
 
-    onError: (err, userId, context) => {
+    onError: (err, _variables, context) => {
       console.error("팔로우 요청 실패:", err);
-
-      // posts 롤백
-      if (context?.previousPosts) {
-        context.previousPosts.forEach(([key, data]) => {
+      // 실패 시 이전 데이터를 복원
+      if (context?.previousData) {
+        context.previousData.forEach(([key, data]) => {
           queryClient.setQueryData(key, data);
         });
       }
-
-      // followCount 롤백
-      if (context?.prevFollowCount) {
-        queryClient.setQueryData(
-          QUERY_KEYS.USER.FOLLOW_COUNT(userId),
-          context.prevFollowCount,
-        );
-      }
     },
 
-    onSettled: (_data, _error, userId) => {
+    // 서버 데이터와 동기화를 위해 관련 쿼리를 무효화
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.COMMUNITY.POSTS });
       queryClient.invalidateQueries({ queryKey: ["bookMark"] });
       queryClient.invalidateQueries({ queryKey: ["isFollow"] });
       queryClient.invalidateQueries({ queryKey: ["profileThreadSearch"] });
-
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.USER.FOLLOW_COUNT(userId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.USER.IS_FOLLOWING(userId),
-      });
-
-      // queryClient.invalidateQueries({
-      //   queryKey: QUERY_KEYS.USER.PROFILE(),
-      // });
     },
   });
 };
