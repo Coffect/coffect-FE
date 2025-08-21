@@ -37,17 +37,6 @@ const ChatInterestsSection = ({
 }: ChatInterestsSectionProps) => {
   const navigate = useNavigate();
 
-  // isMyRequest 디버깅 로그
-  console.log("=== ChatInterestsSection isMyRequest 디버깅 ===");
-  console.log("isMyRequest prop:", isMyRequest, "타입:", typeof isMyRequest);
-  console.log("schedule:", schedule);
-  console.log(
-    "schedule?.isMyRequest:",
-    schedule?.isMyRequest,
-    "타입:",
-    typeof schedule?.isMyRequest,
-  );
-
   const formatScheduleDate = (date: string | Date) => {
     let dateObj: Date;
 
@@ -155,13 +144,7 @@ const ChatInterestsSection = ({
               >
                 <Mail size={16} className="text-[var(--gray-40)]" />
                 <span className="block overflow-hidden text-[16px] font-medium whitespace-nowrap">
-                  {(() => {
-                    const buttonText = isMyRequest
-                      ? "나의 요청 보기"
-                      : "상대 요청 보기";
-
-                    return buttonText;
-                  })()}
+                  {isMyRequest ? "나의 요청 보기" : "상대 요청 보기"}
                 </span>
               </button>
             )}

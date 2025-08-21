@@ -222,10 +222,6 @@ export const getChatRoomSchedule = async (
     }
 
     const currentUserId = profileResponse.success.userInfo.userId;
-    console.log("=== currentUserId 확인 ===");
-    console.log("profileResponse:", profileResponse);
-    console.log("currentUserId:", currentUserId);
-    console.log("currentUserId 타입:", typeof currentUserId);
 
     // 3. 상대방의 userId 찾기 (채팅방의 userId가 현재 사용자가 아닌 경우)
     const opponentUserId =
@@ -246,7 +242,6 @@ export const getChatRoomSchedule = async (
     try {
       const { getUserStringId } = await import("../home");
       opponentStringId = await getUserStringId(opponentUserId);
-      console.log("상대방 string ID:", opponentStringId);
     } catch (error) {
       console.error("상대방 string ID 조회 실패:", error);
       return {
@@ -257,20 +252,7 @@ export const getChatRoomSchedule = async (
     }
 
     // 전체 일정 목록 가져오기
-    console.log("=== getCoffeeChatSchedule API 호출 시작 ===");
     const allSchedules = await getCoffeeChatSchedule();
-    console.log("=== getCoffeeChatSchedule API 호출 완료 ===");
-
-    // 디버깅용 로그
-    console.log("=== getChatRoomSchedule 디버깅 ===");
-    console.log("chatRoomId:", chatRoomId);
-    console.log("currentUserId:", currentUserId);
-    console.log("opponentUserId:", opponentUserId);
-    console.log("opponentStringId:", opponentStringId);
-    console.log("allSchedules:", allSchedules);
-    console.log("allSchedules 타입:", typeof allSchedules);
-    console.log("allSchedules 길이:", allSchedules?.length);
-    console.log("getCoffeeChatSchedule 원본 응답:", allSchedules);
 
     // 채팅방 ID로 필터링하여 해당 채팅방의 일정 찾기
     // opponentId는 string ID이므로 string ID로 비교
@@ -281,12 +263,9 @@ export const getChatRoomSchedule = async (
         location: string;
       }) => {
         const scheduleOpponentId = String(schedule.opponentId);
-        console.log("비교:", scheduleOpponentId, "===", opponentStringId);
         return scheduleOpponentId === opponentStringId;
       },
     );
-
-    console.log("찾은 일정:", chatRoomSchedule);
 
     // 일정이 없어도 제안 정보는 가져와보기
     if (!chatRoomSchedule) {
@@ -298,7 +277,6 @@ export const getChatRoomSchedule = async (
       try {
         // 채팅방 ID로 coffectId 조회
         const coffectIdResponse = await getCoffectId(chatRoomId);
-        console.log("getCoffectId 응답 (일정 없음):", coffectIdResponse);
 
         if (
           coffectIdResponse.resultType === "SUCCESS" &&
@@ -371,14 +349,10 @@ export const getChatRoomSchedule = async (
     let requestMessage: string | undefined;
 
     // 제안 메시지 정보는 coffectId로 조회 (isMyRequest 판단 포함)
-    console.log("=== getCoffectId API 호출 시작 ===");
-    console.log("chatRoomId:", chatRoomId);
-    console.log("이 부분이 실행되는지 확인");
 
     try {
       // 채팅방 ID로 coffectId 조회
       const coffectIdResponse = await getCoffectId(chatRoomId);
-      console.log("getCoffectId 응답:", coffectIdResponse);
 
       if (
         coffectIdResponse.resultType === "SUCCESS" &&
@@ -388,11 +362,7 @@ export const getChatRoomSchedule = async (
 
         // getMessageShowUp API 호출
         try {
-          console.log("=== getMessageShowUp API 호출 ===");
-          console.log("coffectId:", coffectId);
-
           const messageResponse = await getMessageShowUp(coffectId);
-          console.log("getMessageShowUp 응답:", messageResponse);
 
           if (
             messageResponse.resultType === "SUCCESS" &&

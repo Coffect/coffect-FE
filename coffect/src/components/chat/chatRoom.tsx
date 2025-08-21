@@ -95,12 +95,11 @@ const ChatRoom = () => {
     }
 
     // 2. 서버에서 일정 정보 조회 (일정이 없어도 제안 정보는 확인)
-    console.log("서버에서 일정 정보 조회 시작");
+
     try {
       const response = await getChatRoomSchedule(chatRoomId);
-      console.log("getChatRoomSchedule 응답:", response);
+
       if (response.resultType === "SUCCESS" && response.success) {
-        console.log("일정 정보 설정:", response.success);
         setSchedule({
           date: response.success.date,
           time: response.success.time,
@@ -112,7 +111,6 @@ const ChatRoom = () => {
           requestTime: response.success.requestTime,
         });
       } else {
-        console.log("일정 정보 없음, 제안 정보도 없음");
         setSchedule(null);
       }
     } catch (error) {
