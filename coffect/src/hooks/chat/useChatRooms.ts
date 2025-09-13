@@ -43,7 +43,6 @@ export const useChatRooms = (): UseChatRoomsReturn => {
         const chatRoomsWithUserInfo = await Promise.all(
           chatRoomsData.map(async (chatRoom) => {
             try {
-              // 상대방 ID 찾기 - chatRoom.userId가 상대방의 ID라고 가정
               const opponentUserId = chatRoom.userId;
 
               // 상대방의 stringId 가져오기
@@ -100,6 +99,7 @@ export const useChatRooms = (): UseChatRoomsReturn => {
     } finally {
       setIsLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 채팅방 읽음 상태 업데이트
@@ -113,13 +113,12 @@ export const useChatRooms = (): UseChatRoomsReturn => {
     );
   }, []);
 
-  // 채팅방 목록 새로고침 (서버에서 최신 상태 가져오기)
+  // 채팅방 목록 새로고침
   const refreshChatRooms = useCallback(async () => {
-    hasLoadedRef.current = false; // 다시 로드 가능하도록 플래그 리셋
+    hasLoadedRef.current = false;
     await loadChatRooms();
   }, [loadChatRooms]);
 
-  // 언마운트 시 가드 설정
   useEffect(() => {
     return () => {
       isMountedRef.current = false;
