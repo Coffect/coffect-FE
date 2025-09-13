@@ -38,11 +38,10 @@ const useHandleSend = ({
       // 입력값 초기화
       setInputValue("");
 
-      // 소켓을 통한 메시지 전송 (서버에서 receive 이벤트로 받아서 UI 업데이트)
+      // 소켓을 통한 메시지 전송
       const success = await sendMessage(msg);
 
       if (success) {
-        // 성공 시 콜백 실행
         onSuccess?.();
       } else {
         // 실패 시 입력값 복원

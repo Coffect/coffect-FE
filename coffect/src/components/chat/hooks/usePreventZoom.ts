@@ -1,5 +1,5 @@
-// author : 앨리스/박은지
 /*
+ * author : 앨리스/박은지
  * description : 터치 줌 방지
  */
 

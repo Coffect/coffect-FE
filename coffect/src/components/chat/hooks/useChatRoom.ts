@@ -176,7 +176,6 @@ export const useChatRoom = () => {
   useEffect(() => {
     const urls = createdUrlsRef.current;
     return () => {
-      // 언마운트 시 생성된 모든 URL 정리
       urls.forEach((url) => {
         try {
           URL.revokeObjectURL(url);

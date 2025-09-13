@@ -9,7 +9,6 @@ import LoadingScreen from "../components/shareComponents/LoadingScreen";
 import { useNavigate, useLocation } from "react-router-dom";
 import EmptyChatList from "../assets/icon/chat/EmptyChatList.png";
 import ChatRoomList from "../components/chat/ChatRoomList";
-
 import { useChatRooms } from "../hooks/chat";
 import { useEffect, useRef } from "react";
 

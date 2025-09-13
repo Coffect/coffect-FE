@@ -32,7 +32,7 @@ const ChatMessageList: React.FC<Props> = ({
           currentMsg.time !== nextMsg.time || currentMsg.mine !== nextMsg.mine
         );
       }
-      return true; // 다음 메시지가 없는 경우
+      return true;
     }
 
     return true;

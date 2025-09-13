@@ -332,17 +332,14 @@ export const getChatRoomSchedule = async (
       chatRoomSchedule.coffeeDate.includes("T")
     ) {
       try {
-        // ISO 문자열을 직접 파싱해서 "2025-08-23 08:04" 형태로 변환
         const formatted = chatRoomSchedule.coffeeDate
           .replace("T", " ")
           .slice(0, 16);
         const [datePart, timePart] = formatted.split(" ");
 
-        // 날짜를 "8월 23일" 형태로 변환
-        const [year, month, day] = datePart.split("-");
+        const [month, day] = datePart.split("-");
         dateStr = `${Number(month)}월 ${Number(day)}일`;
 
-        // 시간은 그대로 사용
         timeStr = timePart;
       } catch {
         // 변환 실패 시 원본 사용
@@ -350,7 +347,6 @@ export const getChatRoomSchedule = async (
         timeStr = "";
       }
     } else {
-      // ISO 문자열이 아닌 경우 원본 사용
       dateStr = chatRoomSchedule.coffeeDate;
       timeStr = "";
     }
@@ -361,12 +357,12 @@ export const getChatRoomSchedule = async (
         date: dateStr,
         time: timeStr,
         place: chatRoomSchedule.location,
-        alert: "5분 전", // 기본값
+        alert: "5분 전",
         // opponentId 정보 추가
-        opponentId: chatRoomSchedule.opponentId || null, // 상대방 ID
-        // coffectId와 getMessageShowUp API로 정확하게 계산된 값
+        opponentId: chatRoomSchedule.opponentId || null,
+
         isMyRequest: isMyRequest ?? false,
-        // 제안 보낸 시간과 메시지 추가 (getMessageShowUp에서 가져온 createdAt과 message 사용)
+
         requestTime: requestTime,
         requestMessage: requestMessage,
       },
@@ -379,7 +375,6 @@ export const getChatRoomSchedule = async (
       error: { reason: "채팅방 일정 조회에 실패했습니다" },
     };
   } finally {
-    // 실행 상태 해제
     runningRequests.delete(chatRoomId);
   }
 };

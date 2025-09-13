@@ -16,6 +16,7 @@ import { useChatRooms } from "../../hooks/chat/useChatRooms";
 import { formatTimeTo24Hour } from "../../utils/dateUtils";
 import { useScheduleForm } from "./hooks/useScheduleForm";
 import { getCoffectId } from "../../api/chat/chatRoomApi";
+import { getCoffeeChatSchedule } from "../../api/home";
 
 const Schedule: React.FC = () => {
   const location = useLocation();
@@ -176,12 +177,9 @@ const Schedule: React.FC = () => {
       if (response.resultType === "SUCCESS") {
         console.log("일정 등록 성공!");
 
-        // 일정 등록 후 즉시 getCoffeeChatSchedule 호출하여 확인
         try {
-          const { getCoffeeChatSchedule } = await import("../../api/home");
           const schedules = await getCoffeeChatSchedule();
 
-          // 일정이 등록되었는지 확인
           if (schedules.length === 0) {
             console.log("일정 등록은 성공했지만 조회가 안 되는 상황");
           }
@@ -205,7 +203,6 @@ const Schedule: React.FC = () => {
 
   return (
     <div className="flex h-full w-full flex-col bg-[var(--white)]">
-      {/* 상단 헤더 */}
       <div className="relative flex w-full flex-col items-center justify-center bg-[var(--white)] px-4 pt-7 pb-3">
         <button
           className="absolute top-7 left-4 text-2xl text-[var(--gray-70)]"
@@ -279,7 +276,7 @@ const Schedule: React.FC = () => {
             time={formatTimeTo24Hour(form.time)}
             onClose={() => {
               setShowComplete(false);
-              // 일정 등록 완료 후 해당 일정 정보를 유지하면서 채팅방으로 이동
+
               navigate(
                 currentChatRoomId ? `/chat/${currentChatRoomId}` : "/chat",
                 {

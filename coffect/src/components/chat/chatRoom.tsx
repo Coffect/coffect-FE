@@ -347,19 +347,16 @@ const ChatRoom = () => {
 
   // 내가 제안한 것인지 상대방이 제안한 것인지 판단
   const isMyRequest = useMemo(() => {
-    // schedule이 있으면 API에서 계산된 isMyRequest 값을 사용
     if (schedule) {
       const result = schedule.isMyRequest ?? false;
       return result;
     } else {
-      // 일정이 없어도 제안 정보는 있을 수 있으므로 getCoffeeChatSchedule로 확인
-      return false; // 기본값은 false, 실제로는 getChatRoomSchedule에서 계산됨
+      return false;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [schedule, user?.id]);
 
   useEffect(() => {
-    // 채팅방 변경 시 이전 상대방 ID 초기화
     setId(null);
 
     const abortController = new AbortController();
@@ -398,7 +395,6 @@ const ChatRoom = () => {
     };
   }, [currentChatRoom?.userId]);
 
-  // 기존 메시지 로딩 함수
   const loadMessages = useCallback(async () => {
     if (!chatRoomId) return;
 
@@ -428,7 +424,7 @@ const ChatRoom = () => {
                 imageUrl: msg.messageBody,
                 time: timeString,
                 mine: msg.userId === user.id,
-                createdAt, // 정렬용 임시 속성
+                createdAt,
               };
             } else {
               return {
@@ -437,7 +433,7 @@ const ChatRoom = () => {
                 text: msg.messageBody,
                 time: timeString,
                 mine: msg.userId === user.id,
-                createdAt, // 정렬용 임시 속성
+                createdAt,
               };
             }
           })
@@ -450,7 +446,6 @@ const ChatRoom = () => {
             return a.createdAt.getTime() - b.createdAt.getTime();
           });
 
-        // createdAt 속성 제거하고 Message 타입으로 변환
         const finalMessages: Message[] = sortedMessages.map((msg) => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { createdAt, ...message } = msg;
@@ -466,14 +461,12 @@ const ChatRoom = () => {
 
   // 채팅방 입장 및 메시지 로딩
   useEffect(() => {
-    if (userLoading) return; // 사용자 정보 로딩 완료 후에만 메시지 로드
+    if (userLoading) return;
     loadMessages();
   }, [chatRoomId, userLoading, loadMessages]);
 
-  // 전체 로딩 상태 (채팅방 목록 로딩 + 프로필 클릭 로딩)
   const overallLoading = chatRoomsLoading || isProfileLoading;
 
-  // chatRoomId가 없거나 로딩 중일 때 LoadingScreen 표시
   if (overallLoading || !chatRoomId) {
     return <LoadingScreen />;
   }
@@ -510,17 +503,6 @@ const ChatRoom = () => {
         isMyRequest={isMyRequest}
         requestTime={schedule?.requestTime}
       />
-
-      {/* 디버깅용 로그 */}
-      {isModalOpen &&
-        (() => {
-          console.log("=== RequestModal 디버깅 ===");
-          console.log("schedule:", schedule);
-          console.log("schedule?.requestTime:", schedule?.requestTime);
-          console.log("schedule?.requestMessage:", schedule?.requestMessage);
-          console.log("isMyRequest:", isMyRequest);
-          return null;
-        })()}
 
       {/* 메시지 영역 */}
       <ChatMessageArea

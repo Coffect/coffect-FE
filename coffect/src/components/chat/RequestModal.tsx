@@ -10,11 +10,11 @@ import { getCommonFreeTime } from "../../hooks/useTimeTable";
 interface RequestModalProps {
   isOpen: boolean;
   onClose: () => void;
-  opponentName?: string; // 상대방 이름
-  requestMessage?: string; // 상대방의 요청 메시지
-  availableTime?: string; // 상대방의 가능한 시간
-  isMyRequest?: boolean; // 내가 보낸 제안인지 여부
-  requestTime?: string; // 제안 보낸 시간
+  opponentName?: string;
+  requestMessage?: string;
+  availableTime?: string;
+  isMyRequest?: boolean;
+  requestTime?: string;
 }
 
 const RequestModal = ({
@@ -31,13 +31,10 @@ const RequestModal = ({
   // 시간표 데이터를 파싱해서 공강시간만 표시하는 함수
   const formatAvailableTime = (timeData: string): string => {
     try {
-      // 시간표 데이터가 JSON 문자열인지 확인
       if (timeData && timeData.startsWith("[") && timeData.endsWith("]")) {
         const timeSlots = JSON.parse(timeData) as string[];
 
         if (Array.isArray(timeSlots) && timeSlots.length > 0) {
-          // getCommonFreeTime 함수를 사용하여 시간대를 포맷팅
-          // 단일 시간표를 처리하기 위해 빈 문자열과 비교
           const result = getCommonFreeTime(
             JSON.stringify(timeSlots),
             JSON.stringify(timeSlots),
@@ -46,8 +43,6 @@ const RequestModal = ({
           return result;
         }
       }
-
-      // 파싱할 수 없거나 빈 데이터인 경우 기본값 반환
 
       return timeData || "겹치는 공강 시간 없음";
     } catch {
